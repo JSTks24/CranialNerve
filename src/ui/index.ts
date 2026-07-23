@@ -21,6 +21,7 @@ export async function init(): Promise<void> {
 async function boot(): Promise<void> {
   const session = getSession()
   await session.init()
+  injectTheme()
   mountDrawer()
   mountWandButton()
 }
@@ -102,7 +103,6 @@ function openPanel(): void {
     return
   }
   appMounted = true
-  injectTheme()
   document.body.style.overflow = 'hidden'
   const root = document.createElement('div')
   root.id = 'cn_app'

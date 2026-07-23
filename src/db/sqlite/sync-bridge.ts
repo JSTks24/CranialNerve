@@ -14,6 +14,7 @@ interface SyncBridge {
 	save(messageId: number): void
 	load(): LoadResult
 	findLatestSnapshot(): number | null
+	removeAllSnapshots(): void
 }
 
 export default class SqliteSyncBridge implements SyncBridge {
@@ -71,7 +72,17 @@ export default class SqliteSyncBridge implements SyncBridge {
 		return null
 	}
 
-	cleanupOldSnapshots(retainFloors: number): void {
+	removeAllSnapshots(): void {
+			const chat = this.chat.getChat()
+			for (let i = chat.length - 1; i >= 0; i--) {
+				const extra = chat[i]?.extra
+				if (extra && typeof extra[DB_FIELD_PREFIX] === 'string') {
+					delete extra[DB_FIELD_PREFIX]
+				}
+			}
+		}
+
+		cleanupOldSnapshots(retainFloors: number): void {
 		if (retainFloors <= 0) return
 		const chat = this.chat.getChat()
 		let kept = 0

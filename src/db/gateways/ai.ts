@@ -1,4 +1,4 @@
-import OpenAI from 'openai'
+import { getRequestHeaders } from './host-context'
 
 export interface AiChatMessage {
     role: 'system' | 'user' | 'assistant'
@@ -13,14 +13,17 @@ export interface AiClientConfig {
     customIncludeHeaders?: string
 }
 
-export type ChatCompletionParams = Partial<
-    Omit<
-        OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming,
-        'model' | 'messages'
-    >
-> & {
+export interface ChatCompletionParams {
     model: string
     stream?: boolean
+    max_tokens?: number
+    temperature?: number
+    top_p?: number
+    frequency_penalty?: number
+    presence_penalty?: number
+    seed?: number
+    stop?: string[]
+    [key: string]: unknown
 }
 
 export interface AiGateway {
@@ -31,76 +34,106 @@ export interface AiGateway {
     ): Promise<string>
 }
 
-function parseHeaders(raw?: string): Record<string, string> | undefined {
-    if (!raw || raw.trim().length === 0) return undefined
-    const headers: Record<string, string> = {}
-    for (const line of raw.split('\n')) {
-        const trimmed = line.trim()
-        if (!trimmed) continue
-        const idx = trimmed.indexOf(':')
-        if (idx <= 0) continue
-        headers[trimmed.slice(0, idx).trim()] = trimmed.slice(idx + 1).trim()
-    }
-    return Object.keys(headers).length > 0 ? headers : undefined
-}
-
 export default function createAiGateway(): AiGateway {
     return {
         async chatCompletion(messages, clientConfig, params) {
-            const extraHeaders = parseHeaders(clientConfig.customIncludeHeaders)
-            const client = new OpenAI({
-                baseURL: clientConfig.baseURL,
-                apiKey: clientConfig.apiKey,
-                dangerouslyAllowBrowser: true,
-                defaultHeaders: extraHeaders,
-            })
-            const requestMessages = messages as OpenAI.Chat.Completions.ChatCompletionMessageParam[]
-
-            let extraBody: Record<string, unknown> = {}
-            const bodyParams = { ...params } as Record<string, unknown>
+            const { stream, model, ...extraParams } = params
+            const body: Record<string, unknown> = {
+                chat_completion_source: 'custom',
+                custom_url: clientConfig.baseURL,
+                custom_include_headers: buildCustomHeaders(clientConfig),
+                messages,
+                model,
+                stream: !!stream,
+                ...extraParams,
+            }
             if (clientConfig.customIncludeBody) {
                 try {
-                    extraBody = JSON.parse(clientConfig.customIncludeBody) as Record<string, unknown>
+                    const extra = JSON.parse(clientConfig.customIncludeBody)
+                    Object.assign(body, extra)
                 } catch {
                     console.warn('[CranialNerve] customIncludeBody JSON 解析失败，已忽略')
                 }
             }
-            const excludeKeys = (clientConfig.customExcludeBody ?? '').split('\n').map((k) => k.trim()).filter((k) => k.length > 0)
-            const merged = { ...bodyParams, ...extraBody }
-            for (const key of excludeKeys) {
-                delete merged[key]
+            if (clientConfig.customExcludeBody) {
+                body.custom_exclude_body = clientConfig.customExcludeBody
             }
 
-            if (params.stream) {
-                const stream = await client.chat.completions.create({
-                    ...merged,
-                    stream: true,
-                    messages: requestMessages,
-                } as OpenAI.Chat.Completions.ChatCompletionCreateParamsStreaming)
-                let content = ''
-                for await (const chunk of stream) {
-                    const delta = chunk.choices[0]?.delta?.content
-                    if (delta) {
-                        content += delta
-                    }
-                }
-                if (!content) {
-                    throw new Error('AI stream response has no content')
-                }
-                return content
+            const headers = getRequestHeaders()
+            headers['Content-Type'] = 'application/json'
+
+            const res = await fetch('/api/backends/chat-completions/generate', {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(body),
+            })
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}))
+                throw new Error((err as { error?: { message?: string } }).error?.message
+                    ?? (err as { message?: string }).message
+                    ?? `AI 请求失败：${res.status}`)
             }
-            const res = await client.chat.completions.create({
-                ...merged,
-                messages: requestMessages,
-            } as OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming)
-            if (!('choices' in res) || !res.choices[0]) {
+
+            if (stream) {
+                return readStream(res)
+            }
+
+            const json = (await res.json()) as {
+                choices?: Array<{ message?: { content?: string } }>
+            }
+            if (!json.choices?.[0]) {
                 throw new Error('AI response has no choices')
             }
-            const content = res.choices[0].message.content
+            const content = json.choices[0].message?.content
             if (!content) {
                 throw new Error('AI response has no content')
             }
             return content
         },
     }
+}
+
+function buildCustomHeaders(config: AiClientConfig): string {
+    const lines: string[] = []
+    if (config.apiKey) {
+        lines.push(`Authorization: Bearer ${config.apiKey}`)
+    }
+    if (config.customIncludeHeaders) {
+        lines.push(config.customIncludeHeaders)
+    }
+    return lines.join('\n')
+}
+
+async function readStream(res: Response): Promise<string> {
+    if (!res.body) {
+        throw new Error('stream response has no body')
+    }
+    const reader = res.body.getReader()
+    const decoder = new TextDecoder()
+    let content = ''
+    while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        const text = decoder.decode(value, { stream: true })
+        for (const line of text.split('\n')) {
+            const trimmed = line.trim()
+            if (!trimmed.startsWith('data: ')) continue
+            const payload = trimmed.slice(6)
+            if (payload === '[DONE]') continue
+            try {
+                const chunk = JSON.parse(payload) as {
+                    choices?: Array<{ delta?: { content?: string } }>
+                }
+                const delta = chunk.choices?.[0]?.delta?.content
+                if (delta) content += delta
+            } catch {
+                // skip unparseable lines
+            }
+        }
+    }
+    if (!content) {
+        throw new Error('AI stream response has no content')
+    }
+    return content
 }

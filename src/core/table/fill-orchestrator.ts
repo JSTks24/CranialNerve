@@ -62,11 +62,16 @@ async function executeFill(session: CranialNerveSession, extraHint?: string): Pr
 	}
 
 	const segments = session.getActiveSegments('tableEdit')
-	const chronicleGenSegments = session.getActiveSegments('chronicleGenerate')
-	const chronicleGuide = chronicleGenSegments.map((s) => s.content).join('\n\n')
-
-	const tableDefs: TableDef[] = [...template.tables, DEFAULT_CHRONICLE_TABLE]
-	const targetTables = [...template.tables.map((t) => t.name), CHRONICLE_TABLE_NAME]
+	const chronicleEnabled = config.chronicleGenEnabled
+	const chronicleGuide = chronicleEnabled
+		? session.getActiveSegments('chronicleGenerate').map((s) => s.content).join('\n\n')
+		: ''
+	const tableDefs: TableDef[] = chronicleEnabled
+		? [...template.tables, DEFAULT_CHRONICLE_TABLE]
+		: [...template.tables]
+	const targetTables = chronicleEnabled
+		? [...template.tables.map((t) => t.name), CHRONICLE_TABLE_NAME]
+		: template.tables.map((t) => t.name)
 
 	const timeFormat = getTimePromptDescription()
 
@@ -91,12 +96,13 @@ async function executeFill(session: CranialNerveSession, extraHint?: string): Pr
 	}
 
 	const editor = session.getTableEditor()
+	const targetMsgId = chatMessages.length - 1
 	const result = await session.getWriteQueue().enqueue(() =>
 		editor.run(promptCtx, { maxRetries: config.tableFill.maxRetries })
 	)
 
 	if (result.ok) {
-		const lastMsgId = chatMessages.length - 1
+		const lastMsgId = targetMsgId
 		if (lastMsgId >= 0) {
 			session.saveToChat(lastMsgId)
 			session.cleanupOldSnapshots(config.retainFloors)

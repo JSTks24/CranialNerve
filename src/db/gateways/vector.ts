@@ -11,16 +11,18 @@ export default function createVectorGateway(): VectorGateway {
             if (!config.embeddingEndpoint || !config.embeddingModel) {
                 throw new Error('embedding 配置不完整')
             }
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+            if (config.embeddingApiKey) {
+                headers.Authorization = `Bearer ${config.embeddingApiKey}`
+            }
             const res = await fetch(config.embeddingEndpoint, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${config.embeddingApiKey}`,
-                },
+                headers,
                 body: JSON.stringify({ model: config.embeddingModel, input: texts }),
             })
             if (!res.ok) {
-                throw new Error(`embedding 请求失败：${res.status}`)
+                const detail = await res.text().catch(() => res.statusText)
+                throw new Error(`embedding 请求失败 ${res.status}: ${detail}`)
             }
             const data = (await res.json()) as { data?: Array<{ embedding?: number[] }> }
             if (!Array.isArray(data.data)) {
@@ -33,18 +35,21 @@ export default function createVectorGateway(): VectorGateway {
             if (!config.rerankEndpoint || !config.rerankModel) {
                 return documents.map((_, i) => i)
             }
+            const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+            if (config.rerankApiKey) {
+                headers.Authorization = `Bearer ${config.rerankApiKey}`
+            }
             const res = await fetch(config.rerankEndpoint, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${config.rerankApiKey}`,
-                },
+                headers,
                 body: JSON.stringify({ model: config.rerankModel, query, documents }),
             })
             if (!res.ok) {
-                throw new Error(`rerank 请求失败：${res.status}`)
+                throw new Error(`rerank 请求失败: ${res.status} ${await res.text()}`)
             }
-            const data = (await res.json()) as { results?: Array<{ index?: number; relevance_score?: number }> }
+            const data = (await res.json()) as {
+                results?: Array<{ index?: number; relevance_score?: number }>
+            }
             if (!Array.isArray(data.results)) {
                 return documents.map((_, i) => i)
             }

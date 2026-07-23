@@ -13,7 +13,7 @@ import {
   DEFAULT_CHRONICLE_RECALL_PROMPT,
   DEFAULT_TABLE_EDIT_PROMPT
 } from '@shared/prompts/defaults'
-import { getHostContext } from './host-context'
+import { getHostContext, getRequestHeaders } from './host-context'
 
 const CONFIG_KEY = 'cranialnerve'
 
@@ -113,12 +113,22 @@ export default function createConfigGateway(): ConfigGateway {
       if (!preset.baseURL) {
         return []
       }
-      const modelsUrl = preset.baseURL.replace(/\/chat\/completions\/?$/, '/models')
-      const res = await fetch(modelsUrl, {
-        headers: { Authorization: `Bearer ${preset.apiKey}` }
+      const headers = getRequestHeaders()
+      headers['Content-Type'] = 'application/json'
+      const res = await fetch('/api/backends/chat-completions/status', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          chat_completion_source: 'custom',
+          custom_url: preset.baseURL,
+          custom_include_headers: preset.apiKey
+            ? `Authorization: Bearer ${preset.apiKey}`
+            : '',
+        }),
       })
       if (!res.ok) {
-        throw new Error(`获取模型列表失败：${res.status}`)
+        const err = (await res.json().catch(() => ({}))) as { error?: boolean; message?: string }
+        throw new Error(err.message || `获取模型列表失败：${res.status}`)
       }
       const data = (await res.json()) as { data?: Array<{ id: string }> }
       return Array.isArray(data.data) ? data.data.map((m) => m.id) : []

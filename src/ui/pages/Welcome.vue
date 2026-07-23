@@ -122,6 +122,9 @@ function resetDefaults() {
 	c.tableFillPresetId = ''
 	c.recallPresetId = ''
 	c.chronicleGenPresetId = ''
+	c.prompt = session.getConfig().prompt
+	c.vector = { embeddingEndpoint: '', embeddingApiKey: '', embeddingModel: '', rerankEndpoint: '', rerankApiKey: '', rerankModel: '' }
+	c.vectorEnabled = false
 	session.saveConfig(c)
 	cfg.value = session.getConfig()
 	toast.success('已恢复默认设置')
@@ -356,7 +359,7 @@ refresh()
 					<div class="welcome-kv">
 						<div class="welcome-kv__row">
 							<span class="welcome-kv__label">快照策略</span>
-							<select class="cn-select welcome-kv__input" v-model="cfg.snapshotStrategy" @change="saveCfg">
+							<select class="cn-select welcome-kv__select" v-model="cfg.snapshotStrategy" @change="saveCfg">
 								<option value="every-message">每条消息（推荐）</option>
 								<option value="latest-only">仅最新 ⚠️</option>
 							</select>

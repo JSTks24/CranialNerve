@@ -28,12 +28,16 @@ export async function init(): Promise<void> {
 	})
 	;(window as unknown as Record<string, unknown>).CN_API = getCNApi()
 	session.event.makeLast(EVENT_GENERATION_ENDED, () => {
-		onGenerationEnded(session).catch(() => {})
+		onGenerationEnded(session).catch((e) => {
+			console.error('[CranialNerve] onGenerationEnded error:', e instanceof Error ? e.message : e)
+		})
 	})
 	session.event.makeLast(EVENT_CHAT_COMPLETION_PROMPT_READY, (...args: unknown[]) => {
 		const eventData = args[0] as { chat: SillyTavernChatMessage[]; dryRun?: boolean }
 		if (eventData) {
-			onPromptReady(session, eventData).catch(() => {})
+			onPromptReady(session, eventData).catch((e) => {
+				console.error('[CranialNerve] onPromptReady error:', e instanceof Error ? e.message : e)
+			})
 		}
 	})
 }

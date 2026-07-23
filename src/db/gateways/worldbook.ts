@@ -21,7 +21,7 @@ export default function createWorldbookGateway(): WorldbookGateway {
       if (id == null) {
         return null
       }
-      const world = ctx.characters[id]?.data?.extensions?.['world']
+      const world = ctx.characters[id as number]?.data?.extensions?.['world']
       return typeof world === 'string' ? world : null
     },
     async loadLorebook(name) {

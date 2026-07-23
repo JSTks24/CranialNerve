@@ -5,3 +5,11 @@ export function getHostContext(): SillyTavernContext {
     }
     return ctx
 }
+
+export function getRequestHeaders(): Record<string, string> {
+    const ctx = getHostContext()
+    if (typeof ctx.getRequestHeaders === 'function') {
+        return ctx.getRequestHeaders() as Record<string, string>
+    }
+    return { 'Content-Type': 'application/json' }
+}

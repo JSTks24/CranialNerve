@@ -218,6 +218,10 @@ export class CranialNerveSession {
     if (!this.syncBridge) {
       throw new Error('session not initialized')
     }
+    const cfg = this.config.read()
+    if (cfg.snapshotStrategy === 'latest-only') {
+      this.syncBridge.removeAllSnapshots()
+    }
     this.syncBridge.save(messageId)
   }
 

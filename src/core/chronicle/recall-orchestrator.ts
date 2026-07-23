@@ -69,6 +69,9 @@ export async function onPromptReady(
 	}
 
 	const config = session.getConfig()
+	if (!config.recallEnabled) {
+		return
+	}
 	const preset = session.getAiPresetForScene(config.recallPresetId)
 	if (!preset) {
 		return

@@ -26,7 +26,7 @@ interface Window {
 declare function $(handler: () => void): void
 
 interface SillyTavernContext {
-  characterId: number | null
+  characterId: string | number | null
   characters: SillyTavernCharacter[]
   chat: SillyTavernChatMessage[]
   chatMetadata: Record<string, unknown>
@@ -35,6 +35,7 @@ interface SillyTavernContext {
   eventTypes: Record<string, string>
   name1: string
   name2: string
+  getRequestHeaders?: () => Record<string, string>
 }
 
 interface SillyTavernEventSource {

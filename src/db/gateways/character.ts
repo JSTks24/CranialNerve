@@ -13,7 +13,7 @@ export default function createCharacterGateway(): CharacterGateway {
             if (id == null) {
                 return null
             }
-            const character = ctx.characters[id]
+            const character = ctx.characters[Number(id)]
             const raw = character?.data?.extensions?.['cranialnerve']
             if (raw == null) {
                 return null
