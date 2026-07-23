@@ -6,16 +6,15 @@ import { CHRONICLE_TABLE_NAME, DEFAULT_CHRONICLE_TABLE } from '@shared/constants
 import { getTimePromptDescription } from '../time'
 import type { TableDef } from '@shared/types/table'
 
-// ── 填表调度状态（模块级单例） ──
 let generationCountSinceLastFill = 0
 
-/** 重置调度状态（切聊天时调用） */
 export function resetFillScheduler(): void {
 	generationCountSinceLastFill = 0
 }
 
-async function executeFill(session: CranialNerveSession): Promise<RunResult> {
-	const preset = session.getActiveAiPreset()
+async function executeFill(session: CranialNerveSession, extraHint?: string): Promise<RunResult> {
+	const cfg = session.getConfig()
+	const preset = session.getAiPresetForScene(cfg.tableFillPresetId)
 	if (!preset) {
 		return { ok: false, attempts: 0, error: 'no active AI preset' }
 	}
@@ -28,15 +27,12 @@ async function executeFill(session: CranialNerveSession): Promise<RunResult> {
 	const config = session.getConfig()
 	const chatMessages = session.chat.getChat()
 
-	// ── 上下文深度（0=不传任何上下文） ──
 	const contextDepth =
 		config.tableFill.contextDepth > 0 ? config.tableFill.contextDepth : 10
 
-	// ── 跳过楼层：忽略最近 N 条 AI 回复 ──
 	const skipFloors = Math.max(0, config.tableFill.skipFloors || 0)
 	const allAiMessages = chatMessages.filter((m) => !m.is_user)
 
-	// 构建有效消息窗口：排除 skipFloors 条最新 AI 消息
 	let effectiveMessages = chatMessages
 	if (skipFloors > 0 && allAiMessages.length > skipFloors) {
 		const cutoffMsg = allAiMessages[allAiMessages.length - 1 - skipFloors]
@@ -48,10 +44,8 @@ async function executeFill(session: CranialNerveSession): Promise<RunResult> {
 		}
 	}
 
-	// ── 批处理大小：从有效窗口中取最后 batchSize 条 ──
 	const batchSize = Math.max(1, config.tableFill.batchSize || 3)
 	const recentMessages = effectiveMessages.slice(-Math.min(contextDepth, effectiveMessages.length))
-	// 如果 batchSize < 实际取到的消息数，再截一次
 	const batchedMessages = recentMessages.slice(-batchSize)
 
 	const conversationText = batchedMessages
@@ -68,6 +62,8 @@ async function executeFill(session: CranialNerveSession): Promise<RunResult> {
 	}
 
 	const segments = session.getActiveSegments('tableEdit')
+	const chronicleGenSegments = session.getActiveSegments('chronicleGenerate')
+	const chronicleGuide = chronicleGenSegments.map((s) => s.content).join('\n\n')
 
 	const tableDefs: TableDef[] = [...template.tables, DEFAULT_CHRONICLE_TABLE]
 	const targetTables = [...template.tables.map((t) => t.name), CHRONICLE_TABLE_NAME]
@@ -80,7 +76,9 @@ async function executeFill(session: CranialNerveSession): Promise<RunResult> {
 		worldbookContent,
 		conversationText,
 		timeFormat,
-		segments
+		segments,
+		extraHint,
+		chronicleGuide
 	})
 
 	const userPrompt = '请根据以上故事内容更新数据库表格。'
@@ -88,7 +86,7 @@ async function executeFill(session: CranialNerveSession): Promise<RunResult> {
 	const promptCtx: PromptContext = {
 		segments: filledSegments,
 		userPrompt,
-		clientConfig: { baseURL: preset.baseURL, apiKey: preset.apiKey },
+		clientConfig: { baseURL: preset.baseURL, apiKey: preset.apiKey, customIncludeBody: preset.customIncludeBody, customExcludeBody: preset.customExcludeBody, customIncludeHeaders: preset.customIncludeHeaders },
 		params: { model: preset.model }
 	}
 
@@ -101,8 +99,8 @@ async function executeFill(session: CranialNerveSession): Promise<RunResult> {
 		const lastMsgId = chatMessages.length - 1
 		if (lastMsgId >= 0) {
 			session.saveToChat(lastMsgId)
+			session.cleanupOldSnapshots(config.retainFloors)
 		}
-		// 更新调度状态
 		generationCountSinceLastFill = 0
 		try {
 			await syncToWorldbook(session)
@@ -115,12 +113,10 @@ async function executeFill(session: CranialNerveSession): Promise<RunResult> {
 export async function onGenerationEnded(session: CranialNerveSession): Promise<void> {
 	const config = session.getConfig()
 
-	// ── 自动填表总开关 ──
 	if (!config.tableFill.autoFill) {
 		return
 	}
 
-	// ── 更新频率：积累 N 次生成后才触发 ──
 	const frequency = Math.max(0, config.tableFill.updateFrequency || 1)
 	if (frequency <= 0) {
 		return
@@ -133,10 +129,8 @@ export async function onGenerationEnded(session: CranialNerveSession): Promise<v
 	await executeFill(session)
 }
 
-export async function runManualFill(session: CranialNerveSession): Promise<RunResult> {
-	// 手动填表忽略频率限制，直接执行
-	const result = await executeFill(session)
-	// 手动填表后也重置计数器
+export async function runManualFill(session: CranialNerveSession, extraHint?: string): Promise<RunResult> {
+	const result = await executeFill(session, extraHint)
 	if (result.ok) {
 		generationCountSinceLastFill = 0
 	}

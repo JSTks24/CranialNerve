@@ -1,13 +1,3 @@
-/**
- * shujuku TABLE_TEMPLATE_ACU ↔ CranialNerve CardTemplate 双向转换
- *
- * shujuku 格式（Sheet_ACU）:
- *   { mate: {...}, sheet_xxx: { uid, name, sourceData: { note, initNode, deleteNode, updateNode, insertNode, ddl }, content: [[header],[row]...], updateConfig, exportConfig, orderNo } }
- *
- * CranialNerve 格式（CardTemplate）:
- *   { templateVersion: 1, tables: [{ name, displayName, columns: [{ name, displayName, type, constraints, note }], note, insertHint, updateHint, deleteHint }] }
- */
-
 import type { CardTemplate } from '@shared/types/card'
 import type { TableDef, ColumnDef } from '@shared/types/table'
 
@@ -33,7 +23,6 @@ interface ShujukuTemplate {
   [key: string]: unknown
 }
 
-/** 检测 JSON 是否为 shujuku 格式 */
 export function isShujukuTemplate(obj: unknown): obj is ShujukuTemplate {
   if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return false
   const keys = Object.keys(obj as Record<string, unknown>)
@@ -44,14 +33,12 @@ export function isShujukuTemplate(obj: unknown): obj is ShujukuTemplate {
   return typeof (first as Record<string, unknown>).sourceData === 'object'
 }
 
-/** 检测 JSON 是否为 CranialNerve 格式 */
 export function isCardTemplate(obj: unknown): obj is CardTemplate {
   if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return false
   const t = obj as Record<string, unknown>
   return Array.isArray(t.tables) && typeof t.templateVersion === 'number'
 }
 
-/** 解析 shujuku DDL 为列定义 */
 function parseDdl(ddl: string): ColumnDef[] {
   const columns: ColumnDef[] = []
   const bodyMatch = ddl.match(/\(([\s\S]*)\)/i)
@@ -63,15 +50,12 @@ function parseDdl(ddl: string): ColumnDef[] {
     if (!nameMatch) continue
     const name = nameMatch[1]!
 
-    // 提取类型
     const typeMatch = line.match(/\b(TEXT|INTEGER|INT|REAL|BLOB|VARCHAR[^,\s]*)\b/i)
     const type = typeMatch ? typeMatch[1]!.toUpperCase().replace(/^INT$/i, 'INTEGER') : 'TEXT'
 
-    // 提取中文注释
     const commentMatch = line.match(/--\s*(.+)/)
     const displayName = commentMatch ? commentMatch[1]!.trim() : name
 
-    // 提取约束
     const upper = line.toUpperCase()
     const constraints: ColumnDef['constraints'] = {}
     if (upper.includes('PRIMARY KEY')) constraints.primaryKey = true
@@ -86,7 +70,6 @@ function parseDdl(ddl: string): ColumnDef[] {
   return columns
 }
 
-/** shujuku 模板 → CardTemplate */
 export function convertShujukuToCardTemplate(shujuku: ShujukuTemplate): CardTemplate {
   const tables: TableDef[] = []
   const keys = Object.keys(shujuku).filter((k) => k.startsWith('sheet_')).sort((a, b) => {
@@ -106,7 +89,6 @@ export function convertShujukuToCardTemplate(shujuku: ShujukuTemplate): CardTemp
       columns = parseDdl(src.ddl)
     }
 
-    // DDL 解析不够时从 content[0]（表头行）补中文名
     if (sheet.content && Array.isArray(sheet.content[0])) {
       const header = sheet.content[0] as (string | null)[]
       for (let i = 0; i < header.length; i++) {
@@ -136,7 +118,6 @@ export function convertShujukuToCardTemplate(shujuku: ShujukuTemplate): CardTemp
   return { templateVersion: 1, tables }
 }
 
-/** CardTemplate → shujuku 格式（用于导出兼容） */
 export function convertCardTemplateToShujuku(template: CardTemplate): ShujukuTemplate {
   const result: ShujukuTemplate = {
     mate: { type: 'chatSheets', version: 2, updateConfigUiSentinel: -1 }

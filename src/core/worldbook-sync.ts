@@ -106,7 +106,6 @@ export async function cleanupStaleBooks(session: CranialNerveSession): Promise<v
       try {
         await wb.deleteWorldbook(name)
       } catch {
-        // Book may already be deleted or inaccessible
       }
     }
   }

@@ -8197,7 +8197,7 @@ function defineStore(id, setup, setupOptions) {
 }
 //#endregion
 //#region src/ui/theme.css?inline
-var theme_default = "#cn_app {\n  --cn-bg: #f0f9eb;\n  --cn-surface: #ffffff;\n  --cn-primary: #52c41a;\n  --cn-primary-hover: #73d13d;\n  --cn-primary-active: #389e0d;\n  --cn-primary-soft: #d9f7be;\n  --cn-text: #1f1f1f;\n  --cn-text-2: #595959;\n  --cn-text-3: #8c8c8c;\n  --cn-border: #e8e8e8;\n  --cn-border-green: #d9f7be;\n  --cn-radius: 6px;\n  --cn-radius-sm: 4px;\n  --cn-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.06);\n  --cn-font:\n    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei',\n    sans-serif;\n  color: var(--cn-text);\n  font-family: var(--cn-font);\n  font-size: 15px;\n  line-height: 1.5;\n}\n\n#cn_app,\n#cn_app * {\n  box-sizing: border-box;\n}\n\n#cn_app button {\n  appearance: none;\n  -webkit-appearance: none;\n  margin: 0;\n  font: inherit;\n  color: var(--cn-text) !important;\n  background: var(--cn-surface);\n  cursor: pointer;\n  -webkit-tap-highlight-color: transparent;\n}\n\n#cn_app input,\n#cn_app select,\n#cn_app textarea {\n  appearance: none;\n  -webkit-appearance: none;\n  margin: 0;\n  font: inherit;\n  color: var(--cn-text) !important;\n  background: var(--cn-surface) !important;\n  -webkit-tap-highlight-color: transparent;\n}\n\n#cn_app select option {\n  color: var(--cn-text) !important;\n  background: var(--cn-surface) !important;\n}\n\n#cn_app button:focus:not(:focus-visible),\n#cn_app input:focus:not(:focus-visible),\n#cn_app select:focus:not(:focus-visible),\n#cn_app textarea:focus:not(:focus-visible) {\n  outline: none;\n}\n\n#cn_app ul {\n  margin: 0;\n  padding: 0;\n}\n\n#cn_app .cn-btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  height: 32px;\n  padding: 0 15px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  color: var(--cn-text);\n  font-size: 14px;\n  line-height: 1;\n  white-space: nowrap;\n  transition: all 0.15s ease;\n  user-select: none;\n}\n#cn_app .cn-btn:hover:not(:disabled) {\n  border-color: var(--cn-primary);\n  color: var(--cn-primary);\n}\n#cn_app .cn-btn:disabled {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n#cn_app .cn-btn--primary {\n  background: var(--cn-primary);\n  border-color: var(--cn-primary);\n  color: #fff;\n}\n#cn_app .cn-btn--primary:hover:not(:disabled) {\n  background: var(--cn-primary-hover);\n  border-color: var(--cn-primary-hover);\n  color: #fff;\n}\n#cn_app .cn-btn--sm {\n  height: 26px;\n  padding: 0 11px;\n  font-size: 13px;\n}\n#cn_app .cn-btn--text {\n  border-color: transparent;\n  background: transparent;\n  color: var(--cn-text-2);\n}\n#cn_app .cn-btn--text:hover:not(:disabled) {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n  border-color: transparent;\n}\n\n#cn_app .cn-input,\n#cn_app .cn-select,\n#cn_app .cn-textarea {\n  display: block;\n  width: 100%;\n  height: 32px;\n  padding: 4px 11px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  color: var(--cn-text);\n  font-size: 14px;\n  transition:\n    border-color 0.15s ease,\n    box-shadow 0.15s ease;\n}\n#cn_app .cn-textarea {\n  height: auto;\n  min-height: 80px;\n  line-height: 1.5;\n  resize: vertical;\n}\n#cn_app .cn-input:hover,\n#cn_app .cn-select:hover,\n#cn_app .cn-textarea:hover {\n  border-color: var(--cn-primary-hover);\n}\n#cn_app .cn-input:focus,\n#cn_app .cn-select:focus,\n#cn_app .cn-textarea:focus {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.15);\n  outline: none;\n}\n#cn_app .cn-input::placeholder,\n#cn_app .cn-textarea::placeholder {\n  color: var(--cn-text-3);\n}\n#cn_app .cn-select {\n  padding-right: 28px;\n  background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%238c8c8c' d='M8 11L3 6h10z'/%3E%3C/svg%3E\");\n  background-repeat: no-repeat;\n  background-position: right 10px center;\n  background-size: 12px;\n  cursor: pointer;\n}\n\n#cn_app .cn-card {\n  background: var(--cn-surface);\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  box-shadow: var(--cn-shadow);\n  overflow: hidden;\n}\n#cn_app .cn-card__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n  padding: 14px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 16px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .cn-card__body {\n  padding: 16px;\n}\n\n#cn_app .cn-field {\n  margin-bottom: 16px;\n}\n#cn_app .cn-field__label {\n  display: block;\n  margin-bottom: 6px;\n  color: var(--cn-text-2);\n  font-size: 14px;\n}\n\n#cn_app .cn-table {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: 13px;\n}\n#cn_app .cn-table th,\n#cn_app .cn-table td {\n  padding: 8px 12px;\n  border: 1px solid var(--cn-border);\n  text-align: left;\n  white-space: nowrap;\n}\n#cn_app .cn-table th {\n  background: var(--cn-primary-soft);\n  color: var(--cn-text);\n  font-weight: 600;\n}\n#cn_app .cn-table tbody tr:nth-child(even) {\n  background: #fafafa;\n}\n#cn_app .cn-table tbody tr:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cn-table__op {\n  width: 50px;\n  text-align: center;\n  white-space: nowrap;\n}\n\n#cn_app .cn-table__rownum {\n  width: 40px;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 12px;\n  white-space: nowrap;\n}\n\n#cn_app .tables-page {\n  display: flex;\n  flex-direction: column;\n  gap: 0;\n}\n\n#cn_app .table-wrap-card {\n  overflow: visible;\n}\n\n#cn_app .table-tabs {\n  display: flex;\n  gap: 0;\n  padding: 4px 4px 0;\n  background: var(--cn-surface);\n  border-bottom: 1px solid var(--cn-border);\n  overflow-x: auto;\n}\n\n#cn_app .table-tab {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  gap: 2px;\n  padding: 8px 18px;\n  border: 0;\n  border-radius: var(--cn-radius-sm) var(--cn-radius-sm) 0 0;\n  background: transparent;\n  color: var(--cn-text-2);\n  cursor: pointer;\n  transition: all 0.15s ease;\n  white-space: nowrap;\n}\n\n#cn_app .table-tab:hover {\n  color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .table-tab--active {\n  background: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .table-tab__zh {\n  font-size: 14px;\n}\n\n#cn_app .table-tab__en {\n  font-size: 11px;\n  opacity: 0.75;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n}\n\n#cn_app .table-tab--active .table-tab__en {\n  opacity: 0.85;\n}\n\n#cn_app .table-body {\n  background: var(--cn-surface);\n  overflow: hidden;\n}\n\n#cn_app .table-body__meta {\n  flex: 1;\n  color: var(--cn-text-3);\n  font-size: 12px;\n}\n\n#cn_app .table-body__foot {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 10px 16px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .table-row-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 12px;\n  padding: 16px;\n}\n\n#cn_app .table-row-card {\n  flex: 0 0 auto;\n  width: 340px;\n  max-width: 100%;\n}\n\n#cn_app .table-row-card__body {\n  padding: 14px 16px;\n}\n\n#cn_app .table-row-card__field {\n  margin-bottom: 10px;\n}\n\n#cn_app .table-row-card__field:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .table-row-card__label {\n  display: block;\n  margin-bottom: 4px;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n}\n\n#cn_app .table-row-card__label-en {\n  font-weight: 400;\n  color: var(--cn-primary-active);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 11px;\n  margin-left: 6px;\n  opacity: 0.6;\n}\n\n#cn_app .table-row-card__value {\n  min-height: 28px;\n  padding: 6px 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: #fafafa;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n#cn_app .table-row-card__value:focus {\n  background: var(--cn-surface);\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.15);\n}\n\n#cn_app .table-row-card--editing {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2);\n}\n\n#cn_app .table-row-card__foot {\n  display: flex;\n  justify-content: flex-end;\n  gap: 6px;\n  padding: 6px 12px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .chronicle-item--editing {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2);\n}\n\n#cn_app .cell-edit {\n  min-width: 60px;\n  min-height: 20px;\n  padding: 2px 4px;\n  border-radius: var(--cn-radius-sm);\n  outline: none;\n  white-space: normal;\n  word-break: break-word;\n  cursor: text;\n  transition: background 0.15s ease;\n}\n\n#cn_app .cell-edit:empty::before {\n  content: '\\00a0';\n  display: inline;\n}\n\n#cn_app .cell-edit:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cell-edit:focus {\n  background: var(--cn-surface);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2);\n}\n\n#cn_app .chronicle-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .chronicle-toolbar {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n\n#cn_app .chronicle-toolbar__search {\n  flex: 1;\n  max-width: 360px;\n  height: 32px;\n}\n\n#cn_app .chronicle-toolbar__count {\n  flex: 1;\n  text-align: right;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .chronicle-list {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .chronicle-item__key {\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-weight: 700;\n  color: var(--cn-primary-active);\n}\n\n#cn_app .chronicle-fields {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  gap: 12px;\n  margin-bottom: 12px;\n}\n\n#cn_app .chronicle-field {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  min-width: 0;\n}\n\n#cn_app .chronicle-field--full {\n  margin-bottom: 12px;\n}\n\n#cn_app .chronicle-field:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .chronicle-field__label {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n}\n\n#cn_app .chronicle-field__value {\n  min-height: 32px;\n  padding: 6px 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: #fafafa;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n#cn_app .chronicle-field__value:focus {\n  background: var(--cn-surface);\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.15);\n}\n\n#cn_app .cn-empty {\n  padding: 40px 0;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .cn-tag {\n  display: inline-flex;\n  align-items: center;\n  padding: 0 8px;\n  height: 22px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-size: 12px;\n  font-weight: 500;\n}\n\n#cn_app .cn-space {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n}\n#cn_app .cn-space--block {\n  display: flex;\n}\n\n#cn_app .cn-shell {\n  display: flex;\n  height: 100vh;\n  width: 100%;\n  overflow: hidden;\n}\n#cn_app .cn-sider {\n  flex: 0 0 220px;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-right: 1px solid var(--cn-border-green);\n}\n#cn_app .cn-brand {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  height: 56px;\n  padding: 0 20px;\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-brand__icon {\n  font-size: 20px;\n  color: var(--cn-primary);\n}\n#cn_app .cn-brand__name {\n  font-size: 16px;\n  font-weight: 700;\n  color: var(--cn-primary-active);\n}\n#cn_app .cn-menu {\n  flex: 1;\n  padding: 12px 10px;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  overflow-y: auto;\n}\n#cn_app .cn-menu__item {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  width: 100%;\n  padding: 9px 12px;\n  border: 0;\n  background: transparent;\n  border-radius: var(--cn-radius);\n  color: var(--cn-text-2);\n  font-size: 14px;\n  text-align: left;\n  transition: all 0.15s ease;\n}\n#cn_app .cn-menu__item:hover {\n  background: var(--cn-primary-soft);\n  color: var(--cn-text);\n}\n#cn_app .cn-menu__item--active {\n  background: var(--cn-primary);\n  color: #fff;\n  font-weight: 500;\n}\n#cn_app .cn-menu__item--active:hover {\n  background: var(--cn-primary);\n  color: #fff;\n}\n#cn_app .cn-menu__item i {\n  width: 16px;\n  text-align: center;\n  font-size: 14px;\n}\n#cn_app .cn-main {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n#cn_app .cn-header {\n  flex: 0 0 56px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 0 24px;\n  background: var(--cn-surface);\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-header__title {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .cn-content {\n  flex: 1;\n  padding: 20px;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n  background: var(--cn-bg);\n}\n\n#cn_app .welcome {\n  max-width: 760px;\n}\n#cn_app .hero {\n  margin-bottom: 28px;\n}\n#cn_app .hero__title {\n  margin: 0 0 12px;\n  font-size: 32px;\n  font-weight: 800;\n  letter-spacing: -0.5px;\n  background: linear-gradient(135deg, #52c41a 0%, #389e0d 60%, #237d4d 100%);\n  -webkit-background-clip: text;\n  background-clip: text;\n  -webkit-text-fill-color: transparent;\n}\n#cn_app .hero__desc {\n  margin: 0;\n  color: var(--cn-text-2);\n  line-height: 1.7;\n}\n#cn_app .stats {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  gap: 16px;\n}\n#cn_app .stat__body {\n  display: flex;\n  align-items: center;\n  gap: 16px;\n  padding: 20px;\n}\n#cn_app .stat__icon {\n  font-size: 28px;\n  color: var(--cn-primary);\n}\n#cn_app .stat__label {\n  margin-bottom: 4px;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n#cn_app .stat__value {\n  font-size: 20px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n\n#cn_app .toolbar {\n  margin-bottom: 16px;\n}\n#cn_app .model-row {\n  margin-top: 8px;\n}\n\n#cn_app .table-wrap {\n  overflow-x: auto;\n}\n#cn_app .pager {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  justify-content: flex-end;\n  margin-top: 12px;\n}\n#cn_app .pager__info {\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .cn-list {\n  list-style: none;\n}\n#cn_app .cn-list__item {\n  display: flex;\n  gap: 12px;\n  padding: 10px 0;\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-list__item:last-child {\n  border-bottom: 0;\n}\n#cn_app .cn-list__key {\n  flex: 0 0 80px;\n  color: var(--cn-primary-active);\n  font-weight: 600;\n  font-size: 13px;\n}\n#cn_app .cn-list__summary {\n  color: var(--cn-text-2);\n  line-height: 1.6;\n  flex: 1;\n  min-width: 0;\n}\n\n#cn_app .search-input {\n  width: 220px;\n  height: 28px;\n  font-size: 13px;\n}\n\n\n#cn_app .cn-range {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 100%;\n  height: 6px;\n  border-radius: 3px;\n  background: linear-gradient(\n    to right,\n    var(--cn-primary) 0%,\n    var(--cn-primary) var(--cn-range-pct, 50%),\n    #e8e8e8 var(--cn-range-pct, 50%),\n    #e8e8e8 100%\n  ) !important;\n  outline: none;\n  cursor: pointer;\n  margin: 0;\n  border: none;\n}\n\n#cn_app .cn-range::-webkit-slider-thumb {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: var(--cn-primary);\n  border: 2px solid #fff;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\n  cursor: pointer;\n}\n\n#cn_app .cn-range::-moz-range-thumb {\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: var(--cn-primary);\n  border: 2px solid #fff;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\n  cursor: pointer;\n}\n\n#cn_app .cn-range::-moz-range-track {\n  background: transparent;\n  border: 0;\n}\n\n#cn_app .range-row {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n\n#cn_app .range-val {\n  font-weight: 600;\n  color: var(--cn-primary);\n  min-width: 36px;\n  text-align: right;\n  font-size: 14px;\n}\n\n#cn_app .range-num {\n  width: 72px;\n  flex-shrink: 0;\n  text-align: center;\n  font-weight: 600;\n  color: var(--cn-primary);\n}\n\n#cn_app .range-num::-webkit-inner-spin-button {\n  opacity: 1;\n}\n\n#cn_app .prompt-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .prompt-head {\n  margin-bottom: -1px;\n  position: relative;\n  z-index: 2;\n}\n\n#cn_app .scene-tabs {\n  display: flex;\n  gap: 0;\n  padding: 4px 4px 0;\n  background: var(--cn-surface);\n  border: 1px solid var(--cn-border);\n  border-bottom: 0;\n  border-radius: var(--cn-radius) var(--cn-radius) 0 0;\n}\n\n#cn_app .scene-tab {\n  padding: 8px 20px;\n  border: 0;\n  border-radius: var(--cn-radius-sm) var(--cn-radius-sm) 0 0;\n  background: transparent;\n  color: var(--cn-text-2);\n  font-size: 14px;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .scene-tab:hover {\n  color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .scene-tab--active {\n  background: var(--cn-primary);\n  color: #fff;\n  font-weight: 500;\n}\n\n#cn_app .prompt-split {\n  display: grid;\n  grid-template-columns: 220px 1fr;\n  gap: 16px;\n  align-items: start;\n}\n\n#cn_app .preset-list {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n\n#cn_app .preset-list__item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 9px 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  color: var(--cn-text-2);\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .preset-list__item:hover {\n  border-color: var(--cn-primary-hover);\n  color: var(--cn-text);\n}\n\n#cn_app .preset-list__item--active {\n  border-color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-weight: 500;\n}\n\n#cn_app .preset-list__name {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .preset-list__card {\n  color: var(--cn-primary);\n  font-size: 12px;\n  margin-right: 2px;\n}\n\n#cn_app .preset-list__default {\n  flex: 0 0 auto;\n  color: #faad14;\n  font-size: 12px;\n}\n\n#cn_app .preset-list__count {\n  flex: 0 0 auto;\n  font-size: 11px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .prompt-editor__desc {\n  color: var(--cn-text-3);\n  font-size: 12px;\n  font-weight: 400;\n}\n\n#cn_app .block-list {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .block {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: #fafafa;\n  overflow: hidden;\n}\n\n#cn_app .block--ghost {\n  opacity: 0.4;\n  border-style: dashed;\n  border-color: var(--cn-primary);\n}\n\n#cn_app .block-head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 8px 10px;\n  border-bottom: 1px solid var(--cn-border);\n  background: var(--cn-surface);\n}\n\n#cn_app .block-head__grip {\n  color: var(--cn-text-3);\n  font-size: 14px;\n  cursor: grab;\n}\n\n#cn_app .block-head__grip:active {\n  cursor: grabbing;\n}\n\n#cn_app .block-head__name {\n  flex: 1;\n  height: 28px;\n  font-size: 13px;\n  font-weight: 600;\n}\n\n#cn_app .block-segs {\n  min-height: 48px;\n  padding: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n\n#cn_app .block-add {\n  display: flex;\n  gap: 4px;\n  padding: 6px 8px 8px;\n  border-top: 1px solid var(--cn-border);\n  background: var(--cn-surface);\n}\n\n#cn_app .block-add-btn {\n  margin-top: 14px;\n}\n\n#cn_app .seg-item {\n  margin-bottom: 10px;\n  padding: 10px 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  transition:\n    box-shadow 0.15s ease,\n    border-color 0.15s ease;\n}\n\n#cn_app .seg-item:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .seg-item:hover {\n  border-color: var(--cn-primary-hover);\n  box-shadow: 0 1px 4px rgba(82, 196, 26, 0.12);\n}\n\n#cn_app .seg-item--ghost {\n  opacity: 0.4;\n  border-style: dashed;\n  border-color: var(--cn-primary);\n}\n\n#cn_app .seg-item__bar {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  margin-bottom: 8px;\n}\n\n#cn_app .seg-item__grip {\n  color: var(--cn-text-3);\n  font-size: 14px;\n  cursor: grab;\n}\n\n#cn_app .seg-item__grip:active {\n  cursor: grabbing;\n}\n\n#cn_app .seg-item__role {\n  height: 22px;\n  padding: 0 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: 11px;\n  background: var(--cn-surface);\n  color: var(--cn-text-2);\n  font-size: 11px;\n  font-weight: 700;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .seg-item__role:hover {\n  border-color: var(--cn-primary);\n  color: var(--cn-primary);\n}\n\n#cn_app .seg-item__seq {\n  flex: 1;\n  font-size: 12px;\n  color: var(--cn-primary);\n  font-weight: 600;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n}\n\n#cn_app .seg-item__edit {\n  display: block;\n  width: 100%;\n  min-height: 120px;\n  padding: 8px 11px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: #fafafa;\n  color: var(--cn-text);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.6;\n  white-space: pre-wrap;\n  word-wrap: break-word;\n  outline: none;\n  transition:\n    border-color 0.15s ease,\n    box-shadow 0.15s ease;\n  box-sizing: border-box;\n  overflow-y: auto;\n  max-height: 320px;\n}\n\n#cn_app .seg-item__edit:focus {\n  border-color: var(--cn-primary);\n  background: var(--cn-surface);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.15);\n}\n\n#cn_app .seg-var {\n  color: var(--cn-primary-active);\n  background: var(--cn-primary-soft);\n  border: 1px solid var(--cn-primary);\n  border-radius: 3px;\n  padding: 0 4px;\n  font-weight: 600;\n  cursor: help;\n}\n\n#cn_app .seg-var:hover {\n  background: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .prompt-foot {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 16px;\n}\n\n#cn_app .prompt-foot__hint {\n  color: var(--cn-text-3);\n  font-size: 12px;\n  line-height: 1.6;\n}\n\n#cn_app .prompt-foot__hint code {\n  padding: 1px 5px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 11px;\n}\n\n#cn_app .prompt-wrap {\n  overflow: visible;\n}\n\n#cn_app .prompt-wrap .prompt-head {\n  margin: 0;\n  padding: 0;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .prompt-wrap .prompt-split {\n  padding: 16px;\n  gap: 16px;\n}\n\n#cn_app .prompt-side {\n  min-width: 0;\n}\n\n#cn_app .prompt-editor {\n  min-width: 0;\n}\n\n#cn_app .prompt-editor .cn-card__head {\n  padding: 0 0 12px;\n  border-bottom: 1px solid var(--cn-border);\n  margin-bottom: 16px;\n}\n\n#cn_app .prompt-side .cn-card__head {\n  padding: 0 0 12px;\n  border-bottom: 1px solid var(--cn-border);\n  margin-bottom: 12px;\n}\n\n#cn_app .prompt-side .cn-card__body,\n#cn_app .prompt-editor .cn-card__body {\n  padding: 0;\n}\n\n#cn_app .cn-modal-mask {\n  position: fixed;\n  inset: 0;\n  z-index: 10020;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(0, 0, 0, 0.45);\n}\n\n#cn_app .cn-modal {\n  width: 90vw;\n  max-width: 1100px;\n  height: 90vh;\n  max-height: 800px;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n}\n\n#cn_app .cn-modal__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 15px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n\n#cn_app .cn-modal__code {\n  margin: 0;\n  padding: 20px;\n  overflow: auto;\n  background: #1e1e1e;\n  color: #d4d4d4;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.7;\n  white-space: pre-wrap;\n  word-break: break-word;\n  flex: 1;\n  min-height: 0;\n}\n\n#cn_app .model-picker-modal {\n  width: 90vw;\n  max-width: 520px;\n  height: auto;\n  max-height: 70vh;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n}\n\n#cn_app .model-picker__search {\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .model-picker__list {\n  overflow-y: auto;\n  padding: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n}\n\n#cn_app .model-picker__item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  width: 100%;\n  padding: 10px 14px;\n  border: none;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text);\n  font-size: 14px;\n  text-align: left;\n  cursor: pointer;\n  transition: background 0.1s;\n}\n\n#cn_app .model-picker__item:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .model-picker__item--picked {\n  background: var(--cn-primary-soft);\n  font-weight: 500;\n}\n\n#cn_app .model-picker__name {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .model-picker__check {\n  color: var(--cn-primary);\n  font-size: 14px;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-btn--danger {\n  background: #ff4d4f;\n  border-color: #ff4d4f;\n  color: #fff;\n}\n\n#cn_app .cn-btn--danger:hover:not(:disabled) {\n  background: #ff7875;\n  border-color: #ff7875;\n  color: #fff;\n}\n\n#cn_app .cn-dialog-mask {\n  position: fixed;\n  inset: 0;\n  z-index: 10020;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(0, 0, 0, 0.45);\n}\n\n#cn_app .cn-dialog {\n  width: min(420px, 85vw);\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n  animation: cn-dialog-in 0.15s ease-out;\n}\n\n#cn_app .cn-dialog__head {\n  padding: 14px 20px;\n  font-size: 16px;\n  font-weight: 600;\n  color: var(--cn-text);\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .cn-dialog__body {\n  padding: 16px 20px;\n  color: var(--cn-text-2);\n  font-size: 14px;\n  line-height: 1.6;\n}\n\n#cn_app .cn-dialog__foot {\n  display: flex;\n  justify-content: flex-end;\n  gap: 8px;\n  padding: 12px 20px;\n  border-top: 1px solid var(--cn-border);\n  background: #fafafa;\n}\n\n@keyframes cn-dialog-in {\n  from {\n    opacity: 0;\n    transform: scale(0.95);\n  }\n  to {\n    opacity: 1;\n    transform: scale(1);\n  }\n}\n\n.cn-recall-card {\n  display: block;\n  margin: 0 0 8px 0;\n  border: 1px solid #d9f7be;\n  border-radius: 6px;\n  overflow: hidden;\n  background: #fff;\n  font-size: 13px;\n  line-height: 1.6;\n  color: #1f1f1f;\n}\n\n.cn-recall-card__head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 14px;\n  background: #f0f9eb;\n  border-bottom: 1px solid #d9f7be;\n}\n\n.cn-recall-card__icon {\n  color: #52c41a;\n  font-size: 15px;\n}\n\n.cn-recall-card__brand {\n  font-weight: 600;\n  color: #389e0d;\n  font-size: 14px;\n}\n\n.cn-recall-card__count {\n  margin-left: auto;\n  font-size: 12px;\n  color: #8c8c8c;\n}\n\n.cn-recall-tabs {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: flex-start;\n}\n\n.cn-recall-tabs__radio {\n  display: none;\n}\n\n.cn-recall-tab {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  gap: 2px;\n  padding: 8px 12px;\n  cursor: pointer;\n  border-bottom: 2px solid transparent;\n  background: #fafafa;\n  min-width: 100px;\n  transition: background 0.15s, border-color 0.15s;\n  user-select: none;\n}\n\n.cn-recall-tab:hover {\n  background: #f0f9eb;\n}\n\n.cn-recall-tabs__radio:checked + .cn-recall-tab {\n  background: #fff;\n  border-bottom-color: #52c41a;\n}\n\n.cn-recall-tab__key {\n  font-weight: 600;\n  font-size: 13px;\n  color: #1f1f1f;\n}\n\n.cn-recall-tab__time {\n  font-size: 12px;\n  color: #52c41a;\n}\n\n.cn-recall-tab__loc {\n  font-size: 11px;\n  color: #8c8c8c;\n  max-width: 120px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.cn-recall-panel {\n  display: none;\n  width: 100%;\n  padding: 12px 14px;\n  border-top: 1px solid #f0f0f0;\n  order: 1;\n}\n\n.cn-recall-tabs__radio:checked + .cn-recall-tab + .cn-recall-panel {\n  display: block;\n}\n\n.cn-recall-panel__row {\n  display: flex;\n  gap: 8px;\n  margin-bottom: 8px;\n  align-items: flex-start;\n}\n\n.cn-recall-panel__row--full {\n  flex-direction: column;\n  gap: 2px;\n}\n\n.cn-recall-panel__label {\n  flex-shrink: 0;\n  font-size: 12px;\n  color: #8c8c8c;\n  min-width: 60px;\n}\n\n.cn-recall-panel__value {\n  font-size: 13px;\n  color: #1f1f1f;\n  word-break: break-word;\n  white-space: pre-wrap;\n}\n\n.cn-recall-card__message {\n  padding: 12px 14px;\n  border-top: 1px solid #d9f7be;\n  font-size: 14px;\n  color: #1f1f1f;\n  white-space: pre-wrap;\n  word-break: break-word;\n  line-height: 1.8;\n}\n\n#cn_app .api-page {\n  display: grid;\n  grid-template-columns: 3fr 1fr;\n  gap: 16px;\n  align-items: start;\n}\n\n#cn_app .api-left {\n  min-width: 0;\n}\n\n#cn_app .api-right {\n  min-width: 0;\n}\n\n#cn_app .api-head-desc {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 400;\n}\n\n#cn_app .api-preset-select-row {\n  display: flex;\n  gap: 6px;\n}\n\n#cn_app .api-section-divider {\n  border-top: 1px solid var(--cn-border);\n  margin: 14px 0;\n}\n\n#cn_app .api-form-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0 16px;\n}\n\n#cn_app .api-actions {\n  display: flex;\n  justify-content: flex-end;\n  gap: 8px;\n  border-top: 1px solid var(--cn-border);\n  margin-top: 14px;\n  padding-top: 14px;\n}\n\n#cn_app .model-row {\n  display: flex;\n  gap: 8px;\n  align-items: center;\n}\n\n#cn_app .model-select {\n  margin-top: 6px;\n  width: 100%;\n}\n\n@media (max-width: 900px) {\n  #cn_app .api-page {\n    grid-template-columns: 1fr;\n  }\n}\n\n\n#cn_app .welcome-root {\n  min-width: 0;\n}\n\n#cn_app .welcome-hero {\n  display: flex;\n  align-items: flex-start;\n  justify-content: space-between;\n  gap: 16px;\n  margin-bottom: 16px;\n}\n\n#cn_app .welcome-hero__left {\n  min-width: 0;\n}\n\n#cn_app .welcome-hero__title {\n  margin: 0 0 6px 0;\n  font-size: 24px;\n  font-weight: 800;\n  letter-spacing: -0.3px;\n  background: linear-gradient(135deg, #52c41a 0%, #389e0d 60%, #237d4d 100%);\n  -webkit-background-clip: text;\n  background-clip: text;\n  -webkit-text-fill-color: transparent;\n}\n\n#cn_app .welcome-hero__sub {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-hero__reset {\n  flex-shrink: 0;\n  height: 30px;\n  padding: 0 14px;\n  border: 1px solid var(--cn-primary-soft);\n  border-radius: var(--cn-radius);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-size: 13px;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.15s ease;\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  white-space: nowrap;\n}\n\n#cn_app .welcome-hero__reset:hover {\n  background: var(--cn-primary);\n  border-color: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .welcome-grid {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 14px;\n}\n\n#cn_app .welcome-panel {\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n}\n\n#cn_app .welcome-panel__head {\n  padding: 14px 16px 10px 16px;\n  border-bottom: 1px solid var(--cn-border-green);\n}\n\n#cn_app .welcome-panel__title {\n  margin: 0;\n  padding-bottom: 8px;\n  border-bottom: 3px solid var(--cn-primary);\n  display: inline-block;\n  font-size: 17px;\n  font-weight: 700;\n  color: var(--cn-text);\n  line-height: 1.3;\n}\n\n#cn_app .welcome-panel__hint {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  margin-left: 8px;\n}\n\n#cn_app .welcome-panel__body {\n  display: flex;\n  flex-direction: column;\n  gap: 0;\n  flex: 1;\n  min-height: 0;\n}\n\n#cn_app .welcome-health-item {\n  display: grid;\n  grid-template-columns: 30px minmax(0, 1fr);\n  gap: 12px;\n  align-items: center;\n  padding: 8px 0;\n}\n\n#cn_app .welcome-health-item + .welcome-health-item {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-health-item__icon {\n  width: 32px;\n  height: 32px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: var(--cn-radius-sm);\n  background: #f5f5f5;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .welcome-health-item--ok .welcome-health-item__icon {\n  color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .welcome-health-item--warn .welcome-health-item__icon {\n  color: #fa8c16;\n  background: #fff7e6;\n}\n\n#cn_app .welcome-health-item__body {\n  display: flex;\n  flex-direction: column;\n  gap: 3px;\n  min-width: 0;\n}\n\n#cn_app .welcome-health-item__body strong {\n  font-size: 15px;\n  font-weight: 650;\n  color: var(--cn-text);\n}\n\n#cn_app .welcome-health-item__body p {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-toggle {\n  display: flex;\n  flex-direction: column;\n  gap: 5px;\n  padding: 13px 0;\n}\n\n#cn_app .welcome-toggle + .welcome-toggle {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-toggle__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 16px;\n}\n\n#cn_app .welcome-toggle__label {\n  font-size: 15px;\n  font-weight: 500;\n  color: var(--cn-text);\n}\n\n#cn_app .welcome-toggle__desc {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-preset-row {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 0;\n}\n\n#cn_app .welcome-preset-row + .welcome-preset-row {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-preset-row__label {\n  font-size: 15px;\n  color: var(--cn-text-2);\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-preset-row__hint {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .welcome-preset-row__select {\n  width: 140px;\n  height: 32px;\n  font-size: 14px;\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-kv {\n  padding: 8px 0;\n}\n\n#cn_app .welcome-kv + .welcome-kv {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-kv__row {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n}\n\n#cn_app .welcome-kv__label {\n  font-size: 15px;\n  color: var(--cn-text-2);\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-kv__input {\n  width: 150px;\n  height: 32px;\n  font-size: 14px;\n  text-align: center;\n  font-weight: 500;\n}\n\n#cn_app .welcome-kv__desc {\n  margin: 6px 0 0 0;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-stack {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  min-height: 0;\n}\n\n#cn_app .welcome-stack > .welcome-panel:first-child {\n  flex: 1 1 auto;\n  min-height: 0;\n}\n\n#cn_app .welcome-stack > .welcome-panel:last-child {\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-fill-body {\n  display: flex;\n  flex-direction: column;\n  flex: 1 1 auto;\n  min-height: 0;\n  overflow-y: auto;\n  justify-content: space-between;\n}\n\n#cn_app .welcome-fill-empty {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  flex: 1;\n  gap: 8px;\n  font-size: 13px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .welcome-fill-desc {\n  margin: 0 0 10px 0;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-fill-tables {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px 16px;\n  padding: 0 0 10px 0;\n  align-items: center;\n}\n\n#cn_app .welcome-fill-table {\n  display: inline-flex;\n  align-items: center;\n  gap: 5px;\n  font-size: 14px;\n  color: var(--cn-text);\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .welcome-fill-table input[type=\"checkbox\"] {\n  appearance: auto;\n  -webkit-appearance: auto;\n  background: transparent !important;\n  accent-color: var(--cn-primary);\n  width: 16px;\n  height: 16px;\n  cursor: pointer;\n  margin: 0;\n}\n\n#cn_app .welcome-fill-en {\n  font-size: 11px;\n  color: var(--cn-text-3);\n  font-family: ui-monospace, Consolas, monospace;\n  margin-left: 2px;\n}\n\n#cn_app .welcome-fill-hint {\n  flex: 1;\n  min-height: 70px;\n  font-size: 13px;\n  margin-bottom: 12px;\n  resize: vertical;\n}\n\n#cn_app .welcome-fill-actions {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding-top: 12px;\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-fill-note {\n  font-size: 12px;\n  color: var(--cn-text-3);\n}\n\n@media (max-width: 860px) {\n  #cn_app .welcome-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n\n#cn_app .cn-check {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 13px;\n  color: var(--cn-text);\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .cn-check input[type=\"checkbox\"] {\n  appearance: auto;\n  -webkit-appearance: auto;\n  background: transparent !important;\n  accent-color: var(--cn-primary);\n  width: 16px;\n  height: 16px;\n  cursor: pointer;\n  margin: 0;\n}\n\n#cn_app .cn-switch {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .cn-switch input[type=\"checkbox\"] {\n  display: none;\n}\n\n#cn_app .cn-switch__track {\n  width: 36px;\n  height: 20px;\n  border-radius: 10px;\n  background: #d9d9d9;\n  position: relative;\n  transition: background 0.2s;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-switch__track::after {\n  content: '';\n  position: absolute;\n  top: 2px;\n  left: 2px;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: #fff;\n  transition: left 0.2s;\n}\n\n#cn_app .cn-switch input:checked + .cn-switch__track {\n  background: var(--cn-primary);\n}\n\n#cn_app .cn-switch input:checked + .cn-switch__track::after {\n  left: 18px;\n}\n\n#cn_app .cn-switch__label {\n  font-size: 13px;\n  color: var(--cn-text-2);\n}\n\n/* ── 表格模板编辑器 ── */\n\n#cn_app .tpl-table-card {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  margin-bottom: 10px;\n  overflow: hidden;\n}\n\n#cn_app .tpl-table-card--active {\n  border-color: var(--cn-primary);\n}\n\n#cn_app .tpl-table-card__head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 12px;\n  background: #fafafa;\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .tpl-table-card--active .tpl-table-card__head {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .tpl-table-card__name {\n  font-weight: 600;\n  font-size: 14px;\n  color: var(--cn-text);\n  flex: 1;\n}\n\n#cn_app .tpl-table-card__meta {\n  font-size: 12px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .tpl-table-card__body {\n  padding: 12px 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .template-editor-body {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  max-height: 62vh;\n  overflow-y: auto;\n}\n\n#cn_app .template-editor-empty {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 12px;\n  padding: 40px 20px;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .tpl-row {\n  display: flex;\n  gap: 12px;\n}\n\n#cn_app .tpl-field {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n\n#cn_app .tpl-label {\n  font-size: 13px;\n  font-weight: 600;\n  color: var(--cn-text-2);\n}\n\n#cn_app .tpl-section {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  padding: 4px 0;\n}\n\n#cn_app .tpl-section__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n#cn_app .tpl-textarea {\n  width: 100%;\n  min-height: 48px;\n  resize: vertical;\n}\n\n#cn_app .tpl-cols {\n  display: flex;\n  flex-direction: column;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  overflow: hidden;\n}\n\n#cn_app .tpl-col-head,\n#cn_app .tpl-col-row {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  padding: 6px 8px;\n}\n\n#cn_app .tpl-col-head {\n  background: #fafafa;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 12px;\n  font-weight: 600;\n  color: var(--cn-text-2);\n}\n\n#cn_app .tpl-col-row {\n  border-bottom: 1px solid #f5f5f5;\n}\n\n#cn_app .tpl-col-row:last-child {\n  border-bottom: none;\n}\n\n#cn_app .tpl-col-cell {\n  font-size: 13px;\n}\n\n#cn_app .tpl-col-cell.name { width: 100px; flex-shrink: 0; }\n#cn_app .tpl-col-cell.type { width: 76px; flex-shrink: 0; }\n#cn_app .tpl-col-cell.flags { width: 84px; flex-shrink: 0; display: flex; gap: 3px; align-items: center; }\n#cn_app .tpl-col-cell.note { flex: 1; min-width: 90px; }\n#cn_app .tpl-col-cell.del { width: 28px; flex-shrink: 0; }\n\n#cn_app .cn-btn--xs {\n  padding: 0 4px;\n  height: 22px;\n  font-size: 11px;\n  border-radius: 3px;\n  line-height: 20px;\n}\n\n#cn_app .prompt-empty {\n  padding: 20px;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .prompt-side-foot {\n  display: flex;\n  gap: 6px;\n  padding: 10px 12px;\n  border-top: 1px solid var(--cn-border);\n  flex-shrink: 0;\n  margin-top: auto;\n}\n\n@media (max-width: 720px) {\n  #cn_app .prompt-split {\n    grid-template-columns: 1fr;\n  }\n}\n";
+var theme_default = "#cn_app {\n  --cn-bg: #f0f9eb;\n  --cn-surface: #ffffff;\n  --cn-primary: #52c41a;\n  --cn-primary-hover: #73d13d;\n  --cn-primary-active: #389e0d;\n  --cn-primary-soft: #d9f7be;\n  --cn-text: #1f1f1f;\n  --cn-text-2: #595959;\n  --cn-text-3: #8c8c8c;\n  --cn-border: #e8e8e8;\n  --cn-border-green: #d9f7be;\n  --cn-radius: 6px;\n  --cn-radius-sm: 4px;\n  --cn-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.06);\n  --cn-font:\n    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei',\n    sans-serif;\n  color: var(--cn-text);\n  font-family: var(--cn-font);\n  font-size: 15px;\n  line-height: 1.5;\n}\n\n#cn_app,\n#cn_app * {\n  box-sizing: border-box;\n}\n\n#cn_app button {\n  appearance: none;\n  -webkit-appearance: none;\n  margin: 0;\n  font: inherit;\n  color: var(--cn-text) !important;\n  background: var(--cn-surface);\n  cursor: pointer;\n  -webkit-tap-highlight-color: transparent;\n}\n\n#cn_app input,\n#cn_app select,\n#cn_app textarea {\n  appearance: none;\n  -webkit-appearance: none;\n  margin: 0;\n  font: inherit;\n  color: var(--cn-text) !important;\n  background: var(--cn-surface) !important;\n  -webkit-tap-highlight-color: transparent;\n}\n\n#cn_app select option {\n  color: var(--cn-text) !important;\n  background: var(--cn-surface) !important;\n}\n\n#cn_app button:focus:not(:focus-visible),\n#cn_app input:focus:not(:focus-visible),\n#cn_app select:focus:not(:focus-visible),\n#cn_app textarea:focus:not(:focus-visible) {\n  outline: none;\n}\n\n#cn_app ul {\n  margin: 0;\n  padding: 0;\n}\n\n#cn_app .cn-btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  height: 32px;\n  padding: 0 15px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  color: var(--cn-text);\n  font-size: 14px;\n  line-height: 1;\n  white-space: nowrap;\n  transition: all 0.15s ease;\n  user-select: none;\n}\n#cn_app .cn-btn:hover:not(:disabled) {\n  border-color: var(--cn-primary);\n  color: var(--cn-primary);\n}\n#cn_app .cn-btn:disabled {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n#cn_app .cn-btn--primary {\n  background: var(--cn-primary);\n  border-color: var(--cn-primary);\n  color: #fff;\n}\n#cn_app .cn-btn--primary:hover:not(:disabled) {\n  background: var(--cn-primary-hover);\n  border-color: var(--cn-primary-hover);\n  color: #fff;\n}\n#cn_app .cn-btn--sm {\n  height: 26px;\n  padding: 0 11px;\n  font-size: 13px;\n}\n#cn_app .cn-btn--text {\n  border-color: transparent;\n  background: transparent;\n  color: var(--cn-text-2);\n}\n#cn_app .cn-btn--text:hover:not(:disabled) {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n  border-color: transparent;\n}\n\n#cn_app .cn-input,\n#cn_app .cn-select,\n#cn_app .cn-textarea {\n  display: block;\n  width: 100%;\n  height: 32px;\n  padding: 4px 11px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  color: var(--cn-text);\n  font-size: 14px;\n  transition:\n    border-color 0.15s ease,\n    box-shadow 0.15s ease;\n}\n#cn_app .cn-textarea {\n  height: auto;\n  min-height: 80px;\n  line-height: 1.5;\n  resize: vertical;\n}\n#cn_app .cn-input:hover,\n#cn_app .cn-select:hover,\n#cn_app .cn-textarea:hover {\n  border-color: var(--cn-primary-hover);\n}\n#cn_app .cn-input:focus,\n#cn_app .cn-select:focus,\n#cn_app .cn-textarea:focus {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.15);\n  outline: none;\n}\n#cn_app .cn-input::placeholder,\n#cn_app .cn-textarea::placeholder {\n  color: var(--cn-text-3);\n}\n#cn_app .cn-select {\n  padding-right: 28px;\n  background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%238c8c8c' d='M8 11L3 6h10z'/%3E%3C/svg%3E\");\n  background-repeat: no-repeat;\n  background-position: right 10px center;\n  background-size: 12px;\n  cursor: pointer;\n}\n\n#cn_app .cn-card {\n  background: var(--cn-surface);\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  box-shadow: var(--cn-shadow);\n  overflow: hidden;\n}\n#cn_app .cn-card__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n  padding: 14px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 16px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .cn-card__body {\n  padding: 16px;\n}\n\n#cn_app .cn-field {\n  margin-bottom: 16px;\n}\n#cn_app .cn-field__label {\n  display: block;\n  margin-bottom: 6px;\n  color: var(--cn-text-2);\n  font-size: 14px;\n}\n\n#cn_app .cn-table {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: 13px;\n}\n#cn_app .cn-table th,\n#cn_app .cn-table td {\n  padding: 8px 12px;\n  border: 1px solid var(--cn-border);\n  text-align: left;\n  white-space: nowrap;\n}\n#cn_app .cn-table th {\n  background: var(--cn-primary-soft);\n  color: var(--cn-text);\n  font-weight: 600;\n}\n#cn_app .cn-table tbody tr:nth-child(even) {\n  background: #fafafa;\n}\n#cn_app .cn-table tbody tr:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cn-table__op {\n  width: 50px;\n  text-align: center;\n  white-space: nowrap;\n}\n\n#cn_app .cn-table__rownum {\n  width: 40px;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 12px;\n  white-space: nowrap;\n}\n\n#cn_app .tables-page {\n  display: flex;\n  flex-direction: column;\n  gap: 0;\n}\n\n#cn_app .table-wrap-card {\n  overflow: visible;\n}\n\n#cn_app .table-tabs {\n  display: flex;\n  gap: 0;\n  padding: 4px 4px 0;\n  background: var(--cn-surface);\n  border-bottom: 1px solid var(--cn-border);\n  overflow-x: auto;\n}\n\n#cn_app .table-tab {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  gap: 2px;\n  padding: 8px 18px;\n  border: 0;\n  border-radius: var(--cn-radius-sm) var(--cn-radius-sm) 0 0;\n  background: transparent;\n  color: var(--cn-text-2);\n  cursor: pointer;\n  transition: all 0.15s ease;\n  white-space: nowrap;\n}\n\n#cn_app .table-tab:hover {\n  color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .table-tab--active {\n  background: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .table-tab__zh {\n  font-size: 14px;\n}\n\n#cn_app .table-tab__en {\n  font-size: 11px;\n  opacity: 0.75;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n}\n\n#cn_app .table-tab--active .table-tab__en {\n  opacity: 0.85;\n}\n\n#cn_app .table-body {\n  background: var(--cn-surface);\n  overflow: hidden;\n}\n\n#cn_app .table-body__meta {\n  flex: 1;\n  color: var(--cn-text-3);\n  font-size: 12px;\n}\n\n#cn_app .table-body__foot {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 10px 16px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .table-row-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 12px;\n  padding: 16px;\n}\n\n#cn_app .table-row-card {\n  flex: 0 0 auto;\n  width: 340px;\n  max-width: 100%;\n}\n\n#cn_app .table-row-card__body {\n  padding: 14px 16px;\n}\n\n#cn_app .table-row-card__field {\n  margin-bottom: 10px;\n}\n\n#cn_app .table-row-card__field:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .table-row-card__label {\n  display: block;\n  margin-bottom: 4px;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n}\n\n#cn_app .table-row-card__label-en {\n  font-weight: 400;\n  color: var(--cn-primary-active);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 11px;\n  margin-left: 6px;\n  opacity: 0.6;\n}\n\n#cn_app .table-row-card__value {\n  min-height: 28px;\n  padding: 6px 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: #fafafa;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n#cn_app .table-row-card__value:focus {\n  background: var(--cn-surface);\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.15);\n}\n\n#cn_app .table-row-card--editing {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2);\n}\n\n#cn_app .table-row-card__foot {\n  display: flex;\n  justify-content: flex-end;\n  gap: 6px;\n  padding: 6px 12px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .chronicle-item--editing {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2);\n}\n\n#cn_app .cell-edit {\n  min-width: 60px;\n  min-height: 20px;\n  padding: 2px 4px;\n  border-radius: var(--cn-radius-sm);\n  outline: none;\n  white-space: normal;\n  word-break: break-word;\n  cursor: text;\n  transition: background 0.15s ease;\n}\n\n#cn_app .cell-edit:empty::before {\n  content: '\\00a0';\n  display: inline;\n}\n\n#cn_app .cell-edit:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cell-edit:focus {\n  background: var(--cn-surface);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2);\n}\n\n#cn_app .chronicle-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .chronicle-toolbar {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n\n#cn_app .chronicle-toolbar__search {\n  flex: 1;\n  max-width: 360px;\n  height: 32px;\n}\n\n#cn_app .chronicle-toolbar__count {\n  flex: 1;\n  text-align: right;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .chronicle-list {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .chronicle-item__key {\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-weight: 700;\n  color: var(--cn-primary-active);\n}\n\n#cn_app .chronicle-fields {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  gap: 12px;\n  margin-bottom: 12px;\n}\n\n#cn_app .chronicle-field {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  min-width: 0;\n}\n\n#cn_app .chronicle-field--full {\n  margin-bottom: 12px;\n}\n\n#cn_app .chronicle-field:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .chronicle-field__label {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n}\n\n#cn_app .chronicle-field__value {\n  min-height: 32px;\n  padding: 6px 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: #fafafa;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n#cn_app .chronicle-field__value:focus {\n  background: var(--cn-surface);\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.15);\n}\n\n#cn_app .cn-empty {\n  padding: 40px 0;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .cn-tag {\n  display: inline-flex;\n  align-items: center;\n  padding: 0 8px;\n  height: 22px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-size: 12px;\n  font-weight: 500;\n}\n\n#cn_app .cn-space {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n}\n#cn_app .cn-space--block {\n  display: flex;\n}\n\n#cn_app .cn-shell {\n  display: flex;\n  height: 100vh;\n  width: 100%;\n  overflow: hidden;\n}\n#cn_app .cn-sider {\n  flex: 0 0 220px;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-right: 1px solid var(--cn-border-green);\n}\n#cn_app .cn-brand {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  height: 56px;\n  padding: 0 20px;\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-brand__icon {\n  font-size: 20px;\n  color: var(--cn-primary);\n}\n#cn_app .cn-brand__name {\n  font-size: 16px;\n  font-weight: 700;\n  color: var(--cn-primary-active);\n}\n#cn_app .cn-menu {\n  flex: 1;\n  padding: 12px 10px;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  overflow-y: auto;\n}\n#cn_app .cn-menu__item {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  width: 100%;\n  padding: 9px 12px;\n  border: 0;\n  background: transparent;\n  border-radius: var(--cn-radius);\n  color: var(--cn-text-2);\n  font-size: 14px;\n  text-align: left;\n  transition: all 0.15s ease;\n}\n#cn_app .cn-menu__item:hover {\n  background: var(--cn-primary-soft);\n  color: var(--cn-text);\n}\n#cn_app .cn-menu__item--active {\n  background: var(--cn-primary);\n  color: #fff;\n  font-weight: 500;\n}\n#cn_app .cn-menu__item--active:hover {\n  background: var(--cn-primary);\n  color: #fff;\n}\n#cn_app .cn-menu__item i {\n  width: 16px;\n  text-align: center;\n  font-size: 14px;\n}\n#cn_app .cn-main {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n#cn_app .cn-header {\n  flex: 0 0 56px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 0 24px;\n  background: var(--cn-surface);\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-header__title {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .cn-content {\n  flex: 1;\n  padding: 20px;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n  background: var(--cn-bg);\n}\n\n#cn_app .welcome {\n  max-width: 760px;\n}\n#cn_app .hero {\n  margin-bottom: 28px;\n}\n#cn_app .hero__title {\n  margin: 0 0 12px;\n  font-size: 32px;\n  font-weight: 800;\n  letter-spacing: -0.5px;\n  background: linear-gradient(135deg, #52c41a 0%, #389e0d 60%, #237d4d 100%);\n  -webkit-background-clip: text;\n  background-clip: text;\n  -webkit-text-fill-color: transparent;\n}\n#cn_app .hero__desc {\n  margin: 0;\n  color: var(--cn-text-2);\n  line-height: 1.7;\n}\n#cn_app .stats {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  gap: 16px;\n}\n#cn_app .stat__body {\n  display: flex;\n  align-items: center;\n  gap: 16px;\n  padding: 20px;\n}\n#cn_app .stat__icon {\n  font-size: 28px;\n  color: var(--cn-primary);\n}\n#cn_app .stat__label {\n  margin-bottom: 4px;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n#cn_app .stat__value {\n  font-size: 20px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n\n#cn_app .toolbar {\n  margin-bottom: 16px;\n}\n#cn_app .model-row {\n  margin-top: 8px;\n}\n\n#cn_app .table-wrap {\n  overflow-x: auto;\n}\n#cn_app .pager {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  justify-content: flex-end;\n  margin-top: 12px;\n}\n#cn_app .pager__info {\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .cn-list {\n  list-style: none;\n}\n#cn_app .cn-list__item {\n  display: flex;\n  gap: 12px;\n  padding: 10px 0;\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-list__item:last-child {\n  border-bottom: 0;\n}\n#cn_app .cn-list__key {\n  flex: 0 0 80px;\n  color: var(--cn-primary-active);\n  font-weight: 600;\n  font-size: 13px;\n}\n#cn_app .cn-list__summary {\n  color: var(--cn-text-2);\n  line-height: 1.6;\n  flex: 1;\n  min-width: 0;\n}\n\n#cn_app .search-input {\n  width: 220px;\n  height: 28px;\n  font-size: 13px;\n}\n\n\n#cn_app .cn-range {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 100%;\n  height: 6px;\n  border-radius: 3px;\n  background: linear-gradient(\n    to right,\n    var(--cn-primary) 0%,\n    var(--cn-primary) var(--cn-range-pct, 50%),\n    #e8e8e8 var(--cn-range-pct, 50%),\n    #e8e8e8 100%\n  ) !important;\n  outline: none;\n  cursor: pointer;\n  margin: 0;\n  border: none;\n}\n\n#cn_app .cn-range::-webkit-slider-thumb {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: var(--cn-primary);\n  border: 2px solid #fff;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\n  cursor: pointer;\n}\n\n#cn_app .cn-range::-moz-range-thumb {\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: var(--cn-primary);\n  border: 2px solid #fff;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\n  cursor: pointer;\n}\n\n#cn_app .cn-range::-moz-range-track {\n  background: transparent;\n  border: 0;\n}\n\n#cn_app .range-row {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n\n#cn_app .range-val {\n  font-weight: 600;\n  color: var(--cn-primary);\n  min-width: 36px;\n  text-align: right;\n  font-size: 14px;\n}\n\n#cn_app .range-num {\n  width: 72px;\n  flex-shrink: 0;\n  text-align: center;\n  font-weight: 600;\n  color: var(--cn-primary);\n}\n\n#cn_app .range-num::-webkit-inner-spin-button {\n  opacity: 1;\n}\n\n#cn_app .prompt-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .prompt-head {\n  margin-bottom: -1px;\n  position: relative;\n  z-index: 2;\n}\n\n#cn_app .scene-tabs {\n  display: flex;\n  gap: 0;\n  padding: 4px 4px 0;\n  background: var(--cn-surface);\n  border: 1px solid var(--cn-border);\n  border-bottom: 0;\n  border-radius: var(--cn-radius) var(--cn-radius) 0 0;\n}\n\n#cn_app .scene-tab {\n  padding: 8px 20px;\n  border: 0;\n  border-radius: var(--cn-radius-sm) var(--cn-radius-sm) 0 0;\n  background: transparent;\n  color: var(--cn-text-2);\n  font-size: 14px;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .scene-tab:hover {\n  color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .scene-tab--active {\n  background: var(--cn-primary);\n  color: #fff;\n  font-weight: 500;\n}\n\n#cn_app .prompt-split {\n  display: grid;\n  grid-template-columns: 220px 1fr;\n  gap: 16px;\n  align-items: start;\n}\n\n#cn_app .preset-list {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n\n#cn_app .preset-list__item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 9px 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  color: var(--cn-text-2);\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .preset-list__item:hover {\n  border-color: var(--cn-primary-hover);\n  color: var(--cn-text);\n}\n\n#cn_app .preset-list__item--active {\n  border-color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-weight: 500;\n}\n\n#cn_app .preset-list__name {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .preset-list__card {\n  color: var(--cn-primary);\n  font-size: 12px;\n  margin-right: 2px;\n}\n\n#cn_app .preset-list__default {\n  flex: 0 0 auto;\n  color: #faad14;\n  font-size: 12px;\n}\n\n#cn_app .preset-list__count {\n  flex: 0 0 auto;\n  font-size: 11px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .prompt-editor__desc {\n  color: var(--cn-text-3);\n  font-size: 12px;\n  font-weight: 400;\n}\n\n#cn_app .block-list {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .block {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: #fafafa;\n  overflow: hidden;\n}\n\n#cn_app .block--ghost {\n  opacity: 0.4;\n  border-style: dashed;\n  border-color: var(--cn-primary);\n}\n\n#cn_app .block-head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 8px 10px;\n  border-bottom: 1px solid var(--cn-border);\n  background: var(--cn-surface);\n}\n\n#cn_app .block-head__grip {\n  color: var(--cn-text-3);\n  font-size: 14px;\n  cursor: grab;\n}\n\n#cn_app .block-head__grip:active {\n  cursor: grabbing;\n}\n\n#cn_app .block-head__name {\n  flex: 1;\n  height: 28px;\n  font-size: 13px;\n  font-weight: 600;\n}\n\n#cn_app .block-segs {\n  min-height: 48px;\n  padding: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n\n#cn_app .block-add {\n  display: flex;\n  gap: 4px;\n  padding: 6px 8px 8px;\n  border-top: 1px solid var(--cn-border);\n  background: var(--cn-surface);\n}\n\n#cn_app .block-add-btn {\n  margin-top: 14px;\n}\n\n#cn_app .seg-item {\n  margin-bottom: 10px;\n  padding: 10px 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  transition:\n    box-shadow 0.15s ease,\n    border-color 0.15s ease;\n}\n\n#cn_app .seg-item:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .seg-item:hover {\n  border-color: var(--cn-primary-hover);\n  box-shadow: 0 1px 4px rgba(82, 196, 26, 0.12);\n}\n\n#cn_app .seg-item--ghost {\n  opacity: 0.4;\n  border-style: dashed;\n  border-color: var(--cn-primary);\n}\n\n#cn_app .seg-item__bar {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  margin-bottom: 8px;\n}\n\n#cn_app .seg-item__grip {\n  color: var(--cn-text-3);\n  font-size: 14px;\n  cursor: grab;\n}\n\n#cn_app .seg-item__grip:active {\n  cursor: grabbing;\n}\n\n#cn_app .seg-item__role {\n  height: 22px;\n  padding: 0 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: 11px;\n  background: var(--cn-surface);\n  color: var(--cn-text-2);\n  font-size: 11px;\n  font-weight: 700;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .seg-item__role:hover {\n  border-color: var(--cn-primary);\n  color: var(--cn-primary);\n}\n\n#cn_app .seg-item__seq {\n  flex: 1;\n  font-size: 12px;\n  color: var(--cn-primary);\n  font-weight: 600;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n}\n\n#cn_app .seg-item__edit {\n  display: block;\n  width: 100%;\n  min-height: 120px;\n  padding: 8px 11px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: #fafafa;\n  color: var(--cn-text);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.6;\n  white-space: pre-wrap;\n  word-wrap: break-word;\n  outline: none;\n  transition:\n    border-color 0.15s ease,\n    box-shadow 0.15s ease;\n  box-sizing: border-box;\n  overflow-y: auto;\n  max-height: 320px;\n}\n\n#cn_app .seg-item__edit:focus {\n  border-color: var(--cn-primary);\n  background: var(--cn-surface);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.15);\n}\n\n#cn_app .seg-var {\n  color: var(--cn-primary-active);\n  background: var(--cn-primary-soft);\n  border: 1px solid var(--cn-primary);\n  border-radius: 3px;\n  padding: 0 4px;\n  font-weight: 600;\n  cursor: help;\n}\n\n#cn_app .seg-var:hover {\n  background: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .prompt-foot {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 16px;\n}\n\n#cn_app .prompt-foot__hint {\n  color: var(--cn-text-3);\n  font-size: 12px;\n  line-height: 1.6;\n}\n\n#cn_app .prompt-foot__hint code {\n  padding: 1px 5px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 11px;\n}\n\n#cn_app .prompt-wrap {\n  overflow: visible;\n}\n\n#cn_app .prompt-wrap .prompt-head {\n  margin: 0;\n  padding: 0;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .prompt-wrap .prompt-split {\n  padding: 16px;\n  gap: 16px;\n}\n\n#cn_app .prompt-side {\n  min-width: 0;\n}\n\n#cn_app .prompt-editor {\n  min-width: 0;\n}\n\n#cn_app .prompt-editor .cn-card__head {\n  padding: 0 0 12px;\n  border-bottom: 1px solid var(--cn-border);\n  margin-bottom: 16px;\n}\n\n#cn_app .prompt-side .cn-card__head {\n  padding: 0 0 12px;\n  border-bottom: 1px solid var(--cn-border);\n  margin-bottom: 12px;\n}\n\n#cn_app .prompt-side .cn-card__body,\n#cn_app .prompt-editor .cn-card__body {\n  padding: 0;\n}\n\n#cn_app .cn-modal-mask {\n  position: fixed;\n  inset: 0;\n  z-index: 10020;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(0, 0, 0, 0.45);\n}\n\n#cn_app .cn-modal {\n  width: 90vw;\n  max-width: 1100px;\n  height: 90vh;\n  max-height: 800px;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n}\n\n#cn_app .cn-modal__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 15px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n\n#cn_app .cn-modal__code {\n  margin: 0;\n  padding: 20px;\n  overflow: auto;\n  background: #1e1e1e;\n  color: #d4d4d4;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.7;\n  white-space: pre-wrap;\n  word-break: break-word;\n  flex: 1;\n  min-height: 0;\n}\n\n#cn_app .model-picker-modal {\n  width: 90vw;\n  max-width: 520px;\n  height: auto;\n  max-height: 70vh;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n}\n\n#cn_app .model-picker__search {\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .model-picker__list {\n  overflow-y: auto;\n  padding: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n}\n\n#cn_app .model-picker__item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  width: 100%;\n  padding: 10px 14px;\n  border: none;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text);\n  font-size: 14px;\n  text-align: left;\n  cursor: pointer;\n  transition: background 0.1s;\n}\n\n#cn_app .model-picker__item:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .model-picker__item--picked {\n  background: var(--cn-primary-soft);\n  font-weight: 500;\n}\n\n#cn_app .model-picker__name {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .model-picker__check {\n  color: var(--cn-primary);\n  font-size: 14px;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-btn--danger {\n  background: #ff4d4f;\n  border-color: #ff4d4f;\n  color: #fff;\n}\n\n#cn_app .cn-btn--danger:hover:not(:disabled) {\n  background: #ff7875;\n  border-color: #ff7875;\n  color: #fff;\n}\n\n#cn_app .cn-dialog-mask {\n  position: fixed;\n  inset: 0;\n  z-index: 10020;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(0, 0, 0, 0.45);\n}\n\n#cn_app .cn-dialog {\n  width: min(420px, 85vw);\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n  animation: cn-dialog-in 0.15s ease-out;\n}\n\n#cn_app .cn-dialog__head {\n  padding: 14px 20px;\n  font-size: 16px;\n  font-weight: 600;\n  color: var(--cn-text);\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .cn-dialog__body {\n  padding: 16px 20px;\n  color: var(--cn-text-2);\n  font-size: 14px;\n  line-height: 1.6;\n}\n\n#cn_app .cn-dialog__foot {\n  display: flex;\n  justify-content: flex-end;\n  gap: 8px;\n  padding: 12px 20px;\n  border-top: 1px solid var(--cn-border);\n  background: #fafafa;\n}\n\n@keyframes cn-dialog-in {\n  from {\n    opacity: 0;\n    transform: scale(0.95);\n  }\n  to {\n    opacity: 1;\n    transform: scale(1);\n  }\n}\n\n.cn-recall-card {\n  display: block;\n  margin: 0 0 8px 0;\n  border: 1px solid #d9f7be;\n  border-radius: 6px;\n  overflow: hidden;\n  background: #fff;\n  font-size: 13px;\n  line-height: 1.6;\n  color: #1f1f1f;\n}\n\n.cn-recall-card__head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 14px;\n  background: #f0f9eb;\n  border-bottom: 1px solid #d9f7be;\n}\n\n.cn-recall-card__icon {\n  color: #52c41a;\n  font-size: 15px;\n}\n\n.cn-recall-card__brand {\n  font-weight: 600;\n  color: #389e0d;\n  font-size: 14px;\n}\n\n.cn-recall-card__count {\n  margin-left: auto;\n  font-size: 12px;\n  color: #8c8c8c;\n}\n\n.cn-recall-tabs {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: flex-start;\n}\n\n.cn-recall-tabs__radio {\n  display: none;\n}\n\n.cn-recall-tab {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  gap: 2px;\n  padding: 8px 12px;\n  cursor: pointer;\n  border-bottom: 2px solid transparent;\n  background: #fafafa;\n  min-width: 100px;\n  transition: background 0.15s, border-color 0.15s;\n  user-select: none;\n}\n\n.cn-recall-tab:hover {\n  background: #f0f9eb;\n}\n\n.cn-recall-tabs__radio:checked + .cn-recall-tab {\n  background: #fff;\n  border-bottom-color: #52c41a;\n}\n\n.cn-recall-tab__key {\n  font-weight: 600;\n  font-size: 13px;\n  color: #1f1f1f;\n}\n\n.cn-recall-tab__time {\n  font-size: 12px;\n  color: #52c41a;\n}\n\n.cn-recall-tab__loc {\n  font-size: 11px;\n  color: #8c8c8c;\n  max-width: 120px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.cn-recall-panel {\n  display: none;\n  width: 100%;\n  padding: 12px 14px;\n  border-top: 1px solid #f0f0f0;\n  order: 1;\n}\n\n.cn-recall-tabs__radio:checked + .cn-recall-tab + .cn-recall-panel {\n  display: block;\n}\n\n.cn-recall-panel__row {\n  display: flex;\n  gap: 8px;\n  margin-bottom: 8px;\n  align-items: flex-start;\n}\n\n.cn-recall-panel__row--full {\n  flex-direction: column;\n  gap: 2px;\n}\n\n.cn-recall-panel__label {\n  flex-shrink: 0;\n  font-size: 12px;\n  color: #8c8c8c;\n  min-width: 60px;\n}\n\n.cn-recall-panel__value {\n  font-size: 13px;\n  color: #1f1f1f;\n  word-break: break-word;\n  white-space: pre-wrap;\n}\n\n.cn-recall-card__message {\n  padding: 12px 14px;\n  border-top: 1px solid #d9f7be;\n  font-size: 14px;\n  color: #1f1f1f;\n  white-space: pre-wrap;\n  word-break: break-word;\n  line-height: 1.8;\n}\n\n.cn-recall-faded {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 10px;\n  padding: 28px 14px;\n  color: #8c8c8c;\n  font-size: 13px;\n  border-bottom: 1px solid #f0f0f0;\n  user-select: none;\n}\n\n.cn-recall-faded__icon {\n  color: #b7eb8f;\n  font-size: 15px;\n  opacity: 0.7;\n}\n\n.cn-recall-faded__text {\n  font-style: italic;\n  letter-spacing: 1px;\n}\n\n#cn_app .api-page {\n  display: grid;\n  grid-template-columns: 3fr 1fr;\n  gap: 16px;\n  align-items: start;\n}\n\n#cn_app .api-left {\n  min-width: 0;\n}\n\n#cn_app .api-right {\n  min-width: 0;\n}\n\n#cn_app .api-head-desc {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 400;\n}\n\n#cn_app .api-preset-select-row {\n  display: flex;\n  gap: 6px;\n}\n\n#cn_app .api-section-divider {\n  border-top: 1px solid var(--cn-border);\n  margin: 14px 0;\n}\n\n#cn_app .api-form-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0 16px;\n}\n\n#cn_app .api-actions {\n  display: flex;\n  justify-content: flex-end;\n  gap: 8px;\n  border-top: 1px solid var(--cn-border);\n  margin-top: 14px;\n  padding-top: 14px;\n}\n\n#cn_app .model-row {\n  display: flex;\n  gap: 8px;\n  align-items: center;\n}\n\n#cn_app .model-select {\n  margin-top: 6px;\n  width: 100%;\n}\n\n@media (max-width: 900px) {\n  #cn_app .api-page {\n    grid-template-columns: 1fr;\n  }\n}\n\n\n#cn_app .welcome-root {\n  min-width: 0;\n}\n\n#cn_app .welcome-hero {\n  display: flex;\n  align-items: flex-start;\n  justify-content: space-between;\n  gap: 16px;\n  margin-bottom: 16px;\n}\n\n#cn_app .welcome-hero__left {\n  min-width: 0;\n}\n\n#cn_app .welcome-hero__title {\n  margin: 0 0 6px 0;\n  font-size: 24px;\n  font-weight: 800;\n  letter-spacing: -0.3px;\n  background: linear-gradient(135deg, #52c41a 0%, #389e0d 60%, #237d4d 100%);\n  -webkit-background-clip: text;\n  background-clip: text;\n  -webkit-text-fill-color: transparent;\n}\n\n#cn_app .welcome-hero__sub {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-hero__reset {\n  flex-shrink: 0;\n  height: 30px;\n  padding: 0 14px;\n  border: 1px solid var(--cn-primary-soft);\n  border-radius: var(--cn-radius);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-size: 13px;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.15s ease;\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  white-space: nowrap;\n}\n\n#cn_app .welcome-hero__reset:hover {\n  background: var(--cn-primary);\n  border-color: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .welcome-grid {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 14px;\n}\n\n#cn_app .welcome-panel {\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n}\n\n#cn_app .welcome-panel__head {\n  padding: 14px 16px 10px 16px;\n  border-bottom: 1px solid var(--cn-border-green);\n}\n\n#cn_app .welcome-panel__title {\n  margin: 0;\n  padding-bottom: 8px;\n  border-bottom: 3px solid var(--cn-primary);\n  display: inline-block;\n  font-size: 17px;\n  font-weight: 700;\n  color: var(--cn-text);\n  line-height: 1.3;\n}\n\n#cn_app .welcome-panel__hint {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  margin-left: 8px;\n}\n\n#cn_app .welcome-panel__body {\n  display: flex;\n  flex-direction: column;\n  gap: 0;\n  flex: 1;\n  min-height: 0;\n}\n\n#cn_app .welcome-health-item {\n  display: grid;\n  grid-template-columns: 30px minmax(0, 1fr);\n  gap: 12px;\n  align-items: center;\n  padding: 8px 0;\n}\n\n#cn_app .welcome-health-item + .welcome-health-item {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-health-item__icon {\n  width: 32px;\n  height: 32px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: var(--cn-radius-sm);\n  background: #f5f5f5;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .welcome-health-item--ok .welcome-health-item__icon {\n  color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .welcome-health-item--warn .welcome-health-item__icon {\n  color: #fa8c16;\n  background: #fff7e6;\n}\n\n#cn_app .welcome-health-item__body {\n  display: flex;\n  flex-direction: column;\n  gap: 3px;\n  min-width: 0;\n}\n\n#cn_app .welcome-health-item__body strong {\n  font-size: 15px;\n  font-weight: 650;\n  color: var(--cn-text);\n}\n\n#cn_app .welcome-health-item__body p {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-toggle {\n  display: flex;\n  flex-direction: column;\n  gap: 5px;\n  padding: 13px 0;\n}\n\n#cn_app .welcome-toggle + .welcome-toggle {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-toggle__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 16px;\n}\n\n#cn_app .welcome-toggle__label {\n  font-size: 15px;\n  font-weight: 500;\n  color: var(--cn-text);\n}\n\n#cn_app .welcome-toggle__desc {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-preset-row {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 0;\n}\n\n#cn_app .welcome-preset-row + .welcome-preset-row {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-preset-row__label {\n  font-size: 15px;\n  color: var(--cn-text-2);\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-preset-row__hint {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .welcome-preset-row__select {\n  width: 140px;\n  height: 32px;\n  font-size: 14px;\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-kv {\n  padding: 8px 0;\n}\n\n#cn_app .welcome-kv + .welcome-kv {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-kv__row {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n}\n\n#cn_app .welcome-kv__label {\n  font-size: 15px;\n  color: var(--cn-text-2);\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-kv__input {\n  width: 150px;\n  height: 32px;\n  font-size: 14px;\n  text-align: center;\n  font-weight: 500;\n}\n\n#cn_app .welcome-kv__desc {\n  margin: 6px 0 0 0;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-stack {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  min-height: 0;\n}\n\n#cn_app .welcome-stack > .welcome-panel:first-child {\n  flex: 1 1 auto;\n  min-height: 0;\n}\n\n#cn_app .welcome-stack > .welcome-panel:last-child {\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-fill-body {\n  display: flex;\n  flex-direction: column;\n  flex: 1 1 auto;\n  min-height: 0;\n  overflow-y: auto;\n  justify-content: space-between;\n}\n\n#cn_app .welcome-fill-empty {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  flex: 1;\n  gap: 8px;\n  font-size: 13px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .welcome-fill-desc {\n  margin: 0 0 10px 0;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-fill-tables {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px 16px;\n  padding: 0 0 10px 0;\n  align-items: center;\n}\n\n#cn_app .welcome-fill-table {\n  display: inline-flex;\n  align-items: center;\n  gap: 5px;\n  font-size: 14px;\n  color: var(--cn-text);\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .welcome-fill-table input[type=\"checkbox\"] {\n  appearance: auto;\n  -webkit-appearance: auto;\n  background: transparent !important;\n  accent-color: var(--cn-primary);\n  width: 16px;\n  height: 16px;\n  cursor: pointer;\n  margin: 0;\n}\n\n#cn_app .welcome-fill-en {\n  font-size: 11px;\n  color: var(--cn-text-3);\n  font-family: ui-monospace, Consolas, monospace;\n  margin-left: 2px;\n}\n\n#cn_app .welcome-fill-hint {\n  flex: 1;\n  min-height: 70px;\n  font-size: 13px;\n  margin-bottom: 12px;\n  resize: vertical;\n}\n\n#cn_app .welcome-fill-actions {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding-top: 12px;\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-fill-note {\n  font-size: 12px;\n  color: var(--cn-text-3);\n}\n\n@media (max-width: 860px) {\n  #cn_app .welcome-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n\n#cn_app .cn-check {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 13px;\n  color: var(--cn-text);\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .cn-check input[type=\"checkbox\"] {\n  appearance: auto;\n  -webkit-appearance: auto;\n  background: transparent !important;\n  accent-color: var(--cn-primary);\n  width: 16px;\n  height: 16px;\n  cursor: pointer;\n  margin: 0;\n}\n\n#cn_app .cn-switch {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .cn-switch input[type=\"checkbox\"] {\n  display: none;\n}\n\n#cn_app .cn-switch__track {\n  width: 36px;\n  height: 20px;\n  border-radius: 10px;\n  background: #d9d9d9;\n  position: relative;\n  transition: background 0.2s;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-switch__track::after {\n  content: '';\n  position: absolute;\n  top: 2px;\n  left: 2px;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: #fff;\n  transition: left 0.2s;\n}\n\n#cn_app .cn-switch input:checked + .cn-switch__track {\n  background: var(--cn-primary);\n}\n\n#cn_app .cn-switch input:checked + .cn-switch__track::after {\n  left: 18px;\n}\n\n#cn_app .cn-switch__label {\n  font-size: 13px;\n  color: var(--cn-text-2);\n}\n\n/* ── 表格模板编辑器 ── */\n\n#cn_app .tpl-table-card {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  margin-bottom: 10px;\n  overflow: hidden;\n}\n\n#cn_app .tpl-table-card--active {\n  border-color: var(--cn-primary);\n}\n\n#cn_app .tpl-table-card__head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 12px;\n  background: #fafafa;\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .tpl-table-card--active .tpl-table-card__head {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .tpl-table-card__name {\n  font-weight: 600;\n  font-size: 14px;\n  color: var(--cn-text);\n  flex: 1;\n}\n\n#cn_app .tpl-table-card__meta {\n  font-size: 12px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .tpl-table-card__body {\n  padding: 12px 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .template-editor-body {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  max-height: 62vh;\n  overflow-y: auto;\n}\n\n#cn_app .template-editor-empty {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 12px;\n  padding: 40px 20px;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .tpl-row {\n  display: flex;\n  gap: 12px;\n}\n\n#cn_app .tpl-field {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n\n#cn_app .tpl-label {\n  font-size: 13px;\n  font-weight: 600;\n  color: var(--cn-text-2);\n}\n\n#cn_app .tpl-section {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  padding: 4px 0;\n}\n\n#cn_app .tpl-section__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n#cn_app .tpl-textarea {\n  width: 100%;\n  min-height: 48px;\n  resize: vertical;\n}\n\n#cn_app .tpl-cols {\n  display: flex;\n  flex-direction: column;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  overflow: hidden;\n}\n\n#cn_app .tpl-col-head,\n#cn_app .tpl-col-row {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  padding: 6px 8px;\n}\n\n#cn_app .tpl-col-head {\n  background: #fafafa;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 12px;\n  font-weight: 600;\n  color: var(--cn-text-2);\n}\n\n#cn_app .tpl-col-row {\n  border-bottom: 1px solid #f5f5f5;\n}\n\n#cn_app .tpl-col-row:last-child {\n  border-bottom: none;\n}\n\n#cn_app .tpl-col-cell {\n  font-size: 13px;\n}\n\n#cn_app .tpl-col-cell.name { width: 100px; flex-shrink: 0; }\n#cn_app .tpl-col-cell.type { width: 76px; flex-shrink: 0; }\n#cn_app .tpl-col-cell.flags { width: 84px; flex-shrink: 0; display: flex; gap: 3px; align-items: center; }\n#cn_app .tpl-col-cell.note { flex: 1; min-width: 90px; }\n#cn_app .tpl-col-cell.del { width: 28px; flex-shrink: 0; }\n\n#cn_app .cn-btn--xs {\n  padding: 0 4px;\n  height: 22px;\n  font-size: 11px;\n  border-radius: 3px;\n  line-height: 20px;\n}\n\n#cn_app .prompt-empty {\n  padding: 20px;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .prompt-side-foot {\n  display: flex;\n  gap: 6px;\n  padding: 10px 12px;\n  border-top: 1px solid var(--cn-border);\n  flex-shrink: 0;\n  margin-top: auto;\n}\n\n@media (max-width: 720px) {\n  #cn_app .prompt-split {\n    grid-template-columns: 1fr;\n  }\n}\n";
 //#endregion
 //#region __vite-browser-external
 var require___vite_browser_external = /* @__PURE__ */ __commonJSMin(((exports, module) => {
@@ -10682,7 +10682,7 @@ function createCharacterGateway() {
 	return { readTemplateFromCard() {
 		const ctx = getHostContext();
 		const id = ctx.characterId;
-		if (id == null) throw new Error("no character selected");
+		if (id == null) return null;
 		const raw = ctx.characters[id]?.data?.extensions?.["cranialnerve"];
 		if (raw == null) return null;
 		return validateTemplate(raw);
@@ -21119,17 +21119,44 @@ function isUndiciDispatcherVersionMismatchError(error) {
 }
 //#endregion
 //#region src/db/gateways/ai.ts
+function parseHeaders(raw) {
+	if (!raw || raw.trim().length === 0) return void 0;
+	const headers = {};
+	for (const line of raw.split("\n")) {
+		const trimmed = line.trim();
+		if (!trimmed) continue;
+		const idx = trimmed.indexOf(":");
+		if (idx <= 0) continue;
+		headers[trimmed.slice(0, idx).trim()] = trimmed.slice(idx + 1).trim();
+	}
+	return Object.keys(headers).length > 0 ? headers : void 0;
+}
 function createAiGateway() {
 	return { async chatCompletion(messages, clientConfig, params) {
+		const extraHeaders = parseHeaders(clientConfig.customIncludeHeaders);
 		const client = new OpenAI({
 			baseURL: clientConfig.baseURL,
 			apiKey: clientConfig.apiKey,
-			dangerouslyAllowBrowser: true
+			dangerouslyAllowBrowser: true,
+			defaultHeaders: extraHeaders
 		});
 		const requestMessages = messages;
+		let extraBody = {};
+		const bodyParams = { ...params };
+		if (clientConfig.customIncludeBody) try {
+			extraBody = JSON.parse(clientConfig.customIncludeBody);
+		} catch {
+			console.warn("[CranialNerve] customIncludeBody JSON 解析失败，已忽略");
+		}
+		const excludeKeys = (clientConfig.customExcludeBody ?? "").split("\n").map((k) => k.trim()).filter((k) => k.length > 0);
+		const merged = {
+			...bodyParams,
+			...extraBody
+		};
+		for (const key of excludeKeys) delete merged[key];
 		if (params.stream) {
 			const stream = await client.chat.completions.create({
-				...params,
+				...merged,
 				stream: true,
 				messages: requestMessages
 			});
@@ -21142,7 +21169,7 @@ function createAiGateway() {
 			return content;
 		}
 		const res = await client.chat.completions.create({
-			...params,
+			...merged,
 			messages: requestMessages
 		});
 		if (!("choices" in res) || !res.choices[0]) throw new Error("AI response has no choices");
@@ -21206,7 +21233,7 @@ var tableEdit_default = [
 		"name": "主指令",
 		"segments": [{
 			"role": "system",
-			"content": "你是【CranialNerve 填表AI】，负责根据故事内容对数据库表格执行增删改操作。\n\n## 时间格式\n{{timeFormat}}\n\n## 核心任务\n依据三类资料来源执行表格编辑：\n- <背景设定>：故事及人物设定（如有）\n- <正文数据>：本轮发生的故事\n- <当前表格数据>：之前的数据作为填表基础（含每张表的 DDL 建表语句和当前数据）\n\n## 输出格式（严格执行）\n\n只输出一个 JSON，不要输出任何其他内容：\n{\"format\":\"{{format}}\",\"sql\":\"...\"}\n\nsql 字段放标准 SQL（INSERT/UPDATE/DELETE），多条语句用分号分隔。表名、列名必须与 DDL 完全一致（英文物理名）。\n\n## 关键规则\n1. 必须逐表阅读每个表的 DDL 注释和 Note 部分，严格遵守其中的约束\n2. Note 的约束优先级最高，高于通用填表经验\n3. 若 Note 要求禁止修改/格式固定/编码规则，必须严格执行\n4. 纪要表（cn_chronicle）每轮必须插入一条新的纪要记录，禁止 UPDATE/DELETE 纪要表\n5. 只输出必要的 SQL，不要输出查询语句\n6. 字符串值用单引号包裹，值内部的单引号用两个单引号转义\n7. 没有需要修改的表时，sql 字段留空字符串\n\n## 当前数据库结构、数据与提示如下：\n{{tables}}"
+			"content": "你是【CranialNerve 填表AI】，负责根据故事内容对数据库表格执行增删改操作。\n\n## 时间格式\n{{timeFormat}}\n\n## 核心任务\n依据三类资料来源执行表格编辑：\n- <背景设定>：故事及人物设定（如有）\n- <正文数据>：本轮发生的故事\n- <当前表格数据>：之前的数据作为填表基础（含每张表的 DDL 建表语句和当前数据）\n\n## 输出格式（严格执行）\n\n只输出一个 JSON，不要输出任何其他内容：\n{\"format\":\"{{format}}\",\"sql\":\"...\"}\n\nsql 字段放标准 SQL（INSERT/UPDATE/DELETE），多条语句用分号分隔。表名、列名必须与 DDL 完全一致（英文物理名）。\n\n## 关键规则\n1. 必须逐表阅读每个表的 DDL 注释和 Note 部分，严格遵守其中的约束\n2. Note 的约束优先级最高，高于通用填表经验\n3. 若 Note 要求禁止修改/格式固定/编码规则，必须严格执行\n4. 纪要表（cn_chronicle）每轮必须插入一条新的纪要记录，禁止 UPDATE/DELETE 纪要表\n5. 只输出必要的 SQL，不要输出查询语句\n6. 字符串值用单引号包裹，值内部的单引号用两个单引号转义\n7. 没有需要修改的表时，sql 字段留空字符串\n\n## 当前数据库结构、数据与提示如下：\n{{tables}}\n\n{{chronicleGuide}}"
 		}]
 	},
 	{
@@ -21239,7 +21266,7 @@ var chronicleGenerate_default = [{
 	"name": "主指令",
 	"segments": [{
 		"role": "system",
-		"content": "你是【CranialNerve 纪要生成AI】，负责从故事情节中提取关键事件，生成结构化纪要。\n\n## 时间格式\n{{timeFormat}}\n\n## 核心任务\n从下面的故事情节中提取一个完整的事件纪要。只提取时间点本身，不要计算时间差。\n\n## 输出格式（严格执行）\n\n只输出一个 JSON，不要输出任何其他内容：\n{\"summary\":\"摘要\",\"storyTime\":\"故事内时间\",\"keyDialogue\":\"重要台词\"}\n\n## 字段说明\n- summary：以第三方视角客观记录本轮事件。不得加入推测、情绪化语言、负面解读或主观判断。内容必须基于正文明确发生的事实，不得补充未出现的情节。不少于 300 字，结尾禁止进行总结或升华。\n- storyTime：本轮事件发生的具体时间点，格式见上方时间格式说明。从正文中提取明确的时间信息，无法确定则使用上一轮纪要时间递增推算。\n- keyDialogue：本轮中最重要的 1-3 句台词或关键对话，保留原文。无重要台词则留空字符串。\n\n## 关键规则\n1. 第三方视角：不要使用\"你\"或\"我\"，使用角色名称指代\n2. 客观记录：禁止加入\"令人感动\"、\"可怕的\"等主观评价\n3. 忠于原文：不要为了戏剧化而补充原文没有的情节\n4. 时间精确：storyTime 必须是正文中明确出现的时间或合理推算\n5. 只提取时间点本身，不要计算时间差"
+		"content": "你是【CranialNerve 纪要生成AI】。纪要数据通过 SQL INSERT 写入 cn_chronicle 表，以下是你必须遵守的填表规则。\n\n## 纪要表（cn_chronicle）列定义与约束\n\n| 列名 | 类型 | 约束 | 说明 |\n|------|------|------|------|\n| key | TEXT | PRIMARY KEY UNIQUE NOT NULL | CN 编码，格式 CNXXXX（4位零填充递增），纪要唯一标识，作关键词 |\n| time_start | TEXT | NOT NULL | 事件起始时间，{{timeFormat}}。召回算时间跨度用此列 |\n| time_end | TEXT | | 事件结束时间，格式同 time_start。可算事件持续时长 |\n| location | TEXT | NOT NULL | 本轮事件发生地点，从大到小描述 |\n| chronicle_text | TEXT | NOT NULL | 纪要正文，用第三方视角客观记录，不含推测/情绪/主观判断。不少于300字，结尾禁止总结升华 |\n| key_dialogue | TEXT | | 本轮最重要的台词（1-3句），保留原文。无重要台词则留空 |\n\n## 关键规则\n1. 每轮交互后必须 INSERT 一条新记录到 cn_chronicle，禁止 UPDATE/DELETE（纪要只追加不改写）\n2. key 用 CNXXXX 递增序号\n3. 第三方视角：使用角色名称指代，不用\"你\"或\"我\"\n4. 客观记录：禁止\"令人感动\"、\"可怕的\"等主观评价\n5. 忠于原文：不补充原文没有的情节\n6. time_start/time_end 必须是正文中明确出现的时间或合理推算\n7. 只提取时间点本身，不要计算时间差\n8. chronicle_text 只能用 INSERT 写入，不得用 UPDATE 修改已有记录"
 	}]
 }];
 //#endregion
@@ -21538,7 +21565,6 @@ function quoteIdent(name) {
 var SqliteSyncBridge = class {
 	core;
 	chat;
-	/** 上次加载时的 schema 警告（供 UI 展示） */
 	lastLoadWarnings = [];
 	constructor(core, chat) {
 		this.core = core;
@@ -21589,11 +21615,20 @@ var SqliteSyncBridge = class {
 		}
 		return null;
 	}
-	/**
-	* 检测快照中的表结构与当前模板的差异。
-	* - 仅对已在模板中定义的表做对比（快照多出的表不警告，可能是纪要表等内置表）
-	* - 列差异包括：多了列、少了列、列类型变化
-	*/
+	cleanupOldSnapshots(retainFloors) {
+		if (retainFloors <= 0) return;
+		const chat = this.chat.getChat();
+		let kept = 0;
+		for (let i = chat.length - 1; i >= 0; i--) {
+			const msg = chat[i];
+			if (!msg || msg.is_user) continue;
+			const extra = msg.extra;
+			if (extra && typeof extra[DB_FIELD_PREFIX] === "string") {
+				kept++;
+				if (kept > retainFloors) delete extra[DB_FIELD_PREFIX];
+			}
+		}
+	}
 	checkSchemaCompat(snapshot, template) {
 		const warnings = [];
 		if (!template?.tables || template.tables.length === 0) return warnings;
@@ -21724,46 +21759,46 @@ var DEFAULT_CHRONICLE_TABLE = {
 				unique: true,
 				nullable: false
 			},
-			note: "CN 编码，格式 CNXXXX（4位零填充递增），纪要唯一标识，召回时作关键词"
+			note: ""
 		},
 		{
 			name: "time_start",
 			displayName: "起始时间",
 			type: "TEXT",
 			constraints: { nullable: false },
-			note: "事件起始时间，格式见提示词中的时间格式说明。召回算\"距今跨度\"和\"相对今天\"用此列"
+			note: ""
 		},
 		{
 			name: "time_end",
 			displayName: "结束时间",
 			type: "TEXT",
-			note: "事件结束时间，格式同 time_start。未来可算事件持续时长（end-start）"
+			note: ""
 		},
 		{
 			name: "location",
 			displayName: "地点",
 			type: "TEXT",
 			constraints: { nullable: false },
-			note: "本轮事件发生地点，从大到小描述"
+			note: ""
 		},
 		{
 			name: "chronicle_text",
 			displayName: "纪要正文",
 			type: "TEXT",
 			constraints: { nullable: false },
-			note: "以第三方视角客观记录本轮事件，不得加入推测、情绪化语言或主观判断，不少于300字，结尾禁止总结升华"
+			note: ""
 		},
 		{
 			name: "key_dialogue",
 			displayName: "重要台词",
 			type: "TEXT",
-			note: "本轮重要台词记录"
+			note: ""
 		}
 	],
-	note: "纪要表：每轮交互后插入一条新记录。禁止 UPDATE/DELETE（纪要只追加不改）。",
-	insertHint: "每轮交互结束后插入一条新记录。key 用 CNXXXX（递增），time_start/time_end 格式见上方时间格式说明。\nSQL示例: INSERT INTO cn_chronicle (key, time_start, time_end, location, chronicle_text, key_dialogue) VALUES ('CN0001', '2024-06-15T23:50', '2024-06-15T23:55', '王城·中央广场', '纪要正文...', '重要台词');",
-	updateHint: "禁止 UPDATE。",
-	deleteHint: "禁止 DELETE。"
+	note: "",
+	insertHint: "",
+	updateHint: "",
+	deleteHint: ""
 };
 //#endregion
 //#region src/core/time.ts
@@ -21881,16 +21916,23 @@ function interpolate(template, vars) {
 //#region src/core/table/prompt-builder.ts
 function buildTableEditPrompt(core, options) {
 	const tableSection = options.tableDefs.filter((t) => !options.targetTables || options.targetTables.includes(t.name)).map((t) => formatTableForAI(core, t)).join("\n\n");
-	return cloneSegments(options.segments).map((s) => ({
+	const filled = cloneSegments(options.segments).map((s) => ({
 		...s,
 		content: interpolate(s.content, {
 			format: SQL_EDIT_FORMAT,
 			timeFormat: options.timeFormat ?? "ISO 8601 格式（YYYY-MM-DDTHH:MM）",
 			tables: tableSection,
 			worldbook: options.worldbookContent ?? "",
-			conversation: options.conversationText ?? ""
+			conversation: options.conversationText ?? "",
+			chronicleGuide: options.chronicleGuide ?? ""
 		})
 	}));
+	if (options.extraHint && options.extraHint.trim().length > 0) filled.push({
+		id: "hint_" + Math.random().toString(36).slice(2, 10),
+		role: "user",
+		content: options.extraHint
+	});
+	return filled;
 }
 function cloneSegments(segments) {
 	return segments.map((s) => ({ ...s }));
@@ -22279,6 +22321,102 @@ async function cleanupStaleBooks(session) {
 	} catch {}
 }
 //#endregion
+//#region src/core/table/fill-orchestrator.ts
+var generationCountSinceLastFill = 0;
+function resetFillScheduler() {
+	generationCountSinceLastFill = 0;
+}
+async function executeFill(session, extraHint) {
+	const cfg = session.getConfig();
+	const preset = session.getAiPresetForScene(cfg.tableFillPresetId);
+	if (!preset) return {
+		ok: false,
+		attempts: 0,
+		error: "no active AI preset"
+	};
+	const template = session.getTemplate();
+	if (!template || template.tables.length === 0) return {
+		ok: false,
+		attempts: 0,
+		error: "no template loaded"
+	};
+	const config = session.getConfig();
+	const chatMessages = session.chat.getChat();
+	const contextDepth = config.tableFill.contextDepth > 0 ? config.tableFill.contextDepth : 10;
+	const skipFloors = Math.max(0, config.tableFill.skipFloors || 0);
+	const allAiMessages = chatMessages.filter((m) => !m.is_user);
+	let effectiveMessages = chatMessages;
+	if (skipFloors > 0 && allAiMessages.length > skipFloors) {
+		const cutoffMsg = allAiMessages[allAiMessages.length - 1 - skipFloors];
+		if (cutoffMsg) {
+			const cutoffGlobalIndex = chatMessages.indexOf(cutoffMsg);
+			if (cutoffGlobalIndex >= 0) effectiveMessages = chatMessages.slice(0, cutoffGlobalIndex + 1);
+		}
+	}
+	const batchSize = Math.max(1, config.tableFill.batchSize || 3);
+	const conversationText = effectiveMessages.slice(-Math.min(contextDepth, effectiveMessages.length)).slice(-batchSize).map((m) => `${m.is_user ? "User" : "Assistant"}: ${m.mes}`).join("\n");
+	let worldbookContent = "";
+	const lorebookName = session.worldbook.getCurrentCharLorebookName();
+	if (lorebookName) try {
+		const data = await session.worldbook.loadLorebook(lorebookName);
+		worldbookContent = JSON.stringify(data);
+	} catch (_) {}
+	const segments = session.getActiveSegments("tableEdit");
+	const chronicleGuide = session.getActiveSegments("chronicleGenerate").map((s) => s.content).join("\n\n");
+	const tableDefs = [...template.tables, DEFAULT_CHRONICLE_TABLE];
+	const targetTables = [...template.tables.map((t) => t.name), CHRONICLE_TABLE_NAME];
+	const timeFormat = getTimePromptDescription();
+	const promptCtx = {
+		segments: buildTableEditPrompt(session.core, {
+			tableDefs,
+			targetTables,
+			worldbookContent,
+			conversationText,
+			timeFormat,
+			segments,
+			extraHint,
+			chronicleGuide
+		}),
+		userPrompt: "请根据以上故事内容更新数据库表格。",
+		clientConfig: {
+			baseURL: preset.baseURL,
+			apiKey: preset.apiKey,
+			customIncludeBody: preset.customIncludeBody,
+			customExcludeBody: preset.customExcludeBody,
+			customIncludeHeaders: preset.customIncludeHeaders
+		},
+		params: { model: preset.model }
+	};
+	const editor = session.getTableEditor();
+	const result = await session.getWriteQueue().enqueue(() => editor.run(promptCtx, { maxRetries: config.tableFill.maxRetries }));
+	if (result.ok) {
+		const lastMsgId = chatMessages.length - 1;
+		if (lastMsgId >= 0) {
+			session.saveToChat(lastMsgId);
+			session.cleanupOldSnapshots(config.retainFloors);
+		}
+		generationCountSinceLastFill = 0;
+		try {
+			await syncToWorldbook(session);
+		} catch (_) {}
+	}
+	return result;
+}
+async function onGenerationEnded(session) {
+	const config = session.getConfig();
+	if (!config.tableFill.autoFill) return;
+	const frequency = Math.max(0, config.tableFill.updateFrequency || 1);
+	if (frequency <= 0) return;
+	generationCountSinceLastFill++;
+	if (generationCountSinceLastFill < frequency) return;
+	await executeFill(session);
+}
+async function runManualFill(session, extraHint) {
+	const result = await executeFill(session, extraHint);
+	if (result.ok) generationCountSinceLastFill = 0;
+	return result;
+}
+//#endregion
 //#region src/core/session.ts
 var CranialNerveSession = class {
 	core;
@@ -22361,14 +22499,14 @@ var CranialNerveSession = class {
 		await this.core.init();
 		this.nameMapper = null;
 		this.template = null;
-		const { resetFillScheduler } = await Promise.resolve().then(() => fill_orchestrator_exports);
 		resetFillScheduler();
 		this.setupChronicle();
 		try {
 			this.initGameSessionFromCard();
-		} catch {
-			return;
+		} catch (e) {
+			console.warn("[CranialNerve] 角色卡模板数据异常:", e instanceof Error ? e.message : e);
 		}
+		this.core.run(buildCreateTableSql(DEFAULT_CHRONICLE_TABLE));
 		this.loadFromChat();
 		await this.setupWorldbook();
 	}
@@ -22419,13 +22557,15 @@ var CranialNerveSession = class {
 		if (result.warnings.length > 0) console.warn("[CranialNerve] 数据库快照 schema 警告:", result.warnings.join("; "));
 		return true;
 	}
-	/** 获取上次快照加载时的 schema 警告（供 UI 展示） */
 	getLastLoadWarnings() {
 		return this.syncBridge?.lastLoadWarnings ?? [];
 	}
 	saveToChat(messageId) {
 		if (!this.syncBridge) throw new Error("session not initialized");
 		this.syncBridge.save(messageId);
+	}
+	cleanupOldSnapshots(retainFloors) {
+		this.syncBridge?.cleanupOldSnapshots(retainFloors);
 	}
 	getConfig() {
 		return this.config.read();
@@ -22436,6 +22576,14 @@ var CranialNerveSession = class {
 	getActiveAiPreset() {
 		const cfg = this.config.read();
 		return cfg.aiPresets.find((p) => p.id === cfg.activeAiPresetId) ?? null;
+	}
+	getAiPresetForScene(scenePresetId) {
+		const cfg = this.config.read();
+		if (scenePresetId) {
+			const scenePreset = cfg.aiPresets.find((p) => p.id === scenePresetId);
+			if (scenePreset) return scenePreset;
+		}
+		return this.getActiveAiPreset();
 	}
 	getActivePromptPreset() {
 		const scene = this.config.read().prompt.tableEdit;
@@ -24491,98 +24639,6 @@ var App_default = /* @__PURE__ */ defineComponent({
 	}
 });
 //#endregion
-//#region src/core/table/fill-orchestrator.ts
-var fill_orchestrator_exports = /* @__PURE__ */ __exportAll({
-	onGenerationEnded: () => onGenerationEnded,
-	resetFillScheduler: () => resetFillScheduler,
-	runManualFill: () => runManualFill
-});
-var generationCountSinceLastFill = 0;
-/** 重置调度状态（切聊天时调用） */
-function resetFillScheduler() {
-	generationCountSinceLastFill = 0;
-}
-async function executeFill(session) {
-	const preset = session.getActiveAiPreset();
-	if (!preset) return {
-		ok: false,
-		attempts: 0,
-		error: "no active AI preset"
-	};
-	const template = session.getTemplate();
-	if (!template || template.tables.length === 0) return {
-		ok: false,
-		attempts: 0,
-		error: "no template loaded"
-	};
-	const config = session.getConfig();
-	const chatMessages = session.chat.getChat();
-	const contextDepth = config.tableFill.contextDepth > 0 ? config.tableFill.contextDepth : 10;
-	const skipFloors = Math.max(0, config.tableFill.skipFloors || 0);
-	const allAiMessages = chatMessages.filter((m) => !m.is_user);
-	let effectiveMessages = chatMessages;
-	if (skipFloors > 0 && allAiMessages.length > skipFloors) {
-		const cutoffMsg = allAiMessages[allAiMessages.length - 1 - skipFloors];
-		if (cutoffMsg) {
-			const cutoffGlobalIndex = chatMessages.indexOf(cutoffMsg);
-			if (cutoffGlobalIndex >= 0) effectiveMessages = chatMessages.slice(0, cutoffGlobalIndex + 1);
-		}
-	}
-	const batchSize = Math.max(1, config.tableFill.batchSize || 3);
-	const conversationText = effectiveMessages.slice(-Math.min(contextDepth, effectiveMessages.length)).slice(-batchSize).map((m) => `${m.is_user ? "User" : "Assistant"}: ${m.mes}`).join("\n");
-	let worldbookContent = "";
-	const lorebookName = session.worldbook.getCurrentCharLorebookName();
-	if (lorebookName) try {
-		const data = await session.worldbook.loadLorebook(lorebookName);
-		worldbookContent = JSON.stringify(data);
-	} catch (_) {}
-	const segments = session.getActiveSegments("tableEdit");
-	const tableDefs = [...template.tables, DEFAULT_CHRONICLE_TABLE];
-	const targetTables = [...template.tables.map((t) => t.name), CHRONICLE_TABLE_NAME];
-	const timeFormat = getTimePromptDescription();
-	const promptCtx = {
-		segments: buildTableEditPrompt(session.core, {
-			tableDefs,
-			targetTables,
-			worldbookContent,
-			conversationText,
-			timeFormat,
-			segments
-		}),
-		userPrompt: "请根据以上故事内容更新数据库表格。",
-		clientConfig: {
-			baseURL: preset.baseURL,
-			apiKey: preset.apiKey
-		},
-		params: { model: preset.model }
-	};
-	const editor = session.getTableEditor();
-	const result = await session.getWriteQueue().enqueue(() => editor.run(promptCtx, { maxRetries: config.tableFill.maxRetries }));
-	if (result.ok) {
-		const lastMsgId = chatMessages.length - 1;
-		if (lastMsgId >= 0) session.saveToChat(lastMsgId);
-		generationCountSinceLastFill = 0;
-		try {
-			await syncToWorldbook(session);
-		} catch (_) {}
-	}
-	return result;
-}
-async function onGenerationEnded(session) {
-	const config = session.getConfig();
-	if (!config.tableFill.autoFill) return;
-	const frequency = Math.max(0, config.tableFill.updateFrequency || 1);
-	if (frequency <= 0) return;
-	generationCountSinceLastFill++;
-	if (generationCountSinceLastFill < frequency) return;
-	await executeFill(session);
-}
-async function runManualFill(session) {
-	const result = await executeFill(session);
-	if (result.ok) generationCountSinceLastFill = 0;
-	return result;
-}
-//#endregion
 //#region src/ui/toast.ts
 var ICONS = {
 	success: "fa-solid fa-circle-check",
@@ -24916,7 +24972,7 @@ var Welcome_default = /* @__PURE__ */ defineComponent({
 			if (!canFill.value) return;
 			filling.value = true;
 			try {
-				const r = await runManualFill(session);
+				const r = await runManualFill(session, fillHint.value);
 				if (r.ok) {
 					toast.success(`填表完成（${r.attempts} 次）`);
 					refresh();
@@ -25866,6 +25922,7 @@ var Tables_default = /* @__PURE__ */ defineComponent({
 					if (newVal !== editSnapshot.value[c]) session.updateCell(activeTable.value.name, editingRowid.value, c, newVal);
 				}
 				toast.success("已保存");
+				persistChanges();
 				refresh();
 			} catch (err) {
 				toast.error(err instanceof Error ? err.message : String(err));
@@ -25874,6 +25931,11 @@ var Tables_default = /* @__PURE__ */ defineComponent({
 			editingRowid.value = null;
 			editSnapshot.value = {};
 		}
+		function persistChanges() {
+			const lastMsgId = session.chat.getChat().length - 1;
+			if (lastMsgId >= 0) session.saveToChat(lastMsgId);
+			syncToWorldbook(session).catch(() => {});
+		}
 		async function deleteRow(row) {
 			if (!activeTable.value) return;
 			if (!await confirm("删除确认", "确认删除该行？此操作不可撤销。", "删除", true)) return;
@@ -25881,6 +25943,7 @@ var Tables_default = /* @__PURE__ */ defineComponent({
 				session.deleteRow(activeTable.value.name, row.__rowid__);
 				if (activeTable.value) activeTable.value.rows = activeTable.value.rows.filter((r) => r.__rowid__ !== row.__rowid__);
 				toast.success("已删除");
+				persistChanges();
 			} catch (err) {
 				toast.error(err instanceof Error ? err.message : String(err));
 			}
@@ -26052,6 +26115,7 @@ var Chronicle_default = /* @__PURE__ */ defineComponent({
 					if (newVal !== (editSnapshot.value ? String(editSnapshot.value[f.key] ?? "") : "")) session.updateCell(CHRONICLE_TABLE_NAME, editingRowid.value, f.key, newVal);
 				}
 				toast.success("已保存");
+				persistChanges();
 				refresh();
 			} catch (err) {
 				toast.error(err instanceof Error ? err.message : String(err));
@@ -26059,6 +26123,11 @@ var Chronicle_default = /* @__PURE__ */ defineComponent({
 			}
 			editingRowid.value = null;
 			editSnapshot.value = null;
+		}
+		function persistChanges() {
+			const lastMsgId = session.chat.getChat().length - 1;
+			if (lastMsgId >= 0) session.saveToChat(lastMsgId);
+			syncToWorldbook(session).catch(() => {});
 		}
 		function addRow() {
 			const draft = {
@@ -26079,6 +26148,7 @@ var Chronicle_default = /* @__PURE__ */ defineComponent({
 				session.deleteRow(CHRONICLE_TABLE_NAME, row.__rowid__);
 				rows.value = rows.value.filter((r) => r.__rowid__ !== row.__rowid__);
 				toast.success(`已删除 ${row.key}`);
+				persistChanges();
 			} catch (err) {
 				toast.error(err instanceof Error ? err.message : String(err));
 			}
@@ -36481,7 +36551,6 @@ var useConfigStore = defineStore("cn-config", () => {
 });
 //#endregion
 //#region src/shared/template-convert.ts
-/** 检测 JSON 是否为 shujuku 格式 */
 function isShujukuTemplate(obj) {
 	if (!obj || typeof obj !== "object" || Array.isArray(obj)) return false;
 	const sheetKeys = Object.keys(obj).filter((k) => k.startsWith("sheet_"));
@@ -36490,13 +36559,11 @@ function isShujukuTemplate(obj) {
 	if (!first || typeof first !== "object") return false;
 	return typeof first.sourceData === "object";
 }
-/** 检测 JSON 是否为 CranialNerve 格式 */
 function isCardTemplate(obj) {
 	if (!obj || typeof obj !== "object" || Array.isArray(obj)) return false;
 	const t = obj;
 	return Array.isArray(t.tables) && typeof t.templateVersion === "number";
 }
-/** 解析 shujuku DDL 为列定义 */
 function parseDdl(ddl) {
 	const columns = [];
 	const bodyMatch = ddl.match(/\(([\s\S]*)\)/i);
@@ -36526,7 +36593,6 @@ function parseDdl(ddl) {
 	}
 	return columns;
 }
-/** shujuku 模板 → CardTemplate */
 function convertShujukuToCardTemplate(shujuku) {
 	const tables = [];
 	const keys = Object.keys(shujuku).filter((k) => k.startsWith("sheet_")).sort((a, b) => {
@@ -37590,11 +37656,11 @@ function buildRecallCard(items, userMessage) {
 }
 async function onPromptReady(session, eventData) {
 	if (eventData.dryRun) return;
-	const preset = session.getActiveAiPreset();
+	const config = session.getConfig();
+	const preset = session.getAiPresetForScene(config.recallPresetId);
 	if (!preset) return;
 	const recaller = session.getChronicleRecaller();
 	if (!recaller) return;
-	const config = session.getConfig();
 	const chat = eventData.chat;
 	let lastUserIdx = -1;
 	for (let i = chat.length - 1; i >= 0; i--) if (chat[i]?.is_user) {
@@ -37603,12 +37669,16 @@ async function onPromptReady(session, eventData) {
 	}
 	if (lastUserIdx < 0) return;
 	const userMessage = chat[lastUserIdx].mes;
-	const conversationText = chat.slice(Math.max(0, lastUserIdx - 5), lastUserIdx).map((m) => `${m.is_user ? "User" : "Assistant"}: ${m.mes}`).join("\n");
+	const contextDepth = Math.max(1, config.recallContextDepth || 5);
+	const conversationText = chat.slice(Math.max(0, lastUserIdx - contextDepth), lastUserIdx).map((m) => `${m.is_user ? "User" : "Assistant"}: ${m.mes}`).join("\n");
 	const recallSegments = session.getActiveSegments("chronicleRecall");
 	const recallCtx = {
 		clientConfig: {
 			baseURL: preset.baseURL,
-			apiKey: preset.apiKey
+			apiKey: preset.apiKey,
+			customIncludeBody: preset.customIncludeBody,
+			customExcludeBody: preset.customExcludeBody,
+			customIncludeHeaders: preset.customIncludeHeaders
 		},
 		params: { model: preset.model },
 		recallSegments,
@@ -37640,6 +37710,20 @@ var PROMPT_SCRIPT = {
 	minDepth: null,
 	maxDepth: null
 };
+var DEEP_CLEANUP_AI_SCRIPT = {
+	scriptName: "CN - 召回深层清理（AI）",
+	findRegex: "/^(?:CN\\d{4}\\s*)+\\n/",
+	replaceString: "",
+	trimStrings: [],
+	placement: [1],
+	disabled: false,
+	markdownOnly: false,
+	promptOnly: true,
+	runOnEdit: false,
+	substituteRegex: 0,
+	minDepth: 2,
+	maxDepth: null
+};
 var DISPLAY_SCRIPT = {
 	scriptName: "CN - 召回卡片渲染",
 	findRegex: "/\\[CN_recall_ui\\]([\\s\\S]*?)\\[\\/CN_recall_ui\\][\\s\\S]*/",
@@ -37654,26 +37738,52 @@ var DISPLAY_SCRIPT = {
 	minDepth: null,
 	maxDepth: null
 };
+var DEEP_CLEANUP_DISPLAY_SCRIPT = {
+	scriptName: "CN - 召回深层清理（显示）",
+	findRegex: "/<div class=\"cn-recall-tabs\">[\\s\\S]*?<\\/div>\\s*(?=<div class=\"cn-recall-card__message\">)/",
+	replaceString: "<div class=\"cn-recall-faded\"><i class=\"fa-solid fa-feather cn-recall-faded__icon\"></i><span class=\"cn-recall-faded__text\">楼层久远，记忆随风而去...</span></div>",
+	trimStrings: [],
+	placement: [1],
+	disabled: false,
+	markdownOnly: true,
+	promptOnly: false,
+	runOnEdit: true,
+	substituteRegex: 0,
+	minDepth: 2,
+	maxDepth: null
+};
 function generateId() {
 	return "cn_" + Math.random().toString(36).slice(2, 10) + "_" + Date.now().toString(36);
 }
-function registerCNRegexScripts() {
-	const ctx = getHostContext();
-	if (!Array.isArray(ctx.extensionSettings.regex)) ctx.extensionSettings.regex = [];
-	const filtered = (Array.isArray(ctx.extensionSettings.regex) ? ctx.extensionSettings.regex : []).filter((s) => typeof s.scriptName === "string" && !s.scriptName.startsWith(CN_REGEX_PREFIX));
+function registerCNRegexScripts(regexArr) {
+	const filtered = (Array.isArray(regexArr) ? regexArr : []).filter((s) => typeof s.scriptName === "string" && !s.scriptName.startsWith(CN_REGEX_PREFIX));
 	const prompt = {
 		...PROMPT_SCRIPT,
+		id: generateId()
+	};
+	const deepCleanupAi = {
+		...DEEP_CLEANUP_AI_SCRIPT,
 		id: generateId()
 	};
 	const display = {
 		...DISPLAY_SCRIPT,
 		id: generateId()
 	};
-	ctx.extensionSettings.regex = [
+	const deepCleanupDisplay = {
+		...DEEP_CLEANUP_DISPLAY_SCRIPT,
+		id: generateId()
+	};
+	return [
 		...filtered,
 		prompt,
-		display
+		deepCleanupAi,
+		display,
+		deepCleanupDisplay
 	];
+}
+function unregisterCNRegexScripts(regexArr) {
+	if (!Array.isArray(regexArr)) return [];
+	return regexArr.filter((s) => typeof s.scriptName === "string" && !s.scriptName.startsWith(CN_REGEX_PREFIX));
 }
 //#endregion
 //#region src/core/api/groups/session.ts
@@ -37797,7 +37907,12 @@ if (typeof globalThis.process === "undefined") globalThis.process = {
 async function init() {
 	await init$1();
 	const session = getSession();
-	registerCNRegexScripts();
+	const ctx = getHostContext();
+	if (!Array.isArray(ctx.extensionSettings.regex)) ctx.extensionSettings.regex = [];
+	ctx.extensionSettings.regex = registerCNRegexScripts(ctx.extensionSettings.regex);
+	window.addEventListener("beforeunload", () => {
+		ctx.extensionSettings.regex = unregisterCNRegexScripts(ctx.extensionSettings.regex);
+	});
 	window.CN_API = getCNApi();
 	session.event.makeLast(EVENT_GENERATION_ENDED, () => {
 		onGenerationEnded(session).catch(() => {});

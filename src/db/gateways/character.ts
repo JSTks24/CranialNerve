@@ -11,7 +11,7 @@ export default function createCharacterGateway(): CharacterGateway {
             const ctx = getHostContext()
             const id = ctx.characterId
             if (id == null) {
-                throw new Error('no character selected')
+                return null
             }
             const character = ctx.characters[id]
             const raw = character?.data?.extensions?.['cranialnerve']

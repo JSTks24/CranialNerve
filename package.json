@@ -1,6 +1,6 @@
 {
   "name": "cranialnerve",
-  "version": "0.7.4",
+  "version": "0.8.0-beta",
   "description": "CranialNerve — 新一代简约强大的类数据库综合工具，致力于提供更好的游玩体验",
   "type": "module",
   "scripts": {

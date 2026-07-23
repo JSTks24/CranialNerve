@@ -68,7 +68,8 @@ export async function onPromptReady(
 		return
 	}
 
-	const preset = session.getActiveAiPreset()
+	const config = session.getConfig()
+	const preset = session.getAiPresetForScene(config.recallPresetId)
 	if (!preset) {
 		return
 	}
@@ -77,8 +78,6 @@ export async function onPromptReady(
 	if (!recaller) {
 		return
 	}
-
-	const config = session.getConfig()
 
 	const chat = eventData.chat
 	let lastUserIdx = -1
@@ -94,7 +93,8 @@ export async function onPromptReady(
 
 	const userMessage = chat[lastUserIdx]!.mes
 
-	const contextMessages = chat.slice(Math.max(0, lastUserIdx - 5), lastUserIdx)
+	const contextDepth = Math.max(1, config.recallContextDepth || 5)
+	const contextMessages = chat.slice(Math.max(0, lastUserIdx - contextDepth), lastUserIdx)
 	const conversationText = contextMessages
 		.map((m) => `${m.is_user ? 'User' : 'Assistant'}: ${m.mes}`)
 		.join('\n')
@@ -102,7 +102,7 @@ export async function onPromptReady(
 	const recallSegments = session.getActiveSegments('chronicleRecall')
 
 	const recallCtx: RecallContext = {
-		clientConfig: { baseURL: preset.baseURL, apiKey: preset.apiKey },
+		clientConfig: { baseURL: preset.baseURL, apiKey: preset.apiKey, customIncludeBody: preset.customIncludeBody, customExcludeBody: preset.customExcludeBody, customIncludeHeaders: preset.customIncludeHeaders },
 		params: { model: preset.model },
 		recallSegments,
 		userMessage,

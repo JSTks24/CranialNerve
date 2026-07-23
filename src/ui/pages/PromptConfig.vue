@@ -224,7 +224,6 @@ async function openPreview() {
           )
         }
       } catch {
-        // 保留占位
       }
     }
   }
@@ -278,25 +277,21 @@ function importPreset(e: Event) {
   input.value = ''
 }
 
-// ═══════════════════════════════════════════════
-// 表格模板编辑器（预设化：一个预设 = 一个完整模板，含多张表）
-// ═══════════════════════════════════════════════
-
 const showTemplate = ref(false)
 const COL_TYPES = ['TEXT', 'INTEGER', 'REAL', 'BLOB']
 
 function freshTable(): TableDef {
-  return { name: '', displayName: '', columns: [], note: '', insertHint: '', updateHint: '', deleteHint: '' }
+	return { name: '', displayName: '', columns: [], note: '', insertHint: '', updateHint: '', deleteHint: '' }
 }
 
 function freshColumn(): ColumnDef {
-  return { name: '', displayName: '', type: 'TEXT' }
+	return { name: '', displayName: '', type: 'TEXT' }
 }
 
 const ttConfig = computed(() => store.config.tableTemplate)
 
 const activeTemplatePreset = computed(() =>
-  ttConfig.value.presets.find((p) => p.id === ttConfig.value.activeId) ?? ttConfig.value.presets[0]
+	ttConfig.value.presets.find((p) => p.id === ttConfig.value.activeId) ?? ttConfig.value.presets[0]
 )
 
 const editingTables = computed(() => activeTemplatePreset.value?.template?.tables ?? [])
@@ -309,8 +304,6 @@ const selectedTable = computed(() => {
   return tables[selectedTableIdx.value]
 })
 
-// (duplicate removed - see async version below)
-// selectPresetT (old simple version replaced by async version below)
 
 function newPresetT() {
   const p = {
@@ -326,7 +319,6 @@ function newPresetT() {
   toast.success('已新建模板预设')
 }
 
-// 同步角色卡自带模板到预设列表
 function syncCardTemplate() {
   const fromCard = session.getTemplate()
   if (!fromCard || !Array.isArray(fromCard.tables) || fromCard.tables.length === 0) return
@@ -347,7 +339,6 @@ function syncCardTemplate() {
     ttConfig.value.presets.unshift(cardPreset)
   }
 
-  // 卡模板默认选中，除非用户已手动切过
   if (ttConfig.value.activeId !== CARD_PRESET_ID && !existing) {
     ttConfig.value.activeId = CARD_PRESET_ID
   }
@@ -361,7 +352,6 @@ async function selectPresetT(id: string) {
   const target = ttConfig.value.presets.find((p) => p.id === id)
   if (!target || id === ttConfig.value.activeId) return
 
-  // 从卡预设切走 → 警告
   const current = ttConfig.value.presets.find((p) => p.id === ttConfig.value.activeId)
   if (current?.source === 'card') {
     const ok = await confirm(
@@ -373,7 +363,6 @@ async function selectPresetT(id: string) {
     if (!ok) return
   }
 
-  // 已有表数据 → 数据丢失警告
   const tables = session.listTables().filter((n) => n !== 'cn_chronicle' && !n.startsWith('sqlite_'))
   if (tables.length > 0) {
     const ok = await confirm(

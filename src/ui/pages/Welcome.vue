@@ -131,7 +131,7 @@ async function triggerFill() {
 	if (!canFill.value) return
 	filling.value = true
 	try {
-		const r = await runManualFill(session)
+		const r = await runManualFill(session, fillHint.value)
 		if (r.ok) { toast.success(`填表完成（${r.attempts} 次）`); refresh() }
 		else { toast.error(r.error ?? '填表失败') }
 	} catch (e) { toast.error(e instanceof Error ? e.message : String(e)) }

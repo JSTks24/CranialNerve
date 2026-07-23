@@ -2,6 +2,7 @@
 import { ref, computed, watch, onMounted, onActivated } from 'vue'
 import { getSession } from '@core/session'
 import { CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
+import { syncToWorldbook } from '@core/worldbook-sync'
 import toast from '@ui/toast'
 import confirm from '@ui/dialog'
 
@@ -86,6 +87,7 @@ function saveEdit() {
       }
     }
     toast.success('已保存')
+    persistChanges()
     refresh()
   } catch (err) {
     toast.error(err instanceof Error ? err.message : String(err))
@@ -95,6 +97,15 @@ function saveEdit() {
   }
   editingRowid.value = null
   editSnapshot.value = null
+}
+
+function persistChanges() {
+  const chat = session.chat.getChat()
+  const lastMsgId = chat.length - 1
+  if (lastMsgId >= 0) {
+    session.saveToChat(lastMsgId)
+  }
+  syncToWorldbook(session).catch(() => {})
 }
 
 function addRow() {
@@ -118,6 +129,7 @@ async function deleteRow(row: ChronicleRow) {
     session.deleteRow(CHRONICLE_TABLE_NAME, row.__rowid__)
     rows.value = rows.value.filter((r) => r.__rowid__ !== row.__rowid__)
     toast.success(`已删除 ${row.key}`)
+    persistChanges()
   } catch (err) {
     toast.error(err instanceof Error ? err.message : String(err))
   }

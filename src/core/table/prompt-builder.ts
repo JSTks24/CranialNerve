@@ -12,6 +12,8 @@ export interface BuildPromptOptions {
   conversationText?: string
   timeFormat?: string
   segments: PromptSegment[]
+  extraHint?: string
+  chronicleGuide?: string
 }
 
 export function buildTableEditPrompt(
@@ -23,16 +25,23 @@ export function buildTableEditPrompt(
     .map((t) => formatTableForAI(core, t))
     .join('\n\n')
 
-  return cloneSegments(options.segments).map((s) => ({
+  const filled = cloneSegments(options.segments).map((s) => ({
     ...s,
     content: interpolate(s.content, {
       format: SQL_EDIT_FORMAT,
       timeFormat: options.timeFormat ?? 'ISO 8601 格式（YYYY-MM-DDTHH:MM）',
       tables: tableSection,
       worldbook: options.worldbookContent ?? '',
-      conversation: options.conversationText ?? ''
+      conversation: options.conversationText ?? '',
+      chronicleGuide: options.chronicleGuide ?? ''
     })
   }))
+
+  if (options.extraHint && options.extraHint.trim().length > 0) {
+    filled.push({ id: 'hint_' + Math.random().toString(36).slice(2, 10), role: 'user', content: options.extraHint })
+  }
+
+  return filled
 }
 
 function cloneSegments(segments: PromptSegment[]): PromptSegment[] {

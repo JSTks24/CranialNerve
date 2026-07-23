@@ -19,7 +19,6 @@ interface SyncBridge {
 export default class SqliteSyncBridge implements SyncBridge {
 	private readonly core: SqliteCore
 	private readonly chat: ChatGateway
-	/** 上次加载时的 schema 警告（供 UI 展示） */
 	public lastLoadWarnings: string[] = []
 
 	constructor(core: SqliteCore, chat: ChatGateway) {
@@ -53,7 +52,6 @@ export default class SqliteSyncBridge implements SyncBridge {
 			return { ok: false, warnings: ['快照结构异常：缺少 tables 数组'] }
 		}
 
-		// ── Schema 兼容检测：对比快照表列与当前模板 ──
 		const warnings = this.checkSchemaCompat(snapshot, template)
 		this.lastLoadWarnings = warnings
 
@@ -73,11 +71,23 @@ export default class SqliteSyncBridge implements SyncBridge {
 		return null
 	}
 
-	/**
-	 * 检测快照中的表结构与当前模板的差异。
-	 * - 仅对已在模板中定义的表做对比（快照多出的表不警告，可能是纪要表等内置表）
-	 * - 列差异包括：多了列、少了列、列类型变化
-	 */
+	cleanupOldSnapshots(retainFloors: number): void {
+		if (retainFloors <= 0) return
+		const chat = this.chat.getChat()
+		let kept = 0
+		for (let i = chat.length - 1; i >= 0; i--) {
+			const msg = chat[i]
+			if (!msg || msg.is_user) continue
+			const extra = msg.extra
+			if (extra && typeof extra[DB_FIELD_PREFIX] === 'string') {
+				kept++
+				if (kept > retainFloors) {
+					delete extra[DB_FIELD_PREFIX]
+				}
+			}
+		}
+	}
+
 	checkSchemaCompat(snapshot: DatabaseSnapshot, template?: { tables: TableDef[] }): string[] {
 		const warnings: string[] = []
 		if (!template?.tables || template.tables.length === 0) return warnings
@@ -89,7 +99,7 @@ export default class SqliteSyncBridge implements SyncBridge {
 
 		for (const snapTable of snapshot.tables) {
 			const tmpl = templateMap.get(snapTable.name)
-			if (!tmpl) continue // 不在模板中的表（如 cn_chronicle）不警告
+			if (!tmpl) continue
 
 			const snapCols = new Set(snapTable.columns.map((c) => c.name))
 			const tmplCols = new Set(tmpl.columns.map((c) => c.name))
@@ -97,7 +107,6 @@ export default class SqliteSyncBridge implements SyncBridge {
 			const extraInSnap = [...snapCols].filter((c) => !tmplCols.has(c))
 			const missingInSnap = [...tmplCols].filter((c) => !snapCols.has(c))
 
-			// 检测列类型变化
 			const typeChanges: string[] = []
 			if (missingInSnap.length === 0 && extraInSnap.length === 0) {
 				const snapColMap = new Map(snapTable.columns.map((c) => [c.name, c.type]))

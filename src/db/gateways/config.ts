@@ -156,7 +156,6 @@ function cloneScene(s: ScenePromptConfig): ScenePromptConfig {
   }
 }
 
-// 兼容旧版结构：promptPresets(数组)/activePromptPresetId/整块字符串/PromptTemplates段数组
 function migratePrompt(
   current: PromptConfig | undefined,
   raw: Record<string, unknown>

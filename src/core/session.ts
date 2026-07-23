@@ -39,6 +39,7 @@ import type { ChronicleEntry } from '@shared/types/worldbook'
 import createChronicleRecaller, { type ChronicleRecaller } from './chronicle'
 import createWriteQueue, { type WriteQueue } from './write-queue'
 import { cleanupStaleBooks, syncToWorldbook } from './worldbook-sync'
+import { resetFillScheduler } from './table/fill-orchestrator'
 
 export class CranialNerveSession {
   readonly core: SqliteCore
@@ -130,15 +131,14 @@ export class CranialNerveSession {
     await this.core.init()
     this.nameMapper = null
     this.template = null
-    // 重置填表调度状态（切聊天时频率计数器归零）
-    const { resetFillScheduler } = await import('./table/fill-orchestrator')
     resetFillScheduler()
     this.setupChronicle()
     try {
       this.initGameSessionFromCard()
-    } catch {
-      return
+    } catch (e) {
+      console.warn('[CranialNerve] 角色卡模板数据异常:', e instanceof Error ? e.message : e)
     }
+    this.core.run(buildCreateTableSql(DEFAULT_CHRONICLE_TABLE))
     this.loadFromChat()
     await this.setupWorldbook()
   }
@@ -174,7 +174,6 @@ export class CranialNerveSession {
       await cleanupStaleBooks(this)
       await syncToWorldbook(this)
     } catch {
-      // Worldbook sync is non-critical
     }
   }
 
@@ -207,12 +206,10 @@ export class CranialNerveSession {
     }
     if (result.warnings.length > 0) {
       console.warn('[CranialNerve] 数据库快照 schema 警告:', result.warnings.join('; '))
-      // 曝光给 UI 层（Welcome 页可读取展示）
     }
     return true
   }
 
-  /** 获取上次快照加载时的 schema 警告（供 UI 展示） */
   getLastLoadWarnings(): string[] {
     return this.syncBridge?.lastLoadWarnings ?? []
   }
@@ -222,6 +219,10 @@ export class CranialNerveSession {
       throw new Error('session not initialized')
     }
     this.syncBridge.save(messageId)
+  }
+
+  cleanupOldSnapshots(retainFloors: number): void {
+    this.syncBridge?.cleanupOldSnapshots(retainFloors)
   }
 
   getConfig(): CranialNerveConfig {
@@ -235,6 +236,15 @@ export class CranialNerveSession {
   getActiveAiPreset(): AiPreset | null {
     const cfg = this.config.read()
     return cfg.aiPresets.find((p) => p.id === cfg.activeAiPresetId) ?? null
+  }
+
+  getAiPresetForScene(scenePresetId: string): AiPreset | null {
+    const cfg = this.config.read()
+    if (scenePresetId) {
+      const scenePreset = cfg.aiPresets.find((p) => p.id === scenePresetId)
+      if (scenePreset) return scenePreset
+    }
+    return this.getActiveAiPreset()
   }
 
   getActivePromptPreset(): ScenePreset | null {

@@ -9,6 +9,7 @@ const rules = [
     { name: 'ui must not import from db directly (go through core)', check: noDirectGatewayFromUi },
     { name: 'core must not touch DOM (no document/window globals)', check: noDomInCore },
     { name: 'db is the only layer that touches host APIs (getContext/fetch/TavernHelper)', check: noHostApiOutsideDb },
+    { name: 'shared must not import from db/core (bottom layer)', check: noDbImportFromShared },
 ]
 
 function listTsWithin(dir) {
@@ -59,6 +60,20 @@ function noHostApiOutsideDb() {
         if (layerOf(file) === 'db') continue
         const text = readFileSync(file, 'utf8')
         if (hostPatterns.test(text)) {
+            offenders.push(file)
+        }
+    }
+    return offenders
+}
+
+function noDbImportFromShared() {
+    const offenders = []
+    const importPattern = /@(db|core)\//
+    for (const file of listTsWithin(srcDir)) {
+        const layer = layerOf(file)
+        if (layer !== 'shared') continue
+        const text = readFileSync(file, 'utf8')
+        if (importPattern.test(text)) {
             offenders.push(file)
         }
     }
