@@ -1,0 +1,32 @@
+{
+  "name": "cranialnerve",
+  "version": "0.7.4",
+  "description": "CranialNerve — 新一代简约强大的类数据库综合工具，致力于提供更好的游玩体验",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config vite.dev.config.ts",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "arch": "node tools/check-arch.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@types/sql.js": "^1.4.11",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "prettier": "^3.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.1.5",
+    "vitest": "^4.1.10"
+  },
+  "dependencies": {
+    "openai": "^6.48.0",
+    "pinia": "^4.0.2",
+    "sql.js": "^1.14.1",
+    "vue": "^3.5.40",
+    "vue-router": "^4.6.4",
+    "vuedraggable": "^4.1.0"
+  }
+}

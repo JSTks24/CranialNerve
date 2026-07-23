@@ -1,0 +1,11 @@
+{
+    "display_name": "CranialNerve",
+    "loading_order": 100,
+    "requires": [],
+    "dependencies": [],
+    "js": "dist/index.js",
+    "auto_update": true,
+    "hooks": {
+        "activate": "init"
+    }
+}

@@ -1,0 +1,1 @@
+export const CURRENT_TEMPLATE_VERSION = 1

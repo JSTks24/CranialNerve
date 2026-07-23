@@ -1,0 +1,4 @@
+export const EVENT_CHAT_CHANGED = 'chat_id_changed'
+export const EVENT_CHAT_LOADED = 'chatLoaded'
+export const EVENT_CHAT_COMPLETION_PROMPT_READY = 'chat_completion_prompt_ready'
+export const EVENT_GENERATION_ENDED = 'generation_ended'
