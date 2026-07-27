@@ -30,12 +30,15 @@ interface SillyTavernContext {
   characters: SillyTavernCharacter[]
   chat: SillyTavernChatMessage[]
   chatMetadata: Record<string, unknown>
+  chatId: string | null
+  getCurrentChatId?: () => string | null
   extensionSettings: Record<string, unknown>
   eventSource: SillyTavernEventSource
   eventTypes: Record<string, string>
   name1: string
   name2: string
   getRequestHeaders?: () => Record<string, string>
+  saveSettingsDebounced?: () => void
 }
 
 interface SillyTavernEventSource {

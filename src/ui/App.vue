@@ -17,11 +17,15 @@ const menuItems = [
   { key: 'api', label: 'API 配置', icon: 'fa-plug' }
 ]
 
+const debugItem = { key: 'debug', label: '调试', icon: 'fa-bug' }
+
 const currentKey = computed(() => route.path.slice(1) || 'welcome')
 
 const pageTitle = computed(() => {
-  const item = menuItems.find((m) => m.key === currentKey.value)
-  return item?.label ?? 'CranialNerve'
+  const found = menuItems.find((m) => m.key === currentKey.value)
+  if (found) return found.label
+  if (currentKey.value === 'debug') return '调试工具'
+  return 'CranialNerve'
 })
 
 function go(key: string) {
@@ -47,6 +51,16 @@ function go(key: string) {
         >
           <i class="fa-solid" :class="item.icon"></i>
           <span>{{ item.label }}</span>
+        </button>
+        <div class="cn-menu__spacer"></div>
+        <button
+          type="button"
+          class="cn-menu__item cn-menu__item--debug"
+          :class="{ 'cn-menu__item--active': 'debug' === currentKey }"
+          @click="go(debugItem.key)"
+        >
+          <i class="fa-solid" :class="debugItem.icon"></i>
+          <span>{{ debugItem.label }}</span>
         </button>
       </nav>
     </aside>

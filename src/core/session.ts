@@ -22,7 +22,7 @@ import SqliteSyncBridge from '@db/sqlite/sync-bridge'
 import NameMapper from '@shared/namemapper'
 import { buildCreateTableSql } from '@shared/template-builder'
 import { DEFAULT_CHRONICLE_TABLE, CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
-import { validateTimeRegistration } from './time'
+import { validateTimeRegistration, clearTimeRegistration } from './time'
 import { EVENT_CHAT_CHANGED } from '@shared/constants/events'
 import type { CardTemplate } from '@shared/types/card'
 import type { QueryResult, TableDef } from '@shared/types/table'
@@ -38,8 +38,12 @@ import ChronicleEntryStore from './worldbook-entries'
 import type { ChronicleEntry } from '@shared/types/worldbook'
 import createChronicleRecaller, { type ChronicleRecaller } from './chronicle'
 import createWriteQueue, { type WriteQueue } from './write-queue'
-import { cleanupStaleBooks, syncToWorldbook } from './worldbook-sync'
-import { resetFillScheduler } from './table/fill-orchestrator'
+import { buildBookName, cleanupStaleBooks, syncToWorldbook } from './worldbook-sync'
+import { resetFillScheduler, onGenerationEnded } from './table/fill-orchestrator'
+import { onPromptReady } from './chronicle/recall-orchestrator'
+import { exportCheckpoint, validateCheckpointFile } from './checkpoint-transfer'
+import { pushLog } from '@shared/log-buffer'
+import { EVENT_GENERATION_ENDED, EVENT_CHAT_COMPLETION_PROMPT_READY, EVENT_CHAT_RENAMED } from '@shared/constants/events'
 
 export class CranialNerveSession {
   readonly core: SqliteCore
@@ -59,6 +63,8 @@ export class CranialNerveSession {
   private writeQueue: WriteQueue
   private currentChatToken: string | null = null
   private autoSwitchHandler: ((...args: unknown[]) => unknown) | null = null
+  private reloadSeq = 0
+  private lastSnapshotIndex: number | null = null
 
   constructor() {
     this.core = new SqliteCore()
@@ -77,16 +83,39 @@ export class CranialNerveSession {
     this.syncBridge = new SqliteSyncBridge(this.core, this.chat)
     this.tableEditor = new TableEditor(this.core, this.ai)
     this.startAutoSwitch()
+    this.bindCoreEvents()
     await this.reloadForChatChange()
   }
 
+  private eventsBound = false
+  private bindCoreEvents(): void {
+    if (this.eventsBound) return
+    this.eventsBound = true
+    this.event.makeLast(EVENT_GENERATION_ENDED, () => {
+      onGenerationEnded(this).catch((e) => {
+        pushLog('error', 'session', `onGenerationEnded error: ${e instanceof Error ? e.message : String(e)}`)
+      })
+    })
+    this.event.makeLast(EVENT_CHAT_COMPLETION_PROMPT_READY, (...args: unknown[]) => {
+      const eventData = args[0] as { chat: SillyTavernChatMessage[]; dryRun?: boolean }
+      if (eventData) {
+        onPromptReady(this, eventData).catch((e) => {
+          pushLog('error', 'session', `onPromptReady error: ${e instanceof Error ? e.message : String(e)}`)
+        })
+      }
+    })
+    this.event.on(EVENT_CHAT_RENAMED, (...args: unknown[]) => {
+      const payload = args[0] as { oldFileName?: string; newFileName?: string } | undefined
+      if (payload?.oldFileName && payload?.newFileName) {
+        this.renameWorldbook(payload.oldFileName, payload.newFileName).catch((e) => {
+          pushLog('error', 'session', `世界书重命名失败: ${e instanceof Error ? e.message : String(e)}`)
+        })
+      }
+    })
+  }
+
   private setupChronicle(): void {
-    const name = this.worldbook.getCurrentCharLorebookName()
-    if (!name) {
-      this.chronicleStore = null
-      this.chronicleRecaller = null
-      return
-    }
+    const name = buildBookName(this.getChatToken())
     this.chronicleStore = new ChronicleEntryStore(this.worldbook, name)
     const tableReader = async (): Promise<ChronicleEntry[]> => {
       const result = this.core.exec(`SELECT * FROM "${CHRONICLE_TABLE_NAME}"`)
@@ -126,9 +155,21 @@ export class CranialNerveSession {
   }
 
   async reloadForChatChange(): Promise<void> {
+    const mySeq = ++this.reloadSeq
+    const prevToken = this.currentChatToken
+    await this.writeQueue.waitForDrain()
+    if (mySeq !== this.reloadSeq) {
+      return
+    }
+    if (prevToken) {
+      clearTimeRegistration(prevToken)
+    }
     this.currentChatToken = null
     this.core.dispose()
     await this.core.init()
+    if (mySeq !== this.reloadSeq) {
+      return
+    }
     this.nameMapper = null
     this.template = null
     resetFillScheduler()
@@ -138,9 +179,15 @@ export class CranialNerveSession {
     } catch (e) {
       console.warn('[CranialNerve] 角色卡模板数据异常:', e instanceof Error ? e.message : e)
     }
+    if (mySeq !== this.reloadSeq) {
+      return
+    }
     this.core.run(buildCreateTableSql(DEFAULT_CHRONICLE_TABLE))
     this.loadFromChat()
-    await this.setupWorldbook()
+    if (mySeq !== this.reloadSeq) {
+      return
+    }
+    await this.setupWorldbook(mySeq)
   }
 
   getChatToken(): string {
@@ -149,36 +196,52 @@ export class CranialNerveSession {
     }
     try {
       const ctx = getHostContext()
-      const parts: string[] = []
-      if (ctx.characterId != null) {
-        parts.push(String(ctx.characterId))
-      }
-      const chat = ctx.chat
-      if (chat && chat.length > 0) {
-        const firstMsg = chat[0]
-        if (firstMsg && firstMsg.send_date) {
-          parts.push(String(firstMsg.send_date))
-        }
-      }
-      if (parts.length > 0) {
-        this.currentChatToken = parts.join('_')
-        return this.currentChatToken
+      const chatId = ctx.chatId ?? ctx.getCurrentChatId?.()
+      if (chatId && typeof chatId === 'string') {
+        this.currentChatToken = chatId
+        return chatId
       }
     } catch {}
     this.currentChatToken = `cn_${Date.now().toString(36)}`
     return this.currentChatToken
   }
 
-  private async setupWorldbook(): Promise<void> {
+  private async setupWorldbook(mySeq: number): Promise<void> {
+    if (mySeq !== this.reloadSeq) {
+      return
+    }
     try {
       await cleanupStaleBooks(this)
+      if (mySeq !== this.reloadSeq) {
+        return
+      }
       await syncToWorldbook(this)
-    } catch {
+    } catch (e) {
+      console.error('[CranialNerve] 世界书初始化失败:', e)
+    }
+  }
+
+  private async renameWorldbook(oldToken: string, newToken: string): Promise<void> {
+    if (oldToken === newToken) return
+    const wb = this.worldbook
+    const oldName = buildBookName(oldToken)
+    const newName = buildBookName(newToken)
+    const all = wb.listWorldbookNames()
+    if (!all.includes(oldName)) return
+    try {
+      const data = await wb.loadLorebook(oldName)
+      await wb.saveLorebook(newName, data)
+      await wb.deleteWorldbook(oldName)
+      this.currentChatToken = newToken
+      await wb.attachToChat(newName)
+      pushLog('warn', 'session', `世界书重命名: ${oldName} -> ${newName}`)
+    } catch (e) {
+      pushLog('error', 'session', `世界书重命名失败: ${e instanceof Error ? e.message : String(e)}`)
     }
   }
 
   initGameSession(template: CardTemplate): void {
-    validateTimeRegistration()
+    validateTimeRegistration(this.getChatToken())
     this.template = template
     this.nameMapper = new NameMapper(template.tables)
     for (const table of template.tables) {
@@ -200,18 +263,74 @@ export class CranialNerveSession {
       throw new Error('session not initialized')
     }
     const result = this.syncBridge.load(this.template ?? undefined)
+    this.lastSnapshotIndex = result.snapshotIndex
     if (!result.ok) {
-      console.warn('[CranialNerve] 数据库快照加载失败:', result.warnings.join('; '))
+      pushLog('warn', 'session', `数据库快照加载失败: ${result.warnings.join('; ')}`)
       return false
     }
     if (result.warnings.length > 0) {
-      console.warn('[CranialNerve] 数据库快照 schema 警告:', result.warnings.join('; '))
+      pushLog('warn', 'session', `数据库快照 schema 警告: ${result.warnings.join('; ')}`)
     }
     return true
   }
 
   getLastLoadWarnings(): string[] {
     return this.syncBridge?.lastLoadWarnings ?? []
+  }
+
+  getLoadDiagnostic(): { snapshotIndex: number | null; snapshotCount: number; lastAiIndex: number | null } {
+    const chat = this.chat.getChat()
+    let lastAiIndex: number | null = null
+    for (let i = chat.length - 1; i >= 0; i--) {
+      const msg = chat[i]
+      if (msg && !msg.is_user) {
+        lastAiIndex = i
+        break
+      }
+    }
+    return {
+      snapshotIndex: this.lastSnapshotIndex,
+      snapshotCount: this.syncBridge?.countSnapshots() ?? 0,
+      lastAiIndex
+    }
+  }
+
+  listSnapshotIndices(): number[] {
+    return this.syncBridge?.listSnapshotIndices() ?? []
+  }
+
+  exportSnapshot(): import('@shared/types/checkpoint-file').TableCheckpointFileV1 {
+    return exportCheckpoint(this)
+  }
+
+  importSnapshot(file: import('@shared/types/checkpoint-file').TableCheckpointFileV1): { ok: boolean; error?: string } {
+    const valid = validateCheckpointFile(file)
+    if (!valid.ok) return valid
+    const repo = this.getSyncBridgeRepo()
+    if (!repo || !this.syncBridge) {
+      return { ok: false, error: 'session not initialized' }
+    }
+    try {
+      this.syncBridge.applySnapshotExternal(file.tableSnapshot)
+    } catch (e) {
+      return { ok: false, error: e instanceof Error ? e.message : String(e) }
+    }
+    const targetId = this.getLastAiMessageId() ?? 0
+    this.syncBridge.writeCheckpoint(targetId, 'import')
+    return { ok: true }
+  }
+
+  recoverSnapshotAt(index: number): boolean {
+    if (!this.syncBridge) {
+      throw new Error('session not initialized')
+    }
+    const result = this.syncBridge.loadSnapshotAt(index)
+    this.lastSnapshotIndex = result.snapshotIndex
+    if (!result.ok) {
+      pushLog('warn', 'session', `手动恢复快照失败: ${result.warnings.join('; ')}`)
+      return false
+    }
+    return true
   }
 
   saveToChat(messageId: number): void {
@@ -221,8 +340,28 @@ export class CranialNerveSession {
     const cfg = this.config.read()
     if (cfg.snapshotStrategy === 'latest-only') {
       this.syncBridge.removeAllSnapshots()
+      this.syncBridge.writeCheckpoint(messageId, 'manual')
+    } else {
+      this.syncBridge.save(messageId)
     }
-    this.syncBridge.save(messageId)
+  }
+
+  private getLastAiMessageId(): number | null {
+    const chat = this.chat.getChat()
+    for (let i = chat.length - 1; i >= 0; i--) {
+      const msg = chat[i]
+      if (msg && !msg.is_user && !msg.is_system) {
+        return i
+      }
+    }
+    return null
+  }
+
+  private appendManualLog(statements: string[], params?: (string | number | null)[][]): void {
+    if (!this.syncBridge) return
+    const targetId = this.getLastAiMessageId()
+    if (targetId == null) return
+    this.syncBridge.appendManualSqlLog(targetId, statements, params)
   }
 
   cleanupOldSnapshots(retainFloors: number): void {
@@ -280,22 +419,25 @@ export class CranialNerveSession {
   updateCell(tableName: string, rowid: number, column: string, value: string): void {
     const safeTable = tableName.replace(/"/g, '""')
     const safeCol = column.replace(/"/g, '""')
-    this.core.run(`UPDATE "${safeTable}" SET "${safeCol}" = ? WHERE rowid = ?`, [value, rowid])
+    const sql = `UPDATE "${safeTable}" SET "${safeCol}" = ? WHERE rowid = ?`
+    this.core.run(sql, [value, rowid])
+    this.appendManualLog([sql], [[value, rowid]])
   }
 
   deleteRow(tableName: string, rowid: number): void {
     const safe = tableName.replace(/"/g, '""')
-    this.core.run(`DELETE FROM "${safe}" WHERE rowid = ?`, [rowid])
+    const sql = `DELETE FROM "${safe}" WHERE rowid = ?`
+    this.core.run(sql, [rowid])
+    this.appendManualLog([sql], [[rowid]])
   }
 
   insertRow(tableName: string, values: Record<string, string>): void {
     const safeTable = tableName.replace(/"/g, '""')
     const cols = Object.keys(values).map((c) => `"${c.replace(/"/g, '""')}"`)
     const placeholders = cols.map(() => '?').join(', ')
-    this.core.run(
-      `INSERT INTO "${safeTable}" (${cols.join(', ')}) VALUES (${placeholders})`,
-      Object.values(values)
-    )
+    const sql = `INSERT INTO "${safeTable}" (${cols.join(', ')}) VALUES (${placeholders})`
+    this.core.run(sql, Object.values(values))
+    this.appendManualLog([sql], [Object.values(values)])
   }
 
   listTables(): string[] {
@@ -331,6 +473,14 @@ export class CranialNerveSession {
 
   getWriteQueue(): WriteQueue {
     return this.writeQueue
+  }
+
+  getSyncBridgeRepo(): import('@db/sqlite/storage-frame-repo').FrameRepo | null {
+    return this.syncBridge?.getRepo() ?? null
+  }
+
+  runWrite<T>(task: () => Promise<T> | T): Promise<T> {
+    return this.writeQueue.enqueue(() => Promise.resolve(task()))
   }
 }
 

@@ -1,4 +1,5 @@
 import type SqliteCore from '@db/sqlite/core'
+import type { PersistContext } from '@db/sqlite/frame-persist'
 import type { AiClientConfig, AiGateway, ChatCompletionParams } from '@db/gateways/ai'
 import type { TableEditSqlV1 } from '@shared/types/ai'
 import type { PromptSegment } from '@shared/types/config'
@@ -17,6 +18,11 @@ export interface RunOptions {
   maxRetries: number
 }
 
+export interface RunPersist {
+  ctx: PersistContext
+  messageId: number
+}
+
 export interface RunResult {
   ok: boolean
   attempts: number
@@ -33,7 +39,7 @@ export default class TableEditor {
     this.ai = ai
   }
 
-  async run(ctx: PromptContext, options: RunOptions): Promise<RunResult> {
+  async run(ctx: PromptContext, options: RunOptions, persist?: RunPersist): Promise<RunResult> {
     const baseMessages = [
       ...ctx.segments.map((s) => ({ role: s.role, content: s.content })),
       { role: 'user' as const, content: ctx.userPrompt }
@@ -49,7 +55,8 @@ export default class TableEditor {
       const current = parseTableEditSql(raw)
 
       if (current) {
-        const result = executeTableEditSql(this.core, current)
+        const persistArg = persist ? { ctx: persist.ctx, messageId: persist.messageId } : undefined
+        const result = executeTableEditSql(this.core, current, persistArg)
         if (result.ok) {
           return { ok: true, attempts: attempt, lastSql: current.sql }
         }

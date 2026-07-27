@@ -12,7 +12,11 @@ export const useConfigStore = defineStore('cn-config', () => {
   }
 
   function save() {
-    session.saveConfig(config.value)
+    const fresh = session.getConfig()
+    fresh.prompt = config.value.prompt
+    fresh.tableTemplate = config.value.tableTemplate
+    session.saveConfig(fresh)
+    config.value = fresh
   }
 
   return { config, reload, save }

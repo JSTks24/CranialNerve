@@ -21,6 +21,7 @@ export interface RecallContext {
   currentTime: string
   vectorEnabled: boolean
   vectorConfig: VectorConfig
+  chatToken: string
 }
 
 export interface RecallItem {
@@ -55,7 +56,7 @@ export default function createChronicleRecaller(
         items.push({
           key,
           entry,
-          timeDeltaText: computeTimeDelta(entry, ctx.currentTime)
+          timeDeltaText: computeTimeDelta(ctx.chatToken, entry, ctx.currentTime)
         })
       }
       return items

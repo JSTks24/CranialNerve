@@ -212,19 +212,17 @@ async function openPreview() {
   const values = buildVarValues()
   const realValues: Record<string, string> = { ...values }
   if (activeScene.value === 'chronicleRecall') {
-    const store = session.getChronicleStore()
-    if (store) {
-      try {
-        const all = await store.list()
-        if (all.length > 0) {
-          realValues.chronicleList = JSON.stringify(
-            all.map((e) => ({ key: e.key, summary: e.content.summary ?? '' })),
-            null,
-            2
-          )
-        }
-      } catch {
+    try {
+      const result = session.getTableRowsWithRowid('cn_chronicle')
+      const rows = result[0]?.rows ?? []
+      if (rows.length > 0) {
+        realValues.chronicleList = JSON.stringify(
+          rows.map((r) => ({ key: String(r.key ?? ''), summary: String(r.chronicle_text ?? '') })),
+          null,
+          2
+        )
       }
+    } catch {
     }
   }
   const segs = activePreset.value?.blocks.flatMap((b) => b.segments) ?? []
@@ -281,7 +279,13 @@ const showTemplate = ref(false)
 const COL_TYPES = ['TEXT', 'INTEGER', 'REAL', 'BLOB']
 
 function freshTable(): TableDef {
-	return { name: '', displayName: '', columns: [], note: '', insertHint: '', updateHint: '', deleteHint: '' }
+	return { name: '', displayName: '', columns: [], note: '', insertHint: '', updateHint: '', deleteHint: '', exportConfig: { enabled: true, entryType: 'constant', splitByRow: false, keywordColumn: '', keywords: '' } }
+}
+
+function ensureExportConfig(table: TableDef) {
+	if (!table.exportConfig) {
+		table.exportConfig = { enabled: true, entryType: 'constant', splitByRow: false, keywordColumn: '', keywords: '' }
+	}
 }
 
 function freshColumn(): ColumnDef {
@@ -499,6 +503,7 @@ function downloadJson(data: string, filename: string) {
 }
 
 onActivated(() => {
+  store.reload()
   syncCardTemplate()
 })
 </script>
@@ -516,6 +521,18 @@ onActivated(() => {
           <button type="button" class="scene-tab" :class="{ 'scene-tab--active': !showTemplate }" @click="showTemplate = false">
             <i class="fa-solid fa-pen-to-square"></i>
             提示词配置
+          </button>
+        </div>
+        <div v-if="!showTemplate" class="scene-tabs">
+          <button
+            v-for="s in scenes"
+            :key="s.key"
+            type="button"
+            class="scene-tab"
+            :class="{ 'scene-tab--active': activeScene === s.key }"
+            @click="activeScene = s.key"
+          >
+            {{ s.label }}
           </button>
         </div>
       </div>
@@ -594,6 +611,37 @@ onActivated(() => {
                   <textarea class="cn-textarea tpl-textarea" v-model="table.note" rows="2" placeholder="描述表的用途、每列填什么..."></textarea>
                 </div>
                 <div class="tpl-section">
+                  <label class="tpl-label">世界书注入</label>
+                  <div class="tpl-row" style="align-items:center">
+                    <div class="tpl-field" style="flex-direction:row;align-items:center;gap:8px">
+                      <label class="tpl-label" style="font-size:12px">启用注入</label>
+                      <label class="cn-switch">
+                        <input type="checkbox"
+                          :checked="table.exportConfig?.enabled !== false"
+                          @change="ensureExportConfig(table); table.exportConfig!.enabled = ($event.target as HTMLInputElement).checked" />
+                        <span class="cn-switch__track"></span>
+                      </label>
+                    </div>
+                    <div class="tpl-field">
+                      <label class="tpl-label" style="font-size:12px">注入类型</label>
+                      <select class="cn-select" style="width:auto"
+                        @change="ensureExportConfig(table); table.exportConfig!.entryType = ($event.target as HTMLSelectElement).value as 'constant' | 'keyword'">
+                        <option value="constant" :selected="(table.exportConfig?.entryType ?? 'constant') === 'constant'">常量（始终注入）</option>
+                        <option value="keyword" :selected="table.exportConfig?.entryType === 'keyword'">关键词（召回触发）</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div v-if="table.exportConfig?.entryType === 'keyword'" class="tpl-row" style="margin-top:8px">
+                    <div class="tpl-field">
+                      <label class="tpl-label" style="font-size:12px">触发关键词</label>
+                      <input class="cn-input"
+                        :value="table.exportConfig?.keywords ?? ''"
+                        @input="ensureExportConfig(table); table.exportConfig!.keywords = ($event.target as HTMLInputElement).value"
+                        placeholder="逗号分隔，如：背包, 物品, 装备" />
+                    </div>
+                  </div>
+                </div>
+                <div class="tpl-section">
                   <div class="tpl-section__head">
                     <label class="tpl-label">列定义</label>
                     <button class="cn-btn cn-btn--sm" @click="addColumnT"><i class="fa-solid fa-plus"></i>添加列</button>
@@ -650,21 +698,6 @@ onActivated(() => {
 
       <!-- ═══ 提示词编辑器（现有内容，原封不动） ═══ -->
       <template v-if="!showTemplate">
-      <div class="prompt-head">
-        <div class="scene-tabs">
-          <button
-            v-for="s in scenes"
-            :key="s.key"
-            type="button"
-            class="scene-tab"
-            :class="{ 'scene-tab--active': activeScene === s.key }"
-            @click="activeScene = s.key"
-          >
-            {{ s.label }}
-          </button>
-        </div>
-      </div>
-
       <div class="prompt-split">
         <div class="prompt-side">
           <div class="cn-card__head">

@@ -24,6 +24,7 @@ const tables = ref<TableInfo[]>([])
 const activeName = ref<string>('')
 const editingRowid = ref<number | null>(null)
 const editSnapshot = ref<Record<string, string>>({})
+const cellEditEls = new Map<string, HTMLElement>()
 let draftCounter = -1
 
 const activeTable = computed(() => tables.value.find((t) => t.name === activeName.value))
@@ -69,62 +70,69 @@ function startEdit(row: RowData) {
     snap[c] = fieldValue(row, c)
   }
   editSnapshot.value = snap
+  cellEditEls.clear()
+}
+
+function registerCellEl(col: string, el: Element | null): void {
+  const rowid = editingRowid.value
+  if (rowid == null || el == null) return
+  if (!(el instanceof HTMLElement)) return
+  if (!cellEditEls.has(col)) {
+    cellEditEls.set(col, el)
+    const row = activeTable.value?.rows.find((r) => r.__rowid__ === rowid)
+    el.innerText = row ? fieldValue(row, col) : ''
+  }
 }
 
 function cancelEdit() {
   if (!activeTable.value || editingRowid.value == null) return
   const row = activeTable.value.rows.find((r) => r.__rowid__ === editingRowid.value)
-  if (row) {
-    if (row.__rowid__ < 0) {
-      activeTable.value.rows = activeTable.value.rows.filter((r) => r.__rowid__ !== row.__rowid__)
-    } else {
-      for (const c of activeTable.value.columns) {
-        row[c] = editSnapshot.value[c] ?? ''
-      }
-    }
+  if (row && row.__rowid__ < 0) {
+    activeTable.value.rows = activeTable.value.rows.filter((r) => r.__rowid__ !== row.__rowid__)
   }
   editingRowid.value = null
   editSnapshot.value = {}
+  cellEditEls.clear()
 }
 
 function saveEdit() {
   if (!activeTable.value || editingRowid.value == null) return
-  if (document.activeElement instanceof HTMLElement) {
-    document.activeElement.blur()
-  }
   const row = activeTable.value.rows.find((r) => r.__rowid__ === editingRowid.value)
   if (!row) {
     editingRowid.value = null
     return
   }
-  try {
-    if (row.__rowid__ < 0) {
-      const values: Record<string, string> = {}
-      for (const c of activeTable.value.columns) {
-        values[c] = String(row[c] ?? '')
-      }
-      session.insertRow(activeTable.value.name, values)
-    } else {
-      for (const c of activeTable.value.columns) {
-        const newVal = String(row[c] ?? '')
-        if (newVal !== editSnapshot.value[c]) {
-          session.updateCell(activeTable.value.name, editingRowid.value, c, newVal)
+  const collected: Record<string, string> = {}
+  for (const c of activeTable.value.columns) {
+    const el = cellEditEls.get(c)
+    collected[c] = el ? el.innerText : String(row[c] ?? '')
+  }
+  void session.runWrite(async () => {
+    try {
+      if (row.__rowid__ < 0) {
+        const values: Record<string, string> = {}
+        for (const c of activeTable.value!.columns) {
+          values[c] = String(collected[c] ?? '')
+        }
+        session.insertRow(activeTable.value!.name, values)
+      } else {
+        for (const c of activeTable.value!.columns) {
+          const newVal = String(collected[c] ?? '')
+          if (newVal !== editSnapshot.value[c]) {
+            session.updateCell(activeTable.value!.name, editingRowid.value!, c, newVal)
+          }
         }
       }
+      await persistChanges()
+      toast.success('已保存')
+      editingRowid.value = null
+      editSnapshot.value = {}
+      cellEditEls.clear()
+      refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err))
     }
-    toast.success('已保存')
-    persistChanges()
-    refresh()
-  } catch (err) {
-    toast.error(err instanceof Error ? err.message : String(err))
-    if (row.__rowid__ >= 0) {
-      for (const c of activeTable.value.columns) {
-        row[c] = editSnapshot.value[c] ?? ''
-      }
-    }
-  }
-  editingRowid.value = null
-  editSnapshot.value = {}
+  })
 }
 
 function persistChanges() {
@@ -133,23 +141,25 @@ function persistChanges() {
   if (lastMsgId >= 0) {
     session.saveToChat(lastMsgId)
   }
-  syncToWorldbook(session).catch(() => {})
+  return syncToWorldbook(session)
 }
 
 async function deleteRow(row: RowData) {
   if (!activeTable.value) return
   const ok = await confirm('删除确认', '确认删除该行？此操作不可撤销。', '删除', true)
   if (!ok) return
-  try {
-    session.deleteRow(activeTable.value.name, row.__rowid__)
-    if (activeTable.value) {
-      activeTable.value.rows = activeTable.value.rows.filter((r) => r.__rowid__ !== row.__rowid__)
+  await session.runWrite(async () => {
+    try {
+      session.deleteRow(activeTable.value!.name, row.__rowid__)
+      if (activeTable.value) {
+        activeTable.value.rows = activeTable.value.rows.filter((r) => r.__rowid__ !== row.__rowid__)
+      }
+      toast.success('已删除')
+      await persistChanges()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err))
     }
-    toast.success('已删除')
-    persistChanges()
-  } catch (err) {
-    toast.error(err instanceof Error ? err.message : String(err))
-  }
+  })
 }
 
 function addRow() {
@@ -162,6 +172,48 @@ function addRow() {
   startEdit(draft)
 }
 
+function onExportSnapshot() {
+  try {
+    const file = session.exportSnapshot()
+    const data = JSON.stringify(file, null, 2)
+    const blob = new Blob([data], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `cn-snapshot-${Date.now()}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    toast.success('快照已导出')
+  } catch (e) {
+    toast.error(e instanceof Error ? e.message : String(e))
+  }
+}
+
+function onImportSnapshot(e: Event) {
+  const input = e.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = () => {
+    void session.runWrite(async () => {
+      try {
+        const raw = JSON.parse(String(reader.result))
+        const r = session.importSnapshot(raw)
+        if (r.ok) {
+          toast.success('快照已导入')
+          refresh()
+        } else {
+          toast.error(r.error ?? '导入失败')
+        }
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : '导入失败')
+      }
+    })
+  }
+  reader.readAsText(file, 'utf-8')
+  input.value = ''
+}
+
 onMounted(refresh)
 onActivated(refresh)
 </script>
@@ -171,6 +223,17 @@ onActivated(refresh)
     <div v-if="tables.length === 0" class="cn-empty">当前会话未载入表格</div>
 
     <template v-else>
+      <div class="tables-toolbar">
+        <button class="cn-btn cn-btn--sm" @click="onExportSnapshot">
+          <i class="fa-solid fa-download"></i>
+          导出快照
+        </button>
+        <label class="cn-btn cn-btn--sm">
+          <i class="fa-solid fa-upload"></i>
+          导入快照
+          <input type="file" accept="application/json,.json" hidden @change="onImportSnapshot" />
+        </label>
+      </div>
       <div class="cn-card table-wrap-card">
         <div class="table-tabs">
           <button
@@ -203,15 +266,12 @@ onActivated(refresh)
                     <span class="table-row-card__label-en">{{ c }}</span></label
                   >
                   <div
+                    v-if="row.__rowid__ === editingRowid"
                     class="cell-edit table-row-card__value"
-                    :contenteditable="row.__rowid__ === editingRowid"
-                    @blur="
-                      (e) => {
-                        if (row.__rowid__ === editingRowid)
-                          row[c] = (e.target as HTMLElement).innerText
-                      }
-                    "
-                  >
+                    contenteditable="true"
+                    :ref="(el) => registerCellEl(c, el)"
+                  ></div>
+                  <div v-else class="cell-edit table-row-card__value">
                     {{ fieldValue(row, c) }}
                   </div>
                 </div>

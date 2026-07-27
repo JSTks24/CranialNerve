@@ -4,7 +4,6 @@
   "description": "CranialNerve — 新一代简约强大的类数据库综合工具，致力于提供更好的游玩体验",
   "type": "module",
   "scripts": {
-    "dev": "vite --config vite.dev.config.ts",
     "build": "vite build",
     "typecheck": "tsc --noEmit",
     "arch": "node tools/check-arch.mjs",

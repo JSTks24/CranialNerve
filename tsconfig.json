@@ -36,5 +36,5 @@
             "@ui/*": ["./src/ui/*"]
         }
     },
-    "include": ["src", "tests", "dev", "vite.config.ts", "vite.dev.config.ts"]
+    "include": ["src", "tests", "vite.config.ts"]
 }

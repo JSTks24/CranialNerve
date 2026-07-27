@@ -14,6 +14,7 @@ import {
   DEFAULT_TABLE_EDIT_PROMPT
 } from '@shared/prompts/defaults'
 import { getHostContext, getRequestHeaders } from './host-context'
+import { pushLog } from '@shared/log-buffer'
 
 const CONFIG_KEY = 'cranialnerve'
 
@@ -91,6 +92,7 @@ const DEFAULT_CONFIG: CranialNerveConfig = {
 export interface ConfigGateway {
   read(): CranialNerveConfig
   write(config: CranialNerveConfig): void
+  flush(): void
   listModels(preset: AiPreset): Promise<string[]>
 }
 
@@ -108,6 +110,18 @@ export default function createConfigGateway(): ConfigGateway {
     },
     write(config) {
       getHostContext().extensionSettings[CONFIG_KEY] = config
+      const ctx = getHostContext()
+      if (typeof ctx.saveSettingsDebounced === 'function') {
+        ctx.saveSettingsDebounced()
+      } else {
+        pushLog('warn', 'config', 'saveSettingsDebounced 不可用，配置可能无法持久化')
+      }
+    },
+    flush() {
+      const ctx = getHostContext() as unknown as Record<string, unknown>
+      if (typeof ctx.saveSettings === 'function') {
+        (ctx as { saveSettings: () => void }).saveSettings()
+      }
     },
     async listModels(preset) {
       if (!preset.baseURL) {

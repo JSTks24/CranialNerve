@@ -23,6 +23,7 @@ export interface TableDef {
     insertHint?: string
     updateHint?: string
     deleteHint?: string
+    exportConfig?: TableExportConfig
 }
 
 export interface QueryResult {
@@ -38,4 +39,12 @@ export interface TableSnapshot {
 
 export interface DatabaseSnapshot {
     tables: TableSnapshot[]
+}
+
+export interface TableExportConfig {
+    enabled: boolean
+    entryType: 'constant' | 'keyword'
+    splitByRow: boolean
+    keywordColumn: string
+    keywords: string
 }

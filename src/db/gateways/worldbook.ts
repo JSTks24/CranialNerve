@@ -70,6 +70,9 @@ export default function createWorldbookGateway(): WorldbookGateway {
     async detachFromChat() {
       const ctx = getHostContext()
       delete ctx.chatMetadata[METADATA_KEY]
+      if (window.saveMetadata) {
+        await window.saveMetadata()
+      }
     }
   }
 }

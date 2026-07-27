@@ -42,6 +42,18 @@ function refresh() {
 	activePresetModel.value = preset?.model ?? ''
 	cfg.value = session.getConfig()
 	tableList.value = session.listTables().filter((n) => n !== 'cn_chronicle' && !n.startsWith('sqlite_'))
+	checkSnapshotRollback()
+}
+
+function checkSnapshotRollback() {
+	const diag = session.getLoadDiagnostic()
+	if (diag.snapshotIndex == null && diag.lastAiIndex != null) {
+		toast.error('未找到数据库快照，表数据可能已随删除消息丢失')
+		return
+	}
+	if (diag.snapshotIndex != null && diag.lastAiIndex != null && diag.snapshotIndex < diag.lastAiIndex) {
+		toast.warning(`数据库已回退到第 ${diag.snapshotIndex + 1} 楼的快照（最近 AI 消息在第 ${diag.lastAiIndex + 1} 楼），期间填表数据可能丢失`)
+	}
 }
 
 function toggleFillTable(name: string) {

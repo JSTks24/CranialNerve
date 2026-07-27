@@ -21,6 +21,7 @@ const rows = ref<ChronicleRow[]>([])
 const keyword = ref('')
 const editingRowid = ref<number | null>(null)
 const editSnapshot = ref<ChronicleRow | null>(null)
+const cellEditEls = new Map<string, HTMLElement>()
 
 const fields: { key: keyof ChronicleRow; label: string; full?: boolean }[] = [
   { key: 'key', label: '编码' },
@@ -45,58 +46,69 @@ const chronicleEnabled = computed(() => session.getConfig().chronicleGenEnabled)
 function startEdit(row: ChronicleRow) {
   editingRowid.value = row.__rowid__
   editSnapshot.value = { ...row }
+  cellEditEls.clear()
+}
+
+function registerCellEl(col: string, el: Element | null): void {
+  const rowid = editingRowid.value
+  if (rowid == null || el == null) return
+  if (!(el instanceof HTMLElement)) return
+  if (!cellEditEls.has(col)) {
+    cellEditEls.set(col, el)
+    const row = rows.value.find((r) => r.__rowid__ === rowid)
+    el.innerText = row ? String(row[col as keyof ChronicleRow] ?? '') : ''
+  }
 }
 
 function cancelEdit() {
   const row = rows.value.find((r) => r.__rowid__ === editingRowid.value)
-  if (row) {
-    if (row.__rowid__ < 0) {
-      rows.value = rows.value.filter((r) => r.__rowid__ !== row.__rowid__)
-    } else if (editSnapshot.value) {
-      Object.assign(row, editSnapshot.value)
-    }
+  if (row && row.__rowid__ < 0) {
+    rows.value = rows.value.filter((r) => r.__rowid__ !== row.__rowid__)
   }
   editingRowid.value = null
   editSnapshot.value = null
+  cellEditEls.clear()
 }
 
 function saveEdit() {
   if (editingRowid.value == null) return
-  if (document.activeElement instanceof HTMLElement) {
-    document.activeElement.blur()
-  }
   const row = rows.value.find((r) => r.__rowid__ === editingRowid.value)
   if (!row) {
     editingRowid.value = null
     return
   }
-  try {
-    if (row.__rowid__ < 0) {
-      const values: Record<string, string> = {}
-      for (const f of fields) {
-        values[f.key] = String(row[f.key] ?? '')
-      }
-      session.insertRow(CHRONICLE_TABLE_NAME, values)
-    } else {
-      for (const f of fields) {
-        const newVal = String(row[f.key] ?? '')
-        const oldVal = editSnapshot.value ? String(editSnapshot.value[f.key] ?? '') : ''
-        if (newVal !== oldVal) {
-          session.updateCell(CHRONICLE_TABLE_NAME, editingRowid.value, f.key as string, newVal)
+  const collected: Record<string, string> = {}
+  for (const f of fields) {
+    const el = cellEditEls.get(f.key)
+    collected[f.key] = el ? el.innerText : String(row[f.key] ?? '')
+  }
+  void session.runWrite(async () => {
+    try {
+      if (row.__rowid__ < 0) {
+        const values: Record<string, string> = {}
+        for (const f of fields) {
+          values[f.key] = String(collected[f.key] ?? '')
+        }
+        session.insertRow(CHRONICLE_TABLE_NAME, values)
+      } else {
+        for (const f of fields) {
+          const newVal = String(collected[f.key] ?? '')
+          const oldVal = editSnapshot.value ? String(editSnapshot.value[f.key] ?? '') : ''
+          if (newVal !== oldVal) {
+            session.updateCell(CHRONICLE_TABLE_NAME, editingRowid.value!, f.key as string, newVal)
+          }
         }
       }
+      toast.success('已保存')
+      await persistChanges()
+      editingRowid.value = null
+      editSnapshot.value = null
+      cellEditEls.clear()
+      refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err))
     }
-    toast.success('已保存')
-    persistChanges()
-    refresh()
-  } catch (err) {
-    toast.error(err instanceof Error ? err.message : String(err))
-    if (row.__rowid__ >= 0 && editSnapshot.value) {
-      Object.assign(row, editSnapshot.value)
-    }
-  }
-  editingRowid.value = null
-  editSnapshot.value = null
+  })
 }
 
 function persistChanges() {
@@ -105,7 +117,7 @@ function persistChanges() {
   if (lastMsgId >= 0) {
     session.saveToChat(lastMsgId)
   }
-  syncToWorldbook(session).catch(() => {})
+  return syncToWorldbook(session)
 }
 
 function addRow() {
@@ -125,14 +137,16 @@ function addRow() {
 async function deleteRow(row: ChronicleRow) {
   const ok = await confirm('删除确认', `确认删除纪要「${row.key}」？`, '删除', true)
   if (!ok) return
-  try {
-    session.deleteRow(CHRONICLE_TABLE_NAME, row.__rowid__)
-    rows.value = rows.value.filter((r) => r.__rowid__ !== row.__rowid__)
-    toast.success(`已删除 ${row.key}`)
-    persistChanges()
-  } catch (err) {
-    toast.error(err instanceof Error ? err.message : String(err))
-  }
+  await session.runWrite(async () => {
+    try {
+      session.deleteRow(CHRONICLE_TABLE_NAME, row.__rowid__)
+      rows.value = rows.value.filter((r) => r.__rowid__ !== row.__rowid__)
+      toast.success(`已删除 ${row.key}`)
+      await persistChanges()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err))
+    }
+  })
 }
 
 const filtered = ref<ChronicleRow[]>([])
@@ -167,7 +181,7 @@ onActivated(refresh)
     </div>
 
     <div v-if="!chronicleEnabled" class="cn-empty">纪要生成功能未开启，请到首页开启</div>
-	    <div v-else-if="!hasSession" class="cn-empty">当前会话未载入表格</div>
+    <div v-else-if="!hasSession" class="cn-empty">当前会话未载入表格</div>
     <div v-else-if="filtered.length === 0" class="cn-empty">
       {{ rows.length === 0 ? '暂无纪要' : '无匹配结果' }}
     </div>
@@ -204,15 +218,12 @@ onActivated(refresh)
             <div v-for="f in fields.filter((x) => !x.full)" :key="f.key" class="chronicle-field">
               <label class="chronicle-field__label">{{ f.label }}</label>
               <div
+                v-if="row.__rowid__ === editingRowid"
                 class="cell-edit chronicle-field__value"
-                :contenteditable="row.__rowid__ === editingRowid"
-                @blur="
-                  (e) => {
-                    if (row.__rowid__ === editingRowid)
-                      row[f.key] = (e.target as HTMLElement).innerText as never
-                  }
-                "
-              >
+                contenteditable="true"
+                :ref="(el) => registerCellEl(f.key, el)"
+              ></div>
+              <div v-else class="cell-edit chronicle-field__value">
                 {{ row[f.key] ?? '' }}
               </div>
             </div>
@@ -224,15 +235,12 @@ onActivated(refresh)
           >
             <label class="chronicle-field__label">{{ f.label }}</label>
             <div
+              v-if="row.__rowid__ === editingRowid"
               class="cell-edit chronicle-field__value"
-              :contenteditable="row.__rowid__ === editingRowid"
-              @blur="
-                (e) => {
-                  if (row.__rowid__ === editingRowid)
-                    row[f.key] = (e.target as HTMLElement).innerText as never
-                }
-              "
-            >
+              contenteditable="true"
+              :ref="(el) => registerCellEl(f.key, el)"
+            ></div>
+            <div v-else class="cell-edit chronicle-field__value">
               {{ row[f.key] ?? '' }}
             </div>
           </div>

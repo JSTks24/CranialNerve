@@ -1,3 +1,10 @@
+:root {
+  --cn-z-app: 10000;
+  --cn-z-toast: 10010;
+  --cn-z-modal: 10020;
+  --cn-z-dialog: 10020;
+}
+
 #cn_app {
   --cn-bg: #f0f9eb;
   --cn-surface: #ffffff;
@@ -47,6 +54,8 @@
   font: inherit;
   color: var(--cn-text) !important;
   background: var(--cn-surface) !important;
+  border: none !important;
+  outline: none !important;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -97,10 +106,10 @@
   gap: 6px;
   height: 32px;
   padding: 0 15px;
-  border: 1px solid var(--cn-border);
+  border: 1px solid var(--cn-border) !important;
   border-radius: var(--cn-radius);
-  background: var(--cn-surface);
-  color: var(--cn-text);
+  background: var(--cn-surface) !important;
+  color: var(--cn-text) !important;
   font-size: 14px;
   line-height: 1;
   white-space: nowrap;
@@ -108,17 +117,17 @@
   user-select: none;
 }
 #cn_app .cn-btn:hover:not(:disabled) {
-  border-color: var(--cn-primary);
-  color: var(--cn-primary);
+  border-color: var(--cn-primary) !important;
+  color: var(--cn-primary) !important;
 }
 #cn_app .cn-btn:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
 #cn_app .cn-btn--primary {
-  background: var(--cn-primary);
-  border-color: var(--cn-primary);
-  color: #fff;
+  background: var(--cn-primary) !important;
+  border-color: var(--cn-primary) !important;
+  color: #fff !important;
 }
 #cn_app .cn-btn--primary:hover:not(:disabled) {
   background: var(--cn-primary-hover);
@@ -148,10 +157,10 @@
   width: 100%;
   height: 32px;
   padding: 4px 11px;
-  border: 1px solid var(--cn-border);
+  border: 1px solid var(--cn-border) !important;
   border-radius: var(--cn-radius);
-  background: var(--cn-surface);
-  color: var(--cn-text);
+  background: var(--cn-surface) !important;
+  color: var(--cn-text) !important;
   font-size: 14px;
   transition:
     border-color 0.15s ease,
@@ -166,14 +175,14 @@
 #cn_app .cn-input:hover,
 #cn_app .cn-select:hover,
 #cn_app .cn-textarea:hover {
-  border-color: var(--cn-primary-hover);
+  border-color: var(--cn-primary-hover) !important;
 }
 #cn_app .cn-input:focus,
 #cn_app .cn-select:focus,
 #cn_app .cn-textarea:focus {
-  border-color: var(--cn-primary);
-  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.15);
-  outline: none;
+  border-color: var(--cn-primary) !important;
+  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.15) !important;
+  outline: none !important;
 }
 #cn_app .cn-input::placeholder,
 #cn_app .cn-textarea::placeholder {
@@ -189,8 +198,8 @@
 }
 
 #cn_app .cn-card {
-  background: var(--cn-surface);
-  border: 1px solid var(--cn-border);
+  background: var(--cn-surface) !important;
+  border: 1px solid var(--cn-border) !important;
   border-radius: var(--cn-radius);
   box-shadow: var(--cn-shadow);
   overflow: hidden;
@@ -228,7 +237,7 @@
 #cn_app .cn-table th,
 #cn_app .cn-table td {
   padding: 8px 12px;
-  border: 1px solid var(--cn-border);
+  border: 1px solid var(--cn-border) !important;
   text-align: left;
   white-space: nowrap;
 }
@@ -261,7 +270,12 @@
 #cn_app .tables-page {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 16px;
+}
+
+#cn_app .tables-toolbar {
+  display: flex;
+  gap: 8px;
 }
 
 #cn_app .table-wrap-card {
@@ -1135,7 +1149,7 @@
 #cn_app .cn-modal-mask {
   position: fixed;
   inset: 0;
-  z-index: 10020;
+  z-index: var(--cn-z-modal);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1261,7 +1275,7 @@
 #cn_app .cn-dialog-mask {
   position: fixed;
   inset: 0;
-  z-index: 10020;
+  z-index: var(--cn-z-dialog);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1315,13 +1329,13 @@
 .cn-recall-card {
   display: block;
   margin: 0 0 8px 0;
-  border: 1px solid #d9f7be;
+  border: 1px solid #d9f7be !important;
   border-radius: 6px;
   overflow: hidden;
-  background: #fff;
+  background: #fff !important;
   font-size: 13px;
   line-height: 1.6;
-  color: #1f1f1f;
+  color: #1f1f1f !important;
 }
 
 .cn-recall-card__head {
@@ -1329,25 +1343,25 @@
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  background: #f0f9eb;
-  border-bottom: 1px solid #d9f7be;
+  background: #f0f9eb !important;
+  border-bottom: 1px solid #d9f7be !important;
 }
 
 .cn-recall-card__icon {
-  color: #52c41a;
+  color: #52c41a !important;
   font-size: 15px;
 }
 
 .cn-recall-card__brand {
   font-weight: 600;
-  color: #389e0d;
+  color: #389e0d !important;
   font-size: 14px;
 }
 
 .cn-recall-card__count {
   margin-left: auto;
   font-size: 12px;
-  color: #8c8c8c;
+  color: #8c8c8c !important;
 }
 
 .cn-recall-tabs {
@@ -1367,36 +1381,36 @@
   gap: 2px;
   padding: 8px 12px;
   cursor: pointer;
-  border-bottom: 2px solid transparent;
-  background: #fafafa;
+  border-bottom: 2px solid transparent !important;
+  background: #fafafa !important;
   min-width: 100px;
   transition: background 0.15s, border-color 0.15s;
   user-select: none;
 }
 
 .cn-recall-tab:hover {
-  background: #f0f9eb;
+  background: #f0f9eb !important;
 }
 
 .cn-recall-tabs__radio:checked + .cn-recall-tab {
-  background: #fff;
-  border-bottom-color: #52c41a;
+  background: #fff !important;
+  border-bottom-color: #52c41a !important;
 }
 
 .cn-recall-tab__key {
   font-weight: 600;
   font-size: 13px;
-  color: #1f1f1f;
+  color: #1f1f1f !important;
 }
 
 .cn-recall-tab__time {
   font-size: 12px;
-  color: #52c41a;
+  color: #52c41a !important;
 }
 
 .cn-recall-tab__loc {
   font-size: 11px;
-  color: #8c8c8c;
+  color: #8c8c8c !important;
   max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1407,7 +1421,7 @@
   display: none;
   width: 100%;
   padding: 12px 14px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid #f0f0f0 !important;
   order: 1;
 }
 
@@ -1430,22 +1444,22 @@
 .cn-recall-panel__label {
   flex-shrink: 0;
   font-size: 12px;
-  color: #8c8c8c;
+  color: #8c8c8c !important;
   min-width: 60px;
 }
 
 .cn-recall-panel__value {
   font-size: 13px;
-  color: #1f1f1f;
+  color: #1f1f1f !important;
   word-break: break-word;
   white-space: pre-wrap;
 }
 
 .cn-recall-card__message {
   padding: 12px 14px;
-  border-top: 1px solid #d9f7be;
+  border-top: 1px solid #d9f7be !important;
   font-size: 14px;
-  color: #1f1f1f;
+  color: #1f1f1f !important;
   white-space: pre-wrap;
   word-break: break-word;
   line-height: 1.8;
@@ -1457,9 +1471,9 @@
   justify-content: center;
   gap: 10px;
   padding: 28px 14px;
-  color: #8c8c8c;
+  color: #8c8c8c !important;
   font-size: 13px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0 !important;
   user-select: none;
 }
 
@@ -1786,10 +1800,13 @@
   font-weight: 500;
 }
 #cn_app .welcome-kv__select {
-  width: auto;
-  min-width: 180px;
+  width: 180px;
   height: 32px;
   font-size: 14px;
+  flex-shrink: 0;
+  border: 1px solid var(--cn-border);
+  border-radius: var(--cn-radius);
+  background: var(--cn-surface);
 }
 
 #cn_app .welcome-kv__desc {
@@ -2145,4 +2162,194 @@
   #cn_app .prompt-split {
     grid-template-columns: 1fr;
   }
+}
+
+#cn_app .cn-menu__spacer {
+  flex: 1;
+}
+
+#cn_app .cn-menu__item--debug {
+  margin-top: auto;
+}
+
+#cn_app .debug-page {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+#cn_app .debug-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--cn-border);
+}
+
+#cn_app .debug-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--cn-text-3);
+  border-bottom: 2px solid transparent;
+  transition: color .2s, border-color .2s;
+}
+
+#cn_app .debug-tab--active {
+  color: var(--cn-primary);
+  border-bottom-color: var(--cn-primary);
+}
+
+#cn_app .debug-tab__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  font-size: 11px;
+  color: #fff;
+  background: var(--cn-primary);
+}
+
+#cn_app .debug-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+
+#cn_app .debug-toolbar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+#cn_app .debug-toolbar__select {
+  width: auto;
+  min-width: 80px;
+}
+
+#cn_app .debug-toolbar__search {
+  flex: 1;
+  min-width: 120px;
+}
+
+#cn_app .debug-toolbar__hint {
+  display: flex;
+  gap: 16px;
+  font-size: 11px;
+  color: var(--cn-text-3);
+}
+
+#cn_app .debug-log-list {
+  flex: 1;
+  overflow-y: auto;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  border: 1px solid var(--cn-border);
+  border-radius: 6px;
+  background: var(--cn-bg);
+}
+
+#cn_app .debug-log-row {
+  display: grid;
+  grid-template-columns: 90px 44px 80px 1fr;
+  padding: 3px 8px;
+  border-bottom: 1px solid var(--cn-border);
+  align-items: baseline;
+  gap: 4px;
+}
+
+#cn_app .debug-log-row:last-child {
+  border-bottom: none;
+}
+
+#cn_app .debug-log-row--error {
+  background: rgba(255, 77, 79, 0.07);
+}
+
+#cn_app .debug-log-row--warn {
+  background: rgba(250, 140, 22, 0.05);
+}
+
+#cn_app .debug-log-row__time {
+  color: var(--cn-text-3);
+  white-space: nowrap;
+}
+
+#cn_app .debug-log-row__level {
+  font-weight: 600;
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  text-align: center;
+}
+
+#cn_app .debug-log-row__level--error {
+  color: #ff4d4f;
+  background: rgba(255, 77, 79, 0.12);
+}
+
+#cn_app .debug-log-row__level--warn {
+  color: #fa8c16;
+  background: rgba(250, 140, 22, 0.12);
+}
+
+#cn_app .debug-log-row__tag {
+  color: var(--cn-primary);
+}
+
+#cn_app .debug-log-row__msg {
+  color: var(--cn-text-1);
+  word-break: break-all;
+}
+
+#cn_app .debug-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+#cn_app .debug-status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+#cn_app .debug-status-item + .debug-status-item {
+  border-top: 1px solid var(--cn-border);
+}
+
+#cn_app .debug-status-item__label {
+  color: var(--cn-text-2);
+  font-size: 13px;
+}
+
+#cn_app .debug-status-item__value {
+  color: var(--cn-text-1);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+#cn_app .debug-ok {
+  color: var(--cn-primary) !important;
+}
+
+#cn_app .debug-err {
+  color: #ff4d4f !important;
+}
+
+#cn_app .debug-status-actions {
+  display: flex;
+  gap: 6px;
+  padding-top: 8px;
 }

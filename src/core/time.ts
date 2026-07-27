@@ -5,21 +5,39 @@ const DEFAULT_TIME_PROMPT = 'ISO 8601 格式（YYYY-MM-DDTHH:MM）'
 export type TimeCalculator = (entry: ChronicleEntry, currentTime: string) => string
 export type TimePromptGetter = () => string
 
-let customCalculator: TimeCalculator | null = null
-let customPrompt: TimePromptGetter | null = null
-
-export function registerTimeCalculator(fn: TimeCalculator | null): void {
-	customCalculator = fn
+interface TimeRegistration {
+	calculator: TimeCalculator | null
+	prompt: TimePromptGetter | null
 }
 
-export function registerTimePrompt(fn: TimePromptGetter | null): void {
-	customPrompt = fn
+const registrations = new Map<string, TimeRegistration>()
+
+function getRegistration(token: string): TimeRegistration {
+	let reg = registrations.get(token)
+	if (!reg) {
+		reg = { calculator: null, prompt: null }
+		registrations.set(token, reg)
+	}
+	return reg
 }
 
-export function getTimePromptDescription(): string {
-	if (customPrompt) {
+export function registerTimeCalculator(token: string, fn: TimeCalculator | null): void {
+	getRegistration(token).calculator = fn
+}
+
+export function registerTimePrompt(token: string, fn: TimePromptGetter | null): void {
+	getRegistration(token).prompt = fn
+}
+
+export function clearTimeRegistration(token: string): void {
+	registrations.delete(token)
+}
+
+export function getTimePromptDescription(token: string): string {
+	const reg = registrations.get(token)
+	if (reg?.prompt) {
 		try {
-			return customPrompt()
+			return reg.prompt()
 		} catch {
 			return DEFAULT_TIME_PROMPT
 		}
@@ -27,9 +45,10 @@ export function getTimePromptDescription(): string {
 	return DEFAULT_TIME_PROMPT
 }
 
-export function validateTimeRegistration(): void {
-	const hasCalculator = customCalculator !== null
-	const hasPrompt = customPrompt !== null
+export function validateTimeRegistration(token: string): void {
+	const reg = registrations.get(token)
+	const hasCalculator = reg?.calculator !== null && reg?.calculator !== undefined
+	const hasPrompt = reg?.prompt !== null && reg?.prompt !== undefined
 	if (hasCalculator !== hasPrompt) {
 		throw new Error(
 			'registerTimeCalculator 和 registerTimePrompt 必须成对注册或都不注册'
@@ -37,10 +56,11 @@ export function validateTimeRegistration(): void {
 	}
 }
 
-export function computeTimeDelta(entry: ChronicleEntry, currentTime: string): string {
-	if (customCalculator) {
+export function computeTimeDelta(token: string, entry: ChronicleEntry, currentTime: string): string {
+	const reg = registrations.get(token)
+	if (reg?.calculator) {
 		try {
-			return customCalculator(entry, currentTime)
+			return reg.calculator(entry, currentTime)
 		} catch {
 			return '时间不明'
 		}

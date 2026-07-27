@@ -106,13 +106,23 @@ export async function onPromptReady(
 
 	const recallCtx: RecallContext = {
 		clientConfig: { baseURL: preset.baseURL, apiKey: preset.apiKey, customIncludeBody: preset.customIncludeBody, customExcludeBody: preset.customExcludeBody, customIncludeHeaders: preset.customIncludeHeaders },
-		params: { model: preset.model },
+		params: {
+			model: preset.model,
+			max_tokens: preset.maxTokens,
+			temperature: preset.temperature,
+			top_p: preset.topP,
+			frequency_penalty: preset.frequencyPenalty,
+			presence_penalty: preset.presencePenalty,
+			seed: preset.seed >= 0 ? preset.seed : undefined,
+			stream: preset.stream,
+		},
 		recallSegments,
 		userMessage,
 		conversationText,
 		currentTime: new Date().toISOString(),
 		vectorEnabled: config.vectorEnabled,
-		vectorConfig: config.vector
+		vectorConfig: config.vector,
+		chatToken: session.getChatToken()
 	}
 
 	const items = await session.getWriteQueue().enqueue(() => recaller.recall(recallCtx))

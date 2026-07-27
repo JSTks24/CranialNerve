@@ -106,7 +106,7 @@ function openPanel(): void {
   document.body.style.overflow = 'hidden'
   const root = document.createElement('div')
   root.id = 'cn_app'
-  root.style.cssText = 'position:fixed;inset:0;z-index:10000;background:var(--cn-bg);'
+  root.style.cssText = 'position:fixed;inset:0;z-index:var(--cn-z-app);background:var(--cn-bg);'
   document.body.appendChild(root)
   appInstance = createApp(App, { onClose: closePanel })
   appInstance.use(createPinia())

@@ -43,7 +43,7 @@ const vector = ref<VectorConfig>({ ...session.getConfig().vector })
 function emptyPreset(): AiPreset {
 	return {
 		id: '', name: '', baseURL: '', apiKey: '', model: '',
-		maxTokens: 4096, temperature: 1, topP: 1,
+		maxTokens: 65536, temperature: 1, topP: 1,
 		frequencyPenalty: 0, presencePenalty: 0, seed: -1, stream: false,
 		customIncludeBody: '', customExcludeBody: '', customIncludeHeaders: ''
 	}
