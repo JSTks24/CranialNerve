@@ -30,8 +30,8 @@ export default class SqliteSyncBridge {
 		this.repo = createFrameRepo(chat)
 	}
 
-	save(messageId: number): void {
-		ensureInitCheckpoint(createPersistContext(this.repo, this.core), messageId)
+	save(messageId: number, templateId?: string): void {
+		ensureInitCheckpoint(createPersistContext(this.repo, this.core), messageId, templateId)
 	}
 
 	load(template?: { tables: TableDef[] }): LoadResult {
@@ -131,8 +131,8 @@ export default class SqliteSyncBridge {
 		compactAtBoundary(createPersistContext(this.repo, this.core), retainFloors)
 	}
 
-	writeCheckpoint(messageId: number, reason: 'init' | 'migration' | 'import' | 'compaction' | 'manual'): void {
-		writeCheckpoint(createPersistContext(this.repo, this.core), messageId, reason)
+	writeCheckpoint(messageId: number, reason: 'init' | 'migration' | 'import' | 'compaction' | 'manual', templateId?: string): void {
+		writeCheckpoint(createPersistContext(this.repo, this.core), messageId, reason, templateId)
 	}
 
 	appendManualSqlLog(messageId: number, statements: string[], params?: (string | number | null)[][]): void {

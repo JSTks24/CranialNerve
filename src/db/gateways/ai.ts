@@ -1,4 +1,5 @@
 import { getRequestHeaders } from './host-context'
+import { pushLog } from '@shared/log-buffer'
 
 export interface AiChatMessage {
     role: 'system' | 'user' | 'assistant'
@@ -31,12 +32,13 @@ export interface AiGateway {
         messages: AiChatMessage[],
         clientConfig: AiClientConfig,
         params: ChatCompletionParams,
+        signal?: AbortSignal,
     ): Promise<string>
 }
 
 export default function createAiGateway(): AiGateway {
     return {
-        async chatCompletion(messages, clientConfig, params) {
+        async chatCompletion(messages, clientConfig, params, signal) {
             const { stream, model, ...extraParams } = params
             const body: Record<string, unknown> = {
                 chat_completion_source: 'custom',
@@ -52,7 +54,7 @@ export default function createAiGateway(): AiGateway {
                     const extra = JSON.parse(clientConfig.customIncludeBody)
                     Object.assign(body, extra)
                 } catch {
-                    console.warn('[CranialNerve] customIncludeBody JSON 解析失败，已忽略')
+                    pushLog('warn', 'ai', 'customIncludeBody JSON 解析失败，已忽略')
                 }
             }
             if (clientConfig.customExcludeBody) {
@@ -66,6 +68,7 @@ export default function createAiGateway(): AiGateway {
                 method: 'POST',
                 headers,
                 body: JSON.stringify(body),
+                signal,
             })
 
             if (!res.ok) {
@@ -76,7 +79,7 @@ export default function createAiGateway(): AiGateway {
             }
 
             if (stream) {
-                return readStream(res)
+                return readStream(res, signal)
             }
 
             const json = (await res.json()) as {
@@ -105,7 +108,7 @@ function buildCustomHeaders(config: AiClientConfig): string {
     return lines.join('\n')
 }
 
-async function readStream(res: Response): Promise<string> {
+async function readStream(res: Response, signal?: AbortSignal): Promise<string> {
     if (!res.body) {
         throw new Error('stream response has no body')
     }
@@ -113,6 +116,12 @@ async function readStream(res: Response): Promise<string> {
     const decoder = new TextDecoder()
     let content = ''
     while (true) {
+        if (signal?.aborted) {
+            try {
+                await reader.cancel()
+            } catch {}
+            throw new DOMException('Aborted', 'AbortError')
+        }
         const { done, value } = await reader.read()
         if (done) break
         const text = decoder.decode(value, { stream: true })
@@ -127,9 +136,7 @@ async function readStream(res: Response): Promise<string> {
                 }
                 const delta = chunk.choices?.[0]?.delta?.content
                 if (delta) content += delta
-            } catch {
-                // skip unparseable lines
-            }
+            } catch {}
         }
     }
     if (!content) {

@@ -10,6 +10,8 @@ import { interpolate } from '@shared/prompts/interpolate'
 import { computeTimeDelta } from './time'
 import type { ChronicleEntry } from '@shared/types/worldbook'
 
+const VECTOR_TOP_K = 20
+
 export type { ChronicleDraft } from './worldbook-entries'
 
 export interface RecallContext {
@@ -22,6 +24,7 @@ export interface RecallContext {
   vectorEnabled: boolean
   vectorConfig: VectorConfig
   chatToken: string
+  signal?: AbortSignal
 }
 
 export interface RecallItem {
@@ -91,7 +94,7 @@ async function prefilterByVector(
     }
     return scored
       .sort((a, b) => b.score - a.score)
-      .slice(0, Math.max(10, all.length))
+      .slice(0, Math.min(VECTOR_TOP_K, all.length))
       .map((s) => s.entry)
   } catch {
     return all
@@ -141,7 +144,7 @@ async function filterRelevantKeys(
     })),
     { role: 'user', content: userParts.join('\n') }
   ]
-  const raw = await ai.chatCompletion(messages, ctx.clientConfig, ctx.params)
+  const raw = await ai.chatCompletion(messages, ctx.clientConfig, ctx.params, ctx.signal)
   return parseKeys(raw)
 }
 

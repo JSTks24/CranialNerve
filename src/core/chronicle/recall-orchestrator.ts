@@ -1,5 +1,7 @@
 import type { CranialNerveSession } from '../session'
 import type { RecallContext, RecallItem } from '../chronicle'
+import type { ProgressNotifier } from '@shared/types/config'
+import { pushLog } from '@shared/log-buffer'
 
 function escapeHtml(text: string): string {
 	return text
@@ -60,11 +62,21 @@ function buildRecallCard(items: RecallItem[], userMessage: string): string {
 	return fullMessage
 }
 
+function isAbortError(e: unknown, signal?: AbortSignal): boolean {
+	if (signal?.aborted) {
+		return true
+	}
+	if (e instanceof DOMException && e.name === 'AbortError') {
+		return true
+	}
+	return false
+}
+
 export async function onPromptReady(
 	session: CranialNerveSession,
-	eventData: { chat: SillyTavernChatMessage[]; dryRun?: boolean }
+	dryRun?: boolean
 ): Promise<void> {
-	if (eventData.dryRun) {
+	if (dryRun) {
 		return
 	}
 
@@ -82,7 +94,7 @@ export async function onPromptReady(
 		return
 	}
 
-	const chat = eventData.chat
+	const chat = session.chat.getChat()
 	let lastUserIdx = -1
 	for (let i = chat.length - 1; i >= 0; i--) {
 		if (chat[i]?.is_user) {
@@ -104,6 +116,9 @@ export async function onPromptReady(
 
 	const recallSegments = session.getActiveSegments('chronicleRecall')
 
+	const starter = session.getProgressNotifier()
+	const progress: ProgressNotifier | undefined = starter?.('正在召回数据...')
+
 	const recallCtx: RecallContext = {
 		clientConfig: { baseURL: preset.baseURL, apiKey: preset.apiKey, customIncludeBody: preset.customIncludeBody, customExcludeBody: preset.customExcludeBody, customIncludeHeaders: preset.customIncludeHeaders },
 		params: {
@@ -122,16 +137,26 @@ export async function onPromptReady(
 		currentTime: new Date().toISOString(),
 		vectorEnabled: config.vectorEnabled,
 		vectorConfig: config.vector,
-		chatToken: session.getChatToken()
+		chatToken: session.getChatToken(),
+		signal: progress?.abortSignal
 	}
 
-	const items = await session.getWriteQueue().enqueue(() => recaller.recall(recallCtx))
-
-	if (items.length === 0) {
-		return
+	try {
+		const items = await session.getWriteQueue().enqueue(() => recaller.recall(recallCtx))
+		if (items.length === 0) {
+			progress?.done()
+			return
+		}
+		const limited = items.slice(0, config.maxRecallItems)
+		chat[lastUserIdx]!.mes = buildRecallCard(limited, userMessage)
+		progress?.done()
+	} catch (e) {
+		if (isAbortError(e, progress?.abortSignal)) {
+			progress?.fail('操作已终止')
+			pushLog('info', 'recall', '召回被用户终止，发送原始消息')
+			return
+		}
+		progress?.fail(e instanceof Error ? e.message : String(e))
+		pushLog('error', 'recall', `召回失败: ${e instanceof Error ? e.message : String(e)}`)
 	}
-
-	const limited = items.slice(0, config.maxRecallItems)
-
-	chat[lastUserIdx]!.mes = buildRecallCard(limited, userMessage)
 }

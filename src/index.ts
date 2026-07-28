@@ -25,6 +25,9 @@ export async function init(): Promise<void> {
 		try {
 			session.worldbook.detachFromChat()
 		} catch {}
+		try {
+			session.chat.saveChat()
+		} catch {}
 		const hostCtx = ctx as unknown as Record<string, unknown>
 		if (typeof hostCtx.saveSettings === 'function') {
 			;(hostCtx as { saveSettings: () => void }).saveSettings()

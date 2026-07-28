@@ -31,4 +31,5 @@ export interface StorageFrame {
   headRevision?: string | null
   checkpoint?: FullCheckpoint
   logEntries: LogEntry[]
+  templateId?: string
 }

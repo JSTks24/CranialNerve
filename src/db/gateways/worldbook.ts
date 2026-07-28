@@ -1,4 +1,4 @@
-import { getHostContext } from './host-context'
+import { getHostContext, getRequestHeaders } from './host-context'
 
 export const METADATA_KEY = 'world_info'
 
@@ -25,54 +25,63 @@ export default function createWorldbookGateway(): WorldbookGateway {
       return typeof world === 'string' ? world : null
     },
     async loadLorebook(name) {
-      if (!window.loadWorldInfo) {
+      const ctx = getHostContext()
+      if (typeof ctx.loadWorldInfo !== 'function') {
         throw new Error('loadWorldInfo unavailable')
       }
-      const data = await window.loadWorldInfo(name)
+      const data = await ctx.loadWorldInfo(name)
       if (!data) {
         throw new Error(`lorebook "${name}" not found`)
       }
       return data
     },
     async saveLorebook(name, data) {
-      if (!window.saveWorldInfo) {
+      const ctx = getHostContext()
+      if (typeof ctx.saveWorldInfo !== 'function') {
         throw new Error('saveWorldInfo unavailable')
       }
-      await window.saveWorldInfo(name, data)
+      await ctx.saveWorldInfo(name, data)
     },
     async createWorldbook(name) {
-      if (!window.createNewWorldInfo) {
-        const empty: WorldInfoData = { entries: {} }
-        await window.saveWorldInfo!(name, empty)
-        return
+      const ctx = getHostContext()
+      if (typeof ctx.saveWorldInfo !== 'function') {
+        throw new Error('saveWorldInfo unavailable')
       }
-      await window.createNewWorldInfo(name)
+      const empty: WorldInfoData = { entries: {} }
+      await ctx.saveWorldInfo(name, empty)
     },
     async deleteWorldbook(name) {
-      if (!window.deleteWorldInfo) {
-        throw new Error('deleteWorldInfo unavailable')
+      const headers = getRequestHeaders()
+      headers['Content-Type'] = 'application/json'
+      const res = await fetch('/api/worldinfo/delete', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ name }),
+      })
+      if (!res.ok) {
+        throw new Error(`删除世界书失败：${res.status}`)
       }
-      await window.deleteWorldInfo(name)
     },
     listWorldbookNames() {
-      if (!window.getWorldInfoNames) {
+      const ctx = getHostContext()
+      if (typeof ctx.getWorldInfoNames !== 'function') {
         return []
       }
-      return window.getWorldInfoNames()
+      return ctx.getWorldInfoNames()
     },
     async attachToChat(name) {
       const ctx = getHostContext()
       ctx.chatMetadata[METADATA_KEY] = name
-      if (window.saveMetadata) {
-        await window.saveMetadata()
+      if (typeof ctx.saveMetadata === 'function') {
+        await ctx.saveMetadata()
       }
     },
     async detachFromChat() {
       const ctx = getHostContext()
       delete ctx.chatMetadata[METADATA_KEY]
-      if (window.saveMetadata) {
-        await window.saveMetadata()
+      if (typeof ctx.saveMetadata === 'function') {
+        await ctx.saveMetadata()
       }
-    }
+    },
   }
 }

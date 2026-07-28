@@ -15,12 +15,6 @@ interface Window {
   SillyTavern?: {
     getContext(): SillyTavernContext
   }
-  loadWorldInfo?: (name: string) => Promise<WorldInfoData>
-  saveWorldInfo?: (name: string, data: WorldInfoData, immediately?: boolean) => Promise<void>
-  deleteWorldInfo?: (name: string) => Promise<void>
-  createNewWorldInfo?: (name: string) => Promise<void>
-  getWorldInfoNames?: () => string[]
-  saveMetadata?: () => Promise<void>
 }
 
 declare function $(handler: () => void): void
@@ -39,6 +33,11 @@ interface SillyTavernContext {
   name2: string
   getRequestHeaders?: () => Record<string, string>
   saveSettingsDebounced?: () => void
+  saveChat?: () => Promise<void> | void
+  loadWorldInfo?: (name: string) => Promise<WorldInfoData>
+  saveWorldInfo?: (name: string, data: WorldInfoData, immediately?: boolean) => Promise<void>
+  getWorldInfoNames?: () => string[]
+  saveMetadata?: () => Promise<void>
 }
 
 interface SillyTavernEventSource {

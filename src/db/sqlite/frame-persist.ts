@@ -57,7 +57,8 @@ export function appendSqlBatch(
 export function writeCheckpoint(
 	ctx: PersistContext,
 	messageId: number,
-	reason: CheckpointReason
+	reason: CheckpointReason,
+	templateId?: string
 ): void {
 	const data = buildSnapshotFromCore(ctx.core)
 	const checkpoint: FullCheckpoint = {
@@ -72,16 +73,20 @@ export function writeCheckpoint(
 	}
 	frame.checkpoint = checkpoint
 	frame.logEntries = []
+	if (templateId !== undefined) {
+		frame.templateId = templateId
+	}
 	ctx.repo.saveFrame(messageId, frame)
 }
 
 export function ensureInitCheckpoint(
 	ctx: PersistContext,
-	messageId: number
+	messageId: number,
+	templateId?: string
 ): void {
 	const existing = ctx.repo.loadFrame(messageId)
 	if (existing?.checkpoint) return
-	writeCheckpoint(ctx, messageId, 'init')
+	writeCheckpoint(ctx, messageId, 'init', templateId)
 }
 
 export function compactAtBoundary(

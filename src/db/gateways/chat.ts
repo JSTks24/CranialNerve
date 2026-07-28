@@ -8,6 +8,7 @@ export interface ChatGateway {
     writeChatMetadata(key: string, value: unknown): void
     readMessageExtra(messageId: number, key: string): unknown
     writeMessageExtra(messageId: number, key: string, value: unknown): void
+    saveChat(): Promise<void>
 }
 
 export default function createChatGateway(): ChatGateway {
@@ -56,6 +57,12 @@ export default function createChatGateway(): ChatGateway {
                 msg.extra = {}
             }
             msg.extra[key] = value
+        },
+        async saveChat() {
+            const ctx = getHostContext()
+            if (typeof ctx.saveChat === 'function') {
+                await ctx.saveChat()
+            }
         },
     }
 }

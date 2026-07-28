@@ -1,7 +1,6 @@
 import type { PromptBlock, PromptSegment } from '@shared/types/config'
 import tableEditJson from '../../../prompts/tableEdit.json'
 import chronicleRecallJson from '../../../prompts/chronicleRecall.json'
-import chronicleGenerateJson from '../../../prompts/chronicleGenerate.json'
 
 interface RawSegment {
   role: PromptSegment['role']
@@ -32,7 +31,4 @@ function buildBlocks(raw: RawBlock[]): PromptBlock[] {
 export const DEFAULT_TABLE_EDIT_PROMPT: PromptBlock[] = buildBlocks(tableEditJson as RawBlock[])
 export const DEFAULT_CHRONICLE_RECALL_PROMPT: PromptBlock[] = buildBlocks(
   chronicleRecallJson as RawBlock[]
-)
-export const DEFAULT_CHRONICLE_GENERATE_PROMPT: PromptBlock[] = buildBlocks(
-  chronicleGenerateJson as RawBlock[]
 )

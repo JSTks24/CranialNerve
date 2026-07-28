@@ -16,6 +16,7 @@ export interface PromptContext {
 
 export interface RunOptions {
   maxRetries: number
+  signal?: AbortSignal
 }
 
 export interface RunPersist {
@@ -50,7 +51,7 @@ export default class TableEditor {
     for (let attempt = 1; attempt <= options.maxRetries; attempt++) {
       const messages =
         attempt === 1 ? baseMessages : buildFeedbackMessages(baseMessages, lastRaw, lastError)
-      const raw = await this.ai.chatCompletion(messages, ctx.clientConfig, ctx.params)
+      const raw = await this.ai.chatCompletion(messages, ctx.clientConfig, ctx.params, options.signal)
       lastRaw = raw
       const current = parseTableEditSql(raw)
 

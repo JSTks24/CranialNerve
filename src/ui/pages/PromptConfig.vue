@@ -13,6 +13,7 @@ import type {
 import type { TableDef, ColumnDef } from '@shared/types/table'
 import type { CardTemplate } from '@shared/types/card'
 import { isShujukuTemplate, convertShujukuToCardTemplate, isCardTemplate } from '@shared/template-convert'
+import { buildCreateTableSql } from '@shared/template-builder'
 import { SQL_EDIT_FORMAT } from '@shared/constants/sql-json'
 import { interpolate } from '@shared/prompts/interpolate'
 import toast from '@ui/toast'
@@ -28,8 +29,7 @@ const scenes: { key: PromptSceneKey; label: string; desc: string }[] = [
     key: 'chronicleRecall',
     label: '纪要召回',
     desc: '筛选相关纪要。变量：{{chronicleList}} {{userInput}} {{keyExample}}'
-  },
-  { key: 'chronicleGenerate', label: '纪要生成', desc: '提取纪要内容。变量：{{timeFormat}}' }
+  }
 ]
 
 const activeScene = ref<PromptSceneKey>('tableEdit')
@@ -238,6 +238,38 @@ function closePreview() {
   previewVisible.value = false
 }
 
+const previewTemplateVisible = ref(false)
+const previewTemplateJson = ref('')
+
+function openTemplatePreview() {
+  if (!selectedTable.value) return
+  const t = selectedTable.value
+  const lines: string[] = []
+  lines.push(`-- 表: ${t.displayName} (${t.name})`)
+  try {
+    lines.push(`-- DDL:`)
+    lines.push(`-- ${buildCreateTableSql(t).replace(/\n/g, '\n-- ')}`)
+  } catch (e) {
+    lines.push(`-- DDL 生成失败: ${e instanceof Error ? e.message : String(e)}`)
+  }
+  if (t.note) lines.push(`-- Note: ${t.note.replace(/\n/g, '\n-- ')}`)
+  if (t.insertHint) lines.push(`-- INSERT 提示: ${t.insertHint.replace(/\n/g, '\n-- ')}`)
+  if (t.updateHint) lines.push(`-- UPDATE 提示: ${t.updateHint.replace(/\n/g, '\n-- ')}`)
+  if (t.deleteHint) lines.push(`-- DELETE 提示: ${t.deleteHint.replace(/\n/g, '\n-- ')}`)
+  for (const col of t.columns) {
+    if (col.note) {
+      lines.push(`-- 列 ${col.displayName}(${col.name}): ${col.note.replace(/\n/g, '\n-- ')}`)
+    }
+  }
+  lines.push(`-- 当前数据: 模板预览不读取实际数据`)
+  previewTemplateJson.value = lines.join('\n')
+  previewTemplateVisible.value = true
+}
+
+function closeTemplatePreview() {
+  previewTemplateVisible.value = false
+}
+
 function exportPreset() {
   if (!activePreset.value) return
   const data = JSON.stringify(activePreset.value, null, 2)
@@ -368,19 +400,26 @@ async function selectPresetT(id: string) {
   }
 
   const tables = session.listTables().filter((n) => n !== 'cn_chronicle' && !n.startsWith('sqlite_'))
-  if (tables.length > 0) {
+  const hasData = tables.some((t) => (session.getTableRowsWithRowid(t)[0]?.rows?.length ?? 0) > 0)
+  if (hasData) {
     const ok = await confirm(
       '⚠️ 数据丢失风险',
-      `当前已有 ${tables.length} 张数据表。切换模板将删除所有表及其数据，且不可撤销。\n\n确定要切换吗？`,
+      `当前已有数据。切换模板将删除所有表及其数据，且不可撤销。\n\n确定要切换吗？`,
       '删除数据并切换',
       true
     )
     if (!ok) return
   }
 
-  ttConfig.value.activeId = id
-  selectedTableIdx.value = -1
-  store.save()
+  try {
+    await session.reinitWithTemplate(target.template, target.id)
+    ttConfig.value.activeId = id
+    selectedTableIdx.value = -1
+    store.save()
+    toast.success('已切换到模板：' + target.name)
+  } catch (err) {
+    toast.error(err instanceof Error ? err.message : String(err))
+  }
 }
 
 async function deletePresetT(id: string) {
@@ -579,6 +618,7 @@ onActivated(() => {
           <div class="cn-card__head">
             <input class="cn-input" style="width:200px;font-weight:600" v-model="activeTemplatePreset.name" placeholder="模板名称" />
             <button class="cn-btn cn-btn--sm" @click="addTableT"><i class="fa-solid fa-plus"></i>添加表</button>
+            <button class="cn-btn cn-btn--sm" v-if="selectedTable" @click="openTemplatePreview"><i class="fa-solid fa-eye"></i>预览此表</button>
           </div>
           <div class="cn-card__body template-editor-body">
             <div v-if="editingTables.length === 0" class="template-editor-empty">
@@ -608,7 +648,7 @@ onActivated(() => {
                 </div>
                 <div class="tpl-section">
                   <label class="tpl-label">表说明 (note)</label>
-                  <textarea class="cn-textarea tpl-textarea" v-model="table.note" rows="2" placeholder="描述表的用途、每列填什么..."></textarea>
+                  <textarea class="cn-textarea tpl-textarea" v-model="table.note" rows="2" placeholder="表的用途与每列填写约束（经 tables 占位符注入 AI prompt）"></textarea>
                 </div>
                 <div class="tpl-section">
                   <label class="tpl-label">世界书注入</label>
@@ -666,7 +706,7 @@ onActivated(() => {
                         <button class="cn-btn cn-btn--xs" :class="{ 'cn-btn--primary': col.constraints?.unique }" title="唯一" @click="toggleConstraint(col, 'unique')">UQ</button>
                         <button class="cn-btn cn-btn--xs" :class="{ 'cn-btn--primary': !col.constraints?.nullable }" title="非空" @click="toggleConstraint(col, 'nullable')">NN</button>
                       </span>
-                      <input class="cn-input tpl-col-cell note" v-model="col.note" placeholder="给 AI 的列说明" />
+                      <input class="cn-input tpl-col-cell note" v-model="col.note" placeholder="列说明（注入 AI prompt）" />
                       <button class="cn-btn cn-btn--sm cn-btn--text tpl-col-cell del" title="删除列" @click="removeColumnT(ci)">
                         <i class="fa-solid fa-trash"></i>
                       </button>
@@ -675,15 +715,15 @@ onActivated(() => {
                 </div>
                 <div class="tpl-section">
                   <label class="tpl-label">新增行提示 (insertHint)</label>
-                  <textarea class="cn-textarea tpl-textarea" v-model="table.insertHint" rows="2" placeholder="例如：角色获得新物品时插入一行..."></textarea>
+                  <textarea class="cn-textarea tpl-textarea" v-model="table.insertHint" rows="2" placeholder="INSERT 时机/格式/SQL示例（注入 AI prompt）"></textarea>
                 </div>
                 <div class="tpl-section">
                   <label class="tpl-label">更新行提示 (updateHint)</label>
-                  <textarea class="cn-textarea tpl-textarea" v-model="table.updateHint" rows="2" placeholder="例如：物品数量变化时更新..."></textarea>
+                  <textarea class="cn-textarea tpl-textarea" v-model="table.updateHint" rows="2" placeholder="UPDATE 时机/约束（注入 AI prompt）"></textarea>
                 </div>
                 <div class="tpl-section">
                   <label class="tpl-label">删除行提示 (deleteHint)</label>
-                  <textarea class="cn-textarea tpl-textarea" v-model="table.deleteHint" rows="2" placeholder="例如：角色消耗掉物品时删除..."></textarea>
+                  <textarea class="cn-textarea tpl-textarea" v-model="table.deleteHint" rows="2" placeholder="DELETE 时机/约束（注入 AI prompt）"></textarea>
                 </div>
               </div>
             </div>
@@ -864,6 +904,18 @@ onActivated(() => {
           导出
         </button>
         <button class="cn-btn cn-btn--primary" @click="saveTemplate">保存</button>
+      </div>
+    </div>
+
+    <div v-if="previewTemplateVisible" class="cn-modal-mask" @click.self="closeTemplatePreview">
+      <div class="cn-modal">
+        <div class="cn-modal__head">
+          <span>选中表注入 AI prompt 的内容</span>
+          <button class="cn-btn cn-btn--sm cn-btn--text" @click="closeTemplatePreview">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <pre class="cn-modal__code">{{ previewTemplateJson }}</pre>
       </div>
     </div>
 

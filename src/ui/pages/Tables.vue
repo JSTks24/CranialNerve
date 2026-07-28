@@ -135,13 +135,16 @@ function saveEdit() {
   })
 }
 
-function persistChanges() {
+async function persistChanges() {
   const chat = session.chat.getChat()
   const lastMsgId = chat.length - 1
   if (lastMsgId >= 0) {
     session.saveToChat(lastMsgId)
   }
-  return syncToWorldbook(session)
+  await syncToWorldbook(session)
+  try {
+    await session.chat.saveChat()
+  } catch {}
 }
 
 async function deleteRow(row: RowData) {

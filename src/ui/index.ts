@@ -2,6 +2,8 @@ import { createApp, type App as VueApp } from 'vue'
 import { createPinia } from 'pinia'
 import themeCss from './theme.css?inline'
 import { getSession } from '@core/session'
+import { isFillInProgress } from '@core/table/fill-orchestrator'
+import toast from './toast'
 import App from './App.vue'
 import router from './router'
 
@@ -20,10 +22,13 @@ export async function init(): Promise<void> {
 
 async function boot(): Promise<void> {
   const session = getSession()
+  session.setProgressNotifier(toast.progress)
+  session.setToastNotifier(toast)
   await session.init()
   injectTheme()
   mountDrawer()
   mountWandButton()
+  hookSendBlock()
 }
 
 function injectTheme(): void {
@@ -96,6 +101,28 @@ function mountWandButton(): void {
   })
   wrapper.append(item)
   menu.append(wrapper)
+}
+
+function hookSendBlock(): void {
+  const block = (e: Event) => {
+    if (isFillInProgress()) {
+      e.stopImmediatePropagation()
+      e.preventDefault()
+      toast.warning('CranialNerve 纪要生成中，请稍候，请勿重复发送')
+    }
+  }
+  const sendBtn = document.getElementById('send_but')
+  if (sendBtn) {
+    sendBtn.addEventListener('click', block, true)
+  }
+  const textarea = document.getElementById('send_textarea')
+  if (textarea) {
+    textarea.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.altKey) {
+        block(e)
+      }
+    }, true)
+  }
 }
 
 function openPanel(): void {

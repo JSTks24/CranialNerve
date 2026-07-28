@@ -43,7 +43,7 @@ export interface PromptBlock {
   segments: PromptSegment[]
 }
 
-export type PromptSceneKey = 'tableEdit' | 'chronicleRecall' | 'chronicleGenerate'
+export type PromptSceneKey = 'tableEdit' | 'chronicleRecall'
 
 export interface ScenePreset {
   id: string
@@ -60,7 +60,6 @@ export interface ScenePromptConfig {
 export interface PromptConfig {
   tableEdit: ScenePromptConfig
   chronicleRecall: ScenePromptConfig
-  chronicleGenerate: ScenePromptConfig
 }
 
 export interface TableTemplatePreset {
@@ -100,8 +99,22 @@ export interface CranialNerveConfig {
   chronicleGenEnabled: boolean
   tableFillPresetId: string
   recallPresetId: string
-  chronicleGenPresetId: string
   recallContextDepth: number
   retainFloors: number
   tableTemplate: TableTemplateConfig
+}
+
+export interface ProgressNotifier {
+  done(): void
+  fail(errText: string): void
+  abortSignal: AbortSignal
+}
+
+export type ProgressStarter = (text: string) => ProgressNotifier
+
+export interface ToastNotifier {
+  success(text: string): void
+  warning(text: string): void
+  error(text: string): void
+  info(text: string): void
 }

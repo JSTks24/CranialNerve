@@ -133,7 +133,6 @@ function resetDefaults() {
 	c.retainFloors = 100
 	c.tableFillPresetId = ''
 	c.recallPresetId = ''
-	c.chronicleGenPresetId = ''
 	c.prompt = session.getConfig().prompt
 	c.vector = { embeddingEndpoint: '', embeddingApiKey: '', embeddingModel: '', rerankEndpoint: '', rerankApiKey: '', rerankModel: '' }
 	c.vectorEnabled = false
@@ -284,14 +283,6 @@ refresh()
 							<span class="welcome-preset-row__label">纪要召回</span>
 							<span class="welcome-preset-row__hint">{{ presetHint(cfg.recallPresetId) }}</span>
 							<select class="cn-select welcome-preset-row__select" v-model="cfg.recallPresetId" @change="saveCfg">
-								<option value="">跟随全局</option>
-								<option v-for="p in presetList" :key="p.id" :value="p.id">{{ p.name }}</option>
-							</select>
-						</div>
-						<div class="welcome-preset-row">
-							<span class="welcome-preset-row__label">纪要生成</span>
-							<span class="welcome-preset-row__hint">{{ presetHint(cfg.chronicleGenPresetId) }}</span>
-							<select class="cn-select welcome-preset-row__select" v-model="cfg.chronicleGenPresetId" @change="saveCfg">
 								<option value="">跟随全局</option>
 								<option v-for="p in presetList" :key="p.id" :value="p.id">{{ p.name }}</option>
 							</select>

@@ -9,7 +9,6 @@ import type {
   ScenePromptConfig
 } from '@shared/types/config'
 import {
-  DEFAULT_CHRONICLE_GENERATE_PROMPT,
   DEFAULT_CHRONICLE_RECALL_PROMPT,
   DEFAULT_TABLE_EDIT_PROMPT
 } from '@shared/prompts/defaults'
@@ -49,8 +48,7 @@ function sceneFromBlocks(blocks: PromptBlock[]): ScenePromptConfig {
 function defaultPromptConfig(): PromptConfig {
   return {
     tableEdit: sceneFromBlocks(DEFAULT_TABLE_EDIT_PROMPT),
-    chronicleRecall: sceneFromBlocks(DEFAULT_CHRONICLE_RECALL_PROMPT),
-    chronicleGenerate: sceneFromBlocks(DEFAULT_CHRONICLE_GENERATE_PROMPT)
+    chronicleRecall: sceneFromBlocks(DEFAULT_CHRONICLE_RECALL_PROMPT)
   }
 }
 
@@ -83,7 +81,6 @@ const DEFAULT_CONFIG: CranialNerveConfig = {
   chronicleGenEnabled: true,
   tableFillPresetId: '',
   recallPresetId: '',
-  chronicleGenPresetId: '',
   recallContextDepth: 5,
   retainFloors: 100,
   tableTemplate: { presets: [], activeId: '', defaultId: '' }
@@ -164,8 +161,7 @@ function cloneDefault(): CranialNerveConfig {
 function clonePromptConfig(p: PromptConfig): PromptConfig {
   return {
     tableEdit: cloneScene(p.tableEdit),
-    chronicleRecall: cloneScene(p.chronicleRecall),
-    chronicleGenerate: cloneScene(p.chronicleGenerate)
+    chronicleRecall: cloneScene(p.chronicleRecall)
   }
 }
 
@@ -190,8 +186,7 @@ function migratePrompt(
   }
   const merged: PromptConfig = {
     tableEdit: mergeScene(base.tableEdit, current.tableEdit),
-    chronicleRecall: mergeScene(base.chronicleRecall, current.chronicleRecall),
-    chronicleGenerate: mergeScene(base.chronicleGenerate, current.chronicleGenerate)
+    chronicleRecall: mergeScene(base.chronicleRecall, current.chronicleRecall)
   }
   return migrateFromLegacy(raw, merged)
 }
@@ -227,7 +222,7 @@ function migrateFromLegacy(raw: Record<string, unknown>, base: PromptConfig): Pr
   if (!templates || typeof templates !== 'object') {
     return base
   }
-  const scenes: PromptSceneKey[] = ['tableEdit', 'chronicleRecall', 'chronicleGenerate']
+  const scenes: PromptSceneKey[] = ['tableEdit', 'chronicleRecall']
   const result = clonePromptConfig(base)
   for (const key of scenes) {
     const segs = migrateField(templates[key])

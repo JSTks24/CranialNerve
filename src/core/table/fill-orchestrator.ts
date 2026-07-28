@@ -14,9 +14,24 @@ import { createPersistContext } from '@db/sqlite/frame-persist'
 import { ensureInitCheckpoint } from '@db/sqlite/frame-persist'
 
 let generationCountSinceLastFill = 0
+let fillInProgress = false
 
 export function resetFillScheduler(): void {
 	generationCountSinceLastFill = 0
+}
+
+export function isFillInProgress(): boolean {
+	return fillInProgress
+}
+
+function isAbortError(e: unknown, signal?: AbortSignal): boolean {
+	if (signal?.aborted) {
+		return true
+	}
+	if (e instanceof DOMException && e.name === 'AbortError') {
+		return true
+	}
+	return false
 }
 
 async function executeFill(session: CranialNerveSession, extraHint?: string): Promise<RunResult> {
@@ -63,9 +78,6 @@ async function executeFill(session: CranialNerveSession, extraHint?: string): Pr
 
 	const segments = session.getActiveSegments('tableEdit')
 	const chronicleEnabled = config.chronicleGenEnabled
-	const chronicleGuide = chronicleEnabled
-		? session.getActiveSegments('chronicleGenerate').map((s) => s.content).join('\n\n')
-		: ''
 	const tableDefs: TableDef[] = chronicleEnabled
 		? [...template.tables, DEFAULT_CHRONICLE_TABLE]
 		: [...template.tables]
@@ -82,8 +94,7 @@ async function executeFill(session: CranialNerveSession, extraHint?: string): Pr
 		conversationText,
 		timeFormat,
 		segments,
-		extraHint,
-		chronicleGuide
+		extraHint
 	})
 
 	const userPrompt = '请根据以上故事内容更新数据库表格。'
@@ -112,23 +123,45 @@ async function executeFill(session: CranialNerveSession, extraHint?: string): Pr
 		ensureInitCheckpoint(persistCtx, targetMsgId)
 	}
 	const persist = persistCtx && targetMsgId >= 0 ? { ctx: persistCtx, messageId: targetMsgId } : undefined
-	const result = await session.getWriteQueue().enqueue(() =>
-		editor.run(promptCtx, { maxRetries: config.tableFill.maxRetries }, persist)
-	)
 
-	if (result.ok) {
-		if (targetMsgId >= 0) {
-			session.cleanupOldSnapshots(config.retainFloors)
+	const starter = session.getProgressNotifier()
+	const progressText = chronicleEnabled ? '正在生成纪要与更新表格...' : '正在更新表格...'
+	const progress = starter?.(progressText)
+
+	fillInProgress = true
+	try {
+		const result = await session.getWriteQueue().enqueue(() =>
+			editor.run(promptCtx, { maxRetries: config.tableFill.maxRetries, signal: progress?.abortSignal }, persist)
+		)
+
+		if (result.ok) {
+			if (targetMsgId >= 0) {
+				session.cleanupOldSnapshots(config.retainFloors)
+			}
+			generationCountSinceLastFill = 0
+			try {
+				await syncToWorldbook(session)
+			} catch (e) {
+				pushLog('error', 'worldbook', `世界书同步失败: ${e instanceof Error ? e.message : String(e)}`)
+			}
+			progress?.done()
+		} else {
+			progress?.fail(result.error ?? '填表失败')
 		}
-		generationCountSinceLastFill = 0
-		try {
-			await syncToWorldbook(session)
-		} catch (e) {
-			pushLog('error', 'worldbook', `世界书同步失败: ${e instanceof Error ? e.message : String(e)}`)
+
+		return result
+	} catch (e) {
+		if (isAbortError(e, progress?.abortSignal)) {
+			progress?.fail('操作已终止')
+			pushLog('info', 'fill', '填表被用户终止')
+			return { ok: false, attempts: 0, error: 'aborted' }
 		}
+		progress?.fail(e instanceof Error ? e.message : String(e))
+		pushLog('error', 'fill', `填表异常: ${e instanceof Error ? e.message : String(e)}`)
+		return { ok: false, attempts: 0, error: e instanceof Error ? e.message : String(e) }
+	} finally {
+		fillInProgress = false
 	}
-
-	return result
 }
 
 export async function onGenerationEnded(session: CranialNerveSession): Promise<void> {

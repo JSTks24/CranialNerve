@@ -20,11 +20,7 @@ function recoverSnapshot() {
 	if (!pick) return
 	const idx = Number.parseInt(pick.value, 10)
 	if (!Number.isFinite(idx)) return
-	const ok = store.recoverSnapshotAt(idx)
-	if (ok) {
-		// eslint-disable-next-line no-console
-		console.log('[CranialNerve] 快照已恢复')
-	}
+	store.recoverSnapshotAt(idx)
 }
 </script>
 
@@ -56,6 +52,7 @@ function recoverSnapshot() {
 			<div class="debug-toolbar">
 				<select class="cn-select debug-toolbar__select" v-model="store.levelFilter">
 					<option value="all">全部级别</option>
+					<option value="info">信息</option>
 					<option value="warn">警告</option>
 					<option value="error">错误</option>
 				</select>
@@ -95,7 +92,7 @@ function recoverSnapshot() {
 					:class="`debug-log-row--${log.level}`"
 				>
 					<span class="debug-log-row__time">{{ formatTime(log.timestamp) }}</span>
-					<span class="debug-log-row__level" :class="`debug-log-row__level--${log.level}`">{{ log.level === 'error' ? 'ERROR' : 'WARN' }}</span>
+					<span class="debug-log-row__level" :class="`debug-log-row__level--${log.level}`">{{ log.level === 'error' ? 'ERROR' : log.level === 'warn' ? 'WARN' : 'INFO' }}</span>
 					<span class="debug-log-row__tag">{{ log.tag }}</span>
 					<span class="debug-log-row__msg">{{ log.message }}</span>
 				</div>

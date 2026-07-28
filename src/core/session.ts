@@ -31,7 +31,9 @@ import type {
   AiPreset,
   ScenePreset,
   PromptSegment,
-  PromptSceneKey
+  PromptSceneKey,
+  ProgressStarter,
+  ToastNotifier
 } from '@shared/types/config'
 import { TableEditor } from './table'
 import ChronicleEntryStore from './worldbook-entries'
@@ -39,11 +41,11 @@ import type { ChronicleEntry } from '@shared/types/worldbook'
 import createChronicleRecaller, { type ChronicleRecaller } from './chronicle'
 import createWriteQueue, { type WriteQueue } from './write-queue'
 import { buildBookName, cleanupStaleBooks, syncToWorldbook } from './worldbook-sync'
-import { resetFillScheduler, onGenerationEnded } from './table/fill-orchestrator'
+import { resetFillScheduler, onGenerationEnded, isFillInProgress } from './table/fill-orchestrator'
 import { onPromptReady } from './chronicle/recall-orchestrator'
 import { exportCheckpoint, validateCheckpointFile } from './checkpoint-transfer'
 import { pushLog } from '@shared/log-buffer'
-import { EVENT_GENERATION_ENDED, EVENT_CHAT_COMPLETION_PROMPT_READY, EVENT_CHAT_RENAMED } from '@shared/constants/events'
+import { EVENT_GENERATION_ENDED, EVENT_GENERATION_AFTER_COMMANDS, EVENT_CHAT_RENAMED } from '@shared/constants/events'
 
 export class CranialNerveSession {
   readonly core: SqliteCore
@@ -58,9 +60,12 @@ export class CranialNerveSession {
   private tableEditor: TableEditor | null = null
   private nameMapper: NameMapper | null = null
   private template: CardTemplate | null = null
+  private currentTemplateId: string | null = null
   private chronicleStore: ChronicleEntryStore | null = null
   private chronicleRecaller: ChronicleRecaller | null = null
   private writeQueue: WriteQueue
+  private progressNotifier?: ProgressStarter
+  private toastNotifier?: ToastNotifier
   private currentChatToken: string | null = null
   private autoSwitchHandler: ((...args: unknown[]) => unknown) | null = null
   private reloadSeq = 0
@@ -79,12 +84,16 @@ export class CranialNerveSession {
   }
 
   async init(): Promise<void> {
-    await this.core.init()
-    this.syncBridge = new SqliteSyncBridge(this.core, this.chat)
-    this.tableEditor = new TableEditor(this.core, this.ai)
-    this.startAutoSwitch()
-    this.bindCoreEvents()
-    await this.reloadForChatChange()
+    try {
+      await this.core.init()
+      this.syncBridge = new SqliteSyncBridge(this.core, this.chat)
+      this.tableEditor = new TableEditor(this.core, this.ai)
+      this.startAutoSwitch()
+      this.bindCoreEvents()
+      await this.reloadForChatChange()
+    } catch (e) {
+      pushLog('error', 'session', `初始化失败: ${e instanceof Error ? e.message : String(e)}`)
+    }
   }
 
   private eventsBound = false
@@ -96,13 +105,18 @@ export class CranialNerveSession {
         pushLog('error', 'session', `onGenerationEnded error: ${e instanceof Error ? e.message : String(e)}`)
       })
     })
-    this.event.makeLast(EVENT_CHAT_COMPLETION_PROMPT_READY, (...args: unknown[]) => {
-      const eventData = args[0] as { chat: SillyTavernChatMessage[]; dryRun?: boolean }
-      if (eventData) {
-        onPromptReady(this, eventData).catch((e) => {
-          pushLog('error', 'session', `onPromptReady error: ${e instanceof Error ? e.message : String(e)}`)
-        })
+    this.event.makeLast(EVENT_GENERATION_AFTER_COMMANDS, (...args: unknown[]) => {
+      const dryRun = args[2] as boolean | undefined
+      if (dryRun) {
+        return
       }
+      if (isFillInProgress()) {
+        pushLog('warn', 'session', '纪要生成中，跳过本轮召回')
+        return
+      }
+      return onPromptReady(this).catch((e) => {
+        pushLog('error', 'session', `onPromptReady error: ${e instanceof Error ? e.message : String(e)}`)
+      })
     })
     this.event.on(EVENT_CHAT_RENAMED, (...args: unknown[]) => {
       const payload = args[0] as { oldFileName?: string; newFileName?: string } | undefined
@@ -141,7 +155,11 @@ export class CranialNerveSession {
       return
     }
     const handler = async () => {
-      await this.reloadForChatChange()
+      try {
+        await this.reloadForChatChange()
+      } catch (e) {
+        pushLog('error', 'session', `reloadForChatChange 失败: ${e instanceof Error ? e.message : String(e)}`)
+      }
     }
     this.autoSwitchHandler = handler
     this.event.on(EVENT_CHAT_CHANGED, handler)
@@ -166,7 +184,12 @@ export class CranialNerveSession {
     }
     this.currentChatToken = null
     this.core.dispose()
-    await this.core.init()
+    try {
+      await this.core.init()
+    } catch (e) {
+      pushLog('error', 'session', `core.init 失败: ${e instanceof Error ? e.message : String(e)}`)
+      return
+    }
     if (mySeq !== this.reloadSeq) {
       return
     }
@@ -175,9 +198,10 @@ export class CranialNerveSession {
     resetFillScheduler()
     this.setupChronicle()
     try {
-      this.initGameSessionFromCard()
+      this.initSessionTemplate()
     } catch (e) {
-      console.warn('[CranialNerve] 角色卡模板数据异常:', e instanceof Error ? e.message : e)
+      pushLog('warn', 'session', `模板加载异常: ${e instanceof Error ? e.message : String(e)}`)
+      this.toastNotifier?.warning('角色卡模板异常，已降级使用默认表结构')
     }
     if (mySeq !== this.reloadSeq) {
       return
@@ -206,6 +230,16 @@ export class CranialNerveSession {
     return this.currentChatToken
   }
 
+  hasValidChatToken(): boolean {
+    try {
+      const ctx = getHostContext()
+      const chatId = ctx.chatId ?? ctx.getCurrentChatId?.()
+      return !!chatId && typeof chatId === 'string'
+    } catch {
+      return false
+    }
+  }
+
   private async setupWorldbook(mySeq: number): Promise<void> {
     if (mySeq !== this.reloadSeq) {
       return
@@ -215,9 +249,13 @@ export class CranialNerveSession {
       if (mySeq !== this.reloadSeq) {
         return
       }
+      if (!this.hasValidChatToken()) {
+        pushLog('info', 'session', '无有效 chatId，跳过世界书同步（仅清理残留）')
+        return
+      }
       await syncToWorldbook(this)
     } catch (e) {
-      console.error('[CranialNerve] 世界书初始化失败:', e)
+      pushLog('error', 'session', `世界书初始化失败: ${e instanceof Error ? e.message : String(e)}`)
     }
   }
 
@@ -240,9 +278,10 @@ export class CranialNerveSession {
     }
   }
 
-  initGameSession(template: CardTemplate): void {
+  initGameSession(template: CardTemplate, id?: string): void {
     validateTimeRegistration(this.getChatToken())
     this.template = template
+    this.currentTemplateId = id ?? null
     this.nameMapper = new NameMapper(template.tables)
     for (const table of template.tables) {
       this.core.run(buildCreateTableSql(table))
@@ -253,9 +292,58 @@ export class CranialNerveSession {
   initGameSessionFromCard(): CardTemplate | null {
     const template = this.character.readTemplateFromCard()
     if (template) {
-      this.initGameSession(template)
+      this.initGameSession(template, '__card__')
     }
     return template
+  }
+
+  async reinitWithTemplate(template: CardTemplate, id?: string): Promise<void> {
+    this.template = template
+    this.currentTemplateId = id ?? null
+    this.nameMapper = new NameMapper(template.tables)
+    this.core.dispose()
+    await this.core.init()
+    for (const table of template.tables) {
+      this.core.run(buildCreateTableSql(table))
+    }
+    this.core.run(buildCreateTableSql(DEFAULT_CHRONICLE_TABLE))
+    const chat = this.chat.getChat()
+    const targetId = chat.length - 1
+    if (this.syncBridge && targetId >= 0) {
+      this.syncBridge.removeAllSnapshots()
+      this.syncBridge.writeCheckpoint(targetId, 'manual', this.currentTemplateId ?? undefined)
+    }
+    try {
+      await syncToWorldbook(this)
+    } catch (e) {
+      pushLog('error', 'session', `reinitWithTemplate 同步世界书失败: ${e instanceof Error ? e.message : String(e)}`)
+    }
+  }
+
+  private initSessionTemplate(): void {
+    const templateId = this.readFrameTemplateId()
+    if (templateId && templateId !== '__card__') {
+      const cfg = this.getConfig()
+      const preset = cfg.tableTemplate.presets.find((p) => p.id === templateId)
+      if (preset) {
+        this.initGameSession(preset.template, preset.id)
+        this.toastNotifier?.success(`已加载聊天模板：${preset.name}`)
+        return
+      }
+    }
+    const fromCard = this.initGameSessionFromCard()
+    if (fromCard) {
+      this.toastNotifier?.success('已加载角色卡内置模板')
+    }
+  }
+
+  private readFrameTemplateId(): string | undefined {
+    if (!this.syncBridge) return undefined
+    const repo = this.syncBridge.getRepo()
+    const latestId = repo.findLatestFrameMessageId()
+    if (latestId == null) return undefined
+    const frame = repo.loadFrame(latestId)
+    return frame?.templateId
   }
 
   loadFromChat(): boolean {
@@ -338,11 +426,12 @@ export class CranialNerveSession {
       throw new Error('session not initialized')
     }
     const cfg = this.config.read()
+    const tplId = this.currentTemplateId ?? undefined
     if (cfg.snapshotStrategy === 'latest-only') {
       this.syncBridge.removeAllSnapshots()
-      this.syncBridge.writeCheckpoint(messageId, 'manual')
+      this.syncBridge.writeCheckpoint(messageId, 'manual', tplId)
     } else {
-      this.syncBridge.save(messageId)
+      this.syncBridge.save(messageId, tplId)
     }
   }
 
@@ -481,6 +570,22 @@ export class CranialNerveSession {
 
   runWrite<T>(task: () => Promise<T> | T): Promise<T> {
     return this.writeQueue.enqueue(() => Promise.resolve(task()))
+  }
+
+  setProgressNotifier(fn: ProgressStarter): void {
+    this.progressNotifier = fn
+  }
+
+  getProgressNotifier(): ProgressStarter | undefined {
+    return this.progressNotifier
+  }
+
+  setToastNotifier(fn: ToastNotifier): void {
+    this.toastNotifier = fn
+  }
+
+  getToastNotifier(): ToastNotifier | undefined {
+    return this.toastNotifier
   }
 }
 

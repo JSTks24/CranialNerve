@@ -214,4 +214,9 @@ export async function cleanupStaleBooks(session: CranialNerveSession): Promise<v
       }
     }
   }
+  try {
+    await wb.detachFromChat()
+  } catch (e) {
+    pushLog('warn', 'worldbook', `detach 失败: ${e instanceof Error ? e.message : String(e)}`)
+  }
 }
