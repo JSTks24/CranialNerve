@@ -121,7 +121,7 @@ async function executeFill(session: CranialNerveSession, extraHint?: string): Pr
 	const repo = session.getSyncBridgeRepo()
 	const persistCtx = repo ? createPersistContext(repo, session.core) : null
 	if (persistCtx && targetMsgId >= 0) {
-		ensureInitCheckpoint(persistCtx, targetMsgId)
+		ensureInitCheckpoint(persistCtx, targetMsgId, session.getCurrentTemplateId() ?? undefined)
 	}
 	const persist = persistCtx && targetMsgId >= 0 ? { ctx: persistCtx, messageId: targetMsgId } : undefined
 

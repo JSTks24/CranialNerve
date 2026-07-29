@@ -68,6 +68,27 @@ export function computeTimeDelta(token: string, entry: ChronicleEntry, currentTi
 	return defaultCompute(entry, currentTime)
 }
 
+export function resolveStoryNowTime(entries: ChronicleEntry[]): string | undefined {
+	let bestMs = Number.NEGATIVE_INFINITY
+	let bestRaw: string | undefined
+	for (const entry of entries) {
+		for (const raw of [entry.timeEnd, entry.timeStart]) {
+			if (!raw) {
+				continue
+			}
+			const ms = new Date(raw).getTime()
+			if (Number.isNaN(ms)) {
+				continue
+			}
+			if (ms > bestMs) {
+				bestMs = ms
+				bestRaw = raw
+			}
+		}
+	}
+	return bestRaw
+}
+
 function defaultCompute(entry: ChronicleEntry, currentTime: string): string {
 	const ref = parseTime(currentTime)
 	const start = parseTime(entry.timeStart)

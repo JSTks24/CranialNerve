@@ -7,7 +7,7 @@ import type {
 import type { VectorGateway } from '@db/gateways/vector'
 import type { PromptSegment, VectorConfig } from '@shared/types/config'
 import { interpolate } from '@shared/prompts/interpolate'
-import { computeTimeDelta } from './time'
+import { computeTimeDelta, resolveStoryNowTime } from './time'
 import type { ChronicleEntry } from '@shared/types/worldbook'
 
 const VECTOR_TOP_K = 20
@@ -50,6 +50,7 @@ export default function createChronicleRecaller(
       }
       const candidates = await prefilterByVector(vector, ctx, all)
       const keys = await filterRelevantKeys(ai, ctx, candidates)
+      const referenceTime = resolveStoryNowTime(all) ?? ctx.currentTime
       const items: RecallItem[] = []
       for (const key of keys) {
         const entry = all.find((e) => e.key === key)
@@ -59,7 +60,7 @@ export default function createChronicleRecaller(
         items.push({
           key,
           entry,
-          timeDeltaText: computeTimeDelta(ctx.chatToken, entry, ctx.currentTime)
+          timeDeltaText: computeTimeDelta(ctx.chatToken, entry, referenceTime)
         })
       }
       return items

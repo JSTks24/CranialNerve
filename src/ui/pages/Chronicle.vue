@@ -19,9 +19,7 @@ const editSnapshot = ref<RowData | null>(null)
 const cellEditEls = new Map<string, HTMLElement>()
 
 const chronicleDef = computed(() => session.getChronicleTableDef())
-const keyColName = computed(
-  () => chronicleDef.value.columns.find((c) => c.role === 'key')?.name
-)
+const keyColName = computed(() => chronicleDef.value.columns.find((c) => c.role === 'key')?.name)
 const fields = computed(() =>
   chronicleDef.value.columns.map((c) => ({
     key: c.name,
@@ -31,14 +29,20 @@ const fields = computed(() =>
 )
 
 function refresh() {
-  const result = session.getTableRowsWithRowid(CHRONICLE_TABLE_NAME)
-  const first = result[0]
-  rows.value = (first?.rows ?? []) as unknown as RowData[]
+  try {
+    const result = session.getTableRowsWithRowid(CHRONICLE_TABLE_NAME)
+    const first = result[0]
+    rows.value = (first?.rows ?? []) as unknown as RowData[]
+  } catch {
+    rows.value = []
+  }
 }
 
 let draftCounter = -1
 
-const hasSession = computed(() => session.listTables().filter((n) => !n.startsWith('sqlite_')).length > 0)
+const hasSession = computed(
+  () => session.listTables().filter((n) => !n.startsWith('sqlite_')).length > 0
+)
 const chronicleEnabled = computed(() => session.getConfig().chronicleGenEnabled)
 
 function startEdit(row: RowData) {
@@ -184,35 +188,53 @@ onActivated(refresh)
     </div>
 
     <div v-else class="chronicle-list">
-      <div
-        v-for="row in filtered"
-        :key="row.__rowid__"
-        class="cn-card chronicle-item"
-        :class="{ 'chronicle-item--editing': row.__rowid__ === editingRowid }"
-      >
-        <div class="cn-card__head">
-          <span class="chronicle-item__key">{{ keyColName ? (row[keyColName] ?? '') : '' }}</span>
-          <template v-if="row.__rowid__ === editingRowid">
-            <div class="cn-space">
-              <button class="cn-btn cn-btn--sm cn-btn--primary" @click="saveEdit">保存</button>
-              <button class="cn-btn cn-btn--sm" @click="cancelEdit">取消</button>
+      <TransitionGroup name="cn-list">
+        <div
+          v-for="row in filtered"
+          :key="row.__rowid__"
+          class="cn-card chronicle-item"
+          :class="{ 'chronicle-item--editing': row.__rowid__ === editingRowid }"
+        >
+          <div class="cn-card__head">
+            <span class="chronicle-item__key">{{ keyColName ? (row[keyColName] ?? '') : '' }}</span>
+            <template v-if="row.__rowid__ === editingRowid">
+              <div class="cn-space">
+                <button class="cn-btn cn-btn--sm cn-btn--primary" @click="saveEdit">保存</button>
+                <button class="cn-btn cn-btn--sm" @click="cancelEdit">取消</button>
+              </div>
+            </template>
+            <template v-else>
+              <div class="cn-space">
+                <button class="cn-btn cn-btn--sm" @click="startEdit(row)">
+                  <i class="fa-solid fa-pen"></i>
+                  修改
+                </button>
+                <button class="cn-btn cn-btn--sm cn-btn--text" title="删除" @click="deleteRow(row)">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </template>
+          </div>
+          <div class="cn-card__body">
+            <div class="chronicle-fields">
+              <div v-for="f in fields.filter((x) => !x.full)" :key="f.key" class="chronicle-field">
+                <label class="chronicle-field__label">{{ f.label }}</label>
+                <div
+                  v-if="row.__rowid__ === editingRowid"
+                  class="cell-edit chronicle-field__value"
+                  contenteditable="true"
+                  :ref="(el) => registerCellEl(f.key, el)"
+                ></div>
+                <div v-else class="cell-edit chronicle-field__value">
+                  {{ row[f.key] ?? '' }}
+                </div>
+              </div>
             </div>
-          </template>
-          <template v-else>
-            <div class="cn-space">
-              <button class="cn-btn cn-btn--sm" @click="startEdit(row)">
-                <i class="fa-solid fa-pen"></i>
-                修改
-              </button>
-              <button class="cn-btn cn-btn--sm cn-btn--text" title="删除" @click="deleteRow(row)">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            </div>
-          </template>
-        </div>
-        <div class="cn-card__body">
-          <div class="chronicle-fields">
-            <div v-for="f in fields.filter((x) => !x.full)" :key="f.key" class="chronicle-field">
+            <div
+              v-for="f in fields.filter((x) => x.full)"
+              :key="f.key"
+              class="chronicle-field chronicle-field--full"
+            >
               <label class="chronicle-field__label">{{ f.label }}</label>
               <div
                 v-if="row.__rowid__ === editingRowid"
@@ -225,24 +247,8 @@ onActivated(refresh)
               </div>
             </div>
           </div>
-          <div
-            v-for="f in fields.filter((x) => x.full)"
-            :key="f.key"
-            class="chronicle-field chronicle-field--full"
-          >
-            <label class="chronicle-field__label">{{ f.label }}</label>
-            <div
-              v-if="row.__rowid__ === editingRowid"
-              class="cell-edit chronicle-field__value"
-              contenteditable="true"
-              :ref="(el) => registerCellEl(f.key, el)"
-            ></div>
-            <div v-else class="cell-edit chronicle-field__value">
-              {{ row[f.key] ?? '' }}
-            </div>
-          </div>
         </div>
-      </div>
+      </TransitionGroup>
     </div>
   </div>
 </template>

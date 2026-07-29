@@ -54,10 +54,16 @@ export const useDebugStore = defineStore('cn-debug', () => {
 
 	const tableStatus = computed(() => {
 		const tables = session.listTables()
-		const chronicleRows = session.getTableRowsWithRowid('cn_chronicle')
+		let chronicleCount = 0
+		try {
+			const chronicleRows = session.getTableRowsWithRowid('cn_chronicle')
+			chronicleCount = chronicleRows[0]?.rows?.length ?? 0
+		} catch {
+			chronicleCount = 0
+		}
 		return {
 			tableCount: tables.filter((n) => n !== 'cn_chronicle').length,
-			chronicleCount: chronicleRows[0]?.rows?.length ?? 0,
+			chronicleCount,
 		}
 	})
 

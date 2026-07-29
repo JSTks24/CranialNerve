@@ -36,8 +36,12 @@ function tableDisplayName(name: string): string {
 
 function refresh() {
 	tableCount.value = session.listTables().filter((n) => n !== 'cn_chronicle').length
-	const cr = session.getTableRowsWithRowid('cn_chronicle')
-	chronicleCount.value = cr[0]?.rows?.length ?? 0
+	try {
+		const cr = session.getTableRowsWithRowid('cn_chronicle')
+		chronicleCount.value = cr[0]?.rows?.length ?? 0
+	} catch {
+		chronicleCount.value = 0
+	}
 	const preset = session.getActiveAiPreset()
 	activePresetName.value = preset?.name ?? '未配置'
 	activePresetModel.value = preset?.model ?? ''

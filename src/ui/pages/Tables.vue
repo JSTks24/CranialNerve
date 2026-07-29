@@ -251,54 +251,60 @@ onActivated(refresh)
           </button>
         </div>
         <div class="table-body">
-          <div v-if="(activeTable?.rows.length ?? 0) === 0" class="cn-empty">
-            暂无数据
-          </div>
+          <div v-if="(activeTable?.rows.length ?? 0) === 0" class="cn-empty">暂无数据</div>
 
           <div v-else class="table-row-grid">
-            <div
-              v-for="row in activeTable?.rows ?? []"
-              :key="row.__rowid__"
-              class="cn-card table-row-card"
-              :class="{ 'table-row-card--editing': row.__rowid__ === editingRowid }"
-            >
-              <div class="table-row-card__body">
-                <div v-for="c in activeTable?.columns ?? []" :key="c" class="table-row-card__field">
-                  <label class="table-row-card__label"
-                    >{{ activeTable?.colNames[c] ?? c }}
-                    <span class="table-row-card__label-en">{{ c }}</span></label
-                  >
+            <TransitionGroup name="cn-list">
+              <div
+                v-for="row in activeTable?.rows ?? []"
+                :key="row.__rowid__"
+                class="cn-card table-row-card"
+                :class="{ 'table-row-card--editing': row.__rowid__ === editingRowid }"
+              >
+                <div class="table-row-card__body">
                   <div
-                    v-if="row.__rowid__ === editingRowid"
-                    class="cell-edit table-row-card__value"
-                    contenteditable="true"
-                    :ref="(el) => registerCellEl(c, el)"
-                  ></div>
-                  <div v-else class="cell-edit table-row-card__value">
-                    {{ fieldValue(row, c) }}
+                    v-for="c in activeTable?.columns ?? []"
+                    :key="c"
+                    class="table-row-card__field"
+                  >
+                    <label class="table-row-card__label"
+                      >{{ activeTable?.colNames[c] ?? c }}
+                      <span class="table-row-card__label-en">{{ c }}</span></label
+                    >
+                    <div
+                      v-if="row.__rowid__ === editingRowid"
+                      class="cell-edit table-row-card__value"
+                      contenteditable="true"
+                      :ref="(el) => registerCellEl(c, el)"
+                    ></div>
+                    <div v-else class="cell-edit table-row-card__value">
+                      {{ fieldValue(row, c) }}
+                    </div>
                   </div>
                 </div>
+                <div class="table-row-card__foot">
+                  <template v-if="row.__rowid__ === editingRowid">
+                    <button class="cn-btn cn-btn--sm cn-btn--primary" @click="saveEdit">
+                      保存
+                    </button>
+                    <button class="cn-btn cn-btn--sm" @click="cancelEdit">取消</button>
+                  </template>
+                  <template v-else>
+                    <button class="cn-btn cn-btn--sm" @click="startEdit(row)">
+                      <i class="fa-solid fa-pen"></i>
+                      修改
+                    </button>
+                    <button
+                      class="cn-btn cn-btn--sm cn-btn--text"
+                      title="删除"
+                      @click="deleteRow(row)"
+                    >
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </template>
+                </div>
               </div>
-              <div class="table-row-card__foot">
-                <template v-if="row.__rowid__ === editingRowid">
-                  <button class="cn-btn cn-btn--sm cn-btn--primary" @click="saveEdit">保存</button>
-                  <button class="cn-btn cn-btn--sm" @click="cancelEdit">取消</button>
-                </template>
-                <template v-else>
-                  <button class="cn-btn cn-btn--sm" @click="startEdit(row)">
-                    <i class="fa-solid fa-pen"></i>
-                    修改
-                  </button>
-                  <button
-                    class="cn-btn cn-btn--sm cn-btn--text"
-                    title="删除"
-                    @click="deleteRow(row)"
-                  >
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </template>
-              </div>
-            </div>
+            </TransitionGroup>
           </div>
           <div class="table-body__foot">
             <span class="table-body__meta">

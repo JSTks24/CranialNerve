@@ -34,7 +34,8 @@ import type {
   PromptSegment,
   PromptSceneKey,
   ProgressStarter,
-  ToastNotifier
+  ToastNotifier,
+  TableTemplatePreset
 } from '@shared/types/config'
 import { TableEditor } from './table'
 import ChronicleEntryStore from './worldbook-entries'
@@ -346,10 +347,32 @@ export class CranialNerveSession {
         return
       }
     }
-    const fromCard = this.initGameSessionFromCard()
-    if (fromCard) {
-      this.toastNotifier?.success('已加载角色卡内置模板')
+    let cardTemplate: CardTemplate | null = null
+    let cardError = false
+    try {
+      cardTemplate = this.character.readTemplateFromCard()
+    } catch (e) {
+      cardError = true
+      pushLog('warn', 'session', `角色卡模板异常: ${e instanceof Error ? e.message : String(e)}`)
     }
+    if (cardTemplate) {
+      this.initGameSession(cardTemplate, '__card__')
+      this.toastNotifier?.success('已加载角色卡内置模板')
+      return
+    }
+    if (cardError) {
+      this.toastNotifier?.warning('角色卡内置模板存在错误，已降级使用默认模板')
+    }
+    const fallback = this.resolveDefaultTemplatePreset()
+    if (fallback) {
+      this.initGameSession(fallback.template, fallback.id)
+    }
+  }
+
+  private resolveDefaultTemplatePreset(): TableTemplatePreset | null {
+    const tableTemplate = this.getConfig().tableTemplate
+    const byId = (id: string) => tableTemplate.presets.find((p) => p.id === id)
+    return byId(tableTemplate.activeId) ?? byId(tableTemplate.defaultId) ?? tableTemplate.presets[0] ?? null
   }
 
   private readFrameTemplateId(): string | undefined {

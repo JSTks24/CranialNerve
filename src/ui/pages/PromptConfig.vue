@@ -3,15 +3,14 @@ import { ref, computed, onActivated } from 'vue'
 import draggable from 'vuedraggable'
 import { useConfigStore } from '@ui/stores/config'
 import { getSession } from '@core/session'
-import type {
-  PromptRole,
-  PromptSceneKey,
-  PromptSegment,
-  ScenePreset
-} from '@shared/types/config'
+import type { PromptRole, PromptSceneKey, PromptSegment, ScenePreset } from '@shared/types/config'
 import type { ChronicleColumnRole, TableDef, ColumnDef } from '@shared/types/table'
 import type { CardTemplate } from '@shared/types/card'
-import { isShujukuTemplate, convertShujukuToCardTemplate, isCardTemplate } from '@shared/template-convert'
+import {
+  isShujukuTemplate,
+  convertShujukuToCardTemplate,
+  isCardTemplate
+} from '@shared/template-convert'
 import { buildCreateTableSql } from '@shared/template-builder'
 import { SQL_EDIT_FORMAT } from '@shared/constants/sql-json'
 import { interpolate } from '@shared/prompts/interpolate'
@@ -25,7 +24,11 @@ const store = useConfigStore()
 const config = computed(() => store.config.prompt)
 
 const scenes: { key: PromptSceneKey; label: string; desc: string }[] = [
-  { key: 'tableEdit', label: '表格更新', desc: 'AI 填表时发送。变量：{{format}} {{timeFormat}} {{tables}}' },
+  {
+    key: 'tableEdit',
+    label: '表格更新',
+    desc: 'AI 填表时发送。变量：{{format}} {{timeFormat}} {{tables}}'
+  },
   {
     key: 'chronicleRecall',
     label: '纪要召回',
@@ -134,6 +137,19 @@ function save() {
 }
 
 function saveAll() {
+  const p = activePreset.value
+  if (p) {
+    if (!p.name.trim()) {
+      toast.error('预设名称不能为空')
+      return
+    }
+    for (const s of p.segments) {
+      if (!s.name.trim()) {
+        toast.error('段名称不能为空')
+        return
+      }
+    }
+  }
   save()
   toast.success('已保存')
 }
@@ -186,8 +202,7 @@ async function openPreview() {
           2
         )
       }
-    } catch {
-    }
+    } catch {}
   }
   const segs = activePreset.value?.segments ?? []
   const messages = segs.map((s) => ({
@@ -299,23 +314,61 @@ const showTemplate = ref(false)
 const COL_TYPES = ['TEXT', 'INTEGER', 'REAL', 'BLOB']
 
 function freshTable(): TableDef {
-	return { name: '', displayName: '', columns: [], note: '', insertHint: '', updateHint: '', deleteHint: '', exportConfig: { enabled: true, entryType: 'constant', splitByRow: false, keywordColumn: '', keywords: '' } }
+  return {
+    name: '',
+    displayName: '',
+    columns: [],
+    note: '',
+    insertHint: '',
+    updateHint: '',
+    deleteHint: '',
+    exportConfig: {
+      enabled: true,
+      entryType: 'constant',
+      splitByRow: false,
+      keywordColumn: '',
+      keywords: ''
+    }
+  }
+}
+
+function setExportEnabled(table: TableDef, checked: boolean) {
+  ensureExportConfig(table)
+  table.exportConfig!.enabled = checked
+}
+
+function setExportEntryType(table: TableDef, value: string) {
+  ensureExportConfig(table)
+  table.exportConfig!.entryType = value as 'constant' | 'keyword'
+}
+
+function setExportKeywords(table: TableDef, value: string) {
+  ensureExportConfig(table)
+  table.exportConfig!.keywords = value
 }
 
 function ensureExportConfig(table: TableDef) {
-	if (!table.exportConfig) {
-		table.exportConfig = { enabled: true, entryType: 'constant', splitByRow: false, keywordColumn: '', keywords: '' }
-	}
+  if (!table.exportConfig) {
+    table.exportConfig = {
+      enabled: true,
+      entryType: 'constant',
+      splitByRow: false,
+      keywordColumn: '',
+      keywords: ''
+    }
+  }
 }
 
 function freshColumn(): ColumnDef {
-	return { name: '', displayName: '', type: 'TEXT' }
+  return { name: '', displayName: '', type: 'TEXT' }
 }
 
 const ttConfig = computed(() => store.config.tableTemplate)
 
-const activeTemplatePreset = computed(() =>
-	ttConfig.value.presets.find((p) => p.id === ttConfig.value.activeId) ?? ttConfig.value.presets[0]
+const activeTemplatePreset = computed(
+  () =>
+    ttConfig.value.presets.find((p) => p.id === ttConfig.value.activeId) ??
+    ttConfig.value.presets[0]
 )
 
 const editingTables = computed(() => activeTemplatePreset.value?.template?.tables ?? [])
@@ -367,7 +420,35 @@ function removeChronicleColumn(idx: number) {
   chronicleDef.value.columns.splice(idx, 1)
 }
 
+function validateTableDef(table: TableDef, allTables: TableDef[]): string | null {
+  if (!table.name.trim()) return '英文表名不能为空'
+  if (!table.displayName.trim()) return '中文表名不能为空'
+  if (table.columns.length === 0) return '至少需要一列'
+  const nameSet = new Set<string>()
+  for (const col of table.columns) {
+    if (!col.name.trim()) return `表「${table.displayName || table.name}」有列英文名为空`
+    if (!col.displayName.trim()) return `表「${table.displayName || table.name}」有列中文名为空`
+    if (nameSet.has(col.name.trim()))
+      return `表「${table.displayName || table.name}」列英文名重复：${col.name.trim()}`
+    nameSet.add(col.name.trim())
+  }
+  if (table.exportConfig?.entryType === 'keyword' && !table.exportConfig.keywords?.trim()) {
+    return `表「${table.displayName || table.name}」关键词注入模式下，触发关键词不能为空`
+  }
+  const dup = allTables.filter((t) => t !== table && t.name.trim() === table.name.trim())
+  if (dup.length > 0) return `表英文名重复：${table.name.trim()}`
+  return null
+}
+
 function validateChronicleDef(def: TableDef): string | null {
+  const nameSet = new Set<string>()
+  for (const col of def.columns) {
+    if (!col.name.trim()) return '列英文名不能为空'
+    if (!col.displayName.trim()) return '列中文名不能为空'
+    if (!col.note?.trim()) return `列「${col.displayName || col.name}」的列说明不能为空`
+    if (nameSet.has(col.name.trim())) return `列英文名重复：${col.name.trim()}`
+    nameSet.add(col.name.trim())
+  }
   const roleCounts = new Map<ChronicleColumnRole, number>()
   for (const col of def.columns) {
     if (col.role) {
@@ -486,7 +567,9 @@ async function selectPresetT(id: string) {
     if (!ok) return
   }
 
-  const tables = session.listTables().filter((n) => n !== 'cn_chronicle' && !n.startsWith('sqlite_'))
+  const tables = session
+    .listTables()
+    .filter((n) => n !== 'cn_chronicle' && !n.startsWith('sqlite_'))
   const hasData = tables.some((t) => (session.getTableRowsWithRowid(t)[0]?.rows?.length ?? 0) > 0)
   if (hasData) {
     const ok = await confirm(
@@ -520,7 +603,12 @@ async function deletePresetT(id: string) {
     toast.warning('内置模板不可删除')
     return
   }
-  const ok = await confirm('删除确认', `确认删除模板预设「${target.name}」？此操作不可撤销。`, '删除', true)
+  const ok = await confirm(
+    '删除确认',
+    `确认删除模板预设「${target.name}」？此操作不可撤销。`,
+    '删除',
+    true
+  )
   if (!ok) return
   ttConfig.value.presets = ttConfig.value.presets.filter((p) => p.id !== id)
   if (ttConfig.value.activeId === id) ttConfig.value.activeId = ttConfig.value.presets[0]!.id
@@ -545,7 +633,12 @@ function addTableT() {
 async function removeTableT(idx: number) {
   const t = editingTables.value[idx]
   if (!t) return
-  const ok = await confirm('删除确认', `确认删除表「${t.displayName || t.name || '(未命名)'}」？`, '删除', true)
+  const ok = await confirm(
+    '删除确认',
+    `确认删除表「${t.displayName || t.name || '(未命名)'}」？`,
+    '删除',
+    true
+  )
   if (!ok) return
   activeTemplatePreset.value!.template.tables.splice(idx, 1)
   if (selectedTableIdx.value >= editingTables.value.length) {
@@ -572,6 +665,14 @@ async function saveTemplate() {
   if (selectedView.value === 'chronicle') {
     await saveChronicleTableDef()
     return
+  }
+  const tables = activeTemplatePreset.value?.template.tables ?? []
+  for (const t of tables) {
+    const err = validateTableDef(t, tables)
+    if (err) {
+      toast.error(err)
+      return
+    }
   }
   store.save()
   toast.success('已保存')
@@ -655,11 +756,21 @@ onActivated(() => {
       <!-- ═══ 顶层 Tab：表格模板 / 提示词配置 ═══ -->
       <div class="prompt-head">
         <div class="scene-tabs">
-          <button type="button" class="scene-tab" :class="{ 'scene-tab--active': showTemplate }" @click="showTemplate = true">
+          <button
+            type="button"
+            class="scene-tab"
+            :class="{ 'scene-tab--active': showTemplate }"
+            @click="showTemplate = true"
+          >
             <i class="fa-solid fa-table"></i>
             表格模板
           </button>
-          <button type="button" class="scene-tab" :class="{ 'scene-tab--active': !showTemplate }" @click="showTemplate = false">
+          <button
+            type="button"
+            class="scene-tab"
+            :class="{ 'scene-tab--active': !showTemplate }"
+            @click="showTemplate = false"
+          >
             <i class="fa-solid fa-pen-to-square"></i>
             提示词配置
           </button>
@@ -690,37 +801,72 @@ onActivated(() => {
             </button>
           </div>
           <div class="cn-card__body">
-            <ul class="preset-list">
-              <li v-for="p in ttConfig.presets" :key="p.id"
+            <TransitionGroup name="cn-list" tag="ul" class="preset-list">
+              <li
+                v-for="p in ttConfig.presets"
+                :key="p.id"
                 class="preset-list__item"
-                :class="{ 'preset-list__item--active': p.id === ttConfig.activeId && selectedView === 'preset' }"
-                @click="selectPresetT(p.id)">
+                :class="{
+                  'preset-list__item--active':
+                    p.id === ttConfig.activeId && selectedView === 'preset'
+                }"
+                @click="selectPresetT(p.id)"
+              >
                 <span class="preset-list__name">
-                  <i v-if="p.source === 'card'" class="fa-solid fa-id-card preset-list__card" title="角色卡自带模板"></i>
+                  <i
+                    v-if="p.source === 'card'"
+                    class="fa-solid fa-id-card preset-list__card"
+                    title="角色卡自带模板"
+                  ></i>
                   {{ p.name }}
-                  <i v-if="p.id === ttConfig.defaultId" class="fa-solid fa-star preset-list__default" title="默认预设"></i>
+                  <i
+                    v-if="p.id === ttConfig.defaultId"
+                    class="fa-solid fa-star preset-list__default"
+                    title="默认预设"
+                  ></i>
                 </span>
                 <span class="preset-list__count">{{ p.template.tables.length }}表</span>
-                <button v-if="p.id !== ttConfig.activeId" class="cn-btn cn-btn--sm cn-btn--text" title="设为当前" @click.stop="selectPresetT(p.id)">
+                <button
+                  v-if="p.id !== ttConfig.activeId"
+                  class="cn-btn cn-btn--sm cn-btn--text"
+                  title="设为当前"
+                  @click.stop="selectPresetT(p.id)"
+                >
                   <i class="fa-solid fa-check"></i>
                 </button>
-                <button v-if="p.id !== ttConfig.defaultId" class="cn-btn cn-btn--sm cn-btn--text" title="设为默认" @click.stop="setDefaultPresetT(p.id)">
+                <button
+                  v-if="p.id !== ttConfig.defaultId"
+                  class="cn-btn cn-btn--sm cn-btn--text"
+                  title="设为默认"
+                  @click.stop="setDefaultPresetT(p.id)"
+                >
                   <i class="fa-solid fa-star"></i>
                 </button>
-                <button v-if="p.source !== 'card'" class="cn-btn cn-btn--sm cn-btn--text" title="删除" @click.stop="deletePresetT(p.id)">
+                <button
+                  v-if="p.source !== 'card'"
+                  class="cn-btn cn-btn--sm cn-btn--text"
+                  title="删除"
+                  @click.stop="deletePresetT(p.id)"
+                >
                   <i class="fa-solid fa-trash"></i>
                 </button>
               </li>
-            </ul>
+            </TransitionGroup>
           </div>
           <div class="prompt-side__chronicle">
-            <div class="preset-list__item preset-list__item--chronicle"
+            <div
+              class="preset-list__item preset-list__item--chronicle"
               :class="{ 'preset-list__item--active': selectedView === 'chronicle' }"
-              @click="selectChronicle">
+              @click="selectChronicle"
+            >
               <span class="preset-list__name">
                 <i class="fa-solid fa-clock-rotate-left preset-list__card"></i>
                 纪要表
-                <i class="fa-solid fa-circle-info" style="color:var(--cn-text-3);font-size:11px" title="系统内置，结构可编辑"></i>
+                <i
+                  class="fa-solid fa-circle-info"
+                  style="color: var(--cn-text-3); font-size: 11px"
+                  title="系统内置，结构可编辑"
+                ></i>
               </span>
               <span class="preset-list__count">内置</span>
             </div>
@@ -731,7 +877,9 @@ onActivated(() => {
         <div class="prompt-editor" v-if="selectedView === 'chronicle'">
           <div class="cn-card__head">
             <span>纪要表（系统内置）</span>
-            <span class="prompt-editor__desc">结构可编辑；保存后按新结构重建表（同名列数据迁移）。表名固定不可改。</span>
+            <span class="prompt-editor__desc"
+              >结构可编辑；保存后按新结构重建表（同名列数据迁移）。表名固定不可改。</span
+            >
             <button class="cn-btn cn-btn--sm cn-btn--primary" @click="saveChronicleTableDef">
               <i class="fa-solid fa-save"></i>
               保存并重建
@@ -740,7 +888,9 @@ onActivated(() => {
           <div class="cn-card__body template-editor-body">
             <div class="tpl-table-card tpl-table-card--active">
               <div class="tpl-table-card__head">
-                <span class="tpl-table-card__name">{{ chronicleDef.displayName }} ({{ chronicleDef.name }})</span>
+                <span class="tpl-table-card__name"
+                  >{{ chronicleDef.displayName }} ({{ chronicleDef.name }})</span
+                >
                 <span class="tpl-table-card__meta">{{ chronicleDef.columns.length }}列·内置</span>
               </div>
               <div class="tpl-table-card__body">
@@ -751,17 +901,28 @@ onActivated(() => {
                   </div>
                   <div class="tpl-field">
                     <label class="tpl-label">中文表名</label>
-                    <input class="cn-input" v-model="chronicleDef.displayName" placeholder="给 AI 看的表名" />
+                    <input
+                      class="cn-input"
+                      v-model="chronicleDef.displayName"
+                      placeholder="给 AI 看的表名"
+                    />
                   </div>
                 </div>
                 <div class="tpl-section">
                   <label class="tpl-label">表说明 (note)</label>
-                  <textarea class="cn-textarea tpl-textarea" v-model="chronicleDef.note" rows="3" placeholder="表的用途与每列填写约束（经 tables 占位符注入 AI prompt）"></textarea>
+                  <textarea
+                    class="cn-textarea tpl-textarea"
+                    v-model="chronicleDef.note"
+                    rows="3"
+                    placeholder="表的用途与每列填写约束（经 tables 占位符注入 AI prompt）"
+                  ></textarea>
                 </div>
                 <div class="tpl-section">
                   <div class="tpl-section__head">
                     <label class="tpl-label">列定义</label>
-                    <button class="cn-btn cn-btn--sm" @click="addChronicleColumn"><i class="fa-solid fa-plus"></i>添加列</button>
+                    <button class="cn-btn cn-btn--sm" @click="addChronicleColumn">
+                      <i class="fa-solid fa-plus"></i>添加列
+                    </button>
                   </div>
                   <div class="tpl-cols">
                     <div class="tpl-col-head">
@@ -774,22 +935,61 @@ onActivated(() => {
                       <span class="tpl-col-cell del"></span>
                     </div>
                     <div v-for="(col, ci) in chronicleDef.columns" :key="ci" class="tpl-col-row">
-                      <input class="cn-input tpl-col-cell name" v-model="col.name" placeholder="col_name" />
-                      <input class="cn-input tpl-col-cell name" v-model="col.displayName" placeholder="中文名" />
+                      <input
+                        class="cn-input tpl-col-cell name"
+                        v-model="col.name"
+                        placeholder="col_name"
+                      />
+                      <input
+                        class="cn-input tpl-col-cell name"
+                        v-model="col.displayName"
+                        placeholder="中文名"
+                      />
                       <select class="cn-select tpl-col-cell type" v-model="col.type">
                         <option v-for="t in COL_TYPES" :key="t" :value="t">{{ t }}</option>
                       </select>
                       <span class="tpl-col-cell flags">
-                        <button class="cn-btn cn-btn--xs" :class="{ 'cn-btn--primary': col.constraints?.primaryKey }" title="主键" @click="toggleConstraint(col, 'primaryKey')">PK</button>
-                        <button class="cn-btn cn-btn--xs" :class="{ 'cn-btn--primary': col.constraints?.unique }" title="唯一" @click="toggleConstraint(col, 'unique')">UQ</button>
-                        <button class="cn-btn cn-btn--xs" :class="{ 'cn-btn--primary': !col.constraints?.nullable }" title="非空" @click="toggleConstraint(col, 'nullable')">NN</button>
+                        <button
+                          class="cn-btn cn-btn--xs"
+                          :class="{ 'cn-btn--primary': col.constraints?.primaryKey }"
+                          title="主键"
+                          @click="toggleConstraint(col, 'primaryKey')"
+                        >
+                          PK
+                        </button>
+                        <button
+                          class="cn-btn cn-btn--xs"
+                          :class="{ 'cn-btn--primary': col.constraints?.unique }"
+                          title="唯一"
+                          @click="toggleConstraint(col, 'unique')"
+                        >
+                          UQ
+                        </button>
+                        <button
+                          class="cn-btn cn-btn--xs"
+                          :class="{ 'cn-btn--primary': !col.constraints?.nullable }"
+                          title="非空"
+                          @click="toggleConstraint(col, 'nullable')"
+                        >
+                          NN
+                        </button>
                       </span>
                       <select class="cn-select tpl-col-cell role" v-model="col.role">
                         <option :value="undefined">无</option>
-                        <option v-for="r in CHRONICLE_ROLES" :key="r" :value="r">{{ CHRONICLE_ROLE_LABELS[r] }}</option>
+                        <option v-for="r in CHRONICLE_ROLES" :key="r" :value="r">
+                          {{ CHRONICLE_ROLE_LABELS[r] }}
+                        </option>
                       </select>
-                      <input class="cn-input tpl-col-cell note" v-model="col.note" placeholder="列说明（注入 AI prompt）" />
-                      <button class="cn-btn cn-btn--sm cn-btn--text tpl-col-cell del" title="删除列" @click="removeChronicleColumn(ci)">
+                      <input
+                        class="cn-input tpl-col-cell note"
+                        v-model="col.note"
+                        placeholder="列说明（注入 AI prompt）"
+                      />
+                      <button
+                        class="cn-btn cn-btn--sm cn-btn--text tpl-col-cell del"
+                        title="删除列"
+                        @click="removeChronicleColumn(ci)"
+                      >
                         <i class="fa-solid fa-trash"></i>
                       </button>
                     </div>
@@ -797,15 +997,30 @@ onActivated(() => {
                 </div>
                 <div class="tpl-section">
                   <label class="tpl-label">新增行提示 (insertHint)</label>
-                  <textarea class="cn-textarea tpl-textarea" v-model="chronicleDef.insertHint" rows="4" placeholder="INSERT 时机/格式/SQL示例（注入 AI prompt）"></textarea>
+                  <textarea
+                    class="cn-textarea tpl-textarea"
+                    v-model="chronicleDef.insertHint"
+                    rows="4"
+                    placeholder="INSERT 时机/格式/SQL示例（注入 AI prompt）"
+                  ></textarea>
                 </div>
                 <div class="tpl-section">
                   <label class="tpl-label">更新行提示 (updateHint)</label>
-                  <textarea class="cn-textarea tpl-textarea" v-model="chronicleDef.updateHint" rows="2" placeholder="UPDATE 时机/约束（注入 AI prompt）"></textarea>
+                  <textarea
+                    class="cn-textarea tpl-textarea"
+                    v-model="chronicleDef.updateHint"
+                    rows="2"
+                    placeholder="UPDATE 时机/约束（注入 AI prompt）"
+                  ></textarea>
                 </div>
                 <div class="tpl-section">
                   <label class="tpl-label">删除行提示 (deleteHint)</label>
-                  <textarea class="cn-textarea tpl-textarea" v-model="chronicleDef.deleteHint" rows="2" placeholder="DELETE 时机/约束（注入 AI prompt）"></textarea>
+                  <textarea
+                    class="cn-textarea tpl-textarea"
+                    v-model="chronicleDef.deleteHint"
+                    rows="2"
+                    placeholder="DELETE 时机/约束（注入 AI prompt）"
+                  ></textarea>
                 </div>
               </div>
             </div>
@@ -813,116 +1028,225 @@ onActivated(() => {
         </div>
         <div class="prompt-editor" v-else-if="activeTemplatePreset">
           <div class="cn-card__head">
-            <input class="cn-input" style="width:200px;font-weight:600" v-model="activeTemplatePreset.name" placeholder="模板名称" />
-            <button class="cn-btn cn-btn--sm" @click="addTableT"><i class="fa-solid fa-plus"></i>添加表</button>
-            <button class="cn-btn cn-btn--sm" v-if="selectedTable" @click="openTemplatePreview"><i class="fa-solid fa-eye"></i>预览此表</button>
+            <input
+              class="cn-input"
+              style="width: 200px; font-weight: 600"
+              v-model="activeTemplatePreset.name"
+              placeholder="模板名称"
+            />
+            <button class="cn-btn cn-btn--sm" @click="addTableT">
+              <i class="fa-solid fa-plus"></i>添加表
+            </button>
+            <button class="cn-btn cn-btn--sm" v-if="selectedTable" @click="openTemplatePreview">
+              <i class="fa-solid fa-eye"></i>预览此表
+            </button>
           </div>
           <div class="cn-card__body template-editor-body">
             <div v-if="editingTables.length === 0" class="template-editor-empty">
               <span>此模板尚无数据表，点击"添加表"开始</span>
             </div>
-            <div v-for="(table, ti) in editingTables" :key="ti"
+            <div
+              v-for="(table, ti) in editingTables"
+              :key="ti"
               class="tpl-table-card"
               :class="{ 'tpl-table-card--active': ti === selectedTableIdx }"
-              @click="selectedTableIdx = selectedTableIdx === ti ? -1 : ti">
-              <div class="tpl-table-card__head">
-                <span class="tpl-table-card__name">{{ table.displayName || table.name || '(未命名)' }}</span>
+            >
+              <div
+                class="tpl-table-card__head"
+                @click="selectedTableIdx = selectedTableIdx === ti ? -1 : ti"
+              >
+                <span class="tpl-table-card__name">{{
+                  table.displayName || table.name || '(未命名)'
+                }}</span>
                 <span class="tpl-table-card__meta">{{ table.columns.length }}列</span>
-                <button class="cn-btn cn-btn--sm cn-btn--text" title="删除表" @click.stop="removeTableT(ti)">
+                <button
+                  class="cn-btn cn-btn--sm cn-btn--text"
+                  title="删除表"
+                  @click.stop="removeTableT(ti)"
+                >
                   <i class="fa-solid fa-trash"></i>
                 </button>
               </div>
-              <div v-if="ti === selectedTableIdx" class="tpl-table-card__body">
-                <div class="tpl-row">
-                  <div class="tpl-field">
-                    <label class="tpl-label">英文表名</label>
-                    <input class="cn-input" v-model="table.name" placeholder="snake_case" />
-                  </div>
-                  <div class="tpl-field">
-                    <label class="tpl-label">中文表名</label>
-                    <input class="cn-input" v-model="table.displayName" placeholder="给 AI 看的表名" />
-                  </div>
-                </div>
-                <div class="tpl-section">
-                  <label class="tpl-label">表说明 (note)</label>
-                  <textarea class="cn-textarea tpl-textarea" v-model="table.note" rows="2" placeholder="表的用途与每列填写约束（经 tables 占位符注入 AI prompt）"></textarea>
-                </div>
-                <div class="tpl-section">
-                  <label class="tpl-label">世界书注入</label>
-                  <div class="tpl-row" style="align-items:center">
-                    <div class="tpl-field" style="flex-direction:row;align-items:center;gap:8px">
-                      <label class="tpl-label" style="font-size:12px">启用注入</label>
-                      <label class="cn-switch">
-                        <input type="checkbox"
-                          :checked="table.exportConfig?.enabled !== false"
-                          @change="ensureExportConfig(table); table.exportConfig!.enabled = ($event.target as HTMLInputElement).checked" />
-                        <span class="cn-switch__track"></span>
-                      </label>
+              <Transition name="cn-fold">
+                <div v-if="ti === selectedTableIdx" class="tpl-table-card__body">
+                  <div class="tpl-row">
+                    <div class="tpl-field">
+                      <label class="tpl-label">英文表名</label>
+                      <input class="cn-input" v-model="table.name" placeholder="snake_case" />
                     </div>
                     <div class="tpl-field">
-                      <label class="tpl-label" style="font-size:12px">注入类型</label>
-                      <select class="cn-select" style="width:auto"
-                        @change="ensureExportConfig(table); table.exportConfig!.entryType = ($event.target as HTMLSelectElement).value as 'constant' | 'keyword'">
-                        <option value="constant" :selected="(table.exportConfig?.entryType ?? 'constant') === 'constant'">常量（始终注入）</option>
-                        <option value="keyword" :selected="table.exportConfig?.entryType === 'keyword'">关键词（召回触发）</option>
-                      </select>
+                      <label class="tpl-label">中文表名</label>
+                      <input
+                        class="cn-input"
+                        v-model="table.displayName"
+                        placeholder="给 AI 看的表名"
+                      />
                     </div>
                   </div>
-                  <div v-if="table.exportConfig?.entryType === 'keyword'" class="tpl-row" style="margin-top:8px">
-                    <div class="tpl-field">
-                      <label class="tpl-label" style="font-size:12px">触发关键词</label>
-                      <input class="cn-input"
-                        :value="table.exportConfig?.keywords ?? ''"
-                        @input="ensureExportConfig(table); table.exportConfig!.keywords = ($event.target as HTMLInputElement).value"
-                        placeholder="逗号分隔，如：背包, 物品, 装备" />
+                  <div class="tpl-section">
+                    <label class="tpl-label">表说明 (note)</label>
+                    <textarea
+                      class="cn-textarea tpl-textarea"
+                      v-model="table.note"
+                      rows="2"
+                      placeholder="表的用途与每列填写约束（经 tables 占位符注入 AI prompt）"
+                    ></textarea>
+                  </div>
+                  <div class="tpl-section">
+                    <label class="tpl-label">世界书注入</label>
+                    <div class="tpl-row" style="align-items: center">
+                      <div
+                        class="tpl-field"
+                        style="flex-direction: row; align-items: center; gap: 8px"
+                      >
+                        <label class="tpl-label" style="font-size: 12px">启用注入</label>
+                        <label class="cn-switch">
+                          <input
+                            type="checkbox"
+                            :checked="table.exportConfig?.enabled !== false"
+                            @change="setExportEnabled(table, ($event.target as HTMLInputElement).checked)"
+                          />
+                          <span class="cn-switch__track"></span>
+                        </label>
+                      </div>
+                      <div class="tpl-field">
+                        <label class="tpl-label" style="font-size: 12px">注入类型</label>
+                        <select
+                          class="cn-select"
+                          style="width: auto"
+                          @change="setExportEntryType(table, ($event.target as HTMLSelectElement).value)"
+                        >
+                          <option
+                            value="constant"
+                            :selected="(table.exportConfig?.entryType ?? 'constant') === 'constant'"
+                          >
+                            常量（始终注入）
+                          </option>
+                          <option
+                            value="keyword"
+                            :selected="table.exportConfig?.entryType === 'keyword'"
+                          >
+                            关键词（召回触发）
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                    <div
+                      v-if="table.exportConfig?.entryType === 'keyword'"
+                      class="tpl-row"
+                      style="margin-top: 8px"
+                    >
+                      <div class="tpl-field">
+                        <label class="tpl-label" style="font-size: 12px">触发关键词</label>
+                        <input
+                          class="cn-input"
+                          :value="table.exportConfig?.keywords ?? ''"
+                          @input="setExportKeywords(table, ($event.target as HTMLInputElement).value)"
+                          placeholder="逗号分隔，如：背包, 物品, 装备"
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="tpl-section">
-                  <div class="tpl-section__head">
-                    <label class="tpl-label">列定义</label>
-                    <button class="cn-btn cn-btn--sm" @click="addColumnT"><i class="fa-solid fa-plus"></i>添加列</button>
-                  </div>
-                  <div class="tpl-cols">
-                    <div class="tpl-col-head">
-                      <span class="tpl-col-cell name">英文名</span>
-                      <span class="tpl-col-cell name">中文名</span>
-                      <span class="tpl-col-cell type">类型</span>
-                      <span class="tpl-col-cell flags">约束</span>
-                      <span class="tpl-col-cell note">AI 提示</span>
-                      <span class="tpl-col-cell del"></span>
-                    </div>
-                    <div v-for="(col, ci) in table.columns" :key="ci" class="tpl-col-row">
-                      <input class="cn-input tpl-col-cell name" v-model="col.name" placeholder="col_name" />
-                      <input class="cn-input tpl-col-cell name" v-model="col.displayName" placeholder="中文名" />
-                      <select class="cn-select tpl-col-cell type" v-model="col.type">
-                        <option v-for="t in COL_TYPES" :key="t" :value="t">{{ t }}</option>
-                      </select>
-                      <span class="tpl-col-cell flags">
-                        <button class="cn-btn cn-btn--xs" :class="{ 'cn-btn--primary': col.constraints?.primaryKey }" title="主键" @click="toggleConstraint(col, 'primaryKey')">PK</button>
-                        <button class="cn-btn cn-btn--xs" :class="{ 'cn-btn--primary': col.constraints?.unique }" title="唯一" @click="toggleConstraint(col, 'unique')">UQ</button>
-                        <button class="cn-btn cn-btn--xs" :class="{ 'cn-btn--primary': !col.constraints?.nullable }" title="非空" @click="toggleConstraint(col, 'nullable')">NN</button>
-                      </span>
-                      <input class="cn-input tpl-col-cell note" v-model="col.note" placeholder="列说明（注入 AI prompt）" />
-                      <button class="cn-btn cn-btn--sm cn-btn--text tpl-col-cell del" title="删除列" @click="removeColumnT(ci)">
-                        <i class="fa-solid fa-trash"></i>
+                  <div class="tpl-section">
+                    <div class="tpl-section__head">
+                      <label class="tpl-label">列定义</label>
+                      <button class="cn-btn cn-btn--sm" @click="addColumnT">
+                        <i class="fa-solid fa-plus"></i>添加列
                       </button>
                     </div>
+                    <div class="tpl-cols">
+                      <div class="tpl-col-head">
+                        <span class="tpl-col-cell name">英文名</span>
+                        <span class="tpl-col-cell name">中文名</span>
+                        <span class="tpl-col-cell type">类型</span>
+                        <span class="tpl-col-cell flags">约束</span>
+                        <span class="tpl-col-cell note">AI 提示</span>
+                        <span class="tpl-col-cell del"></span>
+                      </div>
+                      <div v-for="(col, ci) in table.columns" :key="ci" class="tpl-col-row">
+                        <input
+                          class="cn-input tpl-col-cell name"
+                          v-model="col.name"
+                          placeholder="col_name"
+                        />
+                        <input
+                          class="cn-input tpl-col-cell name"
+                          v-model="col.displayName"
+                          placeholder="中文名"
+                        />
+                        <select class="cn-select tpl-col-cell type" v-model="col.type">
+                          <option v-for="t in COL_TYPES" :key="t" :value="t">{{ t }}</option>
+                        </select>
+                        <span class="tpl-col-cell flags">
+                          <button
+                            class="cn-btn cn-btn--xs"
+                            :class="{ 'cn-btn--primary': col.constraints?.primaryKey }"
+                            title="主键"
+                            @click="toggleConstraint(col, 'primaryKey')"
+                          >
+                            PK
+                          </button>
+                          <button
+                            class="cn-btn cn-btn--xs"
+                            :class="{ 'cn-btn--primary': col.constraints?.unique }"
+                            title="唯一"
+                            @click="toggleConstraint(col, 'unique')"
+                          >
+                            UQ
+                          </button>
+                          <button
+                            class="cn-btn cn-btn--xs"
+                            :class="{ 'cn-btn--primary': !col.constraints?.nullable }"
+                            title="非空"
+                            @click="toggleConstraint(col, 'nullable')"
+                          >
+                            NN
+                          </button>
+                        </span>
+                        <input
+                          class="cn-input tpl-col-cell note"
+                          v-model="col.note"
+                          placeholder="列说明（注入 AI prompt）"
+                        />
+                        <button
+                          class="cn-btn cn-btn--sm cn-btn--text tpl-col-cell del"
+                          title="删除列"
+                          @click="removeColumnT(ci)"
+                        >
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tpl-section">
+                    <label class="tpl-label">新增行提示 (insertHint)</label>
+                    <textarea
+                      class="cn-textarea tpl-textarea"
+                      v-model="table.insertHint"
+                      rows="2"
+                      placeholder="INSERT 时机/格式/SQL示例（注入 AI prompt）"
+                    ></textarea>
+                  </div>
+                  <div class="tpl-section">
+                    <label class="tpl-label">更新行提示 (updateHint)</label>
+                    <textarea
+                      class="cn-textarea tpl-textarea"
+                      v-model="table.updateHint"
+                      rows="2"
+                      placeholder="UPDATE 时机/约束（注入 AI prompt）"
+                    ></textarea>
+                  </div>
+                  <div class="tpl-section">
+                    <label class="tpl-label">删除行提示 (deleteHint)</label>
+                    <textarea
+                      class="cn-textarea tpl-textarea"
+                      v-model="table.deleteHint"
+                      rows="2"
+                      placeholder="DELETE 时机/约束（注入 AI prompt）"
+                    ></textarea>
                   </div>
                 </div>
-                <div class="tpl-section">
-                  <label class="tpl-label">新增行提示 (insertHint)</label>
-                  <textarea class="cn-textarea tpl-textarea" v-model="table.insertHint" rows="2" placeholder="INSERT 时机/格式/SQL示例（注入 AI prompt）"></textarea>
-                </div>
-                <div class="tpl-section">
-                  <label class="tpl-label">更新行提示 (updateHint)</label>
-                  <textarea class="cn-textarea tpl-textarea" v-model="table.updateHint" rows="2" placeholder="UPDATE 时机/约束（注入 AI prompt）"></textarea>
-                </div>
-                <div class="tpl-section">
-                  <label class="tpl-label">删除行提示 (deleteHint)</label>
-                  <textarea class="cn-textarea tpl-textarea" v-model="table.deleteHint" rows="2" placeholder="DELETE 时机/约束（注入 AI prompt）"></textarea>
-                </div>
-              </div>
+              </Transition>
             </div>
           </div>
         </div>
@@ -935,120 +1259,120 @@ onActivated(() => {
 
       <!-- ═══ 提示词编辑器（现有内容，原封不动） ═══ -->
       <template v-if="!showTemplate">
-      <div class="prompt-split">
-        <div class="prompt-side">
-          <div class="cn-card__head">
-            <span>预设</span>
-            <button class="cn-btn cn-btn--sm" @click="newPreset">
-              <i class="fa-solid fa-plus"></i>
-              新建
-            </button>
-          </div>
-          <div class="cn-card__body">
-            <ul class="preset-list">
-              <li
-                v-for="p in sceneConfig.presets"
-                :key="p.id"
-                class="preset-list__item"
-                :class="{ 'preset-list__item--active': p.id === sceneConfig.activeId }"
-                @click="selectPreset(p.id)"
-              >
-                <span class="preset-list__name">
-                  {{ p.name }}
-                  <i
-                    v-if="p.id === sceneConfig.defaultId"
-                    class="fa-solid fa-star preset-list__default"
-                    title="默认预设"
-                  ></i>
-                </span>
-                <span class="preset-list__count">{{ p.segments.length }}段</span>
-                <button
-                  v-if="p.id !== sceneConfig.activeId"
-                  class="cn-btn cn-btn--sm cn-btn--text"
-                  title="设为当前"
-                  @click.stop="selectPreset(p.id)"
-                >
-                  <i class="fa-solid fa-check"></i>
-                </button>
-                <button
-                  v-if="p.id !== sceneConfig.defaultId"
-                  class="cn-btn cn-btn--sm cn-btn--text"
-                  title="设为默认"
-                  @click.stop="setDefaultPreset(p.id)"
-                >
-                  <i class="fa-solid fa-star"></i>
-                </button>
-                <button
-                  class="cn-btn cn-btn--sm cn-btn--text"
-                  title="删除"
-                  @click.stop="deletePreset(p.id)"
-                >
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="prompt-editor">
-          <div class="cn-card__head">
-            <span>{{ activePreset?.name }}</span>
-            <span class="prompt-editor__desc">{{
-              scenes.find((s) => s.key === activeScene)?.desc
-            }}</span>
-          </div>
-          <div class="cn-card__body">
-            <draggable
-              :list="activePreset?.segments ?? []"
-              item-key="id"
-              :animation="150"
-              handle=".seg-item__grip"
-              ghost-class="seg-item--ghost"
-              class="block-list"
-            >
-              <template #item="{ element: seg, index: si }">
-                <div class="seg-item">
-                  <div class="seg-item__bar">
-                    <i class="fa-solid fa-grip-vertical seg-item__grip"></i>
-                    <button
-                      class="seg-item__role"
-                      :title="`点击切换角色（当前 ${roleLabels[seg.role]}）`"
-                      @click="cycleRole(seg)"
-                    >
-                      {{ roleLabels[seg.role] }}
-                    </button>
-                    <input
-                      class="cn-input seg-item__name"
-                      v-model="seg.name"
-                      placeholder="段名称"
-                    />
-                    <span class="seg-item__seq">#{{ globalIndex(si) }}</span>
-                    <button
-                      class="cn-btn cn-btn--sm cn-btn--text"
-                      title="删除"
-                      @click="removeSegment(seg.id)"
-                    >
-                      <i class="fa-solid fa-trash"></i>
-                    </button>
-                  </div>
-                  <PromptSegmentEditor v-model="seg.content" />
-                </div>
-              </template>
-            </draggable>
-            <div class="seg-add-row">
-              <button
-                v-for="r in roles"
-                :key="r"
-                class="cn-btn cn-btn--sm"
-                @click="addSegment(r)"
-              >
+        <div class="prompt-split">
+          <div class="prompt-side">
+            <div class="cn-card__head">
+              <span>预设</span>
+              <button class="cn-btn cn-btn--sm" @click="newPreset">
                 <i class="fa-solid fa-plus"></i>
-                {{ roleLabels[r] }}
+                新建
               </button>
+            </div>
+            <div class="cn-card__body">
+              <TransitionGroup name="cn-list" tag="ul" class="preset-list">
+                <li
+                  v-for="p in sceneConfig.presets"
+                  :key="p.id"
+                  class="preset-list__item"
+                  :class="{ 'preset-list__item--active': p.id === sceneConfig.activeId }"
+                  @click="selectPreset(p.id)"
+                >
+                  <span class="preset-list__name">
+                    {{ p.name }}
+                    <i
+                      v-if="p.id === sceneConfig.defaultId"
+                      class="fa-solid fa-star preset-list__default"
+                      title="默认预设"
+                    ></i>
+                  </span>
+                  <span class="preset-list__count">{{ p.segments.length }}段</span>
+                  <button
+                    v-if="p.id !== sceneConfig.activeId"
+                    class="cn-btn cn-btn--sm cn-btn--text"
+                    title="设为当前"
+                    @click.stop="selectPreset(p.id)"
+                  >
+                    <i class="fa-solid fa-check"></i>
+                  </button>
+                  <button
+                    v-if="p.id !== sceneConfig.defaultId"
+                    class="cn-btn cn-btn--sm cn-btn--text"
+                    title="设为默认"
+                    @click.stop="setDefaultPreset(p.id)"
+                  >
+                    <i class="fa-solid fa-star"></i>
+                  </button>
+                  <button
+                    class="cn-btn cn-btn--sm cn-btn--text"
+                    title="删除"
+                    @click.stop="deletePreset(p.id)"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </li>
+              </TransitionGroup>
+            </div>
+          </div>
+
+          <div class="prompt-editor">
+            <div class="cn-card__head">
+              <span>{{ activePreset?.name }}</span>
+              <span class="prompt-editor__desc">{{
+                scenes.find((s) => s.key === activeScene)?.desc
+              }}</span>
+            </div>
+            <div class="cn-card__body">
+              <draggable
+                :list="activePreset?.segments ?? []"
+                item-key="id"
+                :animation="150"
+                handle=".seg-item__grip"
+                ghost-class="seg-item--ghost"
+                class="block-list"
+              >
+                <template #item="{ element: seg, index: si }">
+                  <div class="seg-item">
+                    <div class="seg-item__bar">
+                      <i class="fa-solid fa-grip-vertical seg-item__grip"></i>
+                      <button
+                        class="seg-item__role"
+                        :title="`点击切换角色（当前 ${roleLabels[seg.role]}）`"
+                        @click="cycleRole(seg)"
+                      >
+                        {{ roleLabels[seg.role] }}
+                      </button>
+                      <input
+                        class="cn-input seg-item__name"
+                        v-model="seg.name"
+                        placeholder="段名称"
+                      />
+                      <span class="seg-item__seq">#{{ globalIndex(si) }}</span>
+                      <button
+                        class="cn-btn cn-btn--sm cn-btn--text"
+                        title="删除"
+                        @click="removeSegment(seg.id)"
+                      >
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
+                    <PromptSegmentEditor v-model="seg.content" />
+                  </div>
+                </template>
+              </draggable>
+              <div class="seg-add-row">
+                <button
+                  v-for="r in roles"
+                  :key="r"
+                  class="cn-btn cn-btn--sm"
+                  @click="addSegment(r)"
+                >
+                  <i class="fa-solid fa-plus"></i>
+                  {{ roleLabels[r] }}
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       </template>
     </div>
 
@@ -1070,53 +1394,57 @@ onActivated(() => {
       </div>
     </div>
 
-    <div v-if="previewTemplateVisible" class="cn-modal-mask" @click.self="closeTemplatePreview">
-      <div class="cn-modal">
-        <div class="cn-modal__head">
-          <span>选中表注入 AI prompt 的内容</span>
-          <button class="cn-btn cn-btn--sm cn-btn--text" @click="closeTemplatePreview">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
+    <Transition name="cn-modal">
+      <div v-if="previewTemplateVisible" class="cn-modal-mask" @click.self="closeTemplatePreview">
+        <div class="cn-modal">
+          <div class="cn-modal__head">
+            <span>选中表注入 AI prompt 的内容</span>
+            <button class="cn-btn cn-btn--sm cn-btn--text" @click="closeTemplatePreview">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <pre class="cn-modal__code">{{ previewTemplateJson }}</pre>
         </div>
-        <pre class="cn-modal__code">{{ previewTemplateJson }}</pre>
       </div>
-    </div>
+    </Transition>
 
     <template v-if="!showTemplate">
-    <div class="prompt-foot">
-      <span class="prompt-foot__hint">
-        段内用 <code>{{ varExample }}</code> 插入变量。点击角色标签切换
-        System/User/Assistant，拖拽手柄调整顺序。多个段按顺序拼接，模拟多轮对话。
-      </span>
-      <div class="cn-space">
-        <label class="cn-btn">
-          <i class="fa-solid fa-upload"></i>
-          导入
-          <input type="file" accept="application/json,.json" hidden @change="importPreset" />
-        </label>
-        <button class="cn-btn" @click="exportPreset">
-          <i class="fa-solid fa-download"></i>
-          导出
-        </button>
-        <button class="cn-btn" @click="openPreview">
-          <i class="fa-solid fa-eye"></i>
-          预览
-        </button>
-        <button class="cn-btn cn-btn--primary" @click="saveAll">保存</button>
-      </div>
-    </div>
-
-    <div v-if="previewVisible" class="cn-modal-mask" @click.self="closePreview">
-      <div class="cn-modal">
-        <div class="cn-modal__head">
-          <span>发给 AI 的 messages</span>
-          <button class="cn-btn cn-btn--sm cn-btn--text" @click="closePreview">
-            <i class="fa-solid fa-xmark"></i>
+      <div class="prompt-foot">
+        <span class="prompt-foot__hint">
+          段内用 <code>{{ varExample }}</code> 插入变量。点击角色标签切换
+          System/User/Assistant，拖拽手柄调整顺序。多个段按顺序拼接，模拟多轮对话。
+        </span>
+        <div class="cn-space">
+          <label class="cn-btn">
+            <i class="fa-solid fa-upload"></i>
+            导入
+            <input type="file" accept="application/json,.json" hidden @change="importPreset" />
+          </label>
+          <button class="cn-btn" @click="exportPreset">
+            <i class="fa-solid fa-download"></i>
+            导出
           </button>
+          <button class="cn-btn" @click="openPreview">
+            <i class="fa-solid fa-eye"></i>
+            预览
+          </button>
+          <button class="cn-btn cn-btn--primary" @click="saveAll">保存</button>
         </div>
-        <pre class="cn-modal__code">{{ previewJson }}</pre>
       </div>
-    </div>
+
+      <Transition name="cn-modal">
+        <div v-if="previewVisible" class="cn-modal-mask" @click.self="closePreview">
+          <div class="cn-modal">
+            <div class="cn-modal__head">
+              <span>发给 AI 的 messages</span>
+              <button class="cn-btn cn-btn--sm cn-btn--text" @click="closePreview">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <pre class="cn-modal__code">{{ previewJson }}</pre>
+          </div>
+        </div>
+      </Transition>
     </template>
   </div>
 </template>

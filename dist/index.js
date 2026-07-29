@@ -8197,7 +8197,7 @@ function defineStore(id, setup, setupOptions) {
 }
 //#endregion
 //#region src/ui/theme.css?inline
-var theme_default = ":root {\n  --cn-z-app: 10000;\n  --cn-z-toast: 10010;\n  --cn-z-modal: 10020;\n  --cn-z-dialog: 10020;\n}\n\n#cn_app {\n  --cn-bg: #f0f9eb;\n  --cn-surface: #ffffff;\n  --cn-primary: #52c41a;\n  --cn-primary-hover: #73d13d;\n  --cn-primary-active: #389e0d;\n  --cn-primary-soft: #d9f7be;\n  --cn-text: #1f1f1f;\n  --cn-text-2: #595959;\n  --cn-text-3: #8c8c8c;\n  --cn-border: #e8e8e8;\n  --cn-border-green: #d9f7be;\n  --cn-radius: 6px;\n  --cn-radius-sm: 4px;\n  --cn-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.06);\n  --cn-font:\n    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei',\n    sans-serif;\n  color: var(--cn-text);\n  font-family: var(--cn-font);\n  font-size: 15px;\n  line-height: 1.5;\n}\n\n#cn_app,\n#cn_app * {\n  box-sizing: border-box;\n}\n\n#cn_app button {\n  appearance: none;\n  -webkit-appearance: none;\n  margin: 0;\n  font: inherit;\n  color: var(--cn-text) !important;\n  background: var(--cn-surface);\n  cursor: pointer;\n  -webkit-tap-highlight-color: transparent;\n}\n\n#cn_app i {\n  font-size: inherit;\n  line-height: 1;\n  font-style: normal;\n  vertical-align: baseline;\n}\n\n#cn_app .cn-content i {\n  font-size: 0.85em;\n}\n\n#cn_app input,\n#cn_app select,\n#cn_app textarea {\n  appearance: none;\n  -webkit-appearance: none;\n  margin: 0;\n  font: inherit;\n  color: var(--cn-text);\n  background: var(--cn-surface);\n  border: none;\n  outline: none;\n  -webkit-tap-highlight-color: transparent;\n}\n\n#cn_app select option {\n  color: var(--cn-text) !important;\n  background: var(--cn-surface) !important;\n}\n\n#cn_app button:focus:not(:focus-visible),\n#cn_app input:focus:not(:focus-visible),\n#cn_app select:focus:not(:focus-visible),\n#cn_app textarea:focus:not(:focus-visible) {\n  outline: none;\n}\n\n#cn_app ul {\n  margin: 0;\n  padding: 0;\n}\n\n#cn_app a {\n  color: inherit;\n  text-decoration: none;\n}\n\n#cn_app h1,\n#cn_app h2,\n#cn_app h3,\n#cn_app h4,\n#cn_app h5,\n#cn_app h6 {\n  margin: 0;\n  font-size: inherit;\n  font-weight: inherit;\n}\n\n#cn_app label {\n  display: inline-block;\n  margin: 0;\n  font-weight: inherit;\n  cursor: inherit;\n}\n\n#cn_app .cn-btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  height: 32px;\n  padding: 0 15px;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface) !important;\n  color: var(--cn-text) !important;\n  font-size: 14px;\n  line-height: 1;\n  white-space: nowrap;\n  transition: all 0.15s ease;\n  user-select: none;\n}\n#cn_app .cn-btn:hover:not(:disabled) {\n  border-color: var(--cn-primary) !important;\n  color: var(--cn-primary) !important;\n}\n#cn_app .cn-btn:disabled {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n#cn_app .cn-btn--primary {\n  background: var(--cn-primary) !important;\n  border-color: var(--cn-primary) !important;\n  color: #fff !important;\n}\n#cn_app .cn-btn--primary:hover:not(:disabled) {\n  background: var(--cn-primary-hover);\n  border-color: var(--cn-primary-hover);\n  color: #fff;\n}\n#cn_app .cn-btn--sm {\n  height: 26px;\n  padding: 0 11px;\n  font-size: 13px;\n}\n#cn_app .cn-btn--text {\n  border-color: transparent;\n  background: transparent;\n  color: var(--cn-text-2);\n}\n#cn_app .cn-btn--text:hover:not(:disabled) {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n  border-color: transparent;\n}\n\n#cn_app .cn-input,\n#cn_app .cn-select,\n#cn_app .cn-textarea {\n  display: block;\n  width: 100%;\n  height: 32px;\n  padding: 4px 11px;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface) !important;\n  color: var(--cn-text) !important;\n  font-size: 14px;\n  transition:\n    border-color 0.15s ease,\n    box-shadow 0.15s ease;\n}\n#cn_app .cn-textarea {\n  height: auto;\n  min-height: 80px;\n  line-height: 1.5;\n  resize: vertical;\n}\n#cn_app .cn-input:hover,\n#cn_app .cn-select:hover,\n#cn_app .cn-textarea:hover {\n  border-color: var(--cn-primary-hover) !important;\n}\n#cn_app .cn-input:focus,\n#cn_app .cn-select:focus,\n#cn_app .cn-textarea:focus {\n  border-color: var(--cn-primary) !important;\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.15) !important;\n  outline: none !important;\n}\n#cn_app .cn-input::placeholder,\n#cn_app .cn-textarea::placeholder {\n  color: var(--cn-text-3);\n}\n#cn_app .cn-select {\n  padding-right: 28px;\n  background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%238c8c8c' d='M8 11L3 6h10z'/%3E%3C/svg%3E\");\n  background-repeat: no-repeat;\n  background-position: right 10px center;\n  background-size: 12px;\n  cursor: pointer;\n}\n\n#cn_app .cn-card {\n  background: var(--cn-surface) !important;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  box-shadow: var(--cn-shadow);\n  overflow: hidden;\n}\n#cn_app .cn-card__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n  padding: 14px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 16px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .cn-card__body {\n  padding: 16px;\n}\n\n#cn_app .cn-field {\n  margin-bottom: 16px;\n}\n#cn_app .cn-field__label {\n  display: block;\n  margin-bottom: 6px;\n  color: var(--cn-text-2);\n  font-size: 14px;\n}\n\n#cn_app .cn-table {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: 13px;\n}\n#cn_app .cn-table th,\n#cn_app .cn-table td {\n  padding: 8px 12px;\n  border: 1px solid var(--cn-border) !important;\n  text-align: left;\n  white-space: nowrap;\n}\n#cn_app .cn-table th {\n  background: var(--cn-primary-soft);\n  color: var(--cn-text);\n  font-weight: 600;\n}\n#cn_app .cn-table tbody tr:nth-child(even) {\n  background: #fafafa;\n}\n#cn_app .cn-table tbody tr:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cn-table__op {\n  width: 50px;\n  text-align: center;\n  white-space: nowrap;\n}\n\n#cn_app .cn-table__rownum {\n  width: 40px;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 12px;\n  white-space: nowrap;\n}\n\n#cn_app .tables-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .tables-toolbar {\n  display: flex;\n  gap: 8px;\n}\n\n#cn_app .table-wrap-card {\n  overflow: visible;\n}\n\n#cn_app .table-tabs {\n  display: flex;\n  gap: 0;\n  padding: 4px 4px 0;\n  background: var(--cn-surface);\n  border-bottom: 1px solid var(--cn-border);\n  overflow-x: auto;\n}\n\n#cn_app .table-tab {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  gap: 2px;\n  padding: 8px 18px;\n  border: 0;\n  border-radius: var(--cn-radius-sm) var(--cn-radius-sm) 0 0;\n  background: transparent;\n  color: var(--cn-text-2);\n  cursor: pointer;\n  transition: all 0.15s ease;\n  white-space: nowrap;\n}\n\n#cn_app .table-tab:hover {\n  color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .table-tab--active {\n  background: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .table-tab__zh {\n  font-size: 14px;\n}\n\n#cn_app .table-tab__en {\n  font-size: 11px;\n  opacity: 0.75;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n}\n\n#cn_app .table-tab--active .table-tab__en {\n  opacity: 0.85;\n}\n\n#cn_app .table-body {\n  background: var(--cn-surface);\n  overflow: hidden;\n}\n\n#cn_app .table-body__meta {\n  flex: 1;\n  color: var(--cn-text-3);\n  font-size: 12px;\n}\n\n#cn_app .table-body__foot {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 10px 16px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .table-row-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 12px;\n  padding: 16px;\n}\n\n#cn_app .table-row-card {\n  flex: 0 0 auto;\n  width: 340px;\n  max-width: 100%;\n}\n\n#cn_app .table-row-card__body {\n  padding: 14px 16px;\n}\n\n#cn_app .table-row-card__field {\n  margin-bottom: 10px;\n}\n\n#cn_app .table-row-card__field:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .table-row-card__label {\n  display: block;\n  margin-bottom: 4px;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n}\n\n#cn_app .table-row-card__label-en {\n  font-weight: 400;\n  color: var(--cn-primary-active);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 11px;\n  margin-left: 6px;\n  opacity: 0.6;\n}\n\n#cn_app .table-row-card__value {\n  min-height: 28px;\n  padding: 6px 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: #fafafa;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n#cn_app .table-row-card__value:focus {\n  background: var(--cn-surface);\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.15);\n}\n\n#cn_app .table-row-card--editing {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2);\n}\n\n#cn_app .table-row-card__foot {\n  display: flex;\n  justify-content: flex-end;\n  gap: 6px;\n  padding: 6px 12px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .chronicle-item--editing {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2);\n}\n\n#cn_app .cell-edit {\n  min-width: 60px;\n  min-height: 20px;\n  padding: 2px 4px;\n  border-radius: var(--cn-radius-sm);\n  outline: none;\n  white-space: normal;\n  word-break: break-word;\n  cursor: text;\n  transition: background 0.15s ease;\n}\n\n#cn_app .cell-edit:empty::before {\n  content: '\\00a0';\n  display: inline;\n}\n\n#cn_app .cell-edit:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cell-edit:focus {\n  background: var(--cn-surface);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2);\n}\n\n#cn_app .chronicle-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .chronicle-toolbar {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n\n#cn_app .chronicle-toolbar__search {\n  flex: 1;\n  max-width: 360px;\n  height: 32px;\n}\n\n#cn_app .chronicle-toolbar__count {\n  flex: 1;\n  text-align: right;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .chronicle-list {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .chronicle-item__key {\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-weight: 700;\n  color: var(--cn-primary-active);\n}\n\n#cn_app .chronicle-fields {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  gap: 12px;\n  margin-bottom: 12px;\n}\n\n#cn_app .chronicle-field {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  min-width: 0;\n}\n\n#cn_app .chronicle-field--full {\n  margin-bottom: 12px;\n}\n\n#cn_app .chronicle-field:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .chronicle-field__label {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n}\n\n#cn_app .chronicle-field__value {\n  min-height: 32px;\n  padding: 6px 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: #fafafa;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n#cn_app .chronicle-field__value:focus {\n  background: var(--cn-surface);\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.15);\n}\n\n#cn_app .cn-empty {\n  padding: 40px 0;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .cn-tag {\n  display: inline-flex;\n  align-items: center;\n  padding: 0 8px;\n  height: 22px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-size: 12px;\n  font-weight: 500;\n}\n\n#cn_app .cn-space {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n}\n#cn_app .cn-space--block {\n  display: flex;\n}\n\n#cn_app .cn-shell {\n  display: flex;\n  height: 100vh;\n  width: 100%;\n  overflow: hidden;\n}\n#cn_app .cn-sider {\n  flex: 0 0 220px;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-right: 1px solid var(--cn-border-green);\n}\n#cn_app .cn-brand {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  height: 56px;\n  padding: 0 20px;\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-brand__icon {\n  font-size: 20px;\n  color: var(--cn-primary);\n}\n#cn_app .cn-brand__name {\n  font-size: 16px;\n  font-weight: 700;\n  color: var(--cn-primary-active);\n}\n#cn_app .cn-menu {\n  flex: 1;\n  padding: 12px 10px;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  overflow-y: auto;\n}\n#cn_app .cn-menu__item {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  width: 100%;\n  padding: 9px 12px;\n  border: 0;\n  background: transparent;\n  border-radius: var(--cn-radius);\n  color: var(--cn-text-2);\n  font-size: 14px;\n  text-align: left;\n  transition: all 0.15s ease;\n}\n#cn_app .cn-menu__item:hover {\n  background: var(--cn-primary-soft);\n  color: var(--cn-text);\n}\n#cn_app .cn-menu__item--active {\n  background: var(--cn-primary);\n  color: #fff;\n  font-weight: 500;\n}\n#cn_app .cn-menu__item--active:hover {\n  background: var(--cn-primary);\n  color: #fff;\n}\n#cn_app .cn-menu__item i {\n  width: 16px;\n  text-align: center;\n  font-size: 14px;\n}\n#cn_app .cn-main {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n#cn_app .cn-header {\n  flex: 0 0 56px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 0 24px;\n  background: var(--cn-surface);\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-header__title {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .cn-content {\n  flex: 1;\n  padding: 20px;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n  background: var(--cn-bg);\n}\n\n#cn_app .toolbar {\n  margin-bottom: 16px;\n}\n#cn_app .model-row {\n  margin-top: 8px;\n}\n\n#cn_app .table-wrap {\n  overflow-x: auto;\n}\n#cn_app .pager {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  justify-content: flex-end;\n  margin-top: 12px;\n}\n#cn_app .pager__info {\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .cn-list {\n  list-style: none;\n}\n#cn_app .cn-list__item {\n  display: flex;\n  gap: 12px;\n  padding: 10px 0;\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-list__item:last-child {\n  border-bottom: 0;\n}\n#cn_app .cn-list__key {\n  flex: 0 0 80px;\n  color: var(--cn-primary-active);\n  font-weight: 600;\n  font-size: 13px;\n}\n#cn_app .cn-list__summary {\n  color: var(--cn-text-2);\n  line-height: 1.6;\n  flex: 1;\n  min-width: 0;\n}\n\n#cn_app .search-input {\n  width: 220px;\n  height: 28px;\n  font-size: 13px;\n}\n\n\n#cn_app .cn-range {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 100%;\n  height: 6px;\n  border-radius: 3px;\n  background: linear-gradient(\n    to right,\n    var(--cn-primary) 0%,\n    var(--cn-primary) var(--cn-range-pct, 50%),\n    #e8e8e8 var(--cn-range-pct, 50%),\n    #e8e8e8 100%\n  ) !important;\n  outline: none;\n  cursor: pointer;\n  margin: 0;\n  border: none;\n}\n\n#cn_app .cn-range::-webkit-slider-thumb {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: var(--cn-primary);\n  border: 2px solid #fff;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\n  cursor: pointer;\n}\n\n#cn_app .cn-range::-moz-range-thumb {\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: var(--cn-primary);\n  border: 2px solid #fff;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\n  cursor: pointer;\n}\n\n#cn_app .cn-range::-moz-range-track {\n  background: transparent;\n  border: 0;\n}\n\n#cn_app .range-row {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n\n#cn_app .range-val {\n  font-weight: 600;\n  color: var(--cn-primary);\n  min-width: 36px;\n  text-align: right;\n  font-size: 14px;\n}\n\n#cn_app .range-num {\n  width: 72px;\n  flex-shrink: 0;\n  text-align: center;\n  font-weight: 600;\n  color: var(--cn-primary);\n}\n\n#cn_app .range-num::-webkit-inner-spin-button {\n  opacity: 1;\n}\n\n#cn_app .prompt-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  height: 100%;\n  overflow: hidden;\n}\n\n#cn_app .prompt-head {\n  margin-bottom: -1px;\n  position: relative;\n  z-index: 2;\n}\n\n#cn_app .scene-tabs {\n  display: flex;\n  gap: 0;\n  padding: 4px 4px 0;\n  background: var(--cn-surface);\n  border: 1px solid var(--cn-border);\n  border-bottom: 0;\n  border-radius: var(--cn-radius) var(--cn-radius) 0 0;\n}\n\n#cn_app .scene-tab {\n  padding: 8px 20px;\n  border: 0;\n  border-radius: var(--cn-radius-sm) var(--cn-radius-sm) 0 0;\n  background: transparent;\n  color: var(--cn-text-2);\n  font-size: 14px;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .scene-tab:hover {\n  color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .scene-tab--active {\n  background: var(--cn-primary);\n  color: #fff;\n  font-weight: 500;\n}\n\n#cn_app .prompt-split {\n  display: grid;\n  grid-template-columns: 220px 1fr;\n  gap: 16px;\n  align-items: start;\n}\n\n#cn_app .preset-list {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n\n#cn_app .preset-list__item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 6px;\n  padding: 9px 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  color: var(--cn-text-2);\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .preset-list__item:hover {\n  border-color: var(--cn-primary-hover);\n  color: var(--cn-text);\n}\n\n#cn_app .preset-list__item--active {\n  border-color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-weight: 500;\n}\n\n#cn_app .preset-list__name {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .preset-list__card {\n  color: var(--cn-primary);\n  font-size: 12px;\n  margin-right: 2px;\n}\n\n#cn_app .preset-list__default {\n  flex: 0 0 auto;\n  color: #faad14;\n  font-size: 12px;\n}\n\n#cn_app .preset-list__count {\n  flex: 0 0 auto;\n  font-size: 11px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .prompt-editor__desc {\n  color: var(--cn-text-3);\n  font-size: 12px;\n  font-weight: 400;\n}\n\n#cn_app .block-list {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .block {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: #fafafa;\n  overflow: hidden;\n}\n\n#cn_app .block--ghost {\n  opacity: 0.4;\n  border-style: dashed;\n  border-color: var(--cn-primary);\n}\n\n#cn_app .block-head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 8px 10px;\n  border-bottom: 1px solid var(--cn-border);\n  background: var(--cn-surface);\n}\n\n#cn_app .block-head__grip {\n  color: var(--cn-text-3);\n  font-size: 14px;\n  cursor: grab;\n}\n\n#cn_app .block-head__grip:active {\n  cursor: grabbing;\n}\n\n#cn_app .block-head__name {\n  flex: 1;\n  height: 28px;\n  font-size: 13px;\n  font-weight: 600;\n}\n\n#cn_app .block-segs {\n  min-height: 48px;\n  padding: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n\n#cn_app .block-add {\n  display: flex;\n  gap: 4px;\n  padding: 6px 8px 8px;\n  border-top: 1px solid var(--cn-border);\n  background: var(--cn-surface);\n}\n\n#cn_app .block-add-btn {\n  margin-top: 14px;\n}\n\n#cn_app .seg-add-row {\n  display: flex;\n  gap: 8px;\n  margin-top: 14px;\n}\n\n#cn_app .seg-item {\n  margin-bottom: 10px;\n  padding: 10px 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  transition:\n    box-shadow 0.15s ease,\n    border-color 0.15s ease;\n}\n\n#cn_app .seg-item:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .seg-item:hover {\n  border-color: var(--cn-primary-hover);\n  box-shadow: 0 1px 4px rgba(82, 196, 26, 0.12);\n}\n\n#cn_app .seg-item--ghost {\n  opacity: 0.4;\n  border-style: dashed;\n  border-color: var(--cn-primary);\n}\n\n#cn_app .seg-item__bar {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  margin-bottom: 8px;\n}\n\n#cn_app .seg-item__grip {\n  color: var(--cn-text-3);\n  font-size: 14px;\n  cursor: grab;\n}\n\n#cn_app .seg-item__grip:active {\n  cursor: grabbing;\n}\n\n#cn_app .seg-item__role {\n  height: 22px;\n  padding: 0 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: 11px;\n  background: var(--cn-surface);\n  color: var(--cn-text-2);\n  font-size: 11px;\n  font-weight: 700;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .seg-item__role:hover {\n  border-color: var(--cn-primary);\n  color: var(--cn-primary);\n}\n\n#cn_app .seg-item__name {\n  flex: 1;\n  min-width: 0;\n  height: 28px;\n  font-size: 13px;\n  font-weight: 600;\n}\n\n#cn_app .seg-item__seq {\n  flex: 0 0 auto;\n  font-size: 12px;\n  color: var(--cn-primary);\n  font-weight: 600;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n}\n\n#cn_app .seg-item__edit {\n  display: block;\n  width: 100%;\n  min-height: 120px;\n  padding: 8px 11px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: #fafafa;\n  color: var(--cn-text);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.6;\n  white-space: pre-wrap;\n  word-wrap: break-word;\n  outline: none;\n  transition:\n    border-color 0.15s ease,\n    box-shadow 0.15s ease;\n  box-sizing: border-box;\n  overflow: hidden;\n  max-height: 320px;\n}\n\n#cn_app .seg-item__edit:focus-within {\n  border-color: var(--cn-primary);\n  background: var(--cn-surface);\n  box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.15);\n}\n\n#cn_app .seg-var {\n  color: var(--cn-primary-active);\n  background: var(--cn-primary-soft);\n  border: 1px solid var(--cn-primary);\n  border-radius: 3px;\n  padding: 0 4px;\n  font-weight: 600;\n  cursor: help;\n}\n\n#cn_app .seg-var:hover {\n  background: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .seg-item__edit .cm-editor {\n  background: transparent;\n  color: inherit;\n  height: 100%;\n}\n\n#cn_app .seg-item__edit .cm-scroller {\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.6;\n}\n\n#cn_app .seg-item__edit .cm-content {\n  padding: 0;\n  caret-color: var(--cn-primary);\n  min-height: 104px;\n}\n\n#cn_app .seg-item__edit .cm-focused {\n  outline: none;\n}\n\n#cn_app .prompt-foot {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 16px;\n}\n\n#cn_app .prompt-foot__hint {\n  color: var(--cn-text-3);\n  font-size: 12px;\n  line-height: 1.6;\n}\n\n#cn_app .prompt-foot__hint code {\n  padding: 1px 5px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 11px;\n}\n\n#cn_app .prompt-wrap {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n  min-height: 0;\n}\n\n#cn_app .prompt-wrap .prompt-head {\n  margin: 0;\n  padding: 0;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .prompt-wrap .prompt-split {\n  flex: 1;\n  min-height: 0;\n  padding: 16px;\n  gap: 16px;\n  overflow: hidden;\n  align-items: stretch;\n  grid-template-rows: minmax(0, 1fr);\n}\n\n#cn_app .prompt-side {\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n  overflow: hidden;\n}\n\n#cn_app .prompt-editor {\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n  overflow: hidden;\n}\n\n#cn_app .prompt-editor .cn-card__head {\n  padding: 0 0 12px;\n  border-bottom: 1px solid var(--cn-border);\n  margin-bottom: 16px;\n}\n\n#cn_app .prompt-side .cn-card__head {\n  padding: 0 0 12px;\n  border-bottom: 1px solid var(--cn-border);\n  margin-bottom: 12px;\n}\n\n#cn_app .prompt-side .cn-card__body {\n  padding: 0;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .prompt-editor .cn-card__body {\n  padding: 0;\n  flex: 1;\n  min-height: 0;\n  overflow: hidden;\n  display: flex;\n  flex-direction: column;\n}\n\n/* 模板/纪要表编辑区：body 内部纵向滚动（head 与左侧不滚）。\n   提示词配置的 .block-list 自身已 overflow-y:auto，无需此规则。\n   特异性需高于 .prompt-editor .cn-card__body 的 overflow:hidden 才能生效。 */\n#cn_app .prompt-editor .cn-card__body.template-editor-body {\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n\n#cn_app .cn-modal-mask {\n  position: fixed;\n  inset: 0;\n  z-index: var(--cn-z-modal);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(0, 0, 0, 0.45);\n}\n\n#cn_app .cn-modal {\n  width: 90vw;\n  max-width: 1100px;\n  height: 90vh;\n  max-height: 800px;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n}\n\n#cn_app .cn-modal__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 15px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n\n#cn_app .cn-modal__code {\n  margin: 0;\n  padding: 20px;\n  overflow: auto;\n  background: #1e1e1e;\n  color: #d4d4d4;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.7;\n  white-space: pre-wrap;\n  word-break: break-word;\n  flex: 1;\n  min-height: 0;\n}\n\n#cn_app .model-picker-modal {\n  width: 90vw;\n  max-width: 520px;\n  height: auto;\n  max-height: 70vh;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n}\n\n#cn_app .model-picker__search {\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .model-picker__list {\n  overflow-y: auto;\n  padding: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n}\n\n#cn_app .model-picker__item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  width: 100%;\n  padding: 10px 14px;\n  border: none;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text);\n  font-size: 14px;\n  text-align: left;\n  cursor: pointer;\n  transition: background 0.1s;\n}\n\n#cn_app .model-picker__item:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .model-picker__item--picked {\n  background: var(--cn-primary-soft);\n  font-weight: 500;\n}\n\n#cn_app .model-picker__name {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .model-picker__check {\n  color: var(--cn-primary);\n  font-size: 14px;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-btn--danger {\n  background: #ff4d4f;\n  border-color: #ff4d4f;\n  color: #fff;\n}\n\n#cn_app .cn-btn--danger:hover:not(:disabled) {\n  background: #ff7875;\n  border-color: #ff7875;\n  color: #fff;\n}\n\n#cn_app .cn-dialog-mask {\n  position: fixed;\n  inset: 0;\n  z-index: var(--cn-z-dialog);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(0, 0, 0, 0.45);\n}\n\n#cn_app .cn-dialog {\n  width: min(420px, 85vw);\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n  animation: cn-dialog-in 0.15s ease-out;\n}\n\n#cn_app .cn-dialog__head {\n  padding: 14px 20px;\n  font-size: 16px;\n  font-weight: 600;\n  color: var(--cn-text);\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .cn-dialog__body {\n  padding: 16px 20px;\n  color: var(--cn-text-2);\n  font-size: 14px;\n  line-height: 1.6;\n}\n\n#cn_app .cn-dialog__foot {\n  display: flex;\n  justify-content: flex-end;\n  gap: 8px;\n  padding: 12px 20px;\n  border-top: 1px solid var(--cn-border);\n  background: #fafafa;\n}\n\n@keyframes cn-dialog-in {\n  from {\n    opacity: 0;\n    transform: scale(0.95);\n  }\n  to {\n    opacity: 1;\n    transform: scale(1);\n  }\n}\n\n.cn-recall-card {\n  display: block;\n  margin: 0 0 8px 0;\n  border: 1px solid #d9f7be !important;\n  border-radius: 6px;\n  overflow: hidden;\n  background: #fff !important;\n  font-size: 13px;\n  line-height: 1.6;\n  color: #1f1f1f !important;\n}\n\n.cn-recall-card__head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 14px;\n  background: #f0f9eb !important;\n  border-bottom: 1px solid #d9f7be !important;\n}\n\n.cn-recall-card__icon {\n  color: #52c41a !important;\n  font-size: 15px;\n}\n\n.cn-recall-card__brand {\n  font-weight: 600;\n  color: #389e0d !important;\n  font-size: 14px;\n}\n\n.cn-recall-card__count {\n  margin-left: auto;\n  font-size: 12px;\n  color: #8c8c8c !important;\n}\n\n.cn-recall-tabs {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: flex-start;\n}\n\n.cn-recall-tabs__radio {\n  display: none;\n}\n\n.cn-recall-tab {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  gap: 2px;\n  padding: 8px 12px;\n  cursor: pointer;\n  border-bottom: 2px solid transparent !important;\n  background: #fafafa !important;\n  min-width: 100px;\n  transition: background 0.15s, border-color 0.15s;\n  user-select: none;\n}\n\n.cn-recall-tab:hover {\n  background: #f0f9eb !important;\n}\n\n.cn-recall-tabs__radio:checked + .cn-recall-tab {\n  background: #fff !important;\n  border-bottom-color: #52c41a !important;\n}\n\n.cn-recall-tab__key {\n  font-weight: 600;\n  font-size: 13px;\n  color: #1f1f1f !important;\n}\n\n.cn-recall-tab__time {\n  font-size: 12px;\n  color: #52c41a !important;\n}\n\n.cn-recall-tab__loc {\n  font-size: 11px;\n  color: #8c8c8c !important;\n  max-width: 120px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.cn-recall-panel {\n  display: none;\n  width: 100%;\n  padding: 12px 14px;\n  border-top: 1px solid #f0f0f0 !important;\n  order: 1;\n}\n\n.cn-recall-tabs__radio:checked + .cn-recall-tab + .cn-recall-panel {\n  display: block;\n}\n\n.cn-recall-panel__row {\n  display: flex;\n  gap: 8px;\n  margin-bottom: 8px;\n  align-items: flex-start;\n}\n\n.cn-recall-panel__row--full {\n  flex-direction: column;\n  gap: 2px;\n}\n\n.cn-recall-panel__label {\n  flex-shrink: 0;\n  font-size: 12px;\n  color: #8c8c8c !important;\n  min-width: 60px;\n}\n\n.cn-recall-panel__value {\n  font-size: 13px;\n  color: #1f1f1f !important;\n  word-break: break-word;\n  white-space: pre-wrap;\n}\n\n.cn-recall-card__message {\n  padding: 12px 14px;\n  border-top: 1px solid #d9f7be !important;\n  font-size: 14px;\n  color: #1f1f1f !important;\n  white-space: pre-wrap;\n  word-break: break-word;\n  line-height: 1.8;\n}\n\n.cn-recall-faded {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 10px;\n  padding: 28px 14px;\n  color: #8c8c8c !important;\n  font-size: 13px;\n  border-bottom: 1px solid #f0f0f0 !important;\n  user-select: none;\n}\n\n.cn-recall-faded__icon {\n  color: #b7eb8f;\n  font-size: 15px;\n  opacity: 0.7;\n}\n\n.cn-recall-faded__text {\n  font-style: italic;\n  letter-spacing: 1px;\n}\n\n#cn_app .api-page {\n  display: grid;\n  grid-template-columns: 3fr 1fr;\n  gap: 16px;\n  align-items: start;\n}\n\n#cn_app .api-left {\n  min-width: 0;\n}\n\n#cn_app .api-right {\n  min-width: 0;\n}\n\n#cn_app .api-head-desc {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 400;\n}\n\n#cn_app .api-preset-select-row {\n  display: flex;\n  gap: 6px;\n}\n\n#cn_app .api-section-divider {\n  border-top: 1px solid var(--cn-border);\n  margin: 14px 0;\n}\n\n#cn_app .api-form-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0 16px;\n}\n\n#cn_app .api-actions {\n  display: flex;\n  justify-content: flex-end;\n  gap: 8px;\n  border-top: 1px solid var(--cn-border);\n  margin-top: 14px;\n  padding-top: 14px;\n}\n\n#cn_app .model-row {\n  display: flex;\n  gap: 8px;\n  align-items: center;\n}\n\n#cn_app .model-select {\n  margin-top: 6px;\n  width: 100%;\n}\n\n@media (max-width: 900px) {\n  #cn_app .api-page {\n    grid-template-columns: 1fr;\n  }\n}\n\n\n#cn_app .welcome-root {\n  min-width: 0;\n}\n\n#cn_app .welcome-hero {\n  display: flex;\n  align-items: flex-start;\n  justify-content: space-between;\n  gap: 16px;\n  margin-bottom: 16px;\n}\n\n#cn_app .welcome-hero__left {\n  min-width: 0;\n}\n\n#cn_app .welcome-hero__title {\n  margin: 0 0 6px 0;\n  font-size: 24px;\n  font-weight: 800;\n  letter-spacing: -0.3px;\n  background: linear-gradient(135deg, #52c41a 0%, #389e0d 60%, #237d4d 100%);\n  -webkit-background-clip: text;\n  background-clip: text;\n  -webkit-text-fill-color: transparent;\n}\n\n#cn_app .welcome-hero__sub {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-hero__reset {\n  flex-shrink: 0;\n  height: 30px;\n  padding: 0 14px;\n  border: 1px solid var(--cn-primary-soft);\n  border-radius: var(--cn-radius);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-size: 13px;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.15s ease;\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  white-space: nowrap;\n}\n\n#cn_app .welcome-hero__reset:hover {\n  background: var(--cn-primary);\n  border-color: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .welcome-grid {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 14px;\n}\n\n#cn_app .welcome-panel {\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n}\n\n#cn_app .welcome-panel__head {\n  padding: 14px 16px 10px 16px;\n  border-bottom: 1px solid var(--cn-border-green);\n}\n\n#cn_app .welcome-panel__title {\n  margin: 0;\n  padding-bottom: 8px;\n  border-bottom: 3px solid var(--cn-primary);\n  display: inline-block;\n  font-size: 17px;\n  font-weight: 700;\n  color: var(--cn-text);\n  line-height: 1.3;\n}\n\n#cn_app .welcome-panel__hint {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  margin-left: 8px;\n}\n\n#cn_app .welcome-panel__body {\n  display: flex;\n  flex-direction: column;\n  gap: 0;\n  flex: 1;\n  min-height: 0;\n}\n\n#cn_app .welcome-health-item {\n  display: grid;\n  grid-template-columns: 30px minmax(0, 1fr);\n  gap: 12px;\n  align-items: center;\n  padding: 8px 0;\n}\n\n#cn_app .welcome-health-item + .welcome-health-item {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-health-item__icon {\n  width: 32px;\n  height: 32px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: var(--cn-radius-sm);\n  background: #f5f5f5;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .welcome-health-item--ok .welcome-health-item__icon {\n  color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .welcome-health-item--warn .welcome-health-item__icon {\n  color: #fa8c16;\n  background: #fff7e6;\n}\n\n#cn_app .welcome-health-item__body {\n  display: flex;\n  flex-direction: column;\n  gap: 3px;\n  min-width: 0;\n}\n\n#cn_app .welcome-health-item__body strong {\n  font-size: 15px;\n  font-weight: 650;\n  color: var(--cn-text);\n}\n\n#cn_app .welcome-health-item__body p {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-toggle {\n  display: flex;\n  flex-direction: column;\n  gap: 5px;\n  padding: 13px 0;\n}\n\n#cn_app .welcome-toggle + .welcome-toggle {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-toggle__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 16px;\n}\n\n#cn_app .welcome-toggle__label {\n  font-size: 15px;\n  font-weight: 500;\n  color: var(--cn-text);\n}\n\n#cn_app .welcome-toggle__desc {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-preset-row {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 0;\n}\n\n#cn_app .welcome-preset-row + .welcome-preset-row {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-preset-row__label {\n  font-size: 15px;\n  color: var(--cn-text-2);\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-preset-row__hint {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .welcome-preset-row__select {\n  width: 140px;\n  height: 32px;\n  font-size: 14px;\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-kv {\n  padding: 8px 0;\n}\n\n#cn_app .welcome-kv + .welcome-kv {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-kv__row {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n}\n\n#cn_app .welcome-kv__label {\n  font-size: 15px;\n  color: var(--cn-text-2);\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-kv__input {\n  width: 150px;\n  height: 32px;\n  font-size: 14px;\n  text-align: center;\n  font-weight: 500;\n}\n#cn_app .welcome-kv__select {\n  width: 180px;\n  height: 32px;\n  font-size: 14px;\n  flex-shrink: 0;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n}\n\n#cn_app .welcome-kv__desc {\n  margin: 6px 0 0 0;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-stack {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  min-height: 0;\n}\n\n#cn_app .welcome-stack > .welcome-panel:first-child {\n  flex: 1 1 auto;\n  min-height: 0;\n}\n\n#cn_app .welcome-stack > .welcome-panel:last-child {\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-fill-body {\n  display: flex;\n  flex-direction: column;\n  flex: 1 1 auto;\n  min-height: 0;\n  overflow-y: auto;\n  justify-content: space-between;\n}\n\n#cn_app .welcome-fill-empty {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  flex: 1;\n  gap: 8px;\n  font-size: 13px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .welcome-fill-desc {\n  margin: 0 0 10px 0;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-fill-tables {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px 16px;\n  padding: 0 0 10px 0;\n  align-items: center;\n}\n\n#cn_app .welcome-fill-table {\n  display: inline-flex;\n  align-items: center;\n  gap: 5px;\n  font-size: 14px;\n  color: var(--cn-text);\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .welcome-fill-table input[type=\"checkbox\"] {\n  appearance: auto;\n  -webkit-appearance: auto;\n  background: transparent !important;\n  accent-color: var(--cn-primary);\n  width: 16px;\n  height: 16px;\n  cursor: pointer;\n  margin: 0;\n}\n\n#cn_app .welcome-fill-en {\n  font-size: 11px;\n  color: var(--cn-text-3);\n  font-family: ui-monospace, Consolas, monospace;\n  margin-left: 2px;\n}\n\n#cn_app .welcome-fill-hint {\n  flex: 1;\n  min-height: 70px;\n  font-size: 13px;\n  margin-bottom: 12px;\n  resize: vertical;\n}\n\n#cn_app .welcome-fill-actions {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding-top: 12px;\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-fill-note {\n  font-size: 12px;\n  color: var(--cn-text-3);\n}\n\n@media (max-width: 860px) {\n  #cn_app .welcome-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n\n#cn_app .cn-check {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 13px;\n  color: var(--cn-text);\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .cn-check input[type=\"checkbox\"] {\n  appearance: auto;\n  -webkit-appearance: auto;\n  background: transparent !important;\n  accent-color: var(--cn-primary);\n  width: 16px;\n  height: 16px;\n  cursor: pointer;\n  margin: 0;\n}\n\n#cn_app .cn-switch {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .cn-switch input[type=\"checkbox\"] {\n  display: none;\n}\n\n#cn_app .cn-switch__track {\n  width: 36px;\n  height: 20px;\n  border-radius: 10px;\n  background: #d9d9d9;\n  position: relative;\n  transition: background 0.2s;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-switch__track::after {\n  content: '';\n  position: absolute;\n  top: 2px;\n  left: 2px;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: #fff;\n  transition: left 0.2s;\n}\n\n#cn_app .cn-switch input:checked + .cn-switch__track {\n  background: var(--cn-primary);\n}\n\n#cn_app .cn-switch input:checked + .cn-switch__track::after {\n  left: 18px;\n}\n\n#cn_app .cn-switch__label {\n  font-size: 13px;\n  color: var(--cn-text-2);\n}\n\n/* ── 表格模板编辑器 ── */\n\n#cn_app .tpl-table-card {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  margin-bottom: 10px;\n  overflow: hidden;\n  flex-shrink: 0;\n}\n\n#cn_app .tpl-table-card--active {\n  border-color: var(--cn-primary);\n}\n\n#cn_app .tpl-table-card__head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  min-height: 42px;\n  padding: 10px 12px;\n  background: #fafafa;\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .tpl-table-card--active .tpl-table-card__head {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .tpl-table-card__name {\n  font-weight: 600;\n  font-size: 14px;\n  color: var(--cn-text);\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .tpl-table-card__meta {\n  font-size: 12px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .tpl-table-card__body {\n  padding: 12px 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .template-editor-body {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .template-editor-empty {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 12px;\n  padding: 40px 20px;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .tpl-row {\n  display: flex;\n  gap: 12px;\n}\n\n#cn_app .tpl-field {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n\n#cn_app .tpl-label {\n  font-size: 13px;\n  font-weight: 600;\n  color: var(--cn-text-2);\n}\n\n#cn_app .tpl-section {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  padding: 4px 0;\n}\n\n#cn_app .tpl-section__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n#cn_app .tpl-textarea {\n  width: 100%;\n  min-height: 48px;\n  resize: vertical;\n}\n\n#cn_app .tpl-cols {\n  display: flex;\n  flex-direction: column;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  overflow: hidden;\n}\n\n#cn_app .tpl-col-head,\n#cn_app .tpl-col-row {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  padding: 6px 8px;\n}\n\n#cn_app .tpl-col-head {\n  background: #fafafa;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 12px;\n  font-weight: 600;\n  color: var(--cn-text-2);\n}\n\n#cn_app .tpl-col-row {\n  border-bottom: 1px solid #f5f5f5;\n}\n\n#cn_app .tpl-col-row:last-child {\n  border-bottom: none;\n}\n\n#cn_app .tpl-col-cell {\n  font-size: 13px;\n}\n\n#cn_app .tpl-col-cell.name { width: 100px; flex-shrink: 0; }\n#cn_app .tpl-col-cell.type { width: 76px; flex-shrink: 0; }\n#cn_app .tpl-col-cell.flags { width: 96px; flex-shrink: 0; display: flex; gap: 5px; align-items: center; }\n#cn_app .tpl-col-cell.note { flex: 1; min-width: 90px; }\n#cn_app .tpl-col-cell.del { width: 28px; flex-shrink: 0; }\n#cn_app .tpl-col-cell.role { width: 92px; flex-shrink: 0; }\n\n#cn_app .cn-btn--xs {\n  padding: 0 4px;\n  height: 22px;\n  font-size: 11px;\n  border-radius: 3px;\n  line-height: 20px;\n}\n\n#cn_app .prompt-empty {\n  padding: 20px;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .prompt-side-foot {\n  display: flex;\n  gap: 6px;\n  padding: 10px 12px;\n  border-top: 1px solid var(--cn-border);\n  flex-shrink: 0;\n  margin-top: auto;\n}\n\n@media (max-width: 720px) {\n  #cn_app .prompt-split {\n    grid-template-columns: 1fr;\n  }\n}\n\n#cn_app .cn-menu__spacer {\n  flex: 1;\n}\n\n#cn_app .cn-menu__item--debug {\n  margin-top: auto;\n}\n\n#cn_app .debug-page {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  height: 100%;\n}\n\n#cn_app .debug-tabs {\n  display: flex;\n  gap: 0;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .debug-tab {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 16px;\n  border: none;\n  background: none;\n  cursor: pointer;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  border-bottom: 2px solid transparent;\n  transition: color .2s, border-color .2s;\n}\n\n#cn_app .debug-tab--active {\n  color: var(--cn-primary);\n  border-bottom-color: var(--cn-primary);\n}\n\n#cn_app .debug-tab__badge {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-width: 18px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: 9px;\n  font-size: 11px;\n  color: #fff;\n  background: var(--cn-primary);\n}\n\n#cn_app .debug-panel {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  overflow: hidden;\n}\n\n#cn_app .debug-toolbar {\n  display: flex;\n  gap: 6px;\n  flex-wrap: wrap;\n  align-items: center;\n}\n\n#cn_app .debug-toolbar__select {\n  width: auto;\n  min-width: 80px;\n}\n\n#cn_app .debug-toolbar__search {\n  flex: 1;\n  min-width: 120px;\n}\n\n#cn_app .debug-toolbar__hint {\n  display: flex;\n  gap: 16px;\n  font-size: 11px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .debug-log-list {\n  flex: 1;\n  overflow-y: auto;\n  font-family: 'Consolas', 'Courier New', monospace;\n  font-size: 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: 6px;\n  background: var(--cn-bg);\n}\n\n#cn_app .debug-log-row {\n  display: grid;\n  grid-template-columns: 90px 44px 80px 1fr;\n  padding: 3px 8px;\n  border-bottom: 1px solid var(--cn-border);\n  align-items: baseline;\n  gap: 4px;\n}\n\n#cn_app .debug-log-row:last-child {\n  border-bottom: none;\n}\n\n#cn_app .debug-log-row--error {\n  background: rgba(255, 77, 79, 0.07);\n}\n\n#cn_app .debug-log-row--warn {\n  background: rgba(250, 140, 22, 0.05);\n}\n\n#cn_app .debug-log-row__time {\n  color: var(--cn-text-3);\n  white-space: nowrap;\n}\n\n#cn_app .debug-log-row__level {\n  font-weight: 600;\n  font-size: 10px;\n  padding: 1px 4px;\n  border-radius: 3px;\n  text-align: center;\n}\n\n#cn_app .debug-log-row__level--error {\n  color: #ff4d4f;\n  background: rgba(255, 77, 79, 0.12);\n}\n\n#cn_app .debug-log-row__level--warn {\n  color: #fa8c16;\n  background: rgba(250, 140, 22, 0.12);\n}\n\n#cn_app .debug-log-row__tag {\n  color: var(--cn-primary);\n}\n\n#cn_app .debug-log-row__msg {\n  color: var(--cn-text-1);\n  word-break: break-all;\n}\n\n#cn_app .debug-status-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));\n  gap: 12px;\n}\n\n#cn_app .debug-status-item {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 6px 0;\n}\n\n#cn_app .debug-status-item + .debug-status-item {\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .debug-status-item__label {\n  color: var(--cn-text-2);\n  font-size: 13px;\n}\n\n#cn_app .debug-status-item__value {\n  color: var(--cn-text-1);\n  font-size: 13px;\n  font-weight: 500;\n}\n\n#cn_app .debug-ok {\n  color: var(--cn-primary) !important;\n}\n\n#cn_app .debug-err {\n  color: #ff4d4f !important;\n}\n\n#cn_app .debug-status-actions {\n  display: flex;\n  gap: 6px;\n  padding-top: 8px;\n}\n";
+var theme_default = ":root {\n  --cn-z-app: 10000;\n  --cn-z-toast: 10010;\n  --cn-z-modal: 10020;\n  --cn-z-dialog: 10020;\n}\n\n#cn_app {\n  --cn-bg: #edf4ef;\n  --cn-surface: #ffffff;\n  --cn-surface-2: #f3f8f5;\n  --cn-primary: #4caf50;\n  --cn-primary-hover: #388e3c;\n  --cn-primary-active: #2e7d32;\n  --cn-primary-soft: #e0f2e4;\n  --cn-text: #2d2d2d;\n  --cn-text-2: #6b6b6b;\n  --cn-text-3: #9e9e9e;\n  --cn-border: #dce5e0;\n  --cn-border-green: #e0f2e4;\n  --cn-radius: 8px;\n  --cn-radius-sm: 6px;\n  --cn-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.06);\n  --cn-ease: cubic-bezier(0.4, 0, 0.2, 1);\n  --cn-dur-fast: 0.15s;\n  --cn-dur: 0.22s;\n  --cn-dur-slow: 0.3s;\n  --cn-font:\n    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei',\n    sans-serif;\n  color: var(--cn-text);\n  font-family: var(--cn-font);\n  font-size: 15px;\n  line-height: 1.5;\n}\n\n#cn_app,\n#cn_app * {\n  box-sizing: border-box;\n}\n\n#cn_app button {\n  appearance: none;\n  -webkit-appearance: none;\n  margin: 0;\n  font: inherit;\n  color: var(--cn-text) !important;\n  background: var(--cn-surface);\n  cursor: pointer;\n  -webkit-tap-highlight-color: transparent;\n}\n\n#cn_app i {\n  font-size: inherit;\n  line-height: 1;\n  font-style: normal;\n  vertical-align: baseline;\n}\n\n#cn_app .cn-content i {\n  font-size: 0.85em;\n}\n\n#cn_app input,\n#cn_app select,\n#cn_app textarea {\n  appearance: none;\n  -webkit-appearance: none;\n  margin: 0;\n  font: inherit;\n  color: var(--cn-text);\n  background: var(--cn-surface);\n  border: none;\n  outline: none;\n  -webkit-tap-highlight-color: transparent;\n}\n\n#cn_app select option {\n  color: var(--cn-text) !important;\n  background: var(--cn-surface) !important;\n}\n\n#cn_app button:focus:not(:focus-visible),\n#cn_app input:focus:not(:focus-visible),\n#cn_app select:focus:not(:focus-visible),\n#cn_app textarea:focus:not(:focus-visible) {\n  outline: none;\n}\n\n#cn_app ul {\n  margin: 0;\n  padding: 0;\n}\n\n#cn_app a {\n  color: inherit;\n  text-decoration: none;\n}\n\n#cn_app h1,\n#cn_app h2,\n#cn_app h3,\n#cn_app h4,\n#cn_app h5,\n#cn_app h6 {\n  margin: 0;\n  font-size: inherit;\n  font-weight: inherit;\n}\n\n#cn_app label {\n  display: inline-block;\n  margin: 0;\n  font-weight: inherit;\n  cursor: inherit;\n}\n\n#cn_app .cn-btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  height: 32px;\n  padding: 0 15px;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface) !important;\n  color: var(--cn-text) !important;\n  font-size: 14px;\n  line-height: 1;\n  white-space: nowrap;\n  transition: all 0.15s ease;\n  user-select: none;\n}\n#cn_app .cn-btn:hover:not(:disabled) {\n  border-color: var(--cn-primary) !important;\n  color: var(--cn-primary) !important;\n}\n#cn_app .cn-btn:disabled {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n#cn_app .cn-btn--primary {\n  background: var(--cn-primary) !important;\n  border-color: var(--cn-primary) !important;\n  color: #fff !important;\n}\n#cn_app .cn-btn--primary:hover:not(:disabled) {\n  background: var(--cn-primary-hover);\n  border-color: var(--cn-primary-hover);\n  color: #fff;\n}\n#cn_app .cn-btn--sm {\n  height: 26px;\n  padding: 0 11px;\n  font-size: 13px;\n}\n#cn_app .cn-btn--text {\n  border-color: transparent;\n  background: transparent;\n  color: var(--cn-text-2);\n}\n#cn_app .cn-btn--text:hover:not(:disabled) {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n  border-color: transparent;\n}\n\n#cn_app .cn-input,\n#cn_app .cn-select,\n#cn_app .cn-textarea {\n  display: block;\n  width: 100%;\n  height: 32px;\n  padding: 4px 11px;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface) !important;\n  color: var(--cn-text) !important;\n  font-size: 14px;\n  transition:\n    border-color 0.15s ease,\n    box-shadow 0.15s ease;\n}\n#cn_app .cn-textarea {\n  height: auto;\n  min-height: 80px;\n  line-height: 1.5;\n  resize: vertical;\n}\n#cn_app .cn-input:hover,\n#cn_app .cn-select:hover,\n#cn_app .cn-textarea:hover {\n  border-color: var(--cn-primary-hover) !important;\n}\n#cn_app .cn-input:focus,\n#cn_app .cn-select:focus,\n#cn_app .cn-textarea:focus {\n  border-color: var(--cn-primary) !important;\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15) !important;\n  outline: none !important;\n}\n#cn_app .cn-input::placeholder,\n#cn_app .cn-textarea::placeholder {\n  color: var(--cn-text-3);\n}\n#cn_app .cn-select {\n  padding-right: 28px;\n  background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%238c8c8c' d='M8 11L3 6h10z'/%3E%3C/svg%3E\");\n  background-repeat: no-repeat;\n  background-position: right 10px center;\n  background-size: 12px;\n  cursor: pointer;\n}\n\n#cn_app .cn-card {\n  background: var(--cn-surface) !important;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  box-shadow: var(--cn-shadow);\n  overflow: hidden;\n}\n#cn_app .cn-card__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n  padding: 14px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 16px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .cn-card__body {\n  padding: 16px;\n}\n\n#cn_app .cn-field {\n  margin-bottom: 16px;\n}\n#cn_app .cn-field__label {\n  display: block;\n  margin-bottom: 6px;\n  color: var(--cn-text-2);\n  font-size: 14px;\n}\n\n#cn_app .cn-table {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: 13px;\n}\n#cn_app .cn-table th,\n#cn_app .cn-table td {\n  padding: 8px 12px;\n  border: 1px solid var(--cn-border) !important;\n  text-align: left;\n  white-space: nowrap;\n}\n#cn_app .cn-table th {\n  background: var(--cn-primary-soft);\n  color: var(--cn-text);\n  font-weight: 600;\n}\n#cn_app .cn-table tbody tr:nth-child(even) {\n  background: #fafafa;\n}\n#cn_app .cn-table tbody tr:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cn-table__op {\n  width: 50px;\n  text-align: center;\n  white-space: nowrap;\n}\n\n#cn_app .cn-table__rownum {\n  width: 40px;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 12px;\n  white-space: nowrap;\n}\n\n#cn_app .tables-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .tables-toolbar {\n  display: flex;\n  gap: 8px;\n}\n\n#cn_app .table-wrap-card {\n  overflow: visible;\n}\n\n#cn_app .table-tabs {\n  display: flex;\n  gap: 4px;\n  padding: 4px;\n  margin: 12px 12px 8px;\n  background: var(--cn-surface-2);\n  border-radius: var(--cn-radius);\n  overflow-x: auto;\n}\n\n#cn_app .table-tab {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  gap: 1px;\n  padding: 6px 14px;\n  border: 0;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2);\n  cursor: pointer;\n  white-space: nowrap;\n  flex-shrink: 0;\n  transition:\n    background var(--cn-dur-fast) var(--cn-ease),\n    color var(--cn-dur-fast) var(--cn-ease),\n    box-shadow var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .table-tab:hover {\n  color: var(--cn-text);\n}\n\n#cn_app .table-tab--active {\n  background: var(--cn-surface);\n  color: var(--cn-primary);\n  font-weight: 600;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);\n}\n\n#cn_app .table-tab__zh {\n  font-size: 14px;\n  line-height: 1.2;\n}\n\n#cn_app .table-tab__en {\n  font-size: 11px;\n  opacity: 0.65;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n}\n\n#cn_app .table-tab--active .table-tab__en {\n  opacity: 0.8;\n  color: var(--cn-primary);\n}\n\n#cn_app .table-body {\n  background: var(--cn-surface);\n  overflow: hidden;\n}\n\n#cn_app .table-body__meta {\n  flex: 1;\n  color: var(--cn-text-3);\n  font-size: 12px;\n}\n\n#cn_app .table-body__foot {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 10px 16px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .table-row-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 12px;\n  padding: 16px;\n}\n\n#cn_app .table-row-card {\n  flex: 0 0 auto;\n  width: 340px;\n  max-width: 100%;\n}\n\n#cn_app .table-row-card__body {\n  padding: 14px 16px;\n}\n\n#cn_app .table-row-card__field {\n  margin-bottom: 10px;\n}\n\n#cn_app .table-row-card__field:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .table-row-card__label {\n  display: block;\n  margin-bottom: 4px;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n}\n\n#cn_app .table-row-card__label-en {\n  font-weight: 400;\n  color: var(--cn-primary-active);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 11px;\n  margin-left: 6px;\n  opacity: 0.6;\n}\n\n#cn_app .table-row-card__value {\n  min-height: 28px;\n  padding: 6px 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: #fafafa;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n#cn_app .table-row-card__value:focus {\n  background: var(--cn-surface);\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);\n}\n\n#cn_app .table-row-card--editing {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);\n}\n\n#cn_app .table-row-card__foot {\n  display: flex;\n  justify-content: flex-end;\n  gap: 6px;\n  padding: 6px 12px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .chronicle-item--editing {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);\n}\n\n#cn_app .cell-edit {\n  min-width: 60px;\n  min-height: 20px;\n  padding: 2px 4px;\n  border-radius: var(--cn-radius-sm);\n  outline: none;\n  white-space: normal;\n  word-break: break-word;\n  cursor: text;\n  transition: background 0.15s ease;\n}\n\n#cn_app .cell-edit:empty::before {\n  content: '\\00a0';\n  display: inline;\n}\n\n#cn_app .cell-edit:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cell-edit:focus {\n  background: var(--cn-surface);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);\n}\n\n#cn_app .chronicle-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .chronicle-toolbar {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n\n#cn_app .chronicle-toolbar__search {\n  flex: 1;\n  max-width: 360px;\n  height: 32px;\n}\n\n#cn_app .chronicle-toolbar__count {\n  flex: 1;\n  text-align: right;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .chronicle-list {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .chronicle-item__key {\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-weight: 700;\n  color: var(--cn-primary-active);\n}\n\n#cn_app .chronicle-fields {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  gap: 12px;\n  margin-bottom: 12px;\n}\n\n#cn_app .chronicle-field {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  min-width: 0;\n}\n\n#cn_app .chronicle-field--full {\n  margin-bottom: 12px;\n}\n\n#cn_app .chronicle-field:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .chronicle-field__label {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n}\n\n#cn_app .chronicle-field__value {\n  min-height: 32px;\n  padding: 6px 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: #fafafa;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n#cn_app .chronicle-field__value:focus {\n  background: var(--cn-surface);\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);\n}\n\n#cn_app .cn-empty {\n  padding: 40px 0;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .cn-tag {\n  display: inline-flex;\n  align-items: center;\n  padding: 0 8px;\n  height: 22px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-size: 12px;\n  font-weight: 500;\n}\n\n#cn_app .cn-space {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n}\n#cn_app .cn-space--block {\n  display: flex;\n}\n\n#cn_app .cn-shell {\n  display: flex;\n  height: 100vh;\n  width: 100%;\n  overflow: hidden;\n}\n#cn_app .cn-sider {\n  flex: 0 0 220px;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-right: 1px solid var(--cn-border);\n}\n#cn_app .cn-brand {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  height: 56px;\n  padding: 0 20px;\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-brand__icon {\n  font-size: 20px;\n  color: var(--cn-primary);\n}\n#cn_app .cn-brand__name {\n  font-size: 16px;\n  font-weight: 700;\n  color: var(--cn-text);\n}\n#cn_app .cn-menu {\n  flex: 1;\n  padding: 12px 10px;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  overflow-y: auto;\n}\n#cn_app .cn-menu__item {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  width: 100%;\n  padding: 9px 12px;\n  border: 0;\n  background: transparent;\n  border-radius: var(--cn-radius);\n  color: var(--cn-text-2);\n  font-size: 14px;\n  text-align: left;\n  transition: all var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .cn-menu__item:hover {\n  background: var(--cn-primary-soft);\n  color: var(--cn-text);\n}\n#cn_app .cn-menu__item--active {\n  background: var(--cn-primary);\n  color: #fff;\n  font-weight: 500;\n}\n#cn_app .cn-menu__item--active:hover {\n  background: var(--cn-primary);\n  color: #fff;\n}\n#cn_app .cn-menu__item i {\n  width: 16px;\n  text-align: center;\n  font-size: 14px;\n}\n#cn_app .cn-main {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n#cn_app .cn-header {\n  flex: 0 0 56px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 0 24px;\n  background: var(--cn-surface);\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-header__title {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .cn-content {\n  flex: 1;\n  padding: 20px;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n  background: var(--cn-bg);\n}\n\n#cn_app .toolbar {\n  margin-bottom: 16px;\n}\n#cn_app .model-row {\n  margin-top: 8px;\n}\n\n#cn_app .table-wrap {\n  overflow-x: auto;\n}\n#cn_app .pager {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  justify-content: flex-end;\n  margin-top: 12px;\n}\n#cn_app .pager__info {\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .cn-list {\n  list-style: none;\n}\n#cn_app .cn-list__item {\n  display: flex;\n  gap: 12px;\n  padding: 10px 0;\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-list__item:last-child {\n  border-bottom: 0;\n}\n#cn_app .cn-list__key {\n  flex: 0 0 80px;\n  color: var(--cn-primary-active);\n  font-weight: 600;\n  font-size: 13px;\n}\n#cn_app .cn-list__summary {\n  color: var(--cn-text-2);\n  line-height: 1.6;\n  flex: 1;\n  min-width: 0;\n}\n\n#cn_app .search-input {\n  width: 220px;\n  height: 28px;\n  font-size: 13px;\n}\n\n#cn_app .cn-range {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 100%;\n  height: 6px;\n  border-radius: 3px;\n  background: linear-gradient(\n    to right,\n    var(--cn-primary) 0%,\n    var(--cn-primary) var(--cn-range-pct, 50%),\n    #e8e8e8 var(--cn-range-pct, 50%),\n    #e8e8e8 100%\n  ) !important;\n  outline: none;\n  cursor: pointer;\n  margin: 0;\n  border: none;\n}\n\n#cn_app .cn-range::-webkit-slider-thumb {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: var(--cn-primary);\n  border: 2px solid #fff;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\n  cursor: pointer;\n}\n\n#cn_app .cn-range::-moz-range-thumb {\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: var(--cn-primary);\n  border: 2px solid #fff;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\n  cursor: pointer;\n}\n\n#cn_app .cn-range::-moz-range-track {\n  background: transparent;\n  border: 0;\n}\n\n#cn_app .range-row {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n\n#cn_app .range-val {\n  font-weight: 600;\n  color: var(--cn-primary);\n  min-width: 36px;\n  text-align: right;\n  font-size: 14px;\n}\n\n#cn_app .range-num {\n  width: 72px;\n  flex-shrink: 0;\n  text-align: center;\n  font-weight: 600;\n  color: var(--cn-primary);\n}\n\n#cn_app .range-num::-webkit-inner-spin-button {\n  opacity: 1;\n}\n\n#cn_app .prompt-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  height: 100%;\n  overflow: hidden;\n}\n\n#cn_app .prompt-head {\n  margin-bottom: -1px;\n  position: relative;\n  z-index: 2;\n}\n\n#cn_app .scene-tabs {\n  display: inline-flex;\n  gap: 4px;\n  padding: 4px;\n  background: var(--cn-surface-2);\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n}\n\n#cn_app .scene-tab {\n  padding: 6px 18px;\n  border: 0;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2);\n  font-size: 14px;\n  cursor: pointer;\n  transition:\n    background var(--cn-dur-fast) var(--cn-ease),\n    color var(--cn-dur-fast) var(--cn-ease),\n    box-shadow var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .scene-tab:hover {\n  color: var(--cn-text);\n}\n\n#cn_app .scene-tab--active {\n  background: var(--cn-surface);\n  color: var(--cn-primary);\n  font-weight: 600;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);\n}\n\n#cn_app .prompt-split {\n  display: grid;\n  grid-template-columns: 220px 1fr;\n  gap: 16px;\n  align-items: start;\n}\n\n#cn_app .preset-list {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n\n#cn_app .preset-list__item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 6px;\n  padding: 9px 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  color: var(--cn-text-2);\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .preset-list__item:hover {\n  border-color: var(--cn-primary-hover);\n  color: var(--cn-text);\n}\n\n#cn_app .preset-list__item--active {\n  border-color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-weight: 500;\n}\n\n#cn_app .preset-list__name {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .preset-list__card {\n  color: var(--cn-primary);\n  font-size: 12px;\n  margin-right: 2px;\n}\n\n#cn_app .preset-list__default {\n  flex: 0 0 auto;\n  color: #faad14;\n  font-size: 12px;\n}\n\n#cn_app .preset-list__count {\n  flex: 0 0 auto;\n  font-size: 11px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .prompt-editor__desc {\n  color: var(--cn-text-3);\n  font-size: 12px;\n  font-weight: 400;\n}\n\n#cn_app .block-list {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .block {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface-2);\n  overflow: hidden;\n}\n\n#cn_app .block--ghost {\n  opacity: 0.4;\n  border-style: dashed;\n  border-color: var(--cn-primary);\n}\n\n#cn_app .block-head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 8px 10px;\n  border-bottom: 1px solid var(--cn-border);\n  background: var(--cn-surface);\n}\n\n#cn_app .block-head__grip {\n  color: var(--cn-text-3);\n  font-size: 14px;\n  cursor: grab;\n}\n\n#cn_app .block-head__grip:active {\n  cursor: grabbing;\n}\n\n#cn_app .block-head__name {\n  flex: 1;\n  height: 28px;\n  font-size: 13px;\n  font-weight: 600;\n}\n\n#cn_app .block-segs {\n  min-height: 48px;\n  padding: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n\n#cn_app .block-add {\n  display: flex;\n  gap: 4px;\n  padding: 6px 8px 8px;\n  border-top: 1px solid var(--cn-border);\n  background: var(--cn-surface);\n}\n\n#cn_app .block-add-btn {\n  margin-top: 14px;\n}\n\n#cn_app .seg-add-row {\n  display: flex;\n  gap: 8px;\n  margin-top: 14px;\n}\n\n#cn_app .seg-item {\n  margin-bottom: 10px;\n  padding: 10px 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface-2);\n  transition:\n    box-shadow var(--cn-dur-fast) var(--cn-ease),\n    border-color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .seg-item:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .seg-item:hover {\n  border-color: var(--cn-primary-hover);\n  box-shadow: 0 1px 4px rgba(76, 175, 80, 0.12);\n}\n\n#cn_app .seg-item--ghost {\n  opacity: 0.4;\n  border-style: dashed;\n  border-color: var(--cn-primary);\n}\n\n#cn_app .seg-item__bar {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  margin-bottom: 8px;\n}\n\n#cn_app .seg-item__grip {\n  color: var(--cn-text-3);\n  font-size: 14px;\n  cursor: grab;\n}\n\n#cn_app .seg-item__grip:active {\n  cursor: grabbing;\n}\n\n#cn_app .seg-item__role {\n  height: 22px;\n  padding: 0 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: 11px;\n  background: var(--cn-surface);\n  color: var(--cn-text-2);\n  font-size: 11px;\n  font-weight: 700;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .seg-item__role:hover {\n  border-color: var(--cn-primary);\n  color: var(--cn-primary);\n}\n\n#cn_app .seg-item__name {\n  flex: 1;\n  min-width: 0;\n  height: 28px;\n  font-size: 13px;\n  font-weight: 600;\n}\n\n#cn_app .seg-item__seq {\n  flex: 0 0 auto;\n  font-size: 12px;\n  color: var(--cn-primary);\n  font-weight: 600;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n}\n\n#cn_app .seg-item__edit {\n  display: block;\n  width: 100%;\n  min-height: 120px;\n  padding: 8px 11px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  color: var(--cn-text);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.6;\n  white-space: pre-wrap;\n  word-wrap: break-word;\n  outline: none;\n  transition:\n    border-color 0.15s ease,\n    box-shadow 0.15s ease;\n  box-sizing: border-box;\n  overflow: hidden;\n  max-height: 320px;\n}\n\n#cn_app .seg-item__edit:focus-within {\n  border-color: var(--cn-primary);\n  background: var(--cn-surface);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);\n}\n\n#cn_app .seg-var {\n  color: var(--cn-primary-active);\n  background: var(--cn-primary-soft);\n  border: 1px solid var(--cn-primary);\n  border-radius: 3px;\n  padding: 0 4px;\n  font-weight: 600;\n  cursor: help;\n}\n\n#cn_app .seg-var:hover {\n  background: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .seg-item__edit .cm-editor {\n  background: transparent;\n  color: inherit;\n  height: 100%;\n}\n\n#cn_app .seg-item__edit .cm-scroller {\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.6;\n}\n\n#cn_app .seg-item__edit .cm-content {\n  padding: 0;\n  caret-color: var(--cn-primary);\n  min-height: 104px;\n}\n\n#cn_app .seg-item__edit .cm-focused {\n  outline: none;\n}\n\n#cn_app .prompt-foot {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 16px;\n}\n\n#cn_app .prompt-foot__hint {\n  color: var(--cn-text-3);\n  font-size: 12px;\n  line-height: 1.6;\n}\n\n#cn_app .prompt-foot__hint code {\n  padding: 1px 5px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 11px;\n}\n\n#cn_app .prompt-wrap {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n  min-height: 0;\n}\n\n#cn_app .prompt-wrap .prompt-head {\n  margin: 0;\n  padding: 14px 16px 12px;\n  border-bottom: 1px solid var(--cn-border);\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  align-items: flex-start;\n}\n\n#cn_app .prompt-wrap .prompt-split {\n  flex: 1;\n  min-height: 0;\n  padding: 16px;\n  gap: 16px;\n  overflow: hidden;\n  align-items: stretch;\n  grid-template-rows: minmax(0, 1fr);\n}\n\n#cn_app .prompt-side {\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n  overflow: hidden;\n}\n\n#cn_app .prompt-editor {\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n  overflow: hidden;\n}\n\n#cn_app .prompt-editor .cn-card__head {\n  padding: 0 0 12px;\n  border-bottom: 1px solid var(--cn-border);\n  margin-bottom: 16px;\n}\n\n#cn_app .prompt-side .cn-card__head {\n  padding: 0 0 12px;\n  border-bottom: 1px solid var(--cn-border);\n  margin-bottom: 12px;\n}\n\n#cn_app .prompt-side .cn-card__body {\n  padding: 0;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .prompt-editor .cn-card__body {\n  padding: 0;\n  flex: 1;\n  min-height: 0;\n  overflow: hidden;\n  display: flex;\n  flex-direction: column;\n}\n\n/* 模板/纪要表编辑区：body 内部纵向滚动（head 与左侧不滚）。\n   提示词配置的 .block-list 自身已 overflow-y:auto，无需此规则。\n   特异性需高于 .prompt-editor .cn-card__body 的 overflow:hidden 才能生效。 */\n#cn_app .prompt-editor .cn-card__body.template-editor-body {\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n\n#cn_app .cn-modal-mask {\n  position: fixed;\n  inset: 0;\n  z-index: var(--cn-z-modal);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(0, 0, 0, 0.45);\n}\n\n#cn_app .cn-modal {\n  width: 90vw;\n  max-width: 1100px;\n  height: 90vh;\n  max-height: 800px;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n}\n\n#cn_app .cn-modal__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 15px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n\n#cn_app .cn-modal__code {\n  margin: 0;\n  padding: 20px;\n  overflow: auto;\n  background: #1e1e1e;\n  color: #d4d4d4;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.7;\n  white-space: pre-wrap;\n  word-break: break-word;\n  flex: 1;\n  min-height: 0;\n}\n\n#cn_app .model-picker-modal {\n  width: 90vw;\n  max-width: 520px;\n  height: auto;\n  max-height: 70vh;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n}\n\n#cn_app .model-picker__search {\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .model-picker__list {\n  overflow-y: auto;\n  padding: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n}\n\n#cn_app .model-picker__item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  width: 100%;\n  padding: 10px 14px;\n  border: none;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text);\n  font-size: 14px;\n  text-align: left;\n  cursor: pointer;\n  transition: background 0.1s;\n}\n\n#cn_app .model-picker__item:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .model-picker__item--picked {\n  background: var(--cn-primary-soft);\n  font-weight: 500;\n}\n\n#cn_app .model-picker__name {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .model-picker__check {\n  color: var(--cn-primary);\n  font-size: 14px;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-btn--danger {\n  background: #ff4d4f;\n  border-color: #ff4d4f;\n  color: #fff;\n}\n\n#cn_app .cn-btn--danger:hover:not(:disabled) {\n  background: #ff7875;\n  border-color: #ff7875;\n  color: #fff;\n}\n\n#cn_app .cn-dialog-mask {\n  position: fixed;\n  inset: 0;\n  z-index: var(--cn-z-dialog);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(0, 0, 0, 0.45);\n}\n\n#cn_app .cn-dialog {\n  width: min(420px, 85vw);\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n}\n\n#cn_app .cn-dialog__head {\n  padding: 14px 20px;\n  font-size: 16px;\n  font-weight: 600;\n  color: var(--cn-text);\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .cn-dialog__body {\n  padding: 16px 20px;\n  color: var(--cn-text-2);\n  font-size: 14px;\n  line-height: 1.6;\n}\n\n#cn_app .cn-dialog__foot {\n  display: flex;\n  justify-content: flex-end;\n  gap: 8px;\n  padding: 12px 20px;\n  border-top: 1px solid var(--cn-border);\n  background: #fafafa;\n}\n\n@keyframes cn-dialog-in {\n  from {\n    opacity: 0;\n    transform: scale(0.95);\n  }\n  to {\n    opacity: 1;\n    transform: scale(1);\n  }\n}\n\n.cn-recall-card {\n  display: block;\n  margin: 0 0 8px 0;\n  border: 1px solid #e0f2e4 !important;\n  border-radius: 6px;\n  overflow: hidden;\n  background: #fff !important;\n  font-size: 13px;\n  line-height: 1.6;\n  color: #1f1f1f !important;\n}\n\n.cn-recall-card__head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 14px;\n  background: #eef5f0 !important;\n  border-bottom: 1px solid #e0f2e4 !important;\n}\n\n.cn-recall-card__icon {\n  color: #4caf50 !important;\n  font-size: 15px;\n}\n\n.cn-recall-card__brand {\n  font-weight: 600;\n  color: #2e7d32 !important;\n  font-size: 14px;\n}\n\n.cn-recall-card__count {\n  margin-left: auto;\n  font-size: 12px;\n  color: #8c8c8c !important;\n}\n\n.cn-recall-tabs {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: flex-start;\n}\n\n.cn-recall-tabs__radio {\n  display: none;\n}\n\n.cn-recall-tab {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  gap: 2px;\n  padding: 8px 12px;\n  cursor: pointer;\n  border-bottom: 2px solid transparent !important;\n  background: #fafafa !important;\n  min-width: 100px;\n  transition:\n    background 0.15s,\n    border-color 0.15s;\n  user-select: none;\n}\n\n.cn-recall-tab:hover {\n  background: #eef5f0 !important;\n}\n\n.cn-recall-tabs__radio:checked + .cn-recall-tab {\n  background: #fff !important;\n  border-bottom-color: #4caf50 !important;\n}\n\n.cn-recall-tab__key {\n  font-weight: 600;\n  font-size: 13px;\n  color: #1f1f1f !important;\n}\n\n.cn-recall-tab__time {\n  font-size: 12px;\n  color: #4caf50 !important;\n}\n\n.cn-recall-tab__loc {\n  font-size: 11px;\n  color: #8c8c8c !important;\n  max-width: 120px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.cn-recall-panel {\n  display: none;\n  width: 100%;\n  padding: 12px 14px;\n  border-top: 1px solid #f0f0f0 !important;\n  order: 1;\n}\n\n.cn-recall-tabs__radio:checked + .cn-recall-tab + .cn-recall-panel {\n  display: block;\n}\n\n.cn-recall-panel__row {\n  display: flex;\n  gap: 8px;\n  margin-bottom: 8px;\n  align-items: flex-start;\n}\n\n.cn-recall-panel__row--full {\n  flex-direction: column;\n  gap: 2px;\n}\n\n.cn-recall-panel__label {\n  flex-shrink: 0;\n  font-size: 12px;\n  color: #8c8c8c !important;\n  min-width: 60px;\n}\n\n.cn-recall-panel__value {\n  font-size: 13px;\n  color: #1f1f1f !important;\n  word-break: break-word;\n  white-space: pre-wrap;\n}\n\n.cn-recall-card__message {\n  padding: 12px 14px;\n  border-top: 1px solid #e0f2e4 !important;\n  font-size: 14px;\n  color: #1f1f1f !important;\n  white-space: pre-wrap;\n  word-break: break-word;\n  line-height: 1.8;\n}\n\n.cn-recall-faded {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 10px;\n  padding: 28px 14px;\n  color: #8c8c8c !important;\n  font-size: 13px;\n  border-bottom: 1px solid #f0f0f0 !important;\n  user-select: none;\n}\n\n.cn-recall-faded__icon {\n  color: #a5d6a7;\n  font-size: 15px;\n  opacity: 0.7;\n}\n\n.cn-recall-faded__text {\n  font-style: italic;\n  letter-spacing: 1px;\n}\n\n#cn_app .api-page {\n  display: grid;\n  grid-template-columns: 3fr 1fr;\n  gap: 16px;\n  align-items: start;\n}\n\n#cn_app .api-left {\n  min-width: 0;\n}\n\n#cn_app .api-right {\n  min-width: 0;\n}\n\n#cn_app .api-head-desc {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 400;\n}\n\n#cn_app .api-preset-select-row {\n  display: flex;\n  gap: 6px;\n}\n\n#cn_app .api-section-divider {\n  border-top: 1px solid var(--cn-border);\n  margin: 14px 0;\n}\n\n#cn_app .api-form-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0 16px;\n}\n\n#cn_app .api-actions {\n  display: flex;\n  justify-content: flex-end;\n  gap: 8px;\n  border-top: 1px solid var(--cn-border);\n  margin-top: 14px;\n  padding-top: 14px;\n}\n\n#cn_app .model-row {\n  display: flex;\n  gap: 8px;\n  align-items: center;\n}\n\n#cn_app .model-select {\n  margin-top: 6px;\n  width: 100%;\n}\n\n@media (max-width: 900px) {\n  #cn_app .api-page {\n    grid-template-columns: 1fr;\n  }\n}\n\n#cn_app .welcome-root {\n  min-width: 0;\n}\n\n#cn_app .welcome-hero {\n  display: flex;\n  align-items: flex-start;\n  justify-content: space-between;\n  gap: 16px;\n  margin-bottom: 16px;\n}\n\n#cn_app .welcome-hero__left {\n  min-width: 0;\n}\n\n#cn_app .welcome-hero__title {\n  margin: 0 0 6px 0;\n  font-size: 24px;\n  font-weight: 800;\n  letter-spacing: -0.3px;\n  background: linear-gradient(135deg, #4caf50 0%, #388e3c 55%, #2e7d32 100%);\n  -webkit-background-clip: text;\n  background-clip: text;\n  -webkit-text-fill-color: transparent;\n}\n\n#cn_app .welcome-hero__sub {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-hero__reset {\n  flex-shrink: 0;\n  height: 30px;\n  padding: 0 14px;\n  border: 1px solid var(--cn-primary-soft);\n  border-radius: var(--cn-radius);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-size: 13px;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.15s ease;\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  white-space: nowrap;\n}\n\n#cn_app .welcome-hero__reset:hover {\n  background: var(--cn-primary);\n  border-color: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .welcome-grid {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 14px;\n}\n\n#cn_app .welcome-panel {\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n}\n\n#cn_app .welcome-panel__head {\n  padding: 14px 16px 10px 16px;\n  border-bottom: 1px solid var(--cn-border-green);\n}\n\n#cn_app .welcome-panel__title {\n  margin: 0;\n  padding-bottom: 8px;\n  border-bottom: 3px solid var(--cn-primary);\n  display: inline-block;\n  font-size: 17px;\n  font-weight: 700;\n  color: var(--cn-text);\n  line-height: 1.3;\n}\n\n#cn_app .welcome-panel__hint {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  margin-left: 8px;\n}\n\n#cn_app .welcome-panel__body {\n  display: flex;\n  flex-direction: column;\n  gap: 0;\n  flex: 1;\n  min-height: 0;\n}\n\n#cn_app .welcome-health-item {\n  display: grid;\n  grid-template-columns: 30px minmax(0, 1fr);\n  gap: 12px;\n  align-items: center;\n  padding: 8px 0;\n}\n\n#cn_app .welcome-health-item + .welcome-health-item {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-health-item__icon {\n  width: 32px;\n  height: 32px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: var(--cn-radius-sm);\n  background: #f5f5f5;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .welcome-health-item--ok .welcome-health-item__icon {\n  color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .welcome-health-item--warn .welcome-health-item__icon {\n  color: #fa8c16;\n  background: #fff7e6;\n}\n\n#cn_app .welcome-health-item__body {\n  display: flex;\n  flex-direction: column;\n  gap: 3px;\n  min-width: 0;\n}\n\n#cn_app .welcome-health-item__body strong {\n  font-size: 15px;\n  font-weight: 650;\n  color: var(--cn-text);\n}\n\n#cn_app .welcome-health-item__body p {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-toggle {\n  display: flex;\n  flex-direction: column;\n  gap: 5px;\n  padding: 13px 0;\n}\n\n#cn_app .welcome-toggle + .welcome-toggle {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-toggle__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 16px;\n}\n\n#cn_app .welcome-toggle__label {\n  font-size: 15px;\n  font-weight: 500;\n  color: var(--cn-text);\n}\n\n#cn_app .welcome-toggle__desc {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-preset-row {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 0;\n}\n\n#cn_app .welcome-preset-row + .welcome-preset-row {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-preset-row__label {\n  font-size: 15px;\n  color: var(--cn-text-2);\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-preset-row__hint {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .welcome-preset-row__select {\n  width: 140px;\n  height: 32px;\n  font-size: 14px;\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-kv {\n  padding: 8px 0;\n}\n\n#cn_app .welcome-kv + .welcome-kv {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-kv__row {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n}\n\n#cn_app .welcome-kv__label {\n  font-size: 15px;\n  color: var(--cn-text-2);\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-kv__input {\n  width: 150px;\n  height: 32px;\n  font-size: 14px;\n  text-align: center;\n  font-weight: 500;\n}\n#cn_app .welcome-kv__select {\n  width: 180px;\n  height: 32px;\n  font-size: 14px;\n  flex-shrink: 0;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n}\n\n#cn_app .welcome-kv__desc {\n  margin: 6px 0 0 0;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-stack {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  min-height: 0;\n}\n\n#cn_app .welcome-stack > .welcome-panel:first-child {\n  flex: 1 1 auto;\n  min-height: 0;\n}\n\n#cn_app .welcome-stack > .welcome-panel:last-child {\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-fill-body {\n  display: flex;\n  flex-direction: column;\n  flex: 1 1 auto;\n  min-height: 0;\n  overflow-y: auto;\n  justify-content: space-between;\n}\n\n#cn_app .welcome-fill-empty {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  flex: 1;\n  gap: 8px;\n  font-size: 13px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .welcome-fill-desc {\n  margin: 0 0 10px 0;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-fill-tables {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px 16px;\n  padding: 0 0 10px 0;\n  align-items: center;\n}\n\n#cn_app .welcome-fill-table {\n  display: inline-flex;\n  align-items: center;\n  gap: 5px;\n  font-size: 14px;\n  color: var(--cn-text);\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .welcome-fill-table input[type='checkbox'] {\n  appearance: auto;\n  -webkit-appearance: auto;\n  background: transparent !important;\n  accent-color: var(--cn-primary);\n  width: 16px;\n  height: 16px;\n  cursor: pointer;\n  margin: 0;\n}\n\n#cn_app .welcome-fill-en {\n  font-size: 11px;\n  color: var(--cn-text-3);\n  font-family: ui-monospace, Consolas, monospace;\n  margin-left: 2px;\n}\n\n#cn_app .welcome-fill-hint {\n  flex: 1;\n  min-height: 70px;\n  font-size: 13px;\n  margin-bottom: 12px;\n  resize: vertical;\n}\n\n#cn_app .welcome-fill-actions {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding-top: 12px;\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-fill-note {\n  font-size: 12px;\n  color: var(--cn-text-3);\n}\n\n@media (max-width: 860px) {\n  #cn_app .welcome-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n#cn_app .cn-check {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 13px;\n  color: var(--cn-text);\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .cn-check input[type='checkbox'] {\n  appearance: auto;\n  -webkit-appearance: auto;\n  background: transparent !important;\n  accent-color: var(--cn-primary);\n  width: 16px;\n  height: 16px;\n  cursor: pointer;\n  margin: 0;\n}\n\n#cn_app .cn-switch {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .cn-switch input[type='checkbox'] {\n  display: none;\n}\n\n#cn_app .cn-switch__track {\n  width: 36px;\n  height: 20px;\n  border-radius: 10px;\n  background: #d9d9d9;\n  position: relative;\n  transition: background 0.2s;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-switch__track::after {\n  content: '';\n  position: absolute;\n  top: 2px;\n  left: 2px;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: #fff;\n  transition: left 0.2s;\n}\n\n#cn_app .cn-switch input:checked + .cn-switch__track {\n  background: var(--cn-primary);\n}\n\n#cn_app .cn-switch input:checked + .cn-switch__track::after {\n  left: 18px;\n}\n\n#cn_app .cn-switch__label {\n  font-size: 13px;\n  color: var(--cn-text-2);\n}\n\n/* ── 表格模板编辑器 ── */\n\n#cn_app .tpl-table-card {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  margin-bottom: 10px;\n  overflow: hidden;\n  flex-shrink: 0;\n}\n\n#cn_app .tpl-table-card--active {\n  border-color: var(--cn-primary);\n}\n\n#cn_app .tpl-table-card__head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  min-height: 42px;\n  padding: 10px 12px;\n  background: #fafafa;\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .tpl-table-card--active .tpl-table-card__head {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .tpl-table-card__name {\n  font-weight: 600;\n  font-size: 14px;\n  color: var(--cn-text);\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .tpl-table-card__meta {\n  font-size: 12px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .tpl-table-card__body {\n  padding: 12px 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .template-editor-body {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .template-editor-empty {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 12px;\n  padding: 40px 20px;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .tpl-row {\n  display: flex;\n  gap: 12px;\n}\n\n#cn_app .tpl-field {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n\n#cn_app .tpl-label {\n  font-size: 13px;\n  font-weight: 600;\n  color: var(--cn-text-2);\n}\n\n#cn_app .tpl-section {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  padding: 4px 0;\n}\n\n#cn_app .tpl-section__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n#cn_app .tpl-textarea {\n  width: 100%;\n  min-height: 48px;\n  resize: vertical;\n}\n\n#cn_app .tpl-cols {\n  display: flex;\n  flex-direction: column;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  overflow: hidden;\n}\n\n#cn_app .tpl-col-head,\n#cn_app .tpl-col-row {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  padding: 6px 8px;\n}\n\n#cn_app .tpl-col-head {\n  background: #fafafa;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 12px;\n  font-weight: 600;\n  color: var(--cn-text-2);\n}\n\n#cn_app .tpl-col-row {\n  border-bottom: 1px solid #f5f5f5;\n}\n\n#cn_app .tpl-col-row:last-child {\n  border-bottom: none;\n}\n\n#cn_app .tpl-col-cell {\n  font-size: 13px;\n}\n\n#cn_app .tpl-col-cell.name {\n  width: 100px;\n  flex-shrink: 0;\n}\n#cn_app .tpl-col-cell.type {\n  width: 76px;\n  flex-shrink: 0;\n}\n#cn_app .tpl-col-cell.flags {\n  width: 96px;\n  flex-shrink: 0;\n  display: flex;\n  gap: 5px;\n  align-items: center;\n}\n#cn_app .tpl-col-cell.note {\n  flex: 1;\n  min-width: 90px;\n}\n#cn_app .tpl-col-cell.del {\n  width: 28px;\n  flex-shrink: 0;\n}\n#cn_app .tpl-col-cell.role {\n  width: 92px;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-btn--xs {\n  padding: 0 4px;\n  height: 22px;\n  font-size: 11px;\n  border-radius: 3px;\n  line-height: 20px;\n}\n\n#cn_app .prompt-empty {\n  padding: 20px;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .prompt-side-foot {\n  display: flex;\n  gap: 6px;\n  padding: 10px 12px;\n  border-top: 1px solid var(--cn-border);\n  flex-shrink: 0;\n  margin-top: auto;\n}\n\n@media (max-width: 720px) {\n  #cn_app .prompt-split {\n    grid-template-columns: 1fr;\n  }\n}\n\n#cn_app .cn-menu__spacer {\n  flex: 1;\n}\n\n#cn_app .cn-menu__item--debug {\n  margin-top: auto;\n}\n\n#cn_app .debug-page {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  height: 100%;\n}\n\n#cn_app .debug-tabs {\n  display: flex;\n  gap: 0;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .debug-tab {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 16px;\n  border: none;\n  background: none;\n  cursor: pointer;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  border-bottom: 2px solid transparent;\n  transition:\n    color 0.2s,\n    border-color 0.2s;\n}\n\n#cn_app .debug-tab--active {\n  color: var(--cn-primary);\n  border-bottom-color: var(--cn-primary);\n}\n\n#cn_app .debug-tab__badge {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-width: 18px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: 9px;\n  font-size: 11px;\n  color: #fff;\n  background: var(--cn-primary);\n}\n\n#cn_app .debug-panel {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  overflow: hidden;\n}\n\n#cn_app .debug-toolbar {\n  display: flex;\n  gap: 6px;\n  flex-wrap: wrap;\n  align-items: center;\n}\n\n#cn_app .debug-toolbar__select {\n  width: auto;\n  min-width: 80px;\n}\n\n#cn_app .debug-toolbar__search {\n  flex: 1;\n  min-width: 120px;\n}\n\n#cn_app .debug-toolbar__hint {\n  display: flex;\n  gap: 16px;\n  font-size: 11px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .debug-log-list {\n  flex: 1;\n  overflow-y: auto;\n  font-family: 'Consolas', 'Courier New', monospace;\n  font-size: 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: 6px;\n  background: var(--cn-bg);\n}\n\n#cn_app .debug-log-row {\n  display: grid;\n  grid-template-columns: 90px 44px 80px 1fr;\n  padding: 3px 8px;\n  border-bottom: 1px solid var(--cn-border);\n  align-items: baseline;\n  gap: 4px;\n}\n\n#cn_app .debug-log-row:last-child {\n  border-bottom: none;\n}\n\n#cn_app .debug-log-row--error {\n  background: rgba(255, 77, 79, 0.07);\n}\n\n#cn_app .debug-log-row--warn {\n  background: rgba(250, 140, 22, 0.05);\n}\n\n#cn_app .debug-log-row__time {\n  color: var(--cn-text-3);\n  white-space: nowrap;\n}\n\n#cn_app .debug-log-row__level {\n  font-weight: 600;\n  font-size: 10px;\n  padding: 1px 4px;\n  border-radius: 3px;\n  text-align: center;\n}\n\n#cn_app .debug-log-row__level--error {\n  color: #ff4d4f;\n  background: rgba(255, 77, 79, 0.12);\n}\n\n#cn_app .debug-log-row__level--warn {\n  color: #fa8c16;\n  background: rgba(250, 140, 22, 0.12);\n}\n\n#cn_app .debug-log-row__tag {\n  color: var(--cn-primary);\n}\n\n#cn_app .debug-log-row__msg {\n  color: var(--cn-text-1);\n  word-break: break-all;\n}\n\n#cn_app .debug-status-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));\n  gap: 12px;\n}\n\n#cn_app .debug-status-item {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 6px 0;\n}\n\n#cn_app .debug-status-item + .debug-status-item {\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .debug-status-item__label {\n  color: var(--cn-text-2);\n  font-size: 13px;\n}\n\n#cn_app .debug-status-item__value {\n  color: var(--cn-text-1);\n  font-size: 13px;\n  font-weight: 500;\n}\n\n#cn_app .debug-ok {\n  color: var(--cn-primary) !important;\n}\n\n#cn_app .debug-err {\n  color: #ff4d4f !important;\n}\n\n#cn_app .debug-status-actions {\n  display: flex;\n  gap: 6px;\n  padding-top: 8px;\n}\n\n#cn_app .preset-list,\n#cn_app .template-editor-body,\n#cn_app .table-row-grid,\n#cn_app .chronicle-list,\n#cn_app .block-list {\n  position: relative;\n}\n\n#cn_app .cn-route-enter-active,\n#cn_app .cn-route-leave-active {\n  transition: opacity var(--cn-dur) var(--cn-ease);\n}\n#cn_app .cn-route-enter-from,\n#cn_app .cn-route-leave-to {\n  opacity: 0;\n}\n\n#cn_app .cn-list-enter-active,\n#cn_app .cn-list-leave-active {\n  transition:\n    opacity var(--cn-dur-fast) var(--cn-ease),\n    transform var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .cn-list-enter-from {\n  opacity: 0;\n  transform: translateY(-6px);\n}\n#cn_app .cn-list-leave-to {\n  opacity: 0;\n  transform: translateY(4px);\n}\n#cn_app .cn-list-move {\n  transition: transform var(--cn-dur) var(--cn-ease);\n}\n\n#cn_app .cn-modal-enter-active,\n#cn_app .cn-modal-leave-active {\n  transition: opacity var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .cn-modal-enter-from,\n#cn_app .cn-modal-leave-to {\n  opacity: 0;\n}\n#cn_app .cn-modal-enter-active .cn-modal,\n#cn_app .cn-modal-leave-active .cn-modal {\n  transition:\n    opacity var(--cn-dur) var(--cn-ease),\n    transform var(--cn-dur) var(--cn-ease);\n}\n#cn_app .cn-modal-enter-from .cn-modal,\n#cn_app .cn-modal-leave-to .cn-modal {\n  opacity: 0;\n  transform: scale(0.96);\n}\n\n#cn_app .cn-input--error,\n#cn_app .cn-select--error,\n#cn_app .cn-textarea--error {\n  border-color: #ef4444 !important;\n  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15) !important;\n}\n\n#cn_app .cn-fold-enter-active,\n#cn_app .cn-fold-leave-active {\n  transition:\n    opacity var(--cn-dur) var(--cn-ease),\n    transform var(--cn-dur) var(--cn-ease);\n}\n#cn_app .cn-fold-enter-from {\n  opacity: 0;\n  transform: translateY(-6px);\n}\n#cn_app .cn-fold-leave-to {\n  opacity: 0;\n  transform: translateY(-4px);\n}\n\n@media (prefers-reduced-motion: reduce) {\n  #cn_app *,\n  #cn_app *::before,\n  #cn_app *::after {\n    animation-duration: 0.01ms !important;\n    animation-iteration-count: 1 !important;\n    transition-duration: 0.01ms !important;\n  }\n}\n";
 //#endregion
 //#region __vite-browser-external
 var require___vite_browser_external = /* @__PURE__ */ __commonJSMin(((exports, module) => {
@@ -12088,6 +12088,20 @@ function computeTimeDelta(token, entry, currentTime) {
 	}
 	return defaultCompute(entry, currentTime);
 }
+function resolveStoryNowTime(entries) {
+	let bestMs = Number.NEGATIVE_INFINITY;
+	let bestRaw;
+	for (const entry of entries) for (const raw of [entry.timeEnd, entry.timeStart]) {
+		if (!raw) continue;
+		const ms = new Date(raw).getTime();
+		if (Number.isNaN(ms)) continue;
+		if (ms > bestMs) {
+			bestMs = ms;
+			bestRaw = raw;
+		}
+	}
+	return bestRaw;
+}
 function defaultCompute(entry, currentTime) {
 	const ref = parseTime(currentTime);
 	const start = parseTime(entry.timeStart);
@@ -12411,6 +12425,7 @@ function createChronicleRecaller(ai, getEntries, vector) {
 		const all = await getEntries();
 		if (all.length === 0) return [];
 		const keys = await filterRelevantKeys(ai, ctx, await prefilterByVector(vector, ctx, all));
+		const referenceTime = resolveStoryNowTime(all) ?? ctx.currentTime;
 		const items = [];
 		for (const key of keys) {
 			const entry = all.find((e) => e.key === key);
@@ -12418,7 +12433,7 @@ function createChronicleRecaller(ai, getEntries, vector) {
 			items.push({
 				key,
 				entry,
-				timeDeltaText: computeTimeDelta(ctx.chatToken, entry, ctx.currentTime)
+				timeDeltaText: computeTimeDelta(ctx.chatToken, entry, referenceTime)
 			});
 		}
 		return items;
@@ -12945,7 +12960,7 @@ async function executeFill(session, extraHint) {
 	const targetMsgId = chatMessages.length - 1;
 	const repo = session.getSyncBridgeRepo();
 	const persistCtx = repo ? createPersistContext(repo, session.core) : null;
-	if (persistCtx && targetMsgId >= 0) ensureInitCheckpoint(persistCtx, targetMsgId);
+	if (persistCtx && targetMsgId >= 0) ensureInitCheckpoint(persistCtx, targetMsgId, session.getCurrentTemplateId() ?? void 0);
 	const persist = persistCtx && targetMsgId >= 0 ? {
 		ctx: persistCtx,
 		messageId: targetMsgId
@@ -13516,7 +13531,27 @@ var CranialNerveSession = class {
 				return;
 			}
 		}
-		if (this.initGameSessionFromCard()) this.toastNotifier?.success("已加载角色卡内置模板");
+		let cardTemplate = null;
+		let cardError = false;
+		try {
+			cardTemplate = this.character.readTemplateFromCard();
+		} catch (e) {
+			cardError = true;
+			pushLog("warn", "session", `角色卡模板异常: ${e instanceof Error ? e.message : String(e)}`);
+		}
+		if (cardTemplate) {
+			this.initGameSession(cardTemplate, "__card__");
+			this.toastNotifier?.success("已加载角色卡内置模板");
+			return;
+		}
+		if (cardError) this.toastNotifier?.warning("角色卡内置模板存在错误，已降级使用默认模板");
+		const fallback = this.resolveDefaultTemplatePreset();
+		if (fallback) this.initGameSession(fallback.template, fallback.id);
+	}
+	resolveDefaultTemplatePreset() {
+		const tableTemplate = this.getConfig().tableTemplate;
+		const byId = (id) => tableTemplate.presets.find((p) => p.id === id);
+		return byId(tableTemplate.activeId) ?? byId(tableTemplate.defaultId) ?? tableTemplate.presets[0] ?? null;
 	}
 	readFrameTemplateId() {
 		if (!this.syncBridge) return void 0;
@@ -16023,8 +16058,12 @@ var Welcome_default = /* @__PURE__ */ defineComponent({
 		}
 		function refresh() {
 			tableCount.value = session.listTables().filter((n) => n !== "cn_chronicle").length;
-			const cr = session.getTableRowsWithRowid("cn_chronicle");
-			chronicleCount.value = cr[0]?.rows?.length ?? 0;
+			try {
+				const cr = session.getTableRowsWithRowid("cn_chronicle");
+				chronicleCount.value = cr[0]?.rows?.length ?? 0;
+			} catch {
+				chronicleCount.value = 0;
+			}
 			const preset = session.getActiveAiPreset();
 			activePresetName.value = preset?.name ?? "未配置";
 			activePresetModel.value = preset?.model ?? "";
@@ -16501,6 +16540,14 @@ var ApiConfig_default = /* @__PURE__ */ defineComponent({
 				toast.warning("预设名称已存在，请使用其他名称");
 				return;
 			}
+			if (!e.baseURL.trim()) {
+				toast.warning("请填写 baseURL");
+				return;
+			}
+			if (!e.model.trim()) {
+				toast.warning("请填写 model");
+				return;
+			}
 			if (drafting.value) {
 				presets.value.push({ ...e });
 				selectedId.value = e.id;
@@ -16576,7 +16623,7 @@ var ApiConfig_default = /* @__PURE__ */ defineComponent({
 				class: "cn-btn cn-btn--sm",
 				style: { "margin-left": "8px" },
 				onClick: createPreset
-			}, [..._cache[29] || (_cache[29] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode(" 新建", -1)])])])) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+			}, [..._cache[29] || (_cache[29] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode(" 新建 ", -1)])])])) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
 				createBaseVNode("div", _hoisted_6$4, [_cache[34] || (_cache[34] = createBaseVNode("label", { class: "cn-field__label" }, "当前预设", -1)), createBaseVNode("div", _hoisted_7$4, [
 					createBaseVNode("select", {
 						class: "cn-select",
@@ -16855,29 +16902,32 @@ var ApiConfig_default = /* @__PURE__ */ defineComponent({
 						"margin-top": "8px",
 						"width": "100%"
 					}
-				}, "保存向量配置")
-			])])])]), modelPickerVisible.value ? (openBlock(), createElementBlock("div", {
-				key: 0,
-				class: "cn-modal-mask",
-				onClick: _cache[28] || (_cache[28] = withModifiers(($event) => modelPickerVisible.value = false, ["self"]))
-			}, [createBaseVNode("div", _hoisted_45$2, [
-				createBaseVNode("div", _hoisted_46$2, [createBaseVNode("span", null, "选择模型 — 共 " + toDisplayString(models.value.length) + " 个", 1), createBaseVNode("button", {
-					class: "cn-btn cn-btn--sm cn-btn--text",
-					onClick: _cache[26] || (_cache[26] = ($event) => modelPickerVisible.value = false)
-				}, [..._cache[62] || (_cache[62] = [createBaseVNode("i", { class: "fa-solid fa-xmark" }, null, -1)])])]),
-				createBaseVNode("div", _hoisted_47$2, [withDirectives(createBaseVNode("input", {
-					class: "cn-input",
-					"onUpdate:modelValue": _cache[27] || (_cache[27] = ($event) => modelSearch.value = $event),
-					placeholder: "搜索模型…"
-				}, null, 512), [[vModelText, modelSearch.value]])]),
-				createBaseVNode("div", _hoisted_48$2, [(openBlock(true), createElementBlock(Fragment, null, renderList(filteredModels.value, (m) => {
-					return openBlock(), createElementBlock("button", {
-						key: m,
-						class: normalizeClass(["model-picker__item", { "model-picker__item--picked": m === editing.value.model }]),
-						onClick: ($event) => pickModel(m)
-					}, [createBaseVNode("span", _hoisted_50$1, toDisplayString(m), 1), m === editing.value.model ? (openBlock(), createElementBlock("i", _hoisted_51$1)) : createCommentVNode("", true)], 10, _hoisted_49$1);
-				}), 128)), filteredModels.value.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_52$1, toDisplayString(modelSearch.value ? "无匹配模型" : "无模型"), 1)) : createCommentVNode("", true)])
-			])])) : createCommentVNode("", true)], 64);
+				}, " 保存向量配置 ")
+			])])])]), createVNode(Transition, { name: "cn-modal" }, {
+				default: withCtx(() => [modelPickerVisible.value ? (openBlock(), createElementBlock("div", {
+					key: 0,
+					class: "cn-modal-mask",
+					onClick: _cache[28] || (_cache[28] = withModifiers(($event) => modelPickerVisible.value = false, ["self"]))
+				}, [createBaseVNode("div", _hoisted_45$2, [
+					createBaseVNode("div", _hoisted_46$2, [createBaseVNode("span", null, "选择模型 — 共 " + toDisplayString(models.value.length) + " 个", 1), createBaseVNode("button", {
+						class: "cn-btn cn-btn--sm cn-btn--text",
+						onClick: _cache[26] || (_cache[26] = ($event) => modelPickerVisible.value = false)
+					}, [..._cache[62] || (_cache[62] = [createBaseVNode("i", { class: "fa-solid fa-xmark" }, null, -1)])])]),
+					createBaseVNode("div", _hoisted_47$2, [withDirectives(createBaseVNode("input", {
+						class: "cn-input",
+						"onUpdate:modelValue": _cache[27] || (_cache[27] = ($event) => modelSearch.value = $event),
+						placeholder: "搜索模型…"
+					}, null, 512), [[vModelText, modelSearch.value]])]),
+					createBaseVNode("div", _hoisted_48$2, [(openBlock(true), createElementBlock(Fragment, null, renderList(filteredModels.value, (m) => {
+						return openBlock(), createElementBlock("button", {
+							key: m,
+							class: normalizeClass(["model-picker__item", { "model-picker__item--picked": m === editing.value.model }]),
+							onClick: ($event) => pickModel(m)
+						}, [createBaseVNode("span", _hoisted_50$1, toDisplayString(m), 1), m === editing.value.model ? (openBlock(), createElementBlock("i", _hoisted_51$1)) : createCommentVNode("", true)], 10, _hoisted_49$1);
+					}), 128)), filteredModels.value.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_52$1, toDisplayString(modelSearch.value ? "无匹配模型" : "无模型"), 1)) : createCommentVNode("", true)])
+				])])) : createCommentVNode("", true)]),
+				_: 1
+			})], 64);
 		};
 	}
 });
@@ -16889,13 +16939,15 @@ function injectStyles() {
 	const s = document.createElement("style");
 	s.id = "cn_dialog_style";
 	s.textContent = `
-.cn-dialog-mask{position:fixed;inset:0;z-index:var(--cn-z-dialog);display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45)!important}
-.cn-dialog{background:#fff!important;border-radius:6px!important;box-shadow:0 6px 16px rgba(0,0,0,.08),0 3px 6px rgba(0,0,0,.06)!important;min-width:320px;max-width:480px;overflow:hidden!important}
-.cn-dialog__head{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid #e8e8e8!important;font-size:16px;font-weight:600;color:#1f1f1f!important}
-.cn-dialog__body{padding:16px;font-size:14px;color:#595959!important;line-height:1.6;white-space:pre-wrap}
-.cn-dialog__foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;border-top:1px solid #e8e8e8!important}
-.cn-dialog__foot .cn-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 15px;border:1px solid #e8e8e8!important;border-radius:6px;background:#fff!important;color:#1f1f1f!important;font-size:14px;cursor:pointer}
-.cn-dialog__foot .cn-btn--primary{background:#52c41a!important;border-color:#52c41a!important;color:#fff!important}
+.cn-dialog-mask{position:fixed;inset:0;z-index:var(--cn-z-dialog);display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45)!important;opacity:0;transition:opacity .2s var(--cn-ease)}
+.cn-dialog-mask--show{opacity:1}
+.cn-dialog{background:#fff!important;border-radius:8px!important;box-shadow:0 6px 16px rgba(0,0,0,.08),0 3px 6px rgba(0,0,0,.06)!important;min-width:320px;max-width:480px;overflow:hidden!important;transform:scale(.96);opacity:0;transition:opacity .2s var(--cn-ease),transform .2s var(--cn-ease)}
+.cn-dialog-mask--show .cn-dialog{transform:scale(1);opacity:1}
+.cn-dialog__head{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid #dce5e0!important;font-size:16px;font-weight:600;color:#1f2937!important}
+.cn-dialog__body{padding:16px;font-size:14px;color:#6b7280!important;line-height:1.6;white-space:pre-wrap}
+.cn-dialog__foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;border-top:1px solid #dce5e0!important}
+.cn-dialog__foot .cn-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 15px;border:1px solid #dce5e0!important;border-radius:8px;background:#fff!important;color:#1f2937!important;font-size:14px;cursor:pointer}
+.cn-dialog__foot .cn-btn--primary{background:#4caf50!important;border-color:#4caf50!important;color:#fff!important}
 .cn-dialog__foot .cn-btn--danger{background:#ff4d4f!important;border-color:#ff4d4f!important;color:#fff!important}
 `;
 	document.head.appendChild(s);
@@ -16914,13 +16966,17 @@ function createMask() {
 }
 var activeResolver = null;
 var activeEl = null;
+function dismissEl(el) {
+	el.classList.remove("cn-dialog-mask--show");
+	setTimeout(() => el.remove(), 200);
+}
 function closeLatest() {
 	if (activeResolver) {
 		activeResolver(false);
 		activeResolver = null;
 	}
 	if (activeEl) {
-		activeEl.remove();
+		dismissEl(activeEl);
 		activeEl = null;
 	}
 }
@@ -16946,6 +17002,7 @@ function confirm(title, message, confirmLabel = "确认", danger = false) {
 		mask.appendChild(box);
 		getRoot$1().appendChild(mask);
 		activeEl = mask;
+		requestAnimationFrame(() => mask.classList.add("cn-dialog-mask--show"));
 		box.querySelector("#cn-dlg-cancel").addEventListener("click", () => {
 			resolve(false);
 			cleanup();
@@ -16959,7 +17016,7 @@ function confirm(title, message, confirmLabel = "确认", danger = false) {
 function cleanup() {
 	activeResolver = null;
 	if (activeEl) {
-		activeEl.remove();
+		dismissEl(activeEl);
 		activeEl = null;
 	}
 }
@@ -17185,36 +17242,39 @@ var Tables_default = /* @__PURE__ */ defineComponent({
 					class: normalizeClass(["table-tab", { "table-tab--active": t.name === activeName.value }]),
 					onClick: ($event) => switchTab(t.name)
 				}, [createBaseVNode("span", _hoisted_8$3, toDisplayString(t.displayName), 1), createBaseVNode("span", _hoisted_9$3, toDisplayString(t.name), 1)], 10, _hoisted_7$3);
-			}), 128))]), createBaseVNode("div", _hoisted_10$3, [(activeTable.value?.rows.length ?? 0) === 0 ? (openBlock(), createElementBlock("div", _hoisted_11$3, " 暂无数据 ")) : (openBlock(), createElementBlock("div", _hoisted_12$3, [(openBlock(true), createElementBlock(Fragment, null, renderList(activeTable.value?.rows ?? [], (row) => {
-				return openBlock(), createElementBlock("div", {
-					key: row.__rowid__,
-					class: normalizeClass(["cn-card table-row-card", { "table-row-card--editing": row.__rowid__ === editingRowid.value }])
-				}, [createBaseVNode("div", _hoisted_13$3, [(openBlock(true), createElementBlock(Fragment, null, renderList(activeTable.value?.columns ?? [], (c) => {
+			}), 128))]), createBaseVNode("div", _hoisted_10$3, [(activeTable.value?.rows.length ?? 0) === 0 ? (openBlock(), createElementBlock("div", _hoisted_11$3, "暂无数据")) : (openBlock(), createElementBlock("div", _hoisted_12$3, [createVNode(TransitionGroup, { name: "cn-list" }, {
+				default: withCtx(() => [(openBlock(true), createElementBlock(Fragment, null, renderList(activeTable.value?.rows ?? [], (row) => {
 					return openBlock(), createElementBlock("div", {
-						key: c,
-						class: "table-row-card__field"
-					}, [createBaseVNode("label", _hoisted_14$3, [createTextVNode(toDisplayString(activeTable.value?.colNames[c] ?? c) + " ", 1), createBaseVNode("span", _hoisted_15$3, toDisplayString(c), 1)]), row.__rowid__ === editingRowid.value ? (openBlock(), createElementBlock("div", {
-						key: 0,
-						class: "cell-edit table-row-card__value",
-						contenteditable: "true",
-						ref_for: true,
-						ref: (el) => registerCellEl(c, el)
-					}, null, 512)) : (openBlock(), createElementBlock("div", _hoisted_16$3, toDisplayString(fieldValue(row, c)), 1))]);
-				}), 128))]), createBaseVNode("div", _hoisted_17$3, [row.__rowid__ === editingRowid.value ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [createBaseVNode("button", {
-					class: "cn-btn cn-btn--sm cn-btn--primary",
-					onClick: saveEdit
-				}, "保存"), createBaseVNode("button", {
-					class: "cn-btn cn-btn--sm",
-					onClick: cancelEdit
-				}, "取消")], 64)) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [createBaseVNode("button", {
-					class: "cn-btn cn-btn--sm",
-					onClick: ($event) => startEdit(row)
-				}, [..._cache[3] || (_cache[3] = [createBaseVNode("i", { class: "fa-solid fa-pen" }, null, -1), createTextVNode(" 修改 ", -1)])], 8, _hoisted_18$3), createBaseVNode("button", {
-					class: "cn-btn cn-btn--sm cn-btn--text",
-					title: "删除",
-					onClick: ($event) => deleteRow(row)
-				}, [..._cache[4] || (_cache[4] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_19$3)], 64))])], 2);
-			}), 128))])), createBaseVNode("div", _hoisted_20$2, [createBaseVNode("span", _hoisted_21$2, toDisplayString(activeTable.value?.columns.length ?? 0) + " 列 · " + toDisplayString(activeTable.value?.rows.length ?? 0) + " 条 ", 1), createBaseVNode("button", {
+						key: row.__rowid__,
+						class: normalizeClass(["cn-card table-row-card", { "table-row-card--editing": row.__rowid__ === editingRowid.value }])
+					}, [createBaseVNode("div", _hoisted_13$3, [(openBlock(true), createElementBlock(Fragment, null, renderList(activeTable.value?.columns ?? [], (c) => {
+						return openBlock(), createElementBlock("div", {
+							key: c,
+							class: "table-row-card__field"
+						}, [createBaseVNode("label", _hoisted_14$3, [createTextVNode(toDisplayString(activeTable.value?.colNames[c] ?? c) + " ", 1), createBaseVNode("span", _hoisted_15$3, toDisplayString(c), 1)]), row.__rowid__ === editingRowid.value ? (openBlock(), createElementBlock("div", {
+							key: 0,
+							class: "cell-edit table-row-card__value",
+							contenteditable: "true",
+							ref_for: true,
+							ref: (el) => registerCellEl(c, el)
+						}, null, 512)) : (openBlock(), createElementBlock("div", _hoisted_16$3, toDisplayString(fieldValue(row, c)), 1))]);
+					}), 128))]), createBaseVNode("div", _hoisted_17$3, [row.__rowid__ === editingRowid.value ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [createBaseVNode("button", {
+						class: "cn-btn cn-btn--sm cn-btn--primary",
+						onClick: saveEdit
+					}, " 保存 "), createBaseVNode("button", {
+						class: "cn-btn cn-btn--sm",
+						onClick: cancelEdit
+					}, "取消")], 64)) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [createBaseVNode("button", {
+						class: "cn-btn cn-btn--sm",
+						onClick: ($event) => startEdit(row)
+					}, [..._cache[3] || (_cache[3] = [createBaseVNode("i", { class: "fa-solid fa-pen" }, null, -1), createTextVNode(" 修改 ", -1)])], 8, _hoisted_18$3), createBaseVNode("button", {
+						class: "cn-btn cn-btn--sm cn-btn--text",
+						title: "删除",
+						onClick: ($event) => deleteRow(row)
+					}, [..._cache[4] || (_cache[4] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_19$3)], 64))])], 2);
+				}), 128))]),
+				_: 1
+			})])), createBaseVNode("div", _hoisted_20$2, [createBaseVNode("span", _hoisted_21$2, toDisplayString(activeTable.value?.columns.length ?? 0) + " 列 · " + toDisplayString(activeTable.value?.rows.length ?? 0) + " 条 ", 1), createBaseVNode("button", {
 				class: "cn-btn cn-btn--sm",
 				onClick: addRow
 			}, [..._cache[5] || (_cache[5] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode(" 添加条目 ", -1)])])])])])], 64))]);
@@ -17285,8 +17345,12 @@ var Chronicle_default = /* @__PURE__ */ defineComponent({
 			full: c.role === "summary" || c.role === "keyDialogue"
 		})));
 		function refresh() {
-			const first = session.getTableRowsWithRowid(CHRONICLE_TABLE_NAME)[0];
-			rows.value = first?.rows ?? [];
+			try {
+				const first = session.getTableRowsWithRowid(CHRONICLE_TABLE_NAME)[0];
+				rows.value = first?.rows ?? [];
+			} catch {
+				rows.value = [];
+			}
 		}
 		let draftCounter = -1;
 		const hasSession = computed(() => session.listTables().filter((n) => !n.startsWith("sqlite_")).length > 0);
@@ -17402,47 +17466,50 @@ var Chronicle_default = /* @__PURE__ */ defineComponent({
 					class: "cn-btn cn-btn--sm",
 					onClick: addRow
 				}, [..._cache[2] || (_cache[2] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode(" 添加条目 ", -1)])])
-			]), !chronicleEnabled.value ? (openBlock(), createElementBlock("div", _hoisted_4$2, "纪要生成功能未开启，请到首页开启")) : !hasSession.value ? (openBlock(), createElementBlock("div", _hoisted_5$2, "当前会话未载入表格")) : filtered.value.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_6$2, toDisplayString(rows.value.length === 0 ? "暂无纪要" : "无匹配结果"), 1)) : (openBlock(), createElementBlock("div", _hoisted_7$2, [(openBlock(true), createElementBlock(Fragment, null, renderList(filtered.value, (row) => {
-				return openBlock(), createElementBlock("div", {
-					key: row.__rowid__,
-					class: normalizeClass(["cn-card chronicle-item", { "chronicle-item--editing": row.__rowid__ === editingRowid.value }])
-				}, [createBaseVNode("div", _hoisted_8$2, [createBaseVNode("span", _hoisted_9$2, toDisplayString(keyColName.value ? row[keyColName.value] ?? "" : ""), 1), row.__rowid__ === editingRowid.value ? (openBlock(), createElementBlock("div", _hoisted_10$2, [createBaseVNode("button", {
-					class: "cn-btn cn-btn--sm cn-btn--primary",
-					onClick: saveEdit
-				}, "保存"), createBaseVNode("button", {
-					class: "cn-btn cn-btn--sm",
-					onClick: cancelEdit
-				}, "取消")])) : (openBlock(), createElementBlock("div", _hoisted_11$2, [createBaseVNode("button", {
-					class: "cn-btn cn-btn--sm",
-					onClick: ($event) => startEdit(row)
-				}, [..._cache[3] || (_cache[3] = [createBaseVNode("i", { class: "fa-solid fa-pen" }, null, -1), createTextVNode(" 修改 ", -1)])], 8, _hoisted_12$2), createBaseVNode("button", {
-					class: "cn-btn cn-btn--sm cn-btn--text",
-					title: "删除",
-					onClick: ($event) => deleteRow(row)
-				}, [..._cache[4] || (_cache[4] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_13$2)]))]), createBaseVNode("div", _hoisted_14$2, [createBaseVNode("div", _hoisted_15$2, [(openBlock(true), createElementBlock(Fragment, null, renderList(fields.value.filter((x) => !x.full), (f) => {
+			]), !chronicleEnabled.value ? (openBlock(), createElementBlock("div", _hoisted_4$2, "纪要生成功能未开启，请到首页开启")) : !hasSession.value ? (openBlock(), createElementBlock("div", _hoisted_5$2, "当前会话未载入表格")) : filtered.value.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_6$2, toDisplayString(rows.value.length === 0 ? "暂无纪要" : "无匹配结果"), 1)) : (openBlock(), createElementBlock("div", _hoisted_7$2, [createVNode(TransitionGroup, { name: "cn-list" }, {
+				default: withCtx(() => [(openBlock(true), createElementBlock(Fragment, null, renderList(filtered.value, (row) => {
 					return openBlock(), createElementBlock("div", {
-						key: f.key,
-						class: "chronicle-field"
-					}, [createBaseVNode("label", _hoisted_16$2, toDisplayString(f.label), 1), row.__rowid__ === editingRowid.value ? (openBlock(), createElementBlock("div", {
-						key: 0,
-						class: "cell-edit chronicle-field__value",
-						contenteditable: "true",
-						ref_for: true,
-						ref: (el) => registerCellEl(f.key, el)
-					}, null, 512)) : (openBlock(), createElementBlock("div", _hoisted_17$2, toDisplayString(row[f.key] ?? ""), 1))]);
-				}), 128))]), (openBlock(true), createElementBlock(Fragment, null, renderList(fields.value.filter((x) => x.full), (f) => {
-					return openBlock(), createElementBlock("div", {
-						key: f.key,
-						class: "chronicle-field chronicle-field--full"
-					}, [createBaseVNode("label", _hoisted_18$2, toDisplayString(f.label), 1), row.__rowid__ === editingRowid.value ? (openBlock(), createElementBlock("div", {
-						key: 0,
-						class: "cell-edit chronicle-field__value",
-						contenteditable: "true",
-						ref_for: true,
-						ref: (el) => registerCellEl(f.key, el)
-					}, null, 512)) : (openBlock(), createElementBlock("div", _hoisted_19$2, toDisplayString(row[f.key] ?? ""), 1))]);
-				}), 128))])], 2);
-			}), 128))]))]);
+						key: row.__rowid__,
+						class: normalizeClass(["cn-card chronicle-item", { "chronicle-item--editing": row.__rowid__ === editingRowid.value }])
+					}, [createBaseVNode("div", _hoisted_8$2, [createBaseVNode("span", _hoisted_9$2, toDisplayString(keyColName.value ? row[keyColName.value] ?? "" : ""), 1), row.__rowid__ === editingRowid.value ? (openBlock(), createElementBlock("div", _hoisted_10$2, [createBaseVNode("button", {
+						class: "cn-btn cn-btn--sm cn-btn--primary",
+						onClick: saveEdit
+					}, "保存"), createBaseVNode("button", {
+						class: "cn-btn cn-btn--sm",
+						onClick: cancelEdit
+					}, "取消")])) : (openBlock(), createElementBlock("div", _hoisted_11$2, [createBaseVNode("button", {
+						class: "cn-btn cn-btn--sm",
+						onClick: ($event) => startEdit(row)
+					}, [..._cache[3] || (_cache[3] = [createBaseVNode("i", { class: "fa-solid fa-pen" }, null, -1), createTextVNode(" 修改 ", -1)])], 8, _hoisted_12$2), createBaseVNode("button", {
+						class: "cn-btn cn-btn--sm cn-btn--text",
+						title: "删除",
+						onClick: ($event) => deleteRow(row)
+					}, [..._cache[4] || (_cache[4] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_13$2)]))]), createBaseVNode("div", _hoisted_14$2, [createBaseVNode("div", _hoisted_15$2, [(openBlock(true), createElementBlock(Fragment, null, renderList(fields.value.filter((x) => !x.full), (f) => {
+						return openBlock(), createElementBlock("div", {
+							key: f.key,
+							class: "chronicle-field"
+						}, [createBaseVNode("label", _hoisted_16$2, toDisplayString(f.label), 1), row.__rowid__ === editingRowid.value ? (openBlock(), createElementBlock("div", {
+							key: 0,
+							class: "cell-edit chronicle-field__value",
+							contenteditable: "true",
+							ref_for: true,
+							ref: (el) => registerCellEl(f.key, el)
+						}, null, 512)) : (openBlock(), createElementBlock("div", _hoisted_17$2, toDisplayString(row[f.key] ?? ""), 1))]);
+					}), 128))]), (openBlock(true), createElementBlock(Fragment, null, renderList(fields.value.filter((x) => x.full), (f) => {
+						return openBlock(), createElementBlock("div", {
+							key: f.key,
+							class: "chronicle-field chronicle-field--full"
+						}, [createBaseVNode("label", _hoisted_18$2, toDisplayString(f.label), 1), row.__rowid__ === editingRowid.value ? (openBlock(), createElementBlock("div", {
+							key: 0,
+							class: "cell-edit chronicle-field__value",
+							contenteditable: "true",
+							ref_for: true,
+							ref: (el) => registerCellEl(f.key, el)
+						}, null, 512)) : (openBlock(), createElementBlock("div", _hoisted_19$2, toDisplayString(row[f.key] ?? ""), 1))]);
+					}), 128))])], 2);
+				}), 128))]),
+				_: 1
+			})]))]);
 		};
 	}
 });
@@ -44175,88 +44242,86 @@ var _hoisted_7$1 = {
 };
 var _hoisted_8$1 = { class: "prompt-side" };
 var _hoisted_9$1 = { class: "cn-card__body" };
-var _hoisted_10$1 = { class: "preset-list" };
-var _hoisted_11$1 = ["onClick"];
-var _hoisted_12$1 = { class: "preset-list__name" };
-var _hoisted_13$1 = {
+var _hoisted_10$1 = ["onClick"];
+var _hoisted_11$1 = { class: "preset-list__name" };
+var _hoisted_12$1 = {
 	key: 0,
 	class: "fa-solid fa-id-card preset-list__card",
 	title: "角色卡自带模板"
 };
-var _hoisted_14$1 = {
+var _hoisted_13$1 = {
 	key: 1,
 	class: "fa-solid fa-star preset-list__default",
 	title: "默认预设"
 };
-var _hoisted_15$1 = { class: "preset-list__count" };
+var _hoisted_14$1 = { class: "preset-list__count" };
+var _hoisted_15$1 = ["onClick"];
 var _hoisted_16$1 = ["onClick"];
 var _hoisted_17$1 = ["onClick"];
-var _hoisted_18$1 = ["onClick"];
-var _hoisted_19$1 = { class: "prompt-side__chronicle" };
-var _hoisted_20$1 = {
+var _hoisted_18$1 = { class: "prompt-side__chronicle" };
+var _hoisted_19$1 = {
 	key: 0,
 	class: "prompt-editor"
 };
-var _hoisted_21$1 = { class: "cn-card__body template-editor-body" };
-var _hoisted_22$1 = { class: "tpl-table-card tpl-table-card--active" };
-var _hoisted_23$1 = { class: "tpl-table-card__head" };
-var _hoisted_24$1 = { class: "tpl-table-card__name" };
-var _hoisted_25$1 = { class: "tpl-table-card__meta" };
-var _hoisted_26$1 = { class: "tpl-table-card__body" };
-var _hoisted_27$1 = { class: "tpl-row" };
-var _hoisted_28$1 = { class: "tpl-field" };
-var _hoisted_29$1 = ["value"];
-var _hoisted_30$1 = { class: "tpl-field" };
+var _hoisted_20$1 = { class: "cn-card__body template-editor-body" };
+var _hoisted_21$1 = { class: "tpl-table-card tpl-table-card--active" };
+var _hoisted_22$1 = { class: "tpl-table-card__head" };
+var _hoisted_23$1 = { class: "tpl-table-card__name" };
+var _hoisted_24$1 = { class: "tpl-table-card__meta" };
+var _hoisted_25$1 = { class: "tpl-table-card__body" };
+var _hoisted_26$1 = { class: "tpl-row" };
+var _hoisted_27$1 = { class: "tpl-field" };
+var _hoisted_28$1 = ["value"];
+var _hoisted_29$1 = { class: "tpl-field" };
+var _hoisted_30$1 = { class: "tpl-section" };
 var _hoisted_31$1 = { class: "tpl-section" };
-var _hoisted_32$1 = { class: "tpl-section" };
-var _hoisted_33$1 = { class: "tpl-cols" };
+var _hoisted_32$1 = { class: "tpl-cols" };
+var _hoisted_33$1 = ["onUpdate:modelValue"];
 var _hoisted_34$1 = ["onUpdate:modelValue"];
 var _hoisted_35$1 = ["onUpdate:modelValue"];
-var _hoisted_36$1 = ["onUpdate:modelValue"];
-var _hoisted_37$1 = ["value"];
-var _hoisted_38$1 = { class: "tpl-col-cell flags" };
+var _hoisted_36$1 = ["value"];
+var _hoisted_37$1 = { class: "tpl-col-cell flags" };
+var _hoisted_38$1 = ["onClick"];
 var _hoisted_39$1 = ["onClick"];
 var _hoisted_40$1 = ["onClick"];
-var _hoisted_41$1 = ["onClick"];
-var _hoisted_42$1 = ["onUpdate:modelValue"];
-var _hoisted_43$1 = ["value"];
-var _hoisted_44$1 = ["onUpdate:modelValue"];
-var _hoisted_45$1 = ["onClick"];
+var _hoisted_41$1 = ["onUpdate:modelValue"];
+var _hoisted_42$1 = ["value"];
+var _hoisted_43$1 = ["onUpdate:modelValue"];
+var _hoisted_44$1 = ["onClick"];
+var _hoisted_45$1 = { class: "tpl-section" };
 var _hoisted_46$1 = { class: "tpl-section" };
 var _hoisted_47$1 = { class: "tpl-section" };
-var _hoisted_48$1 = { class: "tpl-section" };
-var _hoisted_49 = {
+var _hoisted_48$1 = {
 	key: 1,
 	class: "prompt-editor"
 };
-var _hoisted_50 = { class: "cn-card__head" };
-var _hoisted_51 = { class: "cn-card__body template-editor-body" };
-var _hoisted_52 = {
+var _hoisted_49 = { class: "cn-card__head" };
+var _hoisted_50 = { class: "cn-card__body template-editor-body" };
+var _hoisted_51 = {
 	key: 0,
 	class: "template-editor-empty"
 };
-var _hoisted_53 = ["onClick"];
-var _hoisted_54 = { class: "tpl-table-card__head" };
-var _hoisted_55 = { class: "tpl-table-card__name" };
-var _hoisted_56 = { class: "tpl-table-card__meta" };
-var _hoisted_57 = ["onClick"];
-var _hoisted_58 = {
+var _hoisted_52 = ["onClick"];
+var _hoisted_53 = { class: "tpl-table-card__name" };
+var _hoisted_54 = { class: "tpl-table-card__meta" };
+var _hoisted_55 = ["onClick"];
+var _hoisted_56 = {
 	key: 0,
 	class: "tpl-table-card__body"
 };
-var _hoisted_59 = { class: "tpl-row" };
+var _hoisted_57 = { class: "tpl-row" };
+var _hoisted_58 = { class: "tpl-field" };
+var _hoisted_59 = ["onUpdate:modelValue"];
 var _hoisted_60 = { class: "tpl-field" };
 var _hoisted_61 = ["onUpdate:modelValue"];
-var _hoisted_62 = { class: "tpl-field" };
+var _hoisted_62 = { class: "tpl-section" };
 var _hoisted_63 = ["onUpdate:modelValue"];
 var _hoisted_64 = { class: "tpl-section" };
-var _hoisted_65 = ["onUpdate:modelValue"];
-var _hoisted_66 = { class: "tpl-section" };
-var _hoisted_67 = {
+var _hoisted_65 = {
 	class: "tpl-row",
 	style: { "align-items": "center" }
 };
-var _hoisted_68 = {
+var _hoisted_66 = {
 	class: "tpl-field",
 	style: {
 		"flex-direction": "row",
@@ -44264,84 +44329,83 @@ var _hoisted_68 = {
 		"gap": "8px"
 	}
 };
-var _hoisted_69 = { class: "cn-switch" };
-var _hoisted_70 = ["checked", "onChange"];
-var _hoisted_71 = { class: "tpl-field" };
-var _hoisted_72 = ["onChange"];
-var _hoisted_73 = ["selected"];
-var _hoisted_74 = ["selected"];
-var _hoisted_75 = {
+var _hoisted_67 = { class: "cn-switch" };
+var _hoisted_68 = ["checked", "onChange"];
+var _hoisted_69 = { class: "tpl-field" };
+var _hoisted_70 = ["onChange"];
+var _hoisted_71 = ["selected"];
+var _hoisted_72 = ["selected"];
+var _hoisted_73 = {
 	key: 0,
 	class: "tpl-row",
 	style: { "margin-top": "8px" }
 };
-var _hoisted_76 = { class: "tpl-field" };
-var _hoisted_77 = ["value", "onInput"];
-var _hoisted_78 = { class: "tpl-section" };
-var _hoisted_79 = { class: "tpl-cols" };
+var _hoisted_74 = { class: "tpl-field" };
+var _hoisted_75 = ["value", "onInput"];
+var _hoisted_76 = { class: "tpl-section" };
+var _hoisted_77 = { class: "tpl-cols" };
+var _hoisted_78 = ["onUpdate:modelValue"];
+var _hoisted_79 = ["onUpdate:modelValue"];
 var _hoisted_80 = ["onUpdate:modelValue"];
-var _hoisted_81 = ["onUpdate:modelValue"];
-var _hoisted_82 = ["onUpdate:modelValue"];
-var _hoisted_83 = ["value"];
-var _hoisted_84 = { class: "tpl-col-cell flags" };
+var _hoisted_81 = ["value"];
+var _hoisted_82 = { class: "tpl-col-cell flags" };
+var _hoisted_83 = ["onClick"];
+var _hoisted_84 = ["onClick"];
 var _hoisted_85 = ["onClick"];
-var _hoisted_86 = ["onClick"];
+var _hoisted_86 = ["onUpdate:modelValue"];
 var _hoisted_87 = ["onClick"];
-var _hoisted_88 = ["onUpdate:modelValue"];
-var _hoisted_89 = ["onClick"];
+var _hoisted_88 = { class: "tpl-section" };
+var _hoisted_89 = ["onUpdate:modelValue"];
 var _hoisted_90 = { class: "tpl-section" };
 var _hoisted_91 = ["onUpdate:modelValue"];
 var _hoisted_92 = { class: "tpl-section" };
 var _hoisted_93 = ["onUpdate:modelValue"];
-var _hoisted_94 = { class: "tpl-section" };
-var _hoisted_95 = ["onUpdate:modelValue"];
-var _hoisted_96 = {
+var _hoisted_94 = {
 	key: 2,
 	class: "prompt-editor"
 };
-var _hoisted_97 = {
+var _hoisted_95 = {
 	key: 1,
 	class: "prompt-split"
 };
-var _hoisted_98 = { class: "prompt-side" };
-var _hoisted_99 = { class: "cn-card__body" };
-var _hoisted_100 = { class: "preset-list" };
-var _hoisted_101 = ["onClick"];
-var _hoisted_102 = { class: "preset-list__name" };
-var _hoisted_103 = {
+var _hoisted_96 = { class: "prompt-side" };
+var _hoisted_97 = { class: "cn-card__body" };
+var _hoisted_98 = ["onClick"];
+var _hoisted_99 = { class: "preset-list__name" };
+var _hoisted_100 = {
 	key: 0,
 	class: "fa-solid fa-star preset-list__default",
 	title: "默认预设"
 };
-var _hoisted_104 = { class: "preset-list__count" };
-var _hoisted_105 = ["onClick"];
-var _hoisted_106 = ["onClick"];
-var _hoisted_107 = ["onClick"];
-var _hoisted_108 = { class: "prompt-editor" };
-var _hoisted_109 = { class: "cn-card__head" };
-var _hoisted_110 = { class: "prompt-editor__desc" };
-var _hoisted_111 = { class: "cn-card__body" };
-var _hoisted_112 = { class: "seg-item" };
-var _hoisted_113 = { class: "seg-item__bar" };
-var _hoisted_114 = ["title", "onClick"];
-var _hoisted_115 = ["onUpdate:modelValue"];
-var _hoisted_116 = { class: "seg-item__seq" };
-var _hoisted_117 = ["onClick"];
-var _hoisted_118 = { class: "seg-add-row" };
-var _hoisted_119 = ["onClick"];
-var _hoisted_120 = {
+var _hoisted_101 = { class: "preset-list__count" };
+var _hoisted_102 = ["onClick"];
+var _hoisted_103 = ["onClick"];
+var _hoisted_104 = ["onClick"];
+var _hoisted_105 = { class: "prompt-editor" };
+var _hoisted_106 = { class: "cn-card__head" };
+var _hoisted_107 = { class: "prompt-editor__desc" };
+var _hoisted_108 = { class: "cn-card__body" };
+var _hoisted_109 = { class: "seg-item" };
+var _hoisted_110 = { class: "seg-item__bar" };
+var _hoisted_111 = ["title", "onClick"];
+var _hoisted_112 = ["onUpdate:modelValue"];
+var _hoisted_113 = { class: "seg-item__seq" };
+var _hoisted_114 = ["onClick"];
+var _hoisted_115 = { class: "seg-add-row" };
+var _hoisted_116 = ["onClick"];
+var _hoisted_117 = {
 	key: 0,
 	class: "prompt-foot"
 };
-var _hoisted_121 = { class: "cn-space" };
-var _hoisted_122 = { class: "cn-btn" };
-var _hoisted_123 = { class: "cn-modal" };
-var _hoisted_124 = { class: "cn-modal__code" };
-var _hoisted_125 = { class: "prompt-foot" };
-var _hoisted_126 = { class: "cn-space" };
-var _hoisted_127 = { class: "cn-btn" };
-var _hoisted_128 = { class: "cn-modal" };
-var _hoisted_129 = { class: "cn-modal__code" };
+var _hoisted_118 = { class: "cn-space" };
+var _hoisted_119 = { class: "cn-btn" };
+var _hoisted_120 = { class: "cn-modal" };
+var _hoisted_121 = { class: "cn-modal__code" };
+var _hoisted_122 = { class: "prompt-foot" };
+var _hoisted_123 = { class: "cn-space" };
+var _hoisted_124 = { class: "cn-btn" };
+var _hoisted_125 = { class: "cn-modal" };
+var _hoisted_126 = { class: "cn-modal__code" };
 var varExample = "{{变量名}}";
 //#endregion
 //#region src/ui/pages/PromptConfig.vue
@@ -44443,6 +44507,17 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 			store.save();
 		}
 		function saveAll() {
+			const p = activePreset.value;
+			if (p) {
+				if (!p.name.trim()) {
+					toast.error("预设名称不能为空");
+					return;
+				}
+				for (const s of p.segments) if (!s.name.trim()) {
+					toast.error("段名称不能为空");
+					return;
+				}
+			}
 			save();
 			toast.success("已保存");
 		}
@@ -44593,6 +44668,18 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 				}
 			};
 		}
+		function setExportEnabled(table, checked) {
+			ensureExportConfig(table);
+			table.exportConfig.enabled = checked;
+		}
+		function setExportEntryType(table, value) {
+			ensureExportConfig(table);
+			table.exportConfig.entryType = value;
+		}
+		function setExportKeywords(table, value) {
+			ensureExportConfig(table);
+			table.exportConfig.keywords = value;
+		}
 		function ensureExportConfig(table) {
 			if (!table.exportConfig) table.exportConfig = {
 				enabled: true,
@@ -44649,7 +44736,30 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 			}
 			chronicleDef.value.columns.splice(idx, 1);
 		}
+		function validateTableDef(table, allTables) {
+			if (!table.name.trim()) return "英文表名不能为空";
+			if (!table.displayName.trim()) return "中文表名不能为空";
+			if (table.columns.length === 0) return "至少需要一列";
+			const nameSet = /* @__PURE__ */ new Set();
+			for (const col of table.columns) {
+				if (!col.name.trim()) return `表「${table.displayName || table.name}」有列英文名为空`;
+				if (!col.displayName.trim()) return `表「${table.displayName || table.name}」有列中文名为空`;
+				if (nameSet.has(col.name.trim())) return `表「${table.displayName || table.name}」列英文名重复：${col.name.trim()}`;
+				nameSet.add(col.name.trim());
+			}
+			if (table.exportConfig?.entryType === "keyword" && !table.exportConfig.keywords?.trim()) return `表「${table.displayName || table.name}」关键词注入模式下，触发关键词不能为空`;
+			if (allTables.filter((t) => t !== table && t.name.trim() === table.name.trim()).length > 0) return `表英文名重复：${table.name.trim()}`;
+			return null;
+		}
 		function validateChronicleDef(def) {
+			const nameSet = /* @__PURE__ */ new Set();
+			for (const col of def.columns) {
+				if (!col.name.trim()) return "列英文名不能为空";
+				if (!col.displayName.trim()) return "列中文名不能为空";
+				if (!col.note?.trim()) return `列「${col.displayName || col.name}」的列说明不能为空`;
+				if (nameSet.has(col.name.trim())) return `列英文名重复：${col.name.trim()}`;
+				nameSet.add(col.name.trim());
+			}
 			const roleCounts = /* @__PURE__ */ new Map();
 			for (const col of def.columns) if (col.role) roleCounts.set(col.role, (roleCounts.get(col.role) ?? 0) + 1);
 			const missing = [
@@ -44796,6 +44906,14 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 				await saveChronicleTableDef();
 				return;
 			}
+			const tables = activeTemplatePreset.value?.template.tables ?? [];
+			for (const t of tables) {
+				const err = validateTableDef(t, tables);
+				if (err) {
+					toast.error(err);
+					return;
+				}
+			}
 			store.save();
 			toast.success("已保存");
 		}
@@ -44883,39 +45001,46 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 							class: "cn-btn cn-btn--sm",
 							onClick: newPresetT
 						}, [..._cache[10] || (_cache[10] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode(" 新建 ", -1)])])]),
-						createBaseVNode("div", _hoisted_9$1, [createBaseVNode("ul", _hoisted_10$1, [(openBlock(true), createElementBlock(Fragment, null, renderList(ttConfig.value.presets, (p) => {
-							return openBlock(), createElementBlock("li", {
-								key: p.id,
-								class: normalizeClass(["preset-list__item", { "preset-list__item--active": p.id === ttConfig.value.activeId && selectedView.value === "preset" }]),
-								onClick: ($event) => selectPresetT(p.id)
-							}, [
-								createBaseVNode("span", _hoisted_12$1, [
-									p.source === "card" ? (openBlock(), createElementBlock("i", _hoisted_13$1)) : createCommentVNode("", true),
-									createTextVNode(" " + toDisplayString(p.name) + " ", 1),
-									p.id === ttConfig.value.defaultId ? (openBlock(), createElementBlock("i", _hoisted_14$1)) : createCommentVNode("", true)
-								]),
-								createBaseVNode("span", _hoisted_15$1, toDisplayString(p.template.tables.length) + "表", 1),
-								p.id !== ttConfig.value.activeId ? (openBlock(), createElementBlock("button", {
-									key: 0,
-									class: "cn-btn cn-btn--sm cn-btn--text",
-									title: "设为当前",
-									onClick: withModifiers(($event) => selectPresetT(p.id), ["stop"])
-								}, [..._cache[12] || (_cache[12] = [createBaseVNode("i", { class: "fa-solid fa-check" }, null, -1)])], 8, _hoisted_16$1)) : createCommentVNode("", true),
-								p.id !== ttConfig.value.defaultId ? (openBlock(), createElementBlock("button", {
-									key: 1,
-									class: "cn-btn cn-btn--sm cn-btn--text",
-									title: "设为默认",
-									onClick: withModifiers(($event) => setDefaultPresetT(p.id), ["stop"])
-								}, [..._cache[13] || (_cache[13] = [createBaseVNode("i", { class: "fa-solid fa-star" }, null, -1)])], 8, _hoisted_17$1)) : createCommentVNode("", true),
-								p.source !== "card" ? (openBlock(), createElementBlock("button", {
-									key: 2,
-									class: "cn-btn cn-btn--sm cn-btn--text",
-									title: "删除",
-									onClick: withModifiers(($event) => deletePresetT(p.id), ["stop"])
-								}, [..._cache[14] || (_cache[14] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_18$1)) : createCommentVNode("", true)
-							], 10, _hoisted_11$1);
-						}), 128))])]),
-						createBaseVNode("div", _hoisted_19$1, [createBaseVNode("div", {
+						createBaseVNode("div", _hoisted_9$1, [createVNode(TransitionGroup, {
+							name: "cn-list",
+							tag: "ul",
+							class: "preset-list"
+						}, {
+							default: withCtx(() => [(openBlock(true), createElementBlock(Fragment, null, renderList(ttConfig.value.presets, (p) => {
+								return openBlock(), createElementBlock("li", {
+									key: p.id,
+									class: normalizeClass(["preset-list__item", { "preset-list__item--active": p.id === ttConfig.value.activeId && selectedView.value === "preset" }]),
+									onClick: ($event) => selectPresetT(p.id)
+								}, [
+									createBaseVNode("span", _hoisted_11$1, [
+										p.source === "card" ? (openBlock(), createElementBlock("i", _hoisted_12$1)) : createCommentVNode("", true),
+										createTextVNode(" " + toDisplayString(p.name) + " ", 1),
+										p.id === ttConfig.value.defaultId ? (openBlock(), createElementBlock("i", _hoisted_13$1)) : createCommentVNode("", true)
+									]),
+									createBaseVNode("span", _hoisted_14$1, toDisplayString(p.template.tables.length) + "表", 1),
+									p.id !== ttConfig.value.activeId ? (openBlock(), createElementBlock("button", {
+										key: 0,
+										class: "cn-btn cn-btn--sm cn-btn--text",
+										title: "设为当前",
+										onClick: withModifiers(($event) => selectPresetT(p.id), ["stop"])
+									}, [..._cache[12] || (_cache[12] = [createBaseVNode("i", { class: "fa-solid fa-check" }, null, -1)])], 8, _hoisted_15$1)) : createCommentVNode("", true),
+									p.id !== ttConfig.value.defaultId ? (openBlock(), createElementBlock("button", {
+										key: 1,
+										class: "cn-btn cn-btn--sm cn-btn--text",
+										title: "设为默认",
+										onClick: withModifiers(($event) => setDefaultPresetT(p.id), ["stop"])
+									}, [..._cache[13] || (_cache[13] = [createBaseVNode("i", { class: "fa-solid fa-star" }, null, -1)])], 8, _hoisted_16$1)) : createCommentVNode("", true),
+									p.source !== "card" ? (openBlock(), createElementBlock("button", {
+										key: 2,
+										class: "cn-btn cn-btn--sm cn-btn--text",
+										title: "删除",
+										onClick: withModifiers(($event) => deletePresetT(p.id), ["stop"])
+									}, [..._cache[14] || (_cache[14] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_17$1)) : createCommentVNode("", true)
+								], 10, _hoisted_10$1);
+							}), 128))]),
+							_: 1
+						})]),
+						createBaseVNode("div", _hoisted_18$1, [createBaseVNode("div", {
 							class: normalizeClass(["preset-list__item preset-list__item--chronicle", { "preset-list__item--active": selectedView.value === "chronicle" }]),
 							onClick: selectChronicle
 						}, [..._cache[15] || (_cache[15] = [createBaseVNode("span", { class: "preset-list__name" }, [
@@ -44930,33 +45055,33 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 								title: "系统内置，结构可编辑"
 							})
 						], -1), createBaseVNode("span", { class: "preset-list__count" }, "内置", -1)])], 2)])
-					]), selectedView.value === "chronicle" ? (openBlock(), createElementBlock("div", _hoisted_20$1, [createBaseVNode("div", { class: "cn-card__head" }, [
+					]), selectedView.value === "chronicle" ? (openBlock(), createElementBlock("div", _hoisted_19$1, [createBaseVNode("div", { class: "cn-card__head" }, [
 						_cache[17] || (_cache[17] = createBaseVNode("span", null, "纪要表（系统内置）", -1)),
 						_cache[18] || (_cache[18] = createBaseVNode("span", { class: "prompt-editor__desc" }, "结构可编辑；保存后按新结构重建表（同名列数据迁移）。表名固定不可改。", -1)),
 						createBaseVNode("button", {
 							class: "cn-btn cn-btn--sm cn-btn--primary",
 							onClick: saveChronicleTableDef
 						}, [..._cache[16] || (_cache[16] = [createBaseVNode("i", { class: "fa-solid fa-save" }, null, -1), createTextVNode(" 保存并重建 ", -1)])])
-					]), createBaseVNode("div", _hoisted_21$1, [createBaseVNode("div", _hoisted_22$1, [createBaseVNode("div", _hoisted_23$1, [createBaseVNode("span", _hoisted_24$1, toDisplayString(chronicleDef.value.displayName) + " (" + toDisplayString(chronicleDef.value.name) + ")", 1), createBaseVNode("span", _hoisted_25$1, toDisplayString(chronicleDef.value.columns.length) + "列·内置", 1)]), createBaseVNode("div", _hoisted_26$1, [
-						createBaseVNode("div", _hoisted_27$1, [createBaseVNode("div", _hoisted_28$1, [_cache[19] || (_cache[19] = createBaseVNode("label", { class: "tpl-label" }, "英文表名（锁定）", -1)), createBaseVNode("input", {
+					]), createBaseVNode("div", _hoisted_20$1, [createBaseVNode("div", _hoisted_21$1, [createBaseVNode("div", _hoisted_22$1, [createBaseVNode("span", _hoisted_23$1, toDisplayString(chronicleDef.value.displayName) + " (" + toDisplayString(chronicleDef.value.name) + ")", 1), createBaseVNode("span", _hoisted_24$1, toDisplayString(chronicleDef.value.columns.length) + "列·内置", 1)]), createBaseVNode("div", _hoisted_25$1, [
+						createBaseVNode("div", _hoisted_26$1, [createBaseVNode("div", _hoisted_27$1, [_cache[19] || (_cache[19] = createBaseVNode("label", { class: "tpl-label" }, "英文表名（锁定）", -1)), createBaseVNode("input", {
 							class: "cn-input",
 							value: chronicleDef.value.name,
 							disabled: ""
-						}, null, 8, _hoisted_29$1)]), createBaseVNode("div", _hoisted_30$1, [_cache[20] || (_cache[20] = createBaseVNode("label", { class: "tpl-label" }, "中文表名", -1)), withDirectives(createBaseVNode("input", {
+						}, null, 8, _hoisted_28$1)]), createBaseVNode("div", _hoisted_29$1, [_cache[20] || (_cache[20] = createBaseVNode("label", { class: "tpl-label" }, "中文表名", -1)), withDirectives(createBaseVNode("input", {
 							class: "cn-input",
 							"onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => chronicleDef.value.displayName = $event),
 							placeholder: "给 AI 看的表名"
 						}, null, 512), [[vModelText, chronicleDef.value.displayName]])])]),
-						createBaseVNode("div", _hoisted_31$1, [_cache[21] || (_cache[21] = createBaseVNode("label", { class: "tpl-label" }, "表说明 (note)", -1)), withDirectives(createBaseVNode("textarea", {
+						createBaseVNode("div", _hoisted_30$1, [_cache[21] || (_cache[21] = createBaseVNode("label", { class: "tpl-label" }, "表说明 (note)", -1)), withDirectives(createBaseVNode("textarea", {
 							class: "cn-textarea tpl-textarea",
 							"onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => chronicleDef.value.note = $event),
 							rows: "3",
 							placeholder: "表的用途与每列填写约束（经 tables 占位符注入 AI prompt）"
 						}, null, 512), [[vModelText, chronicleDef.value.note]])]),
-						createBaseVNode("div", _hoisted_32$1, [createBaseVNode("div", { class: "tpl-section__head" }, [_cache[23] || (_cache[23] = createBaseVNode("label", { class: "tpl-label" }, "列定义", -1)), createBaseVNode("button", {
+						createBaseVNode("div", _hoisted_31$1, [createBaseVNode("div", { class: "tpl-section__head" }, [_cache[23] || (_cache[23] = createBaseVNode("label", { class: "tpl-label" }, "列定义", -1)), createBaseVNode("button", {
 							class: "cn-btn cn-btn--sm",
 							onClick: addChronicleColumn
-						}, [..._cache[22] || (_cache[22] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode("添加列", -1)])])]), createBaseVNode("div", _hoisted_33$1, [_cache[26] || (_cache[26] = createStaticVNode("<div class=\"tpl-col-head\"><span class=\"tpl-col-cell name\">英文名</span><span class=\"tpl-col-cell name\">中文名</span><span class=\"tpl-col-cell type\">类型</span><span class=\"tpl-col-cell flags\">约束</span><span class=\"tpl-col-cell role\">语义角色</span><span class=\"tpl-col-cell note\">AI 提示</span><span class=\"tpl-col-cell del\"></span></div>", 1)), (openBlock(true), createElementBlock(Fragment, null, renderList(chronicleDef.value.columns, (col, ci) => {
+						}, [..._cache[22] || (_cache[22] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode("添加列 ", -1)])])]), createBaseVNode("div", _hoisted_32$1, [_cache[26] || (_cache[26] = createStaticVNode("<div class=\"tpl-col-head\"><span class=\"tpl-col-cell name\">英文名</span><span class=\"tpl-col-cell name\">中文名</span><span class=\"tpl-col-cell type\">类型</span><span class=\"tpl-col-cell flags\">约束</span><span class=\"tpl-col-cell role\">语义角色</span><span class=\"tpl-col-cell note\">AI 提示</span><span class=\"tpl-col-cell del\"></span></div>", 1)), (openBlock(true), createElementBlock(Fragment, null, renderList(chronicleDef.value.columns, (col, ci) => {
 							return openBlock(), createElementBlock("div", {
 								key: ci,
 								class: "tpl-col-row"
@@ -44965,12 +45090,12 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 									class: "cn-input tpl-col-cell name",
 									"onUpdate:modelValue": ($event) => col.name = $event,
 									placeholder: "col_name"
-								}, null, 8, _hoisted_34$1), [[vModelText, col.name]]),
+								}, null, 8, _hoisted_33$1), [[vModelText, col.name]]),
 								withDirectives(createBaseVNode("input", {
 									class: "cn-input tpl-col-cell name",
 									"onUpdate:modelValue": ($event) => col.displayName = $event,
 									placeholder: "中文名"
-								}, null, 8, _hoisted_35$1), [[vModelText, col.displayName]]),
+								}, null, 8, _hoisted_34$1), [[vModelText, col.displayName]]),
 								withDirectives(createBaseVNode("select", {
 									class: "cn-select tpl-col-cell type",
 									"onUpdate:modelValue": ($event) => col.type = $event
@@ -44978,24 +45103,24 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 									return createBaseVNode("option", {
 										key: t,
 										value: t
-									}, toDisplayString(t), 9, _hoisted_37$1);
-								}), 64))], 8, _hoisted_36$1), [[vModelSelect, col.type]]),
-								createBaseVNode("span", _hoisted_38$1, [
+									}, toDisplayString(t), 9, _hoisted_36$1);
+								}), 64))], 8, _hoisted_35$1), [[vModelSelect, col.type]]),
+								createBaseVNode("span", _hoisted_37$1, [
 									createBaseVNode("button", {
 										class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": col.constraints?.primaryKey }]),
 										title: "主键",
 										onClick: ($event) => toggleConstraint(col, "primaryKey")
-									}, "PK", 10, _hoisted_39$1),
+									}, " PK ", 10, _hoisted_38$1),
 									createBaseVNode("button", {
 										class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": col.constraints?.unique }]),
 										title: "唯一",
 										onClick: ($event) => toggleConstraint(col, "unique")
-									}, "UQ", 10, _hoisted_40$1),
+									}, " UQ ", 10, _hoisted_39$1),
 									createBaseVNode("button", {
 										class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": !col.constraints?.nullable }]),
 										title: "非空",
 										onClick: ($event) => toggleConstraint(col, "nullable")
-									}, "NN", 10, _hoisted_41$1)
+									}, " NN ", 10, _hoisted_40$1)
 								]),
 								withDirectives(createBaseVNode("select", {
 									class: "cn-select tpl-col-cell role",
@@ -45004,39 +45129,39 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 									return createBaseVNode("option", {
 										key: r,
 										value: r
-									}, toDisplayString(CHRONICLE_ROLE_LABELS[r]), 9, _hoisted_43$1);
-								}), 64))], 8, _hoisted_42$1), [[vModelSelect, col.role]]),
+									}, toDisplayString(CHRONICLE_ROLE_LABELS[r]), 9, _hoisted_42$1);
+								}), 64))], 8, _hoisted_41$1), [[vModelSelect, col.role]]),
 								withDirectives(createBaseVNode("input", {
 									class: "cn-input tpl-col-cell note",
 									"onUpdate:modelValue": ($event) => col.note = $event,
 									placeholder: "列说明（注入 AI prompt）"
-								}, null, 8, _hoisted_44$1), [[vModelText, col.note]]),
+								}, null, 8, _hoisted_43$1), [[vModelText, col.note]]),
 								createBaseVNode("button", {
 									class: "cn-btn cn-btn--sm cn-btn--text tpl-col-cell del",
 									title: "删除列",
 									onClick: ($event) => removeChronicleColumn(ci)
-								}, [..._cache[25] || (_cache[25] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_45$1)
+								}, [..._cache[25] || (_cache[25] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_44$1)
 							]);
 						}), 128))])]),
-						createBaseVNode("div", _hoisted_46$1, [_cache[27] || (_cache[27] = createBaseVNode("label", { class: "tpl-label" }, "新增行提示 (insertHint)", -1)), withDirectives(createBaseVNode("textarea", {
+						createBaseVNode("div", _hoisted_45$1, [_cache[27] || (_cache[27] = createBaseVNode("label", { class: "tpl-label" }, "新增行提示 (insertHint)", -1)), withDirectives(createBaseVNode("textarea", {
 							class: "cn-textarea tpl-textarea",
 							"onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => chronicleDef.value.insertHint = $event),
 							rows: "4",
 							placeholder: "INSERT 时机/格式/SQL示例（注入 AI prompt）"
 						}, null, 512), [[vModelText, chronicleDef.value.insertHint]])]),
-						createBaseVNode("div", _hoisted_47$1, [_cache[28] || (_cache[28] = createBaseVNode("label", { class: "tpl-label" }, "更新行提示 (updateHint)", -1)), withDirectives(createBaseVNode("textarea", {
+						createBaseVNode("div", _hoisted_46$1, [_cache[28] || (_cache[28] = createBaseVNode("label", { class: "tpl-label" }, "更新行提示 (updateHint)", -1)), withDirectives(createBaseVNode("textarea", {
 							class: "cn-textarea tpl-textarea",
 							"onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => chronicleDef.value.updateHint = $event),
 							rows: "2",
 							placeholder: "UPDATE 时机/约束（注入 AI prompt）"
 						}, null, 512), [[vModelText, chronicleDef.value.updateHint]])]),
-						createBaseVNode("div", _hoisted_48$1, [_cache[29] || (_cache[29] = createBaseVNode("label", { class: "tpl-label" }, "删除行提示 (deleteHint)", -1)), withDirectives(createBaseVNode("textarea", {
+						createBaseVNode("div", _hoisted_47$1, [_cache[29] || (_cache[29] = createBaseVNode("label", { class: "tpl-label" }, "删除行提示 (deleteHint)", -1)), withDirectives(createBaseVNode("textarea", {
 							class: "cn-textarea tpl-textarea",
 							"onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => chronicleDef.value.deleteHint = $event),
 							rows: "2",
 							placeholder: "DELETE 时机/约束（注入 AI prompt）"
 						}, null, 512), [[vModelText, chronicleDef.value.deleteHint]])])
-					])])])])) : activeTemplatePreset.value ? (openBlock(), createElementBlock("div", _hoisted_49, [createBaseVNode("div", _hoisted_50, [
+					])])])])) : activeTemplatePreset.value ? (openBlock(), createElementBlock("div", _hoisted_48$1, [createBaseVNode("div", _hoisted_49, [
 						withDirectives(createBaseVNode("input", {
 							class: "cn-input",
 							style: {
@@ -45049,189 +45174,199 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 						createBaseVNode("button", {
 							class: "cn-btn cn-btn--sm",
 							onClick: addTableT
-						}, [..._cache[30] || (_cache[30] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode("添加表", -1)])]),
+						}, [..._cache[30] || (_cache[30] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode("添加表 ", -1)])]),
 						selectedTable.value ? (openBlock(), createElementBlock("button", {
 							key: 0,
 							class: "cn-btn cn-btn--sm",
 							onClick: openTemplatePreview
-						}, [..._cache[31] || (_cache[31] = [createBaseVNode("i", { class: "fa-solid fa-eye" }, null, -1), createTextVNode("预览此表", -1)])])) : createCommentVNode("", true)
-					]), createBaseVNode("div", _hoisted_51, [editingTables.value.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_52, [..._cache[32] || (_cache[32] = [createBaseVNode("span", null, "此模板尚无数据表，点击\"添加表\"开始", -1)])])) : createCommentVNode("", true), (openBlock(true), createElementBlock(Fragment, null, renderList(editingTables.value, (table, ti) => {
+						}, [..._cache[31] || (_cache[31] = [createBaseVNode("i", { class: "fa-solid fa-eye" }, null, -1), createTextVNode("预览此表 ", -1)])])) : createCommentVNode("", true)
+					]), createBaseVNode("div", _hoisted_50, [editingTables.value.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_51, [..._cache[32] || (_cache[32] = [createBaseVNode("span", null, "此模板尚无数据表，点击\"添加表\"开始", -1)])])) : createCommentVNode("", true), (openBlock(true), createElementBlock(Fragment, null, renderList(editingTables.value, (table, ti) => {
 						return openBlock(), createElementBlock("div", {
 							key: ti,
-							class: normalizeClass(["tpl-table-card", { "tpl-table-card--active": ti === selectedTableIdx.value }]),
+							class: normalizeClass(["tpl-table-card", { "tpl-table-card--active": ti === selectedTableIdx.value }])
+						}, [createBaseVNode("div", {
+							class: "tpl-table-card__head",
 							onClick: ($event) => selectedTableIdx.value = selectedTableIdx.value === ti ? -1 : ti
-						}, [createBaseVNode("div", _hoisted_54, [
-							createBaseVNode("span", _hoisted_55, toDisplayString(table.displayName || table.name || "(未命名)"), 1),
-							createBaseVNode("span", _hoisted_56, toDisplayString(table.columns.length) + "列", 1),
+						}, [
+							createBaseVNode("span", _hoisted_53, toDisplayString(table.displayName || table.name || "(未命名)"), 1),
+							createBaseVNode("span", _hoisted_54, toDisplayString(table.columns.length) + "列", 1),
 							createBaseVNode("button", {
 								class: "cn-btn cn-btn--sm cn-btn--text",
 								title: "删除表",
 								onClick: withModifiers(($event) => removeTableT(ti), ["stop"])
-							}, [..._cache[33] || (_cache[33] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_57)
-						]), ti === selectedTableIdx.value ? (openBlock(), createElementBlock("div", _hoisted_58, [
-							createBaseVNode("div", _hoisted_59, [createBaseVNode("div", _hoisted_60, [_cache[34] || (_cache[34] = createBaseVNode("label", { class: "tpl-label" }, "英文表名", -1)), withDirectives(createBaseVNode("input", {
-								class: "cn-input",
-								"onUpdate:modelValue": ($event) => table.name = $event,
-								placeholder: "snake_case"
-							}, null, 8, _hoisted_61), [[vModelText, table.name]])]), createBaseVNode("div", _hoisted_62, [_cache[35] || (_cache[35] = createBaseVNode("label", { class: "tpl-label" }, "中文表名", -1)), withDirectives(createBaseVNode("input", {
-								class: "cn-input",
-								"onUpdate:modelValue": ($event) => table.displayName = $event,
-								placeholder: "给 AI 看的表名"
-							}, null, 8, _hoisted_63), [[vModelText, table.displayName]])])]),
-							createBaseVNode("div", _hoisted_64, [_cache[36] || (_cache[36] = createBaseVNode("label", { class: "tpl-label" }, "表说明 (note)", -1)), withDirectives(createBaseVNode("textarea", {
-								class: "cn-textarea tpl-textarea",
-								"onUpdate:modelValue": ($event) => table.note = $event,
-								rows: "2",
-								placeholder: "表的用途与每列填写约束（经 tables 占位符注入 AI prompt）"
-							}, null, 8, _hoisted_65), [[vModelText, table.note]])]),
-							createBaseVNode("div", _hoisted_66, [
-								_cache[41] || (_cache[41] = createBaseVNode("label", { class: "tpl-label" }, "世界书注入", -1)),
-								createBaseVNode("div", _hoisted_67, [createBaseVNode("div", _hoisted_68, [_cache[38] || (_cache[38] = createBaseVNode("label", {
-									class: "tpl-label",
-									style: { "font-size": "12px" }
-								}, "启用注入", -1)), createBaseVNode("label", _hoisted_69, [createBaseVNode("input", {
-									type: "checkbox",
-									checked: table.exportConfig?.enabled !== false,
-									onChange: ($event) => {
-										ensureExportConfig(table);
-										table.exportConfig.enabled = $event.target.checked;
-									}
-								}, null, 40, _hoisted_70), _cache[37] || (_cache[37] = createBaseVNode("span", { class: "cn-switch__track" }, null, -1))])]), createBaseVNode("div", _hoisted_71, [_cache[39] || (_cache[39] = createBaseVNode("label", {
-									class: "tpl-label",
-									style: { "font-size": "12px" }
-								}, "注入类型", -1)), createBaseVNode("select", {
-									class: "cn-select",
-									style: { "width": "auto" },
-									onChange: ($event) => {
-										ensureExportConfig(table);
-										table.exportConfig.entryType = $event.target.value;
-									}
-								}, [createBaseVNode("option", {
-									value: "constant",
-									selected: (table.exportConfig?.entryType ?? "constant") === "constant"
-								}, "常量（始终注入）", 8, _hoisted_73), createBaseVNode("option", {
-									value: "keyword",
-									selected: table.exportConfig?.entryType === "keyword"
-								}, "关键词（召回触发）", 8, _hoisted_74)], 40, _hoisted_72)])]),
-								table.exportConfig?.entryType === "keyword" ? (openBlock(), createElementBlock("div", _hoisted_75, [createBaseVNode("div", _hoisted_76, [_cache[40] || (_cache[40] = createBaseVNode("label", {
-									class: "tpl-label",
-									style: { "font-size": "12px" }
-								}, "触发关键词", -1)), createBaseVNode("input", {
+							}, [..._cache[33] || (_cache[33] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_55)
+						], 8, _hoisted_52), createVNode(Transition, { name: "cn-fold" }, {
+							default: withCtx(() => [ti === selectedTableIdx.value ? (openBlock(), createElementBlock("div", _hoisted_56, [
+								createBaseVNode("div", _hoisted_57, [createBaseVNode("div", _hoisted_58, [_cache[34] || (_cache[34] = createBaseVNode("label", { class: "tpl-label" }, "英文表名", -1)), withDirectives(createBaseVNode("input", {
 									class: "cn-input",
-									value: table.exportConfig?.keywords ?? "",
-									onInput: ($event) => {
-										ensureExportConfig(table);
-										table.exportConfig.keywords = $event.target.value;
-									},
-									placeholder: "逗号分隔，如：背包, 物品, 装备"
-								}, null, 40, _hoisted_77)])])) : createCommentVNode("", true)
-							]),
-							createBaseVNode("div", _hoisted_78, [createBaseVNode("div", { class: "tpl-section__head" }, [_cache[43] || (_cache[43] = createBaseVNode("label", { class: "tpl-label" }, "列定义", -1)), createBaseVNode("button", {
-								class: "cn-btn cn-btn--sm",
-								onClick: addColumnT
-							}, [..._cache[42] || (_cache[42] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode("添加列", -1)])])]), createBaseVNode("div", _hoisted_79, [_cache[45] || (_cache[45] = createStaticVNode("<div class=\"tpl-col-head\"><span class=\"tpl-col-cell name\">英文名</span><span class=\"tpl-col-cell name\">中文名</span><span class=\"tpl-col-cell type\">类型</span><span class=\"tpl-col-cell flags\">约束</span><span class=\"tpl-col-cell note\">AI 提示</span><span class=\"tpl-col-cell del\"></span></div>", 1)), (openBlock(true), createElementBlock(Fragment, null, renderList(table.columns, (col, ci) => {
-								return openBlock(), createElementBlock("div", {
-									key: ci,
-									class: "tpl-col-row"
-								}, [
-									withDirectives(createBaseVNode("input", {
-										class: "cn-input tpl-col-cell name",
-										"onUpdate:modelValue": ($event) => col.name = $event,
-										placeholder: "col_name"
-									}, null, 8, _hoisted_80), [[vModelText, col.name]]),
-									withDirectives(createBaseVNode("input", {
-										class: "cn-input tpl-col-cell name",
-										"onUpdate:modelValue": ($event) => col.displayName = $event,
-										placeholder: "中文名"
-									}, null, 8, _hoisted_81), [[vModelText, col.displayName]]),
-									withDirectives(createBaseVNode("select", {
-										class: "cn-select tpl-col-cell type",
-										"onUpdate:modelValue": ($event) => col.type = $event
-									}, [(openBlock(), createElementBlock(Fragment, null, renderList(COL_TYPES, (t) => {
-										return createBaseVNode("option", {
-											key: t,
-											value: t
-										}, toDisplayString(t), 9, _hoisted_83);
-									}), 64))], 8, _hoisted_82), [[vModelSelect, col.type]]),
-									createBaseVNode("span", _hoisted_84, [
+									"onUpdate:modelValue": ($event) => table.name = $event,
+									placeholder: "snake_case"
+								}, null, 8, _hoisted_59), [[vModelText, table.name]])]), createBaseVNode("div", _hoisted_60, [_cache[35] || (_cache[35] = createBaseVNode("label", { class: "tpl-label" }, "中文表名", -1)), withDirectives(createBaseVNode("input", {
+									class: "cn-input",
+									"onUpdate:modelValue": ($event) => table.displayName = $event,
+									placeholder: "给 AI 看的表名"
+								}, null, 8, _hoisted_61), [[vModelText, table.displayName]])])]),
+								createBaseVNode("div", _hoisted_62, [_cache[36] || (_cache[36] = createBaseVNode("label", { class: "tpl-label" }, "表说明 (note)", -1)), withDirectives(createBaseVNode("textarea", {
+									class: "cn-textarea tpl-textarea",
+									"onUpdate:modelValue": ($event) => table.note = $event,
+									rows: "2",
+									placeholder: "表的用途与每列填写约束（经 tables 占位符注入 AI prompt）"
+								}, null, 8, _hoisted_63), [[vModelText, table.note]])]),
+								createBaseVNode("div", _hoisted_64, [
+									_cache[41] || (_cache[41] = createBaseVNode("label", { class: "tpl-label" }, "世界书注入", -1)),
+									createBaseVNode("div", _hoisted_65, [createBaseVNode("div", _hoisted_66, [_cache[38] || (_cache[38] = createBaseVNode("label", {
+										class: "tpl-label",
+										style: { "font-size": "12px" }
+									}, "启用注入", -1)), createBaseVNode("label", _hoisted_67, [createBaseVNode("input", {
+										type: "checkbox",
+										checked: table.exportConfig?.enabled !== false,
+										onChange: ($event) => setExportEnabled(table, $event.target.checked)
+									}, null, 40, _hoisted_68), _cache[37] || (_cache[37] = createBaseVNode("span", { class: "cn-switch__track" }, null, -1))])]), createBaseVNode("div", _hoisted_69, [_cache[39] || (_cache[39] = createBaseVNode("label", {
+										class: "tpl-label",
+										style: { "font-size": "12px" }
+									}, "注入类型", -1)), createBaseVNode("select", {
+										class: "cn-select",
+										style: { "width": "auto" },
+										onChange: ($event) => setExportEntryType(table, $event.target.value)
+									}, [createBaseVNode("option", {
+										value: "constant",
+										selected: (table.exportConfig?.entryType ?? "constant") === "constant"
+									}, " 常量（始终注入） ", 8, _hoisted_71), createBaseVNode("option", {
+										value: "keyword",
+										selected: table.exportConfig?.entryType === "keyword"
+									}, " 关键词（召回触发） ", 8, _hoisted_72)], 40, _hoisted_70)])]),
+									table.exportConfig?.entryType === "keyword" ? (openBlock(), createElementBlock("div", _hoisted_73, [createBaseVNode("div", _hoisted_74, [_cache[40] || (_cache[40] = createBaseVNode("label", {
+										class: "tpl-label",
+										style: { "font-size": "12px" }
+									}, "触发关键词", -1)), createBaseVNode("input", {
+										class: "cn-input",
+										value: table.exportConfig?.keywords ?? "",
+										onInput: ($event) => setExportKeywords(table, $event.target.value),
+										placeholder: "逗号分隔，如：背包, 物品, 装备"
+									}, null, 40, _hoisted_75)])])) : createCommentVNode("", true)
+								]),
+								createBaseVNode("div", _hoisted_76, [createBaseVNode("div", { class: "tpl-section__head" }, [_cache[43] || (_cache[43] = createBaseVNode("label", { class: "tpl-label" }, "列定义", -1)), createBaseVNode("button", {
+									class: "cn-btn cn-btn--sm",
+									onClick: addColumnT
+								}, [..._cache[42] || (_cache[42] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode("添加列 ", -1)])])]), createBaseVNode("div", _hoisted_77, [_cache[45] || (_cache[45] = createBaseVNode("div", { class: "tpl-col-head" }, [
+									createBaseVNode("span", { class: "tpl-col-cell name" }, "英文名"),
+									createBaseVNode("span", { class: "tpl-col-cell name" }, "中文名"),
+									createBaseVNode("span", { class: "tpl-col-cell type" }, "类型"),
+									createBaseVNode("span", { class: "tpl-col-cell flags" }, "约束"),
+									createBaseVNode("span", { class: "tpl-col-cell note" }, "AI 提示"),
+									createBaseVNode("span", { class: "tpl-col-cell del" })
+								], -1)), (openBlock(true), createElementBlock(Fragment, null, renderList(table.columns, (col, ci) => {
+									return openBlock(), createElementBlock("div", {
+										key: ci,
+										class: "tpl-col-row"
+									}, [
+										withDirectives(createBaseVNode("input", {
+											class: "cn-input tpl-col-cell name",
+											"onUpdate:modelValue": ($event) => col.name = $event,
+											placeholder: "col_name"
+										}, null, 8, _hoisted_78), [[vModelText, col.name]]),
+										withDirectives(createBaseVNode("input", {
+											class: "cn-input tpl-col-cell name",
+											"onUpdate:modelValue": ($event) => col.displayName = $event,
+											placeholder: "中文名"
+										}, null, 8, _hoisted_79), [[vModelText, col.displayName]]),
+										withDirectives(createBaseVNode("select", {
+											class: "cn-select tpl-col-cell type",
+											"onUpdate:modelValue": ($event) => col.type = $event
+										}, [(openBlock(), createElementBlock(Fragment, null, renderList(COL_TYPES, (t) => {
+											return createBaseVNode("option", {
+												key: t,
+												value: t
+											}, toDisplayString(t), 9, _hoisted_81);
+										}), 64))], 8, _hoisted_80), [[vModelSelect, col.type]]),
+										createBaseVNode("span", _hoisted_82, [
+											createBaseVNode("button", {
+												class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": col.constraints?.primaryKey }]),
+												title: "主键",
+												onClick: ($event) => toggleConstraint(col, "primaryKey")
+											}, " PK ", 10, _hoisted_83),
+											createBaseVNode("button", {
+												class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": col.constraints?.unique }]),
+												title: "唯一",
+												onClick: ($event) => toggleConstraint(col, "unique")
+											}, " UQ ", 10, _hoisted_84),
+											createBaseVNode("button", {
+												class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": !col.constraints?.nullable }]),
+												title: "非空",
+												onClick: ($event) => toggleConstraint(col, "nullable")
+											}, " NN ", 10, _hoisted_85)
+										]),
+										withDirectives(createBaseVNode("input", {
+											class: "cn-input tpl-col-cell note",
+											"onUpdate:modelValue": ($event) => col.note = $event,
+											placeholder: "列说明（注入 AI prompt）"
+										}, null, 8, _hoisted_86), [[vModelText, col.note]]),
 										createBaseVNode("button", {
-											class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": col.constraints?.primaryKey }]),
-											title: "主键",
-											onClick: ($event) => toggleConstraint(col, "primaryKey")
-										}, "PK", 10, _hoisted_85),
-										createBaseVNode("button", {
-											class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": col.constraints?.unique }]),
-											title: "唯一",
-											onClick: ($event) => toggleConstraint(col, "unique")
-										}, "UQ", 10, _hoisted_86),
-										createBaseVNode("button", {
-											class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": !col.constraints?.nullable }]),
-											title: "非空",
-											onClick: ($event) => toggleConstraint(col, "nullable")
-										}, "NN", 10, _hoisted_87)
-									]),
-									withDirectives(createBaseVNode("input", {
-										class: "cn-input tpl-col-cell note",
-										"onUpdate:modelValue": ($event) => col.note = $event,
-										placeholder: "列说明（注入 AI prompt）"
-									}, null, 8, _hoisted_88), [[vModelText, col.note]]),
-									createBaseVNode("button", {
-										class: "cn-btn cn-btn--sm cn-btn--text tpl-col-cell del",
-										title: "删除列",
-										onClick: ($event) => removeColumnT(ci)
-									}, [..._cache[44] || (_cache[44] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_89)
-								]);
-							}), 128))])]),
-							createBaseVNode("div", _hoisted_90, [_cache[46] || (_cache[46] = createBaseVNode("label", { class: "tpl-label" }, "新增行提示 (insertHint)", -1)), withDirectives(createBaseVNode("textarea", {
-								class: "cn-textarea tpl-textarea",
-								"onUpdate:modelValue": ($event) => table.insertHint = $event,
-								rows: "2",
-								placeholder: "INSERT 时机/格式/SQL示例（注入 AI prompt）"
-							}, null, 8, _hoisted_91), [[vModelText, table.insertHint]])]),
-							createBaseVNode("div", _hoisted_92, [_cache[47] || (_cache[47] = createBaseVNode("label", { class: "tpl-label" }, "更新行提示 (updateHint)", -1)), withDirectives(createBaseVNode("textarea", {
-								class: "cn-textarea tpl-textarea",
-								"onUpdate:modelValue": ($event) => table.updateHint = $event,
-								rows: "2",
-								placeholder: "UPDATE 时机/约束（注入 AI prompt）"
-							}, null, 8, _hoisted_93), [[vModelText, table.updateHint]])]),
-							createBaseVNode("div", _hoisted_94, [_cache[48] || (_cache[48] = createBaseVNode("label", { class: "tpl-label" }, "删除行提示 (deleteHint)", -1)), withDirectives(createBaseVNode("textarea", {
-								class: "cn-textarea tpl-textarea",
-								"onUpdate:modelValue": ($event) => table.deleteHint = $event,
-								rows: "2",
-								placeholder: "DELETE 时机/约束（注入 AI prompt）"
-							}, null, 8, _hoisted_95), [[vModelText, table.deleteHint]])])
-						])) : createCommentVNode("", true)], 10, _hoisted_53);
-					}), 128))])])) : (openBlock(), createElementBlock("div", _hoisted_96, [..._cache[49] || (_cache[49] = [createBaseVNode("div", { class: "cn-card__body template-editor-empty" }, [createBaseVNode("span", null, "从左侧选择一个模板预设开始编辑")], -1)])]))])) : createCommentVNode("", true),
-					!showTemplate.value ? (openBlock(), createElementBlock("div", _hoisted_97, [createBaseVNode("div", _hoisted_98, [createBaseVNode("div", { class: "cn-card__head" }, [_cache[51] || (_cache[51] = createBaseVNode("span", null, "预设", -1)), createBaseVNode("button", {
+											class: "cn-btn cn-btn--sm cn-btn--text tpl-col-cell del",
+											title: "删除列",
+											onClick: ($event) => removeColumnT(ci)
+										}, [..._cache[44] || (_cache[44] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_87)
+									]);
+								}), 128))])]),
+								createBaseVNode("div", _hoisted_88, [_cache[46] || (_cache[46] = createBaseVNode("label", { class: "tpl-label" }, "新增行提示 (insertHint)", -1)), withDirectives(createBaseVNode("textarea", {
+									class: "cn-textarea tpl-textarea",
+									"onUpdate:modelValue": ($event) => table.insertHint = $event,
+									rows: "2",
+									placeholder: "INSERT 时机/格式/SQL示例（注入 AI prompt）"
+								}, null, 8, _hoisted_89), [[vModelText, table.insertHint]])]),
+								createBaseVNode("div", _hoisted_90, [_cache[47] || (_cache[47] = createBaseVNode("label", { class: "tpl-label" }, "更新行提示 (updateHint)", -1)), withDirectives(createBaseVNode("textarea", {
+									class: "cn-textarea tpl-textarea",
+									"onUpdate:modelValue": ($event) => table.updateHint = $event,
+									rows: "2",
+									placeholder: "UPDATE 时机/约束（注入 AI prompt）"
+								}, null, 8, _hoisted_91), [[vModelText, table.updateHint]])]),
+								createBaseVNode("div", _hoisted_92, [_cache[48] || (_cache[48] = createBaseVNode("label", { class: "tpl-label" }, "删除行提示 (deleteHint)", -1)), withDirectives(createBaseVNode("textarea", {
+									class: "cn-textarea tpl-textarea",
+									"onUpdate:modelValue": ($event) => table.deleteHint = $event,
+									rows: "2",
+									placeholder: "DELETE 时机/约束（注入 AI prompt）"
+								}, null, 8, _hoisted_93), [[vModelText, table.deleteHint]])])
+							])) : createCommentVNode("", true)]),
+							_: 2
+						}, 1024)], 2);
+					}), 128))])])) : (openBlock(), createElementBlock("div", _hoisted_94, [..._cache[49] || (_cache[49] = [createBaseVNode("div", { class: "cn-card__body template-editor-empty" }, [createBaseVNode("span", null, "从左侧选择一个模板预设开始编辑")], -1)])]))])) : createCommentVNode("", true),
+					!showTemplate.value ? (openBlock(), createElementBlock("div", _hoisted_95, [createBaseVNode("div", _hoisted_96, [createBaseVNode("div", { class: "cn-card__head" }, [_cache[51] || (_cache[51] = createBaseVNode("span", null, "预设", -1)), createBaseVNode("button", {
 						class: "cn-btn cn-btn--sm",
 						onClick: newPreset
-					}, [..._cache[50] || (_cache[50] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode(" 新建 ", -1)])])]), createBaseVNode("div", _hoisted_99, [createBaseVNode("ul", _hoisted_100, [(openBlock(true), createElementBlock(Fragment, null, renderList(sceneConfig.value.presets, (p) => {
-						return openBlock(), createElementBlock("li", {
-							key: p.id,
-							class: normalizeClass(["preset-list__item", { "preset-list__item--active": p.id === sceneConfig.value.activeId }]),
-							onClick: ($event) => selectPreset(p.id)
-						}, [
-							createBaseVNode("span", _hoisted_102, [createTextVNode(toDisplayString(p.name) + " ", 1), p.id === sceneConfig.value.defaultId ? (openBlock(), createElementBlock("i", _hoisted_103)) : createCommentVNode("", true)]),
-							createBaseVNode("span", _hoisted_104, toDisplayString(p.segments.length) + "段", 1),
-							p.id !== sceneConfig.value.activeId ? (openBlock(), createElementBlock("button", {
-								key: 0,
-								class: "cn-btn cn-btn--sm cn-btn--text",
-								title: "设为当前",
-								onClick: withModifiers(($event) => selectPreset(p.id), ["stop"])
-							}, [..._cache[52] || (_cache[52] = [createBaseVNode("i", { class: "fa-solid fa-check" }, null, -1)])], 8, _hoisted_105)) : createCommentVNode("", true),
-							p.id !== sceneConfig.value.defaultId ? (openBlock(), createElementBlock("button", {
-								key: 1,
-								class: "cn-btn cn-btn--sm cn-btn--text",
-								title: "设为默认",
-								onClick: withModifiers(($event) => setDefaultPreset(p.id), ["stop"])
-							}, [..._cache[53] || (_cache[53] = [createBaseVNode("i", { class: "fa-solid fa-star" }, null, -1)])], 8, _hoisted_106)) : createCommentVNode("", true),
-							createBaseVNode("button", {
-								class: "cn-btn cn-btn--sm cn-btn--text",
-								title: "删除",
-								onClick: withModifiers(($event) => deletePreset(p.id), ["stop"])
-							}, [..._cache[54] || (_cache[54] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_107)
-						], 10, _hoisted_101);
-					}), 128))])])]), createBaseVNode("div", _hoisted_108, [createBaseVNode("div", _hoisted_109, [createBaseVNode("span", null, toDisplayString(activePreset.value?.name), 1), createBaseVNode("span", _hoisted_110, toDisplayString(scenes.find((s) => s.key === activeScene.value)?.desc), 1)]), createBaseVNode("div", _hoisted_111, [createVNode(unref(import_vuedraggable_umd.default), {
+					}, [..._cache[50] || (_cache[50] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode(" 新建 ", -1)])])]), createBaseVNode("div", _hoisted_97, [createVNode(TransitionGroup, {
+						name: "cn-list",
+						tag: "ul",
+						class: "preset-list"
+					}, {
+						default: withCtx(() => [(openBlock(true), createElementBlock(Fragment, null, renderList(sceneConfig.value.presets, (p) => {
+							return openBlock(), createElementBlock("li", {
+								key: p.id,
+								class: normalizeClass(["preset-list__item", { "preset-list__item--active": p.id === sceneConfig.value.activeId }]),
+								onClick: ($event) => selectPreset(p.id)
+							}, [
+								createBaseVNode("span", _hoisted_99, [createTextVNode(toDisplayString(p.name) + " ", 1), p.id === sceneConfig.value.defaultId ? (openBlock(), createElementBlock("i", _hoisted_100)) : createCommentVNode("", true)]),
+								createBaseVNode("span", _hoisted_101, toDisplayString(p.segments.length) + "段", 1),
+								p.id !== sceneConfig.value.activeId ? (openBlock(), createElementBlock("button", {
+									key: 0,
+									class: "cn-btn cn-btn--sm cn-btn--text",
+									title: "设为当前",
+									onClick: withModifiers(($event) => selectPreset(p.id), ["stop"])
+								}, [..._cache[52] || (_cache[52] = [createBaseVNode("i", { class: "fa-solid fa-check" }, null, -1)])], 8, _hoisted_102)) : createCommentVNode("", true),
+								p.id !== sceneConfig.value.defaultId ? (openBlock(), createElementBlock("button", {
+									key: 1,
+									class: "cn-btn cn-btn--sm cn-btn--text",
+									title: "设为默认",
+									onClick: withModifiers(($event) => setDefaultPreset(p.id), ["stop"])
+								}, [..._cache[53] || (_cache[53] = [createBaseVNode("i", { class: "fa-solid fa-star" }, null, -1)])], 8, _hoisted_103)) : createCommentVNode("", true),
+								createBaseVNode("button", {
+									class: "cn-btn cn-btn--sm cn-btn--text",
+									title: "删除",
+									onClick: withModifiers(($event) => deletePreset(p.id), ["stop"])
+								}, [..._cache[54] || (_cache[54] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_104)
+							], 10, _hoisted_98);
+						}), 128))]),
+						_: 1
+					})])]), createBaseVNode("div", _hoisted_105, [createBaseVNode("div", _hoisted_106, [createBaseVNode("span", null, toDisplayString(activePreset.value?.name), 1), createBaseVNode("span", _hoisted_107, toDisplayString(scenes.find((s) => s.key === activeScene.value)?.desc), 1)]), createBaseVNode("div", _hoisted_108, [createVNode(unref(import_vuedraggable_umd.default), {
 						list: activePreset.value?.segments ?? [],
 						"item-key": "id",
 						animation: 150,
@@ -45239,39 +45374,39 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 						"ghost-class": "seg-item--ghost",
 						class: "block-list"
 					}, {
-						item: withCtx(({ element: seg, index: si }) => [createBaseVNode("div", _hoisted_112, [createBaseVNode("div", _hoisted_113, [
+						item: withCtx(({ element: seg, index: si }) => [createBaseVNode("div", _hoisted_109, [createBaseVNode("div", _hoisted_110, [
 							_cache[56] || (_cache[56] = createBaseVNode("i", { class: "fa-solid fa-grip-vertical seg-item__grip" }, null, -1)),
 							createBaseVNode("button", {
 								class: "seg-item__role",
 								title: `点击切换角色（当前 ${roleLabels[seg.role]}）`,
 								onClick: ($event) => cycleRole(seg)
-							}, toDisplayString(roleLabels[seg.role]), 9, _hoisted_114),
+							}, toDisplayString(roleLabels[seg.role]), 9, _hoisted_111),
 							withDirectives(createBaseVNode("input", {
 								class: "cn-input seg-item__name",
 								"onUpdate:modelValue": ($event) => seg.name = $event,
 								placeholder: "段名称"
-							}, null, 8, _hoisted_115), [[vModelText, seg.name]]),
-							createBaseVNode("span", _hoisted_116, "#" + toDisplayString(globalIndex(si)), 1),
+							}, null, 8, _hoisted_112), [[vModelText, seg.name]]),
+							createBaseVNode("span", _hoisted_113, "#" + toDisplayString(globalIndex(si)), 1),
 							createBaseVNode("button", {
 								class: "cn-btn cn-btn--sm cn-btn--text",
 								title: "删除",
 								onClick: ($event) => removeSegment(seg.id)
-							}, [..._cache[55] || (_cache[55] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_117)
+							}, [..._cache[55] || (_cache[55] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_114)
 						]), createVNode(PromptSegmentEditor_default, {
 							modelValue: seg.content,
 							"onUpdate:modelValue": ($event) => seg.content = $event
 						}, null, 8, ["modelValue", "onUpdate:modelValue"])])]),
 						_: 1
-					}, 8, ["list"]), createBaseVNode("div", _hoisted_118, [(openBlock(), createElementBlock(Fragment, null, renderList(roles, (r) => {
+					}, 8, ["list"]), createBaseVNode("div", _hoisted_115, [(openBlock(), createElementBlock(Fragment, null, renderList(roles, (r) => {
 						return createBaseVNode("button", {
 							key: r,
 							class: "cn-btn cn-btn--sm",
 							onClick: ($event) => addSegment(r)
-						}, [_cache[57] || (_cache[57] = createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1)), createTextVNode(" " + toDisplayString(roleLabels[r]), 1)], 8, _hoisted_119);
+						}, [_cache[57] || (_cache[57] = createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1)), createTextVNode(" " + toDisplayString(roleLabels[r]), 1)], 8, _hoisted_116);
 					}), 64))])])])])) : createCommentVNode("", true)
 				]),
-				showTemplate.value ? (openBlock(), createElementBlock("div", _hoisted_120, [_cache[61] || (_cache[61] = createBaseVNode("span", { class: "prompt-foot__hint" }, " 每个模板预设含多张数据表及其 AI 行为提示词。导入支持 CN 和 shujuku 两种格式。 ", -1)), createBaseVNode("div", _hoisted_121, [
-					createBaseVNode("label", _hoisted_122, [
+				showTemplate.value ? (openBlock(), createElementBlock("div", _hoisted_117, [_cache[61] || (_cache[61] = createBaseVNode("span", { class: "prompt-foot__hint" }, " 每个模板预设含多张数据表及其 AI 行为提示词。导入支持 CN 和 shujuku 两种格式。 ", -1)), createBaseVNode("div", _hoisted_118, [
+					createBaseVNode("label", _hoisted_119, [
 						_cache[58] || (_cache[58] = createBaseVNode("i", { class: "fa-solid fa-upload" }, null, -1)),
 						_cache[59] || (_cache[59] = createTextVNode(" 导入 ", -1)),
 						createBaseVNode("input", {
@@ -45290,20 +45425,23 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 						onClick: saveTemplate
 					}, "保存")
 				])])) : createCommentVNode("", true),
-				previewTemplateVisible.value ? (openBlock(), createElementBlock("div", {
-					key: 1,
-					class: "cn-modal-mask",
-					onClick: withModifiers(closeTemplatePreview, ["self"])
-				}, [createBaseVNode("div", _hoisted_123, [createBaseVNode("div", { class: "cn-modal__head" }, [_cache[63] || (_cache[63] = createBaseVNode("span", null, "选中表注入 AI prompt 的内容", -1)), createBaseVNode("button", {
-					class: "cn-btn cn-btn--sm cn-btn--text",
-					onClick: closeTemplatePreview
-				}, [..._cache[62] || (_cache[62] = [createBaseVNode("i", { class: "fa-solid fa-xmark" }, null, -1)])])]), createBaseVNode("pre", _hoisted_124, toDisplayString(previewTemplateJson.value), 1)])])) : createCommentVNode("", true),
-				!showTemplate.value ? (openBlock(), createElementBlock(Fragment, { key: 2 }, [createBaseVNode("div", _hoisted_125, [createBaseVNode("span", { class: "prompt-foot__hint" }, [
+				createVNode(Transition, { name: "cn-modal" }, {
+					default: withCtx(() => [previewTemplateVisible.value ? (openBlock(), createElementBlock("div", {
+						key: 0,
+						class: "cn-modal-mask",
+						onClick: withModifiers(closeTemplatePreview, ["self"])
+					}, [createBaseVNode("div", _hoisted_120, [createBaseVNode("div", { class: "cn-modal__head" }, [_cache[63] || (_cache[63] = createBaseVNode("span", null, "选中表注入 AI prompt 的内容", -1)), createBaseVNode("button", {
+						class: "cn-btn cn-btn--sm cn-btn--text",
+						onClick: closeTemplatePreview
+					}, [..._cache[62] || (_cache[62] = [createBaseVNode("i", { class: "fa-solid fa-xmark" }, null, -1)])])]), createBaseVNode("pre", _hoisted_121, toDisplayString(previewTemplateJson.value), 1)])])) : createCommentVNode("", true)]),
+					_: 1
+				}),
+				!showTemplate.value ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [createBaseVNode("div", _hoisted_122, [createBaseVNode("span", { class: "prompt-foot__hint" }, [
 					_cache[64] || (_cache[64] = createTextVNode(" 段内用 ", -1)),
 					createBaseVNode("code", null, toDisplayString(varExample)),
 					_cache[65] || (_cache[65] = createTextVNode(" 插入变量。点击角色标签切换 System/User/Assistant，拖拽手柄调整顺序。多个段按顺序拼接，模拟多轮对话。 ", -1))
-				]), createBaseVNode("div", _hoisted_126, [
-					createBaseVNode("label", _hoisted_127, [
+				]), createBaseVNode("div", _hoisted_123, [
+					createBaseVNode("label", _hoisted_124, [
 						_cache[66] || (_cache[66] = createBaseVNode("i", { class: "fa-solid fa-upload" }, null, -1)),
 						_cache[67] || (_cache[67] = createTextVNode(" 导入 ", -1)),
 						createBaseVNode("input", {
@@ -45325,14 +45463,17 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 						class: "cn-btn cn-btn--primary",
 						onClick: saveAll
 					}, "保存")
-				])]), previewVisible.value ? (openBlock(), createElementBlock("div", {
-					key: 0,
-					class: "cn-modal-mask",
-					onClick: withModifiers(closePreview, ["self"])
-				}, [createBaseVNode("div", _hoisted_128, [createBaseVNode("div", { class: "cn-modal__head" }, [_cache[71] || (_cache[71] = createBaseVNode("span", null, "发给 AI 的 messages", -1)), createBaseVNode("button", {
-					class: "cn-btn cn-btn--sm cn-btn--text",
-					onClick: closePreview
-				}, [..._cache[70] || (_cache[70] = [createBaseVNode("i", { class: "fa-solid fa-xmark" }, null, -1)])])]), createBaseVNode("pre", _hoisted_129, toDisplayString(previewJson.value), 1)])])) : createCommentVNode("", true)], 64)) : createCommentVNode("", true)
+				])]), createVNode(Transition, { name: "cn-modal" }, {
+					default: withCtx(() => [previewVisible.value ? (openBlock(), createElementBlock("div", {
+						key: 0,
+						class: "cn-modal-mask",
+						onClick: withModifiers(closePreview, ["self"])
+					}, [createBaseVNode("div", _hoisted_125, [createBaseVNode("div", { class: "cn-modal__head" }, [_cache[71] || (_cache[71] = createBaseVNode("span", null, "发给 AI 的 messages", -1)), createBaseVNode("button", {
+						class: "cn-btn cn-btn--sm cn-btn--text",
+						onClick: closePreview
+					}, [..._cache[70] || (_cache[70] = [createBaseVNode("i", { class: "fa-solid fa-xmark" }, null, -1)])])]), createBaseVNode("pre", _hoisted_126, toDisplayString(previewJson.value), 1)])])) : createCommentVNode("", true)]),
+					_: 1
+				})], 64)) : createCommentVNode("", true)
 			]);
 		};
 	}
@@ -45383,10 +45524,15 @@ var useDebugStore = defineStore("cn-debug", () => {
 	});
 	const tableStatus = computed(() => {
 		const tables = session.listTables();
-		const chronicleRows = session.getTableRowsWithRowid("cn_chronicle");
+		let chronicleCount = 0;
+		try {
+			chronicleCount = session.getTableRowsWithRowid("cn_chronicle")[0]?.rows?.length ?? 0;
+		} catch {
+			chronicleCount = 0;
+		}
 		return {
 			tableCount: tables.filter((n) => n !== "cn_chronicle").length,
-			chronicleCount: chronicleRows[0]?.rows?.length ?? 0
+			chronicleCount
 		};
 	});
 	const snapshotStatus = computed(() => {
