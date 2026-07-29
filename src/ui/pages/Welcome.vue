@@ -4,6 +4,7 @@ import { getSession } from '@core/session'
 import { runManualFill } from '@core/table/fill-orchestrator'
 import type { CranialNerveConfig } from '@shared/types/config'
 import toast from '@ui/toast'
+import { pushLog } from '@shared/log-buffer'
 
 const session = getSession()
 const tableCount = ref(0)
@@ -47,12 +48,13 @@ function refresh() {
 
 function checkSnapshotRollback() {
 	const diag = session.getLoadDiagnostic()
+	if (diag.snapshotCount === 0) return
 	if (diag.snapshotIndex == null && diag.lastAiIndex != null) {
-		toast.error('未找到数据库快照，表数据可能已随删除消息丢失')
+		pushLog('warn', 'snapshot', '未找到数据库快照，表数据可能已随删除消息丢失')
 		return
 	}
 	if (diag.snapshotIndex != null && diag.lastAiIndex != null && diag.snapshotIndex < diag.lastAiIndex) {
-		toast.warning(`数据库已回退到第 ${diag.snapshotIndex + 1} 楼的快照（最近 AI 消息在第 ${diag.lastAiIndex + 1} 楼），期间填表数据可能丢失`)
+		pushLog('warn', 'snapshot', `数据库已回退到第 ${diag.snapshotIndex + 1} 楼的快照（最近 AI 消息在第 ${diag.lastAiIndex + 1} 楼），期间填表数据可能丢失`)
 	}
 }
 

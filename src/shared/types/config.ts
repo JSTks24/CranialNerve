@@ -1,4 +1,5 @@
 import type { CardTemplate } from './card'
+import type { TableDef } from './table'
 
 export interface AiPreset {
   id: string
@@ -33,14 +34,9 @@ export type PromptRole = 'system' | 'user' | 'assistant'
 
 export interface PromptSegment {
   id: string
+  name: string
   role: PromptRole
   content: string
-}
-
-export interface PromptBlock {
-  id: string
-  name: string
-  segments: PromptSegment[]
 }
 
 export type PromptSceneKey = 'tableEdit' | 'chronicleRecall'
@@ -48,7 +44,7 @@ export type PromptSceneKey = 'tableEdit' | 'chronicleRecall'
 export interface ScenePreset {
   id: string
   name: string
-  blocks: PromptBlock[]
+  segments: PromptSegment[]
 }
 
 export interface ScenePromptConfig {
@@ -66,7 +62,7 @@ export interface TableTemplatePreset {
   id: string
   name: string
   template: CardTemplate
-  source: 'card' | 'user'
+  source: 'card' | 'user' | 'builtin'
 }
 
 export interface TableTemplateConfig {
@@ -102,6 +98,15 @@ export interface CranialNerveConfig {
   recallContextDepth: number
   retainFloors: number
   tableTemplate: TableTemplateConfig
+  chronicleTableHints?: ChronicleTableHints
+  chronicleTableDef?: TableDef
+}
+
+export interface ChronicleTableHints {
+  note?: string
+  insertHint?: string
+  updateHint?: string
+  deleteHint?: string
 }
 
 export interface ProgressNotifier {

@@ -15,6 +15,7 @@ export const useConfigStore = defineStore('cn-config', () => {
     const fresh = session.getConfig()
     fresh.prompt = config.value.prompt
     fresh.tableTemplate = config.value.tableTemplate
+    fresh.chronicleTableDef = config.value.chronicleTableDef
     session.saveConfig(fresh)
     config.value = fresh
   }

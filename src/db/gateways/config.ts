@@ -1,17 +1,25 @@
 import type {
   AiPreset,
+  ChronicleTableHints,
   CranialNerveConfig,
-  PromptBlock,
   PromptConfig,
   PromptSceneKey,
   PromptSegment,
   ScenePreset,
-  ScenePromptConfig
+  ScenePromptConfig,
+  TableTemplateConfig
 } from '@shared/types/config'
+import type { CardTemplate } from '@shared/types/card'
+import type { TableDef } from '@shared/types/table'
+import { DEFAULT_CHRONICLE_TABLE } from '@shared/constants/chronicle'
 import {
-  DEFAULT_CHRONICLE_RECALL_PROMPT,
-  DEFAULT_TABLE_EDIT_PROMPT
+  getDefaultChronicleRecallPrompt,
+  getDefaultTableEditPrompt
 } from '@shared/prompts/defaults'
+import {
+  createDefaultTemplatePreset,
+  DEFAULT_TEMPLATE_PRESET_ID
+} from '@shared/constants/default-template'
 import { getHostContext, getRequestHeaders } from './host-context'
 import { pushLog } from '@shared/log-buffer'
 
@@ -21,34 +29,27 @@ function newId(): string {
   return `seg_${Math.random().toString(36).slice(2, 10)}`
 }
 
-function newBlockId(): string {
-  return `blk_${Math.random().toString(36).slice(2, 10)}`
+function cloneSegments(segments: PromptSegment[]): PromptSegment[] {
+  return segments.map((s) => ({ ...s }))
 }
 
-function cloneBlocks(blocks: PromptBlock[]): PromptBlock[] {
-  return blocks.map((b) => ({
-    ...b,
-    segments: b.segments.map((s) => ({ ...s }))
-  }))
-}
-
-function presetFromBlocks(blocks: PromptBlock[], name = '默认'): ScenePreset {
+function presetFromSegments(segments: PromptSegment[], name = '默认'): ScenePreset {
   return {
     id: `preset_${Math.random().toString(36).slice(2, 10)}`,
     name,
-    blocks: cloneBlocks(blocks)
+    segments: cloneSegments(segments)
   }
 }
 
-function sceneFromBlocks(blocks: PromptBlock[]): ScenePromptConfig {
-  const preset = presetFromBlocks(blocks)
+function sceneFromSegments(segments: PromptSegment[]): ScenePromptConfig {
+  const preset = presetFromSegments(segments)
   return { presets: [preset], activeId: preset.id, defaultId: preset.id }
 }
 
 function defaultPromptConfig(): PromptConfig {
   return {
-    tableEdit: sceneFromBlocks(DEFAULT_TABLE_EDIT_PROMPT),
-    chronicleRecall: sceneFromBlocks(DEFAULT_CHRONICLE_RECALL_PROMPT)
+    tableEdit: sceneFromSegments(getDefaultTableEditPrompt()),
+    chronicleRecall: sceneFromSegments(getDefaultChronicleRecallPrompt())
   }
 }
 
@@ -83,7 +84,11 @@ const DEFAULT_CONFIG: CranialNerveConfig = {
   recallPresetId: '',
   recallContextDepth: 5,
   retainFloors: 100,
-  tableTemplate: { presets: [], activeId: '', defaultId: '' }
+  tableTemplate: {
+    presets: [createDefaultTemplatePreset()],
+    activeId: DEFAULT_TEMPLATE_PRESET_ID,
+    defaultId: DEFAULT_TEMPLATE_PRESET_ID
+  }
 }
 
 export interface ConfigGateway {
@@ -103,6 +108,8 @@ export default function createConfigGateway(): ConfigGateway {
       const merged = { ...cloneDefault(), ...(raw as Partial<CranialNerveConfig>) }
       merged.vector = { ...DEFAULT_CONFIG.vector, ...merged.vector }
       merged.prompt = migratePrompt(merged.prompt, raw as Record<string, unknown>)
+      merged.tableTemplate = migrateTableTemplate(merged.tableTemplate)
+      merged.chronicleTableDef = migrateChronicleTableDef(merged.chronicleTableDef, merged.chronicleTableHints)
       return merged
     },
     write(config) {
@@ -152,9 +159,9 @@ function cloneDefault(): CranialNerveConfig {
     ...DEFAULT_CONFIG,
     aiPresets: [],
     vector: { ...DEFAULT_CONFIG.vector },
-    prompt: clonePromptConfig(DEFAULT_CONFIG.prompt),
+    prompt: clonePromptConfig(defaultPromptConfig()),
     tableFill: { ...DEFAULT_CONFIG.tableFill },
-    tableTemplate: { presets: [], activeId: '', defaultId: '' }
+    tableTemplate: cloneTableTemplate(DEFAULT_CONFIG.tableTemplate)
   }
 }
 
@@ -169,7 +176,7 @@ function cloneScene(s: ScenePromptConfig): ScenePromptConfig {
   return {
     presets: s.presets.map((p) => ({
       ...p,
-      blocks: cloneBlocks(p.blocks)
+      segments: cloneSegments(p.segments)
     })),
     activeId: s.activeId,
     defaultId: s.defaultId
@@ -185,10 +192,62 @@ function migratePrompt(
     return migrateFromLegacy(raw, base)
   }
   const merged: PromptConfig = {
-    tableEdit: mergeScene(base.tableEdit, current.tableEdit),
-    chronicleRecall: mergeScene(base.chronicleRecall, current.chronicleRecall)
+    tableEdit: mergeScene(base.tableEdit, migrateScene(current.tableEdit)),
+    chronicleRecall: mergeScene(base.chronicleRecall, migrateScene(current.chronicleRecall))
   }
   return migrateFromLegacy(raw, merged)
+}
+
+function migrateScene(scene: unknown): ScenePromptConfig {
+  if (!scene || typeof scene !== 'object') {
+    return { presets: [], activeId: '', defaultId: '' }
+  }
+  const s = scene as { presets?: unknown[]; activeId?: unknown; defaultId?: unknown }
+  return {
+    presets: Array.isArray(s.presets) ? s.presets.map(migratePreset) : [],
+    activeId: typeof s.activeId === 'string' ? s.activeId : '',
+    defaultId: typeof s.defaultId === 'string' ? s.defaultId : ''
+  }
+}
+
+function migratePreset(p: unknown): ScenePreset {
+  if (!p || typeof p !== 'object') {
+    return { id: `preset_${Math.random().toString(36).slice(2, 10)}`, name: '默认', segments: [] }
+  }
+  const preset = p as {
+    id?: unknown
+    name?: unknown
+    segments?: PromptSegment[]
+    blocks?: { name: string; segments: PromptSegment[] }[]
+  }
+  let segments: PromptSegment[]
+  if (Array.isArray(preset.segments)) {
+    segments = preset.segments.map((s) => ({
+      id: typeof s.id === 'string' ? s.id : newId(),
+      name: typeof s.name === 'string' ? s.name : '',
+      role: s.role,
+      content: s.content
+    }))
+  } else if (Array.isArray(preset.blocks)) {
+    segments = []
+    for (const b of preset.blocks) {
+      for (const s of b.segments) {
+        segments.push({
+          id: s.id || newId(),
+          name: b.name,
+          role: s.role,
+          content: s.content
+        })
+      }
+    }
+  } else {
+    segments = []
+  }
+  return {
+    id: typeof preset.id === 'string' ? preset.id : `preset_${Math.random().toString(36).slice(2, 10)}`,
+    name: typeof preset.name === 'string' ? preset.name : '默认',
+    segments
+  }
 }
 
 function mergeScene(
@@ -227,8 +286,7 @@ function migrateFromLegacy(raw: Record<string, unknown>, base: PromptConfig): Pr
   for (const key of scenes) {
     const segs = migrateField(templates[key])
     if (segs) {
-      const block: PromptBlock = { id: newBlockId(), name: '主指令', segments: segs }
-      const preset = presetFromBlocks([block])
+      const preset = presetFromSegments(segs)
       result[key] = { presets: [preset], activeId: preset.id, defaultId: preset.id }
     }
   }
@@ -237,10 +295,60 @@ function migrateFromLegacy(raw: Record<string, unknown>, base: PromptConfig): Pr
 
 function migrateField(val: unknown): PromptSegment[] | null {
   if (Array.isArray(val)) {
-    return (val as PromptSegment[]).map((s) => ({ ...s }))
+    return (val as PromptSegment[]).map((s) => ({
+      id: typeof s.id === 'string' ? s.id : newId(),
+      name: typeof s.name === 'string' ? s.name : '',
+      role: s.role,
+      content: s.content
+    }))
   }
   if (typeof val === 'string' && val.length > 0) {
-    return [{ id: newId(), role: 'system', content: val }]
+    return [{ id: newId(), name: '主指令', role: 'system', content: val }]
   }
   return null
+}
+
+function cloneTableTemplate(t: TableTemplateConfig): TableTemplateConfig {
+  return {
+    presets: t.presets.map((p) => ({
+      ...p,
+      template: JSON.parse(JSON.stringify(p.template)) as CardTemplate
+    })),
+    activeId: t.activeId,
+    defaultId: t.defaultId
+  }
+}
+
+function migrateTableTemplate(cur: TableTemplateConfig | undefined): TableTemplateConfig {
+  if (!cur || !Array.isArray(cur.presets)) {
+    return {
+      presets: [createDefaultTemplatePreset()],
+      activeId: DEFAULT_TEMPLATE_PRESET_ID,
+      defaultId: DEFAULT_TEMPLATE_PRESET_ID
+    }
+  }
+  const presets = [...cur.presets]
+  if (!presets.find((p) => p.id === DEFAULT_TEMPLATE_PRESET_ID)) {
+    presets.unshift(createDefaultTemplatePreset())
+  }
+  let activeId = cur.activeId || DEFAULT_TEMPLATE_PRESET_ID
+  let defaultId = cur.defaultId || DEFAULT_TEMPLATE_PRESET_ID
+  if (!presets.find((p) => p.id === activeId)) {
+    activeId = DEFAULT_TEMPLATE_PRESET_ID
+  }
+  if (!presets.find((p) => p.id === defaultId)) {
+    defaultId = DEFAULT_TEMPLATE_PRESET_ID
+  }
+  return { presets, activeId, defaultId }
+}
+
+function migrateChronicleTableDef(
+  cur: TableDef | undefined,
+  legacyHints: ChronicleTableHints | undefined
+): TableDef {
+  if (cur && Array.isArray(cur.columns) && cur.columns.length > 0) {
+    return cur
+  }
+  const base = legacyHints ? { ...DEFAULT_CHRONICLE_TABLE, ...legacyHints } : DEFAULT_CHRONICLE_TABLE
+  return JSON.parse(JSON.stringify(base)) as TableDef
 }

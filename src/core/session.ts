@@ -1,4 +1,5 @@
 import SqliteCore from '@db/sqlite/core'
+import { loadDefaultPrompts } from '@db/gateways/prompt'
 import {
   createAiGateway,
   createCharacterGateway,
@@ -20,12 +21,12 @@ import type {
 import type { ConfigGateway } from '@db/gateways/config'
 import SqliteSyncBridge from '@db/sqlite/sync-bridge'
 import NameMapper from '@shared/namemapper'
-import { buildCreateTableSql } from '@shared/template-builder'
+import { buildCreateTableSql, quoteIdent } from '@shared/template-builder'
 import { DEFAULT_CHRONICLE_TABLE, CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
 import { validateTimeRegistration, clearTimeRegistration } from './time'
 import { EVENT_CHAT_CHANGED } from '@shared/constants/events'
 import type { CardTemplate } from '@shared/types/card'
-import type { QueryResult, TableDef } from '@shared/types/table'
+import type { ChronicleColumnRole, QueryResult, TableDef } from '@shared/types/table'
 import type {
   CranialNerveConfig,
   AiPreset,
@@ -85,6 +86,7 @@ export class CranialNerveSession {
 
   async init(): Promise<void> {
     try {
+      await loadDefaultPrompts()
       await this.core.init()
       this.syncBridge = new SqliteSyncBridge(this.core, this.chat)
       this.tableEditor = new TableEditor(this.core, this.ai)
@@ -132,18 +134,29 @@ export class CranialNerveSession {
     const name = buildBookName(this.getChatToken())
     this.chronicleStore = new ChronicleEntryStore(this.worldbook, name)
     const tableReader = async (): Promise<ChronicleEntry[]> => {
+      const def = this.getChronicleTableDef()
+      const colName = (role: ChronicleColumnRole) =>
+        def.columns.find((c) => c.role === role)?.name
+      const kKey = colName('key')
+      const kTimeStart = colName('timeStart')
+      const kTimeEnd = colName('timeEnd')
+      const kLocation = colName('location')
+      const kSummary = colName('summary')
+      const kKeyDialogue = colName('keyDialogue')
       const result = this.core.exec(`SELECT * FROM "${CHRONICLE_TABLE_NAME}"`)
       const first = result[0]
       if (!first) return []
+      const pick = (r: Record<string, unknown>, name?: string): string =>
+        name ? String(r[name] ?? '') : ''
       return first.rows.map((r) => ({
-        key: String(r.key ?? ''),
-        timeStart: String(r.time_start ?? ''),
-        timeEnd: String(r.time_end ?? ''),
+        key: pick(r, kKey),
+        timeStart: pick(r, kTimeStart),
+        timeEnd: pick(r, kTimeEnd),
         content: {
-          summary: String(r.chronicle_text ?? ''),
-          storyTime: String(r.time_start ?? ''),
-          keyDialogue: String(r.key_dialogue ?? ''),
-          location: String(r.location ?? '')
+          summary: pick(r, kSummary),
+          storyTime: pick(r, kTimeStart),
+          keyDialogue: pick(r, kKeyDialogue),
+          location: pick(r, kLocation)
         }
       }))
     }
@@ -206,7 +219,7 @@ export class CranialNerveSession {
     if (mySeq !== this.reloadSeq) {
       return
     }
-    this.core.run(buildCreateTableSql(DEFAULT_CHRONICLE_TABLE))
+    this.core.run(buildCreateTableSql(this.getChronicleTableDef()))
     this.loadFromChat()
     if (mySeq !== this.reloadSeq) {
       return
@@ -284,9 +297,10 @@ export class CranialNerveSession {
     this.currentTemplateId = id ?? null
     this.nameMapper = new NameMapper(template.tables)
     for (const table of template.tables) {
+      if (!table.name || table.columns.length === 0) continue
       this.core.run(buildCreateTableSql(table))
     }
-    this.core.run(buildCreateTableSql(DEFAULT_CHRONICLE_TABLE))
+    this.core.run(buildCreateTableSql(this.getChronicleTableDef()))
   }
 
   initGameSessionFromCard(): CardTemplate | null {
@@ -304,9 +318,10 @@ export class CranialNerveSession {
     this.core.dispose()
     await this.core.init()
     for (const table of template.tables) {
+      if (!table.name || table.columns.length === 0) continue
       this.core.run(buildCreateTableSql(table))
     }
-    this.core.run(buildCreateTableSql(DEFAULT_CHRONICLE_TABLE))
+    this.core.run(buildCreateTableSql(this.getChronicleTableDef()))
     const chat = this.chat.getChat()
     const targetId = chat.length - 1
     if (this.syncBridge && targetId >= 0) {
@@ -461,6 +476,10 @@ export class CranialNerveSession {
     return this.config.read()
   }
 
+  getChronicleTableDef(): TableDef {
+    return this.config.read().chronicleTableDef ?? DEFAULT_CHRONICLE_TABLE
+  }
+
   saveConfig(config: CranialNerveConfig): void {
     this.config.write(config)
   }
@@ -489,7 +508,7 @@ export class CranialNerveSession {
     const cfg = this.config.read()
     const sc = cfg.prompt[scene]
     const preset = sc.presets.find((p) => p.id === sc.activeId) ?? sc.presets[0]
-    return preset?.blocks.flatMap((b) => b.segments) ?? []
+    return preset?.segments ?? []
   }
 
   async listModels(preset: AiPreset): Promise<string[]> {
@@ -552,6 +571,10 @@ export class CranialNerveSession {
     return this.template
   }
 
+  getCurrentTemplateId(): string | null {
+    return this.currentTemplateId
+  }
+
   getChronicleRecaller(): ChronicleRecaller | null {
     return this.chronicleRecaller
   }
@@ -570,6 +593,46 @@ export class CranialNerveSession {
 
   runWrite<T>(task: () => Promise<T> | T): Promise<T> {
     return this.writeQueue.enqueue(() => Promise.resolve(task()))
+  }
+
+  async applyChronicleTableDef(def: TableDef): Promise<void> {
+    await this.runWrite(async () => {
+      const oldRows = this.getTableRowsWithRowid(CHRONICLE_TABLE_NAME)[0]?.rows ?? []
+      this.core.transaction(() => {
+        this.core.run(`DROP TABLE IF EXISTS ${quoteIdent(CHRONICLE_TABLE_NAME)}`)
+        this.core.run(buildCreateTableSql(def))
+        if (def.columns.length > 0) {
+          const cols = def.columns.map((c) => quoteIdent(c.name))
+          const placeholders = def.columns.map(() => '?').join(', ')
+          const sql = `INSERT INTO ${quoteIdent(CHRONICLE_TABLE_NAME)} (${cols.join(', ')}) VALUES (${placeholders})`
+          for (const row of oldRows) {
+            const values = def.columns.map((c) => {
+              const v = (row as Record<string, unknown>)[c.name]
+              return v == null ? '' : String(v)
+            })
+            try {
+              this.core.run(sql, values)
+            } catch (e) {
+              pushLog('warn', 'session', `applyChronicleTableDef 跳过冲突行: ${e instanceof Error ? e.message : String(e)}`)
+            }
+          }
+        }
+      })
+      const cfg = this.getConfig()
+      cfg.chronicleTableDef = def
+      this.saveConfig(cfg)
+      const chat = this.chat.getChat()
+      const lastMsgId = chat.length - 1
+      if (lastMsgId >= 0) {
+        this.saveToChat(lastMsgId)
+      }
+      try {
+        await syncToWorldbook(this)
+        await this.chat.saveChat()
+      } catch (e) {
+        pushLog('error', 'session', `applyChronicleTableDef 同步失败: ${e instanceof Error ? e.message : String(e)}`)
+      }
+    })
   }
 
   setProgressNotifier(fn: ProgressStarter): void {

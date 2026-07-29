@@ -41,6 +41,9 @@ export default class SqliteSyncBridge {
 		this.lastLoadWarnings = warnings
 
 		if (!replay.snapshot) {
+			if (replay.snapshotIndex === null) {
+				return { ok: true, warnings: [], snapshotIndex: null }
+			}
 			return { ok: false, warnings, snapshotIndex: replay.snapshotIndex }
 		}
 

@@ -4,7 +4,8 @@
   "description": "CranialNerve — 新一代简约强大的类数据库综合工具，致力于提供更好的游玩体验",
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && node tools/deploy.mjs",
+    "deploy": "node tools/deploy.mjs",
     "typecheck": "tsc --noEmit",
     "arch": "node tools/check-arch.mjs",
     "test": "vitest run",
@@ -21,6 +22,9 @@
     "vitest": "^4.1.10"
   },
   "dependencies": {
+    "@codemirror/commands": "^6.10.4",
+    "@codemirror/state": "^6.7.1",
+    "@codemirror/view": "^6.43.7",
     "pinia": "^4.0.2",
     "sql.js": "^1.14.1",
     "vue": "^3.5.40",

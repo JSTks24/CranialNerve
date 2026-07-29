@@ -38,7 +38,7 @@ export function buildTableEditPrompt(
   }))
 
   if (options.extraHint && options.extraHint.trim().length > 0) {
-    filled.push({ id: 'hint_' + Math.random().toString(36).slice(2, 10), role: 'user', content: options.extraHint })
+    filled.push({ id: 'hint_' + Math.random().toString(36).slice(2, 10), name: '额外提示', role: 'user', content: options.extraHint })
   }
 
   return filled

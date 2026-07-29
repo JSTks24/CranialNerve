@@ -51,6 +51,12 @@ export async function syncToWorldbook(session: CranialNerveSession): Promise<voi
   while (usedOrders.has(orderCounter)) {
     orderCounter++
   }
+  const chronicleDef = session.getChronicleTableDef()
+  const chronicleKeyCol = chronicleDef.columns.find((c) => c.role === 'key')?.name
+  const chronicleSummaryCols = [
+    chronicleDef.columns.find((c) => c.role === 'summary')?.name,
+    chronicleDef.columns.find((c) => c.role === 'keyDialogue')?.name
+  ].filter((v): v is string => typeof v === 'string')
   const tableNames = session.listTables()
   for (const tableName of tableNames) {
     const results = session.getTableRowsWithRowid(tableName)
@@ -64,8 +70,8 @@ export async function syncToWorldbook(session: CranialNerveSession): Promise<voi
     const isChronicle = tableName === CHRONICLE_TABLE_NAME
     if (isChronicle) {
       for (const row of result.rows) {
-        const keyCol = findKeyColumn(result.columns, tableName, row)
-        const summaryCol = findSummaryColumn(result.columns, tableName, row)
+        const keyCol = findKeyColumn(result.columns, tableName, row, chronicleKeyCol)
+        const summaryCol = findSummaryColumn(result.columns, tableName, row, chronicleSummaryCols)
         const uid = nextUid(entries)
         entries[uid] = {
           uid,
@@ -139,9 +145,16 @@ export async function syncToWorldbook(session: CranialNerveSession): Promise<voi
   await wb.attachToChat(bookName)
 }
 
-function findKeyColumn(columns: string[], tableName: string, row: Record<string, unknown>): string {
+function findKeyColumn(
+  columns: string[],
+  tableName: string,
+  row: Record<string, unknown>,
+  chronicleKeyCol?: string
+): string {
   const priorityCols =
-    tableName === CHRONICLE_TABLE_NAME ? ['key'] : ['key', 'id', 'row_id', columns[0] ?? '']
+    tableName === CHRONICLE_TABLE_NAME
+      ? [chronicleKeyCol, 'key'].filter((v): v is string => typeof v === 'string' && v.length > 0)
+      : ['key', 'id', 'row_id', columns[0] ?? '']
   for (const col of priorityCols) {
     const v = row[col]
     if (v != null && String(v).trim().length > 0) {
@@ -154,11 +167,12 @@ function findKeyColumn(columns: string[], tableName: string, row: Record<string,
 function findSummaryColumn(
   columns: string[],
   tableName: string,
-  row: Record<string, unknown>
+  row: Record<string, unknown>,
+  chronicleSummaryCols?: string[]
 ): string {
   const summaryCols =
     tableName === CHRONICLE_TABLE_NAME
-      ? ['chronicle_text', 'key_dialogue']
+      ? [...(chronicleSummaryCols ?? []), 'chronicle_text', 'key_dialogue']
       : ['summary', 'desc', 'description', 'note', columns[1] ?? '']
   for (const col of summaryCols) {
     const v = row[col]

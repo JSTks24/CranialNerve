@@ -7,12 +7,21 @@ export interface ColumnConstraints {
     defaultValue?: string
 }
 
+export type ChronicleColumnRole =
+    | 'key'
+    | 'timeStart'
+    | 'timeEnd'
+    | 'location'
+    | 'summary'
+    | 'keyDialogue'
+
 export interface ColumnDef {
     name: string
     displayName: string
     type: string
     constraints?: ColumnConstraints
     note?: string
+    role?: ChronicleColumnRole
 }
 
 export interface TableDef {

@@ -6,36 +6,34 @@ import { syncToWorldbook } from '@core/worldbook-sync'
 import toast from '@ui/toast'
 import confirm from '@ui/dialog'
 
-interface ChronicleRow {
+interface RowData {
   __rowid__: number
-  key: string
-  time_start: string
-  time_end: string
-  location: string
-  chronicle_text: string
-  key_dialogue: string
+  [k: string]: unknown
 }
 
 const session = getSession()
-const rows = ref<ChronicleRow[]>([])
+const rows = ref<RowData[]>([])
 const keyword = ref('')
 const editingRowid = ref<number | null>(null)
-const editSnapshot = ref<ChronicleRow | null>(null)
+const editSnapshot = ref<RowData | null>(null)
 const cellEditEls = new Map<string, HTMLElement>()
 
-const fields: { key: keyof ChronicleRow; label: string; full?: boolean }[] = [
-  { key: 'key', label: '编码' },
-  { key: 'time_start', label: '起始时间' },
-  { key: 'time_end', label: '结束时间' },
-  { key: 'location', label: '地点' },
-  { key: 'chronicle_text', label: '纪要正文', full: true },
-  { key: 'key_dialogue', label: '重要台词', full: true }
-]
+const chronicleDef = computed(() => session.getChronicleTableDef())
+const keyColName = computed(
+  () => chronicleDef.value.columns.find((c) => c.role === 'key')?.name
+)
+const fields = computed(() =>
+  chronicleDef.value.columns.map((c) => ({
+    key: c.name,
+    label: c.displayName || c.name,
+    full: c.role === 'summary' || c.role === 'keyDialogue'
+  }))
+)
 
 function refresh() {
   const result = session.getTableRowsWithRowid(CHRONICLE_TABLE_NAME)
   const first = result[0]
-  rows.value = (first?.rows ?? []) as unknown as ChronicleRow[]
+  rows.value = (first?.rows ?? []) as unknown as RowData[]
 }
 
 let draftCounter = -1
@@ -43,7 +41,7 @@ let draftCounter = -1
 const hasSession = computed(() => session.listTables().filter((n) => !n.startsWith('sqlite_')).length > 0)
 const chronicleEnabled = computed(() => session.getConfig().chronicleGenEnabled)
 
-function startEdit(row: ChronicleRow) {
+function startEdit(row: RowData) {
   editingRowid.value = row.__rowid__
   editSnapshot.value = { ...row }
   cellEditEls.clear()
@@ -56,7 +54,7 @@ function registerCellEl(col: string, el: Element | null): void {
   if (!cellEditEls.has(col)) {
     cellEditEls.set(col, el)
     const row = rows.value.find((r) => r.__rowid__ === rowid)
-    el.innerText = row ? String(row[col as keyof ChronicleRow] ?? '') : ''
+    el.innerText = row ? String(row[col] ?? '') : ''
   }
 }
 
@@ -78,7 +76,7 @@ function saveEdit() {
     return
   }
   const collected: Record<string, string> = {}
-  for (const f of fields) {
+  for (const f of fields.value) {
     const el = cellEditEls.get(f.key)
     collected[f.key] = el ? el.innerText : String(row[f.key] ?? '')
   }
@@ -86,16 +84,16 @@ function saveEdit() {
     try {
       if (row.__rowid__ < 0) {
         const values: Record<string, string> = {}
-        for (const f of fields) {
+        for (const f of fields.value) {
           values[f.key] = String(collected[f.key] ?? '')
         }
         session.insertRow(CHRONICLE_TABLE_NAME, values)
       } else {
-        for (const f of fields) {
+        for (const f of fields.value) {
           const newVal = String(collected[f.key] ?? '')
           const oldVal = editSnapshot.value ? String(editSnapshot.value[f.key] ?? '') : ''
           if (newVal !== oldVal) {
-            session.updateCell(CHRONICLE_TABLE_NAME, editingRowid.value!, f.key as string, newVal)
+            session.updateCell(CHRONICLE_TABLE_NAME, editingRowid.value!, f.key, newVal)
           }
         }
       }
@@ -124,27 +122,23 @@ async function persistChanges() {
 }
 
 function addRow() {
-  const draft: ChronicleRow = {
-    __rowid__: draftCounter--,
-    key: '',
-    time_start: '',
-    time_end: '',
-    location: '',
-    chronicle_text: '',
-    key_dialogue: ''
+  const draft: RowData = { __rowid__: draftCounter-- }
+  for (const f of fields.value) {
+    draft[f.key] = ''
   }
   rows.value.push(draft)
   startEdit(draft)
 }
 
-async function deleteRow(row: ChronicleRow) {
-  const ok = await confirm('删除确认', `确认删除纪要「${row.key}」？`, '删除', true)
+async function deleteRow(row: RowData) {
+  const keyText = keyColName.value ? String(row[keyColName.value] ?? '') : ''
+  const ok = await confirm('删除确认', `确认删除纪要「${keyText}」？`, '删除', true)
   if (!ok) return
   await session.runWrite(async () => {
     try {
       session.deleteRow(CHRONICLE_TABLE_NAME, row.__rowid__)
       rows.value = rows.value.filter((r) => r.__rowid__ !== row.__rowid__)
-      toast.success(`已删除 ${row.key}`)
+      toast.success(`已删除 ${keyText}`)
       await persistChanges()
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err))
@@ -152,7 +146,7 @@ async function deleteRow(row: ChronicleRow) {
   })
 }
 
-const filtered = ref<ChronicleRow[]>([])
+const filtered = ref<RowData[]>([])
 function applyFilter() {
   const kw = keyword.value.trim().toLowerCase()
   if (!kw) {
@@ -197,7 +191,7 @@ onActivated(refresh)
         :class="{ 'chronicle-item--editing': row.__rowid__ === editingRowid }"
       >
         <div class="cn-card__head">
-          <span class="chronicle-item__key">{{ row.key }}</span>
+          <span class="chronicle-item__key">{{ keyColName ? (row[keyColName] ?? '') : '' }}</span>
           <template v-if="row.__rowid__ === editingRowid">
             <div class="cn-space">
               <button class="cn-btn cn-btn--sm cn-btn--primary" @click="saveEdit">保存</button>

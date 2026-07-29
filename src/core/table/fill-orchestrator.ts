@@ -78,8 +78,9 @@ async function executeFill(session: CranialNerveSession, extraHint?: string): Pr
 
 	const segments = session.getActiveSegments('tableEdit')
 	const chronicleEnabled = config.chronicleGenEnabled
+	const chronicleTable = config.chronicleTableDef ?? DEFAULT_CHRONICLE_TABLE
 	const tableDefs: TableDef[] = chronicleEnabled
-		? [...template.tables, DEFAULT_CHRONICLE_TABLE]
+		? [...template.tables, chronicleTable]
 		: [...template.tables]
 	const targetTables = chronicleEnabled
 		? [...template.tables.map((t) => t.name), CHRONICLE_TABLE_NAME]

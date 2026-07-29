@@ -11,40 +11,46 @@ export const DEFAULT_CHRONICLE_TABLE: TableDef = {
       displayName: '编码',
       type: 'TEXT',
       constraints: { primaryKey: true, unique: true, nullable: false },
-      note: 'CN 编码，格式 CNXXXX（4位零填充递增），纪要唯一标识，作召回关键词'
+      note: 'CN 编码，格式 CNXXXX（4位零填充递增），纪要唯一标识，作召回关键词',
+      role: 'key'
     },
     {
       name: 'time_start',
       displayName: '起始时间',
       type: 'TEXT',
       constraints: { nullable: false },
-      note: '事件起始时间，ISO 8601（YYYY-MM-DDTHH:MM）。召回算时间跨度用此列'
+      note: '事件起始时间，ISO 8601（YYYY-MM-DDTHH:MM）。召回算时间跨度用此列',
+      role: 'timeStart'
     },
     {
       name: 'time_end',
       displayName: '结束时间',
       type: 'TEXT',
-      note: '事件结束时间，格式同 time_start。可算事件持续时长'
+      note: '事件结束时间，格式同 time_start。可算事件持续时长',
+      role: 'timeEnd'
     },
     {
       name: 'location',
       displayName: '地点',
       type: 'TEXT',
       constraints: { nullable: false },
-      note: '本轮事件发生地点，从大到小描述'
+      note: '本轮事件发生地点，从大到小描述',
+      role: 'location'
     },
     {
       name: 'chronicle_text',
       displayName: '纪要正文',
       type: 'TEXT',
       constraints: { nullable: false },
-      note: '第三方视角客观记录，不含推测/情绪/主观判断，忠于原文不补充，不少于300字，结尾禁止总结升华'
+      note: '第三方视角客观记录，不含推测/情绪/主观判断，忠于原文不补充，不少于300字，结尾禁止总结升华',
+      role: 'summary'
     },
     {
       name: 'key_dialogue',
       displayName: '重要台词',
       type: 'TEXT',
-      note: '本轮最重要的台词（1-3句），保留原文。无重要台词则留空'
+      note: '本轮最重要的台词（1-3句），保留原文。无重要台词则留空',
+      role: 'keyDialogue'
     }
   ],
   note: '纪要表，每轮交互后必须立即插入一条新记录，禁止 UPDATE/DELETE（纪要只追加不改写）。第三方视角客观记录，作召回记忆源。',
