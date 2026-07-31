@@ -12,6 +12,7 @@ const chronicleCount = ref(0)
 const activePresetName = ref('未配置')
 const activePresetModel = ref('')
 const cfg = ref<CranialNerveConfig>(session.getConfig())
+const chatActive = ref(false)
 
 const fillTables = ref<string[]>([])
 const fillHint = ref('')
@@ -35,6 +36,7 @@ function tableDisplayName(name: string): string {
 }
 
 function refresh() {
+	chatActive.value = session.isChatActive()
 	tableCount.value = session.listTables().filter((n) => n !== 'cn_chronicle').length
 	try {
 		const cr = session.getTableRowsWithRowid('cn_chronicle')
@@ -182,14 +184,14 @@ refresh()
 						<div class="welcome-health-item__icon"><i class="fa-solid fa-table"></i></div>
 						<div class="welcome-health-item__body">
 							<strong>数据表</strong>
-							<p>{{ tableCount }} 张</p>
+							<p>{{ chatActive ? `${tableCount} 张` : '未检测到聊天' }}</p>
 						</div>
 					</div>
 					<div class="welcome-health-item welcome-health-item--ok">
 						<div class="welcome-health-item__icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
 						<div class="welcome-health-item__body">
 							<strong>纪要条目</strong>
-							<p>{{ chronicleCount }} 条</p>
+							<p>{{ chatActive ? `${chronicleCount} 条` : '未检测到聊天' }}</p>
 						</div>
 					</div>
 					<div class="welcome-health-item" :class="activePresetName === '未配置' ? 'welcome-health-item--warn' : 'welcome-health-item--ok'">

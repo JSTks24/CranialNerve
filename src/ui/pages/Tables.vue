@@ -21,6 +21,7 @@ interface TableInfo {
 
 const session = getSession()
 const tables = ref<TableInfo[]>([])
+const chatActive = ref(false)
 const activeName = ref<string>('')
 const editingRowid = ref<number | null>(null)
 const editSnapshot = ref<Record<string, string>>({})
@@ -37,6 +38,7 @@ function switchTab(name: string) {
 }
 
 function refresh() {
+  chatActive.value = session.isChatActive()
   const names = session.listTables()
   tables.value = names
     .filter((n) => !n.startsWith('sqlite_') && n !== CHRONICLE_TABLE_NAME)
@@ -223,7 +225,8 @@ onActivated(refresh)
 
 <template>
   <div class="tables-page">
-    <div v-if="tables.length === 0" class="cn-empty">当前会话未载入表格</div>
+    <div v-if="!chatActive" class="cn-empty">未检测到聊天，请先在酒馆中打开一个对话</div>
+    <div v-else-if="tables.length === 0" class="cn-empty">当前会话未载入表格</div>
 
     <template v-else>
       <div class="tables-toolbar">

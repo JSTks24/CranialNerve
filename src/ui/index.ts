@@ -10,6 +10,7 @@ import router from './router'
 let themeInjected = false
 let appMounted = false
 let appInstance: VueApp | null = null
+let prevBodyOverflow = ''
 
 export async function init(): Promise<void> {
 	await new Promise<void>((resolve) => {
@@ -130,6 +131,7 @@ function openPanel(): void {
     return
   }
   appMounted = true
+  prevBodyOverflow = document.body.style.overflow
   document.body.style.overflow = 'hidden'
   const root = document.createElement('div')
   root.id = 'cn_app'
@@ -148,6 +150,6 @@ function closePanel(): void {
   if (root) {
     root.remove()
   }
-  document.body.style.overflow = ''
+  document.body.style.overflow = prevBodyOverflow
   appMounted = false
 }

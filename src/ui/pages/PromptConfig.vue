@@ -486,17 +486,25 @@ async function saveChronicleTableDef() {
     toast.error(err)
     return
   }
-  const ok = await confirm(
-    '保存纪要表',
-    '保存后将按新结构重建纪要表：同名列数据迁移保留，删改列名的列数据丢失，结构立即生效。继续？',
-    '保存并重建',
-    true
-  )
-  if (!ok) return
+  let hasData = false
+  try {
+    hasData = (session.getTableRowsWithRowid('cn_chronicle')[0]?.rows?.length ?? 0) > 0
+  } catch {
+    hasData = false
+  }
+  if (hasData) {
+    const ok = await confirm(
+      '保存纪要表',
+      '保存后将按新结构重建纪要表：同名列数据迁移保留，删改列名的列数据丢失，结构立即生效。继续？',
+      '保存并重建',
+      true
+    )
+    if (!ok) return
+  }
   try {
     await session.applyChronicleTableDef(JSON.parse(JSON.stringify(chronicleDef.value)))
     store.reload()
-    toast.success('纪要表已保存并重建')
+    toast.success(hasData ? '纪要表已保存并重建' : '纪要表已保存')
   } catch (err) {
     toast.error(err instanceof Error ? err.message : String(err))
   }

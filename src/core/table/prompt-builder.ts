@@ -14,6 +14,8 @@ export interface BuildPromptOptions {
   segments: PromptSegment[]
   extraHint?: string
   chronicleGuide?: string
+  personaDescription?: string
+  charDescription?: string
 }
 
 export function buildTableEditPrompt(
@@ -33,9 +35,11 @@ export function buildTableEditPrompt(
       tables: tableSection,
       worldbook: options.worldbookContent ?? '',
       conversation: options.conversationText ?? '',
-      chronicleGuide: options.chronicleGuide ?? ''
+      chronicleGuide: options.chronicleGuide ?? '',
+      persona: options.personaDescription ?? '',
+      charDescription: options.charDescription ?? ''
     })
-  }))
+  })).filter((s) => s.content.trim().length > 0)
 
   if (options.extraHint && options.extraHint.trim().length > 0) {
     filled.push({ id: 'hint_' + Math.random().toString(36).slice(2, 10), name: '额外提示', role: 'user', content: options.extraHint })

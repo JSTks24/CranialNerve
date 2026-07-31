@@ -2,7 +2,8 @@ import type {
   AiGateway,
   ChatCompletionParams,
   AiClientConfig,
-  AiChatMessage
+  AiChatMessage,
+  AiCallOptions
 } from '@db/gateways/ai'
 import type { VectorGateway } from '@db/gateways/vector'
 import type { PromptSegment, VectorConfig } from '@shared/types/config'
@@ -20,11 +21,14 @@ export interface RecallContext {
   recallSegments: PromptSegment[]
   userMessage: string
   conversationText?: string
+  personaDescription?: string
+  charDescription?: string
   currentTime: string
   vectorEnabled: boolean
   vectorConfig: VectorConfig
   chatToken: string
   signal?: AbortSignal
+  callOptions?: AiCallOptions
 }
 
 export interface RecallItem {
@@ -82,7 +86,7 @@ async function prefilterByVector(
   try {
     const docs = all.map((e) => e.content.summary ?? e.key)
     const [queryVec, ...docVecs] = await vector.embed([ctx.userMessage, ...docs], ctx.vectorConfig)
-    if (!queryVec) {
+    if (!queryVec || queryVec.length === 0) {
       return all
     }
     const scored = docVecs.map((vec, i) => ({
@@ -103,6 +107,9 @@ async function prefilterByVector(
 }
 
 function cosine(a: number[], b: number[]): number {
+  if (a.length === 0 || a.length !== b.length) {
+    return 0
+  }
   let dot = 0
   let na = 0
   let nb = 0
@@ -131,6 +138,12 @@ async function filterRelevantKeys(
   }))
   const chronicleList = JSON.stringify(catalog)
   const userParts = [`玩家输入：${ctx.userMessage}`]
+  if (ctx.personaDescription) {
+    userParts.push(`用户人设：${ctx.personaDescription}`)
+  }
+  if (ctx.charDescription) {
+    userParts.push(`角色设定：${ctx.charDescription}`)
+  }
   if (ctx.conversationText) {
     userParts.push(`近期对话：${ctx.conversationText}`)
   }
@@ -145,7 +158,7 @@ async function filterRelevantKeys(
     })),
     { role: 'user', content: userParts.join('\n') }
   ]
-  const raw = await ai.chatCompletion(messages, ctx.clientConfig, ctx.params, ctx.signal)
+  const raw = await ai.chatCompletion(messages, ctx.clientConfig, ctx.params, ctx.signal, ctx.callOptions)
   return parseKeys(raw)
 }
 

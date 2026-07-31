@@ -2,6 +2,8 @@ import type { CranialNerveSession } from '../session'
 import type { RecallContext, RecallItem } from '../chronicle'
 import type { ProgressNotifier } from '@shared/types/config'
 import { pushLog } from '@shared/log-buffer'
+import { getHostContext } from '@db/gateways/host-context'
+import { getPersonaDescription, getCharDescription, getUserName } from '@db/gateways/host-state'
 
 function escapeHtml(text: string): string {
 	return text
@@ -75,43 +77,38 @@ function isAbortError(e: unknown, signal?: AbortSignal): boolean {
 export async function onPromptReady(
 	session: CranialNerveSession,
 	dryRun?: boolean
-): Promise<void> {
+): Promise<boolean> {
 	if (dryRun) {
-		return
+		return true
 	}
 
 	const config = session.getConfig()
 	if (!config.recallEnabled) {
-		return
+		return true
 	}
 	const preset = session.getAiPresetForScene(config.recallPresetId)
 	if (!preset) {
-		return
+		return true
 	}
 
 	const recaller = session.getChronicleRecaller()
 	if (!recaller) {
-		return
+		return true
 	}
 
 	const chat = session.chat.getChat()
-	let lastUserIdx = -1
-	for (let i = chat.length - 1; i >= 0; i--) {
-		if (chat[i]?.is_user) {
-			lastUserIdx = i
-			break
-		}
-	}
+	const lastUserIdx = session.getLastUserIdx()
 	if (lastUserIdx < 0) {
-		return
+		return true
 	}
 
 	const userMessage = chat[lastUserIdx]!.mes
 
+	const userName = getUserName()
 	const contextDepth = Math.max(1, config.recallContextDepth || 5)
 	const contextMessages = chat.slice(Math.max(0, lastUserIdx - contextDepth), lastUserIdx)
 	const conversationText = contextMessages
-		.map((m) => `${m.is_user ? 'User' : 'Assistant'}: ${m.mes}`)
+		.map((m) => `${m.is_user ? userName : 'Assistant'}: ${m.mes}`)
 		.join('\n')
 
 	const recallSegments = session.getActiveSegments('chronicleRecall')
@@ -134,29 +131,42 @@ export async function onPromptReady(
 		recallSegments,
 		userMessage,
 		conversationText,
+		personaDescription: getPersonaDescription(),
+		charDescription: getCharDescription(),
 		currentTime: new Date().toISOString(),
 		vectorEnabled: config.vectorEnabled,
 		vectorConfig: config.vector,
 		chatToken: session.getChatToken(),
-		signal: progress?.abortSignal
+		signal: progress?.abortSignal,
+		callOptions: {
+			timeoutMs: config.pending.aiCallTimeoutMs,
+			timeoutRetries: config.pending.aiTimeoutRetries
+		}
 	}
 
 	try {
 		const items = await session.getWriteQueue().enqueue(() => recaller.recall(recallCtx))
 		if (items.length === 0) {
 			progress?.done()
-			return
+			return true
 		}
 		const limited = items.slice(0, config.maxRecallItems)
 		chat[lastUserIdx]!.mes = buildRecallCard(limited, userMessage)
+		try {
+			getHostContext().updateMessageBlock?.(lastUserIdx, chat[lastUserIdx]!)
+		} catch (e) {
+			pushLog('warn', 'recall', `召回卡片重渲染失败: ${e instanceof Error ? e.message : String(e)}`)
+		}
 		progress?.done()
+		return true
 	} catch (e) {
 		if (isAbortError(e, progress?.abortSignal)) {
 			progress?.fail('操作已终止')
 			pushLog('info', 'recall', '召回被用户终止，发送原始消息')
-			return
+			return false
 		}
 		progress?.fail(e instanceof Error ? e.message : String(e))
 		pushLog('error', 'recall', `召回失败: ${e instanceof Error ? e.message : String(e)}`)
+		return true
 	}
 }

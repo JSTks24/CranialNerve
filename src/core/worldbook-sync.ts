@@ -42,7 +42,9 @@ export async function syncToWorldbook(session: CranialNerveSession): Promise<voi
         }
       }
     }
-  } catch {}
+  } catch (e) {
+    pushLog('warn', 'worldbook', `加载现有书 ${bookName} 失败（视为无手动条目）: ${e instanceof Error ? e.message : String(e)}`)
+  }
   for (const entry of Object.values(entries)) {
     if (Number.isFinite(entry.order)) {
       usedOrders.add(entry.order)

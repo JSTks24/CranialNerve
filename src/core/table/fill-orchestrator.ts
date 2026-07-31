@@ -9,12 +9,22 @@ import type { ScanEntry } from '@shared/types/worldbook-scanner'
 import { pushLog } from '@shared/log-buffer'
 import type { WorldInfoEntry } from '@shared/types/worldbook'
 import { getHostContext } from '@db/gateways/host-context'
+import { getPersonaDescription, getCharDescription, getUserName } from '@db/gateways/host-state'
 import type { TableDef } from '@shared/types/table'
 import { createPersistContext } from '@db/sqlite/frame-persist'
 import { ensureInitCheckpoint } from '@db/sqlite/frame-persist'
 
 let generationCountSinceLastFill = 0
 let fillInProgress = false
+let lastGenerationWasStopped = false
+
+export function markGenerationStopped(): void {
+	lastGenerationWasStopped = true
+}
+
+export function resetGenerationStopped(): void {
+	lastGenerationWasStopped = false
+}
 
 export function resetFillScheduler(): void {
 	generationCountSinceLastFill = 0
@@ -35,6 +45,10 @@ function isAbortError(e: unknown, signal?: AbortSignal): boolean {
 }
 
 async function executeFill(session: CranialNerveSession, extraHint?: string): Promise<RunResult> {
+	if (fillInProgress) {
+		pushLog('warn', 'fill', '已有填表进行中，跳过本次触发')
+		return { ok: false, attempts: 0, error: 'fill in progress' }
+	}
 	const cfg = session.getConfig()
 	const preset = session.getAiPresetForScene(cfg.tableFillPresetId)
 	if (!preset) {
@@ -70,8 +84,9 @@ async function executeFill(session: CranialNerveSession, extraHint?: string): Pr
 	const recentMessages = effectiveMessages.slice(-Math.min(contextDepth, effectiveMessages.length))
 	const batchedMessages = recentMessages.slice(-batchSize)
 
+	const userName = getUserName()
 	const conversationText = batchedMessages
-		.map((m) => `${m.is_user ? 'User' : 'Assistant'}: ${m.mes}`)
+		.map((m) => `${m.is_user ? userName : 'Assistant'}: ${m.mes}`)
 		.join('\n')
 
 	const worldbookContent = await buildWorldbookContext(session, conversationText)
@@ -87,6 +102,8 @@ async function executeFill(session: CranialNerveSession, extraHint?: string): Pr
 		: template.tables.map((t) => t.name)
 
 	const timeFormat = getTimePromptDescription(session.getChatToken())
+	const personaDescription = getPersonaDescription()
+	const charDescription = getCharDescription()
 
 	const filledSegments = buildTableEditPrompt(session.core, {
 		tableDefs,
@@ -95,7 +112,9 @@ async function executeFill(session: CranialNerveSession, extraHint?: string): Pr
 		conversationText,
 		timeFormat,
 		segments,
-		extraHint
+		extraHint,
+		personaDescription,
+		charDescription
 	})
 
 	const userPrompt = '请根据以上故事内容更新数据库表格。'
@@ -113,6 +132,10 @@ async function executeFill(session: CranialNerveSession, extraHint?: string): Pr
 			presence_penalty: preset.presencePenalty,
 			seed: preset.seed >= 0 ? preset.seed : undefined,
 			stream: preset.stream,
+		},
+		callOptions: {
+			timeoutMs: config.pending.aiCallTimeoutMs,
+			timeoutRetries: config.pending.aiTimeoutRetries
 		}
 	}
 
@@ -172,13 +195,38 @@ export async function onGenerationEnded(session: CranialNerveSession): Promise<v
 		return
 	}
 
-	const frequency = Math.max(0, config.tableFill.updateFrequency || 1)
+	const frequency = Math.max(0, config.tableFill.updateFrequency ?? 1)
 	if (frequency <= 0) {
 		return
 	}
 	generationCountSinceLastFill++
 	if (generationCountSinceLastFill < frequency) {
 		return
+	}
+
+	await Promise.resolve()
+	if (lastGenerationWasStopped && !config.pending.summarizeOnManualAbort) {
+		pushLog('info', 'fill', '手动中止且未开启中止总结，跳过本轮纪要总结')
+		resetGenerationStopped()
+		return
+	}
+	resetGenerationStopped()
+
+	const minLen = Math.max(0, config.pending.minSummaryLength ?? 0)
+	if (minLen > 0) {
+		const chat = session.chat.getChat()
+		let lastAiLen = 0
+		for (let i = chat.length - 1; i >= 0; i--) {
+			const m = chat[i]
+			if (m && !m.is_user && !m.is_system) {
+				lastAiLen = m.mes?.length ?? 0
+				break
+			}
+		}
+		if (lastAiLen < minLen) {
+			pushLog('info', 'fill', `AI回复字数 ${lastAiLen} < ${minLen}，跳过纪要总结`)
+			return
+		}
 	}
 
 	await executeFill(session)
@@ -211,7 +259,9 @@ async function buildWorldbookContext(session: CranialNerveSession, scanText: str
 		for (const entry of Object.values(data.entries)) {
 			scanEntriesList.push(worldInfoToScanEntry(entry, cnBookName))
 		}
-	} catch {}
+	} catch (e) {
+		pushLog('warn', 'worldbook', `读取 CN 书 ${cnBookName} 失败: ${e instanceof Error ? e.message : String(e)}`)
+	}
 
 	if (scanEntriesList.length === 0) {
 		return ''

@@ -84,6 +84,14 @@ const DEFAULT_CONFIG: CranialNerveConfig = {
   recallPresetId: '',
   recallContextDepth: 5,
   retainFloors: 100,
+  pending: {
+    aiCallTimeoutMs: 60000,
+    aiTimeoutRetries: 1,
+    listModelsTimeoutMs: 10000,
+    writeQueueDrainTimeoutMs: 8000,
+    summarizeOnManualAbort: false,
+    minSummaryLength: 100
+  },
   tableTemplate: {
     presets: [createDefaultTemplatePreset()],
     activeId: DEFAULT_TEMPLATE_PRESET_ID,
@@ -95,18 +103,19 @@ export interface ConfigGateway {
   read(): CranialNerveConfig
   write(config: CranialNerveConfig): void
   flush(): void
-  listModels(preset: AiPreset): Promise<string[]>
+  listModels(preset: AiPreset, timeoutMs?: number): Promise<string[]>
 }
 
 export default function createConfigGateway(): ConfigGateway {
   return {
     read() {
       const raw = getHostContext().extensionSettings[CONFIG_KEY]
-      if (typeof raw !== 'object' || raw === null) {
+      if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
         return cloneDefault()
       }
       const merged = { ...cloneDefault(), ...(raw as Partial<CranialNerveConfig>) }
       merged.vector = { ...DEFAULT_CONFIG.vector, ...merged.vector }
+      merged.pending = { ...DEFAULT_CONFIG.pending, ...merged.pending }
       merged.prompt = migratePrompt(merged.prompt, raw as Record<string, unknown>)
       merged.tableTemplate = migrateTableTemplate(merged.tableTemplate)
       merged.chronicleTableDef = migrateChronicleTableDef(merged.chronicleTableDef, merged.chronicleTableHints)
@@ -127,29 +136,37 @@ export default function createConfigGateway(): ConfigGateway {
         (ctx as { saveSettings: () => void }).saveSettings()
       }
     },
-    async listModels(preset) {
+    async listModels(preset, timeoutMs) {
       if (!preset.baseURL) {
         return []
       }
       const headers = getRequestHeaders()
       headers['Content-Type'] = 'application/json'
-      const res = await fetch('/api/backends/chat-completions/status', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          chat_completion_source: 'custom',
-          custom_url: preset.baseURL,
-          custom_include_headers: preset.apiKey
-            ? `Authorization: Bearer ${preset.apiKey}`
-            : '',
-        }),
-      })
-      if (!res.ok) {
-        const err = (await res.json().catch(() => ({}))) as { error?: boolean; message?: string }
-        throw new Error(err.message || `获取模型列表失败：${res.status}`)
+      const safeKey = preset.apiKey.replace(/[\r\n]/g, '')
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), timeoutMs ?? 10000)
+      try {
+        const res = await fetch('/api/backends/chat-completions/status', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            chat_completion_source: 'custom',
+            custom_url: preset.baseURL,
+            custom_include_headers: safeKey
+              ? `Authorization: Bearer ${safeKey}`
+              : '',
+          }),
+          signal: controller.signal,
+        })
+        if (!res.ok) {
+          const err = (await res.json().catch(() => ({}))) as { error?: boolean; message?: string }
+          throw new Error(err.message || `获取模型列表失败：${res.status}`)
+        }
+        const data = (await res.json()) as { data?: Array<{ id: string }> }
+        return Array.isArray(data.data) ? data.data.map((m) => m.id) : []
+      } finally {
+        clearTimeout(timer)
       }
-      const data = (await res.json()) as { data?: Array<{ id: string }> }
-      return Array.isArray(data.data) ? data.data.map((m) => m.id) : []
     }
   }
 }
@@ -161,6 +178,7 @@ function cloneDefault(): CranialNerveConfig {
     vector: { ...DEFAULT_CONFIG.vector },
     prompt: clonePromptConfig(defaultPromptConfig()),
     tableFill: { ...DEFAULT_CONFIG.tableFill },
+    pending: { ...DEFAULT_CONFIG.pending },
     tableTemplate: cloneTableTemplate(DEFAULT_CONFIG.tableTemplate)
   }
 }
@@ -231,6 +249,7 @@ function migratePreset(p: unknown): ScenePreset {
   } else if (Array.isArray(preset.blocks)) {
     segments = []
     for (const b of preset.blocks) {
+      if (!b || !Array.isArray(b.segments)) continue
       for (const s of b.segments) {
         segments.push({
           id: s.id || newId(),

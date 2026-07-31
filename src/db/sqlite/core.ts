@@ -7,6 +7,7 @@ const sqlWasmUrl = new URL('assets/sql-wasm.wasm', import.meta.url).href
 export default class SqliteCore {
     private sqlJs: SqlJsStatic | null = null
     private db: Database | null = null
+    private inTransaction = false
 
     get isReady(): boolean {
         return this.db !== null
@@ -96,6 +97,10 @@ export default class SqliteCore {
     }
 
     transaction<T>(fn: (tx: SqliteCore) => T): T {
+        if (this.inTransaction) {
+            throw new Error('nested transaction is not supported')
+        }
+        this.inTransaction = true
         this.run('BEGIN TRANSACTION')
         try {
             const result = fn(this)
@@ -104,6 +109,8 @@ export default class SqliteCore {
         } catch (e) {
             this.run('ROLLBACK')
             throw e
+        } finally {
+            this.inTransaction = false
         }
     }
 

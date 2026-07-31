@@ -31,6 +31,9 @@ interface SillyTavernContext {
   eventTypes: Record<string, string>
   name1: string
   name2: string
+  name2_description?: string
+  powerUserSettings?: { persona_description?: string }
+  updateMessageBlock?: (messageId: number, message: SillyTavernChatMessage) => void
   getRequestHeaders?: () => Record<string, string>
   saveSettingsDebounced?: () => void
   saveChat?: () => Promise<void> | void
@@ -48,7 +51,9 @@ interface SillyTavernEventSource {
 
 interface SillyTavernCharacter {
   avatar: string
+  description?: string
   data?: {
+    description?: string
     extensions?: Record<string, unknown>
   }
 }

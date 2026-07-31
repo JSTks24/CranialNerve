@@ -96,10 +96,10 @@ export function compactAtBoundary(
 	if (retainFloors <= 0) return
 	const ids = ctx.repo.listFrameMessageIds()
 	if (ids.length <= retainFloors) return
-	const boundaryId = ids[retainFloors]
+	const boundaryId = ids[retainFloors - 1]
 	if (boundaryId == null) return
 	writeCheckpoint(ctx, boundaryId, 'compaction')
-	for (let i = retainFloors + 1; i < ids.length; i++) {
+	for (let i = retainFloors; i < ids.length; i++) {
 		const id = ids[i]
 		if (id != null) ctx.repo.removeFrame(id)
 	}

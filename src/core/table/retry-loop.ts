@@ -1,6 +1,6 @@
 import type SqliteCore from '@db/sqlite/core'
 import type { PersistContext } from '@db/sqlite/frame-persist'
-import type { AiClientConfig, AiGateway, ChatCompletionParams } from '@db/gateways/ai'
+import type { AiClientConfig, AiGateway, AiCallOptions, ChatCompletionParams } from '@db/gateways/ai'
 import type { TableEditSqlV1 } from '@shared/types/ai'
 import type { PromptSegment } from '@shared/types/config'
 import { SQL_EDIT_FORMAT } from '@shared/constants/sql-json'
@@ -12,6 +12,7 @@ export interface PromptContext {
   userPrompt: string
   clientConfig: AiClientConfig
   params: ChatCompletionParams
+  callOptions?: AiCallOptions
 }
 
 export interface RunOptions {
@@ -51,7 +52,7 @@ export default class TableEditor {
     for (let attempt = 1; attempt <= options.maxRetries; attempt++) {
       const messages =
         attempt === 1 ? baseMessages : buildFeedbackMessages(baseMessages, lastRaw, lastError)
-      const raw = await this.ai.chatCompletion(messages, ctx.clientConfig, ctx.params, options.signal)
+      const raw = await this.ai.chatCompletion(messages, ctx.clientConfig, ctx.params, options.signal, ctx.callOptions)
       lastRaw = raw
       const current = parseTableEditSql(raw)
 
@@ -78,7 +79,7 @@ function parseTableEditSql(raw: string): TableEditSqlV1 | null {
   }
   try {
     const parsed = JSON.parse(jsonStr) as TableEditSqlV1
-    if (parsed.format !== SQL_EDIT_FORMAT || typeof parsed.sql !== 'string') {
+    if (parsed.format !== SQL_EDIT_FORMAT || typeof parsed.sql !== 'string' || parsed.sql.trim().length === 0) {
       return null
     }
     return parsed

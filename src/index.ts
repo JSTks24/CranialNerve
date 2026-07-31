@@ -23,10 +23,10 @@ export async function init(): Promise<void> {
 	window.addEventListener('beforeunload', () => {
 		ctx.extensionSettings.regex = unregisterCNRegexScripts(ctx.extensionSettings.regex as Record<string, unknown>[])
 		try {
-			session.worldbook.detachFromChat()
+			session.worldbook.detachFromChatSync()
 		} catch {}
 		try {
-			session.chat.saveChat()
+			void session.chat.saveChat()
 		} catch {}
 		const hostCtx = ctx as unknown as Record<string, unknown>
 		if (typeof hostCtx.saveSettings === 'function') {

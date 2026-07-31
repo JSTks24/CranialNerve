@@ -43,11 +43,11 @@ import type { ChronicleEntry } from '@shared/types/worldbook'
 import createChronicleRecaller, { type ChronicleRecaller } from './chronicle'
 import createWriteQueue, { type WriteQueue } from './write-queue'
 import { buildBookName, cleanupStaleBooks, syncToWorldbook } from './worldbook-sync'
-import { resetFillScheduler, onGenerationEnded, isFillInProgress } from './table/fill-orchestrator'
+import { resetFillScheduler, onGenerationEnded, isFillInProgress, markGenerationStopped, resetGenerationStopped } from './table/fill-orchestrator'
 import { onPromptReady } from './chronicle/recall-orchestrator'
 import { exportCheckpoint, validateCheckpointFile } from './checkpoint-transfer'
 import { pushLog } from '@shared/log-buffer'
-import { EVENT_GENERATION_ENDED, EVENT_GENERATION_AFTER_COMMANDS, EVENT_CHAT_RENAMED } from '@shared/constants/events'
+import { EVENT_GENERATION_ENDED, EVENT_GENERATION_AFTER_COMMANDS, EVENT_CHAT_RENAMED, EVENT_GENERATION_STARTED, EVENT_GENERATION_STOPPED } from '@shared/constants/events'
 
 export class CranialNerveSession {
   readonly core: SqliteCore
@@ -72,6 +72,9 @@ export class CranialNerveSession {
   private autoSwitchHandler: ((...args: unknown[]) => unknown) | null = null
   private reloadSeq = 0
   private lastSnapshotIndex: number | null = null
+  private initFailed = false
+  private lastRecalledUserIdx = -1
+  private realGenerationPending = false
 
   constructor() {
     this.core = new SqliteCore()
@@ -94,9 +97,15 @@ export class CranialNerveSession {
       this.startAutoSwitch()
       this.bindCoreEvents()
       await this.reloadForChatChange()
+      this.initFailed = false
     } catch (e) {
+      this.initFailed = true
       pushLog('error', 'session', `初始化失败: ${e instanceof Error ? e.message : String(e)}`)
     }
+  }
+
+  isInitialized(): boolean {
+    return !this.initFailed && this.syncBridge !== null && this.tableEditor !== null
   }
 
   private eventsBound = false
@@ -104,6 +113,10 @@ export class CranialNerveSession {
     if (this.eventsBound) return
     this.eventsBound = true
     this.event.makeLast(EVENT_GENERATION_ENDED, () => {
+      if (!this.realGenerationPending) {
+        return
+      }
+      this.realGenerationPending = false
       onGenerationEnded(this).catch((e) => {
         pushLog('error', 'session', `onGenerationEnded error: ${e instanceof Error ? e.message : String(e)}`)
       })
@@ -117,10 +130,28 @@ export class CranialNerveSession {
         pushLog('warn', 'session', '纪要生成中，跳过本轮召回')
         return
       }
-      return onPromptReady(this).catch((e) => {
+      const lastUserIdx = this.getLastUserIdx()
+      if (lastUserIdx < 0) {
+        return
+      }
+      if (lastUserIdx === this.lastRecalledUserIdx) {
+        this.realGenerationPending = false
+        pushLog('info', 'session', '玩家消息未变，跳过召回（可能是提示词查看器/regenerate）')
+        return
+      }
+      this.lastRecalledUserIdx = lastUserIdx
+      this.realGenerationPending = true
+      return onPromptReady(this).then((recalled) => {
+        if (!recalled) {
+          this.lastRecalledUserIdx = -1
+          this.realGenerationPending = false
+        }
+      }).catch((e) => {
         pushLog('error', 'session', `onPromptReady error: ${e instanceof Error ? e.message : String(e)}`)
       })
     })
+    this.event.on(EVENT_GENERATION_STARTED, () => resetGenerationStopped())
+    this.event.on(EVENT_GENERATION_STOPPED, () => markGenerationStopped())
     this.event.on(EVENT_CHAT_RENAMED, (...args: unknown[]) => {
       const payload = args[0] as { oldFileName?: string; newFileName?: string } | undefined
       if (payload?.oldFileName && payload?.newFileName) {
@@ -144,7 +175,13 @@ export class CranialNerveSession {
       const kLocation = colName('location')
       const kSummary = colName('summary')
       const kKeyDialogue = colName('keyDialogue')
-      const result = this.core.exec(`SELECT * FROM "${CHRONICLE_TABLE_NAME}"`)
+      let result: QueryResult[]
+      try {
+        result = this.core.exec(`SELECT * FROM "${CHRONICLE_TABLE_NAME}"`)
+      } catch (e) {
+        pushLog('warn', 'session', `纪要表读取失败，召回按空表处理: ${e instanceof Error ? e.message : String(e)}`)
+        return []
+      }
       const first = result[0]
       if (!first) return []
       const pick = (r: Record<string, unknown>, name?: string): string =>
@@ -189,7 +226,13 @@ export class CranialNerveSession {
   async reloadForChatChange(): Promise<void> {
     const mySeq = ++this.reloadSeq
     const prevToken = this.currentChatToken
-    await this.writeQueue.waitForDrain()
+    this.lastRecalledUserIdx = -1
+    this.realGenerationPending = false
+    try {
+      await this.writeQueue.waitForDrain(this.getConfig().pending.writeQueueDrainTimeoutMs)
+    } catch (e) {
+      pushLog('error', 'session', `等待写入队列超时，强制继续 reload: ${e instanceof Error ? e.message : String(e)}`)
+    }
     if (mySeq !== this.reloadSeq) {
       return
     }
@@ -215,7 +258,9 @@ export class CranialNerveSession {
       this.initSessionTemplate()
     } catch (e) {
       pushLog('warn', 'session', `模板加载异常: ${e instanceof Error ? e.message : String(e)}`)
-      this.toastNotifier?.warning('角色卡模板异常，已降级使用默认表结构')
+      if (this.hasValidChatToken()) {
+        this.toastNotifier?.warning('模板加载异常，已降级使用默认表结构')
+      }
     }
     if (mySeq !== this.reloadSeq) {
       return
@@ -242,6 +287,16 @@ export class CranialNerveSession {
     } catch {}
     this.currentChatToken = `cn_${Date.now().toString(36)}`
     return this.currentChatToken
+  }
+
+  isChatActive(): boolean {
+    try {
+      const ctx = getHostContext()
+      const chatId = ctx.chatId ?? ctx.getCurrentChatId?.()
+      return !!(chatId && typeof chatId === 'string')
+    } catch {
+      return false
+    }
   }
 
   hasValidChatToken(): boolean {
@@ -342,9 +397,13 @@ export class CranialNerveSession {
       const cfg = this.getConfig()
       const preset = cfg.tableTemplate.presets.find((p) => p.id === templateId)
       if (preset) {
-        this.initGameSession(preset.template, preset.id)
-        this.toastNotifier?.success(`已加载聊天模板：${preset.name}`)
-        return
+        try {
+          this.initGameSession(preset.template, preset.id)
+          this.toastNotifier?.success(`已加载聊天模板：${preset.name}`)
+          return
+        } catch (e) {
+          pushLog('warn', 'session', `聊天模板加载失败，降级: ${e instanceof Error ? e.message : String(e)}`)
+        }
       }
     }
     let cardTemplate: CardTemplate | null = null
@@ -356,16 +415,25 @@ export class CranialNerveSession {
       pushLog('warn', 'session', `角色卡模板异常: ${e instanceof Error ? e.message : String(e)}`)
     }
     if (cardTemplate) {
-      this.initGameSession(cardTemplate, '__card__')
-      this.toastNotifier?.success('已加载角色卡内置模板')
-      return
+      try {
+        this.initGameSession(cardTemplate, '__card__')
+        this.toastNotifier?.success('已加载角色卡内置模板')
+        return
+      } catch (e) {
+        cardError = true
+        pushLog('warn', 'session', `角色卡模板建表失败，降级: ${e instanceof Error ? e.message : String(e)}`)
+      }
     }
     if (cardError) {
       this.toastNotifier?.warning('角色卡内置模板存在错误，已降级使用默认模板')
     }
     const fallback = this.resolveDefaultTemplatePreset()
     if (fallback) {
-      this.initGameSession(fallback.template, fallback.id)
+      try {
+        this.initGameSession(fallback.template, fallback.id)
+      } catch (e) {
+        pushLog('error', 'session', `默认模板建表失败: ${e instanceof Error ? e.message : String(e)}`)
+      }
     }
   }
 
@@ -484,6 +552,17 @@ export class CranialNerveSession {
     return null
   }
 
+  getLastUserIdx(): number {
+    const chat = this.chat.getChat()
+    for (let i = chat.length - 1; i >= 0; i--) {
+      const msg = chat[i]
+      if (msg && msg.is_user) {
+        return i
+      }
+    }
+    return -1
+  }
+
   private appendManualLog(statements: string[], params?: (string | number | null)[][]): void {
     if (!this.syncBridge) return
     const targetId = this.getLastAiMessageId()
@@ -535,7 +614,7 @@ export class CranialNerveSession {
   }
 
   async listModels(preset: AiPreset): Promise<string[]> {
-    return this.config.listModels(preset)
+    return this.config.listModels(preset, this.getConfig().pending.listModelsTimeoutMs)
   }
 
   getTableData(tableName: string): QueryResult[] {
@@ -620,7 +699,8 @@ export class CranialNerveSession {
 
   async applyChronicleTableDef(def: TableDef): Promise<void> {
     await this.runWrite(async () => {
-      const oldRows = this.getTableRowsWithRowid(CHRONICLE_TABLE_NAME)[0]?.rows ?? []
+      const hasChronicle = this.core.listTables().includes(CHRONICLE_TABLE_NAME)
+      const oldRows = hasChronicle ? (this.getTableRowsWithRowid(CHRONICLE_TABLE_NAME)[0]?.rows ?? []) : []
       this.core.transaction(() => {
         this.core.run(`DROP TABLE IF EXISTS ${quoteIdent(CHRONICLE_TABLE_NAME)}`)
         this.core.run(buildCreateTableSql(def))

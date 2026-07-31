@@ -81,6 +81,15 @@ export interface TableFillConfig {
   maxRetries: number
 }
 
+export interface PendingConfig {
+  aiCallTimeoutMs: number
+  aiTimeoutRetries: number
+  listModelsTimeoutMs: number
+  writeQueueDrainTimeoutMs: number
+  summarizeOnManualAbort: boolean
+  minSummaryLength: number
+}
+
 export interface CranialNerveConfig {
   aiPresets: AiPreset[]
   activeAiPresetId: string
@@ -98,6 +107,7 @@ export interface CranialNerveConfig {
   recallContextDepth: number
   retainFloors: number
   tableTemplate: TableTemplateConfig
+  pending: PendingConfig
   chronicleTableHints?: ChronicleTableHints
   chronicleTableDef?: TableDef
 }

@@ -13,6 +13,7 @@ interface RowData {
 
 const session = getSession()
 const rows = ref<RowData[]>([])
+const chatActive = ref(false)
 const keyword = ref('')
 const editingRowid = ref<number | null>(null)
 const editSnapshot = ref<RowData | null>(null)
@@ -29,6 +30,7 @@ const fields = computed(() =>
 )
 
 function refresh() {
+  chatActive.value = session.isChatActive()
   try {
     const result = session.getTableRowsWithRowid(CHRONICLE_TABLE_NAME)
     const first = result[0]
@@ -181,11 +183,16 @@ onActivated(refresh)
       </button>
     </div>
 
-    <div v-if="!chronicleEnabled" class="cn-empty">纪要生成功能未开启，请到首页开启</div>
+    <div v-if="!chatActive" class="cn-empty">未检测到聊天，请先在酒馆中打开一个对话</div>
     <div v-else-if="!hasSession" class="cn-empty">当前会话未载入表格</div>
-    <div v-else-if="filtered.length === 0" class="cn-empty">
-      {{ rows.length === 0 ? '暂无纪要' : '无匹配结果' }}
-    </div>
+    <template v-else>
+      <div v-if="!chronicleEnabled" class="chronicle-gen-off-tip">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>纪要生成已关闭，新交互不会自动产生纪要。下方仍可查看已有纪要。</span>
+      </div>
+      <div v-if="filtered.length === 0" class="cn-empty">
+        {{ rows.length === 0 ? '暂无纪要' : '无匹配结果' }}
+      </div>
 
     <div v-else class="chronicle-list">
       <TransitionGroup name="cn-list">
@@ -250,5 +257,6 @@ onActivated(refresh)
         </div>
       </TransitionGroup>
     </div>
+    </template>
   </div>
 </template>

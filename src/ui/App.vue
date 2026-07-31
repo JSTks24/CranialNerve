@@ -14,7 +14,8 @@ const menuItems = [
   { key: 'tables', label: '表格', icon: 'fa-table' },
   { key: 'chronicle', label: '纪要', icon: 'fa-clock-rotate-left' },
   { key: 'prompts', label: '模板和提示词', icon: 'fa-pen-to-square' },
-  { key: 'api', label: 'API 配置', icon: 'fa-plug' }
+  { key: 'api', label: 'API 配置', icon: 'fa-plug' },
+  { key: 'pending', label: '待定配置', icon: 'fa-sliders' }
 ]
 
 const debugItem = { key: 'debug', label: '调试', icon: 'fa-bug' }

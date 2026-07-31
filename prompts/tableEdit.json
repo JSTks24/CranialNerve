@@ -10,6 +10,16 @@
     "content": "<背景设定>\n{{worldbook}}\n</背景设定>"
   },
   {
+    "name": "用户人设",
+    "role": "system",
+    "content": "{{persona}}"
+  },
+  {
+    "name": "角色设定",
+    "role": "system",
+    "content": "{{charDescription}}"
+  },
+  {
     "name": "本轮正文",
     "role": "user",
     "content": "请根据下面的故事内容，更新数据库表格：\n\n<正文数据>\n{{conversation}}\n</正文数据>"

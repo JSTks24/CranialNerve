@@ -1,7 +1,7 @@
 export interface WriteQueue {
 	enqueue<T>(task: () => Promise<T>): Promise<T>
 	isPending(): boolean
-	waitForDrain(): Promise<void>
+	waitForDrain(timeoutMs?: number): Promise<void>
 }
 
 export default function createWriteQueue(): WriteQueue {
@@ -24,8 +24,18 @@ export default function createWriteQueue(): WriteQueue {
 		isPending() {
 			return pendingCount > 0
 		},
-		waitForDrain() {
-			return tail.then(() => undefined)
+		waitForDrain(timeoutMs) {
+			const drain = tail.then(() => undefined)
+			if (timeoutMs === undefined || timeoutMs <= 0) {
+				return drain
+			}
+			let timer: ReturnType<typeof setTimeout> | undefined
+			const timeout = new Promise<void>((_, reject) => {
+				timer = setTimeout(() => reject(new Error('write queue drain timeout')), timeoutMs)
+			})
+			return Promise.race([drain, timeout]).finally(() => {
+				if (timer) clearTimeout(timer)
+			})
 		},
 	}
 }

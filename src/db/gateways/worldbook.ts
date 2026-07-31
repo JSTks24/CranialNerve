@@ -11,6 +11,7 @@ export interface WorldbookGateway {
   listWorldbookNames(): string[]
   attachToChat(name: string): Promise<void>
   detachFromChat(): Promise<void>
+  detachFromChatSync(): void
 }
 
 export default function createWorldbookGateway(): WorldbookGateway {
@@ -21,7 +22,7 @@ export default function createWorldbookGateway(): WorldbookGateway {
       if (id == null) {
         return null
       }
-      const world = ctx.characters[id as number]?.data?.extensions?.['world']
+      const world = ctx.characters[Number(id)]?.data?.extensions?.['world']
       return typeof world === 'string' ? world : null
     },
     async loadLorebook(name) {
@@ -82,6 +83,10 @@ export default function createWorldbookGateway(): WorldbookGateway {
       if (typeof ctx.saveMetadata === 'function') {
         await ctx.saveMetadata()
       }
+    },
+    detachFromChatSync() {
+      const ctx = getHostContext()
+      delete ctx.chatMetadata[METADATA_KEY]
     },
   }
 }

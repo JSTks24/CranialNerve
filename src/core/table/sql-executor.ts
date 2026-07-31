@@ -1,8 +1,8 @@
 import type SqliteCore from '@db/sqlite/core'
 import type { PersistContext } from '@db/sqlite/frame-persist'
 import { appendSqlLog } from '@db/sqlite/frame-persist'
-import { splitStatements } from '@db/sqlite/frame-replay'
 import type { TableEditSqlV1 } from '@shared/types/ai'
+import { pushLog } from '@shared/log-buffer'
 
 export interface SqlExecResult {
     ok: boolean
@@ -27,12 +27,15 @@ export default function executeTableEditSql(
             return tx.getRowsModified() - before
         })
         if (persist) {
-            const statements = splitStatements(edit.sql)
-            appendSqlLog(persist.ctx, persist.messageId, [{
-                kind: 'sql_batch',
-                statements,
-                reason: 'ai_fill'
-            }])
+            try {
+                appendSqlLog(persist.ctx, persist.messageId, [{
+                    kind: 'sql_batch',
+                    statements: [edit.sql],
+                    reason: 'ai_fill'
+                }])
+            } catch (e) {
+                pushLog('error', 'sql-executor', `记录 SQL log 失败（数据已执行）: ${e instanceof Error ? e.message : String(e)}`)
+            }
         }
         return { ok: true, changes }
     } catch (e) {

@@ -104,7 +104,7 @@ function progress(text: string): {
     </div>
     <div class="cn-toast__bd">
       <i class="fa-solid fa-spinner fa-spin"></i>
-      <span>正在处理... ${escapeHtml(text)}</span>
+      <span>${escapeHtml(text)}</span>
     </div>
     <div class="cn-toast__ft">
       <button class="cn-toast__term">终止</button>

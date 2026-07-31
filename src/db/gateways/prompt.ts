@@ -20,10 +20,11 @@ export async function loadDefaultPrompts(): Promise<void> {
         fetch(promptUrl('chronicleRecall')).then((r) => r.json())
       ])
       setDefaultPrompts(te as RawSegment[], cr as RawSegment[])
+      loaded = true
     } catch (e) {
-      pushLog('error', 'prompt', `默认提示词加载失败: ${e instanceof Error ? e.message : String(e)}`)
+      pushLog('error', 'prompt', `默认提示词加载失败（下次将重试）: ${e instanceof Error ? e.message : String(e)}`)
+      loadingPromise = null
     }
-    loaded = true
   })()
   return loadingPromise
 }
