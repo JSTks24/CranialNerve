@@ -3,6 +3,7 @@ import { ref, computed, onActivated } from 'vue'
 import { getSession } from '@core/session'
 import type { CranialNerveConfig } from '@shared/types/config'
 import toast from '@ui/toast'
+import CNTabs from '@ui/components/CNTabs.vue'
 
 const session = getSession()
 const cfg = ref<CranialNerveConfig>(session.getConfig())
@@ -10,6 +11,23 @@ const cfg = ref<CranialNerveConfig>(session.getConfig())
 type StrategyTab = 'fill' | 'recall' | 'snapshot' | 'ai'
 
 const activeTab = ref<StrategyTab>('fill')
+const activeTabValue = computed({
+	get: () => activeTab.value,
+	set: (v: string) => {
+		activeTab.value = v as StrategyTab
+	}
+})
+const snapshotTabs = [
+	{ key: 'every-message', label: '每条消息（推荐）' },
+	{ key: 'latest-only', label: '仅最新' }
+]
+const snapshotValue = computed({
+	get: () => cfg.value.snapshotStrategy,
+	set: (v: string) => {
+		cfg.value.snapshotStrategy = v as typeof cfg.value.snapshotStrategy
+		saveCfg()
+	}
+})
 
 const tabs: { key: StrategyTab; label: string; icon: string }[] = [
 	{ key: 'fill', label: '填表管线', icon: 'fa-diagram-project' },
@@ -97,19 +115,7 @@ onActivated(() => {
 <template>
 	<div class="strategy-page">
 		<div class="cn-card strategy-head">
-			<div class="scene-tabs">
-				<button
-					v-for="t in tabs"
-					:key="t.key"
-					type="button"
-					class="scene-tab"
-					:class="{ 'scene-tab--active': activeTab === t.key }"
-					@click="activeTab = t.key"
-				>
-					<i class="fa-solid" :class="t.icon"></i>
-					{{ t.label }}
-				</button>
-			</div>
+			<CNTabs level="l1" :items="tabs" v-model="activeTabValue" />
 		</div>
 
 		<div class="strategy-body">
@@ -294,12 +300,7 @@ onActivated(() => {
 								<span class="strategy-row__label">快照策略</span>
 								<span class="strategy-row__desc">每条消息都存可完整回溯，仅最新更省空间但丢历史。</span>
 							</div>
-							<div class="cn-seg">
-								<button type="button" class="cn-seg__item" :class="{ 'cn-seg__item--active': cfg.snapshotStrategy === 'every-message' }"
-									@click="cfg.snapshotStrategy = 'every-message'; saveCfg()">每条消息（推荐）</button>
-								<button type="button" class="cn-seg__item" :class="{ 'cn-seg__item--active': cfg.snapshotStrategy === 'latest-only' }"
-									@click="cfg.snapshotStrategy = 'latest-only'; saveCfg()">仅最新</button>
-							</div>
+							<CNTabs level="l2" :items="snapshotTabs" v-model="snapshotValue" />
 						</div>
 						<div v-if="cfg.snapshotStrategy === 'latest-only'" class="strategy-warn">
 							<i class="fa-solid fa-triangle-exclamation"></i>

@@ -3,9 +3,9 @@ import { ref, computed, onActivated } from 'vue'
 import { getSession } from '@core/session'
 import { CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
 import { detectLastSummarizedAiFloor } from '@core/table/fill-orchestrator'
-import type { FillPhase } from '@core/table/retry-loop'
 import type { CranialNerveConfig } from '@shared/types/config'
 import confirm from '@ui/dialog'
+import toast from '@ui/toast'
 
 const session = getSession()
 const cfg = ref<CranialNerveConfig>(session.getConfig())
@@ -23,14 +23,6 @@ const manualDepth = ref<number | null>(cfg.value.tableFill.manualUpdateContextDe
 const manualBatch = ref<number | null>(cfg.value.tableFill.manualUpdateBatchSize)
 const extraHint = ref('')
 const busy = ref(false)
-
-const phase = ref<FillPhase | null>(null)
-const attempt = ref(0)
-const maxRetries = ref(0)
-const currentBucket = ref(0)
-const totalBuckets = ref(0)
-const errorMsg = ref('')
-const lastResult = ref<{ ok: boolean; text: string } | null>(null)
 
 function defaultInput(r: { value: number | null }, fallback: number) {
   return computed({
@@ -66,36 +58,6 @@ const expectedRange = computed(() => {
   return `第 ${start}~${end} 层${aiLabel}`
 })
 
-const steps = computed(() => {
-  const p = phase.value
-  return [
-    { label: '调用 AI', done: p === 'parsing' || p === 'saving' || p === 'complete', active: p === 'calling_ai' || p === 'retry' },
-    { label: '解析结果', done: p === 'saving' || p === 'complete', active: p === 'parsing' },
-    { label: '保存数据', done: p === 'complete', active: p === 'saving' },
-    { label: '完成', done: false, active: p === 'complete' },
-  ]
-})
-
-const progressPercent = computed(() => {
-  if (phase.value === 'complete' || phase.value === 'error') return 100
-  if (totalBuckets.value === 0) {
-    switch (phase.value) {
-      case 'calling_ai': case 'retry': return 25
-      case 'parsing': return 50
-      case 'saving': return 75
-      default: return 0
-    }
-  }
-  const cur = currentBucket.value || 1
-  let phasePct = 0
-  switch (phase.value) {
-    case 'calling_ai': case 'retry': phasePct = 25; break
-    case 'parsing': phasePct = 50; break
-    case 'saving': phasePct = 75; break
-  }
-  return ((cur - 1) * 100 + phasePct) / totalBuckets.value
-})
-
 function selectAllTables() {
   selectedTables.value = availableTables.value.map((t) => t.name)
   saveSelection()
@@ -122,31 +84,12 @@ function saveManualBatch() {
   session.saveConfig(cfg.value)
 }
 
-function onProgress(p: FillPhase, detail?: { attempt?: number; maxRetries?: number; error?: string; currentBucket?: number; totalBuckets?: number }) {
-  phase.value = p
-  if (detail?.attempt != null) attempt.value = detail.attempt
-  if (detail?.maxRetries != null) maxRetries.value = detail.maxRetries
-  if (detail?.error) errorMsg.value = detail.error
-  if (detail?.currentBucket != null) currentBucket.value = detail.currentBucket
-  if (detail?.totalBuckets != null) totalBuckets.value = detail.totalBuckets
-}
-
-function resetProgress() {
-  phase.value = null
-  attempt.value = 0
-  maxRetries.value = 0
-  currentBucket.value = 0
-  totalBuckets.value = 0
-  errorMsg.value = ''
-  lastResult.value = null
-}
-
 async function runRefill() {
   if (busy.value || selectedTables.value.length === 0) return
   const confirmed = await confirm('执行手动填表', '是否执行手动填表？若相关层数有数据，则数据会丢失。', '确认执行', true)
   if (!confirmed) return
   busy.value = true
-  resetProgress()
+  const prog = toast.progress('正在手动填表...')
   try {
     const result = await session.runManualRefill({
       targetTables: selectedTables.value,
@@ -155,11 +98,11 @@ async function runRefill() {
       batchSize: manualBatch.value ?? undefined,
       skipFloors: cfg.value.tableFill.skipFloors,
       extraHint: extraHint.value.trim() || undefined,
-      onProgress,
     })
-    lastResult.value = result.ok ? { ok: true, text: '重填完成' } : { ok: false, text: result.error ?? '重填失败' }
+    if (result.ok) prog.done()
+    else prog.fail(result.error ?? '重填失败')
   } catch (e) {
-    lastResult.value = { ok: false, text: e instanceof Error ? e.message : String(e) }
+    prog.fail(e instanceof Error ? e.message : String(e))
   } finally {
     busy.value = false
   }
@@ -174,18 +117,18 @@ async function runCatchUp() {
   )
   if (!confirmed) return
   busy.value = true
-  resetProgress()
+  const prog = toast.progress('正在追平未总结楼层...')
   try {
     const result = await session.runManualCatchUp({
       targetTables: selectedTables.value.length > 0 ? selectedTables.value : undefined,
       includeChronicle: includeChronicle.value,
       batchSize: manualBatch.value ?? undefined,
       extraHint: extraHint.value.trim() || undefined,
-      onProgress,
     })
-    lastResult.value = result.ok ? { ok: true, text: '追平完成' } : { ok: false, text: result.error ?? '追平失败' }
+    if (result.ok) prog.done()
+    else prog.fail(result.error ?? '追平失败')
   } catch (e) {
-    lastResult.value = { ok: false, text: e instanceof Error ? e.message : String(e) }
+    prog.fail(e instanceof Error ? e.message : String(e))
   } finally {
     busy.value = false
   }
@@ -311,43 +254,6 @@ onActivated(() => {
           <button class="mf-btn mf-btn--secondary" type="button" :disabled="busy" @click="runCatchUp">
             <i class="fa-solid fa-wand-magic-sparkles"></i> {{ busy ? '追平中...' : '追平未总结楼层' }}
           </button>
-        </div>
-      </div>
-    </section>
-
-    <section v-if="busy || lastResult" class="mf-card">
-      <header class="mf-card__head">
-        <div class="mf-card__title">
-          <i class="fa-solid fa-circle-notch mf-card__icon" :class="busy ? 'mf-icon--spin' : ''"></i>
-          <span>更新情况</span>
-        </div>
-      </header>
-      <div class="mf-card__body">
-        <template v-if="busy">
-          <div class="mf-steps">
-            <template v-for="(s, i) in steps" :key="s.label">
-              <div class="mf-step" :class="{ 'mf-step--active': s.active, 'mf-step--done': s.done }">
-                <div class="mf-step__dot">
-                  <i v-if="s.done" class="fa-solid fa-check"></i>
-                  <span v-else>{{ i + 1 }}</span>
-                </div>
-                <span class="mf-step__label">{{ s.label }}</span>
-              </div>
-              <div v-if="i < steps.length - 1" class="mf-step__line" :class="{ 'mf-step__line--done': s.done }"></div>
-            </template>
-          </div>
-          <div class="mf-progress">
-            <div class="mf-progress__bar" :style="{ width: progressPercent + '%' }"></div>
-          </div>
-          <div class="mf-progress__meta">
-            <span v-if="totalBuckets > 0">批次 {{ currentBucket }}/{{ totalBuckets }}</span>
-            <span v-if="attempt > 0">第 {{ attempt }}/{{ maxRetries }} 次尝试</span>
-            <span v-if="errorMsg" class="mf-progress__error">{{ errorMsg }}</span>
-          </div>
-        </template>
-        <div v-else-if="lastResult" class="mf-result" :class="lastResult.ok ? 'mf-result--ok' : 'mf-result--err'">
-          <i :class="lastResult.ok ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation'"></i>
-          <span>{{ lastResult.text }}</span>
         </div>
       </div>
     </section>

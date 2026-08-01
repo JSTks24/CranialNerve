@@ -234,7 +234,7 @@ refresh()
 							<p v-if="chatActive">{{ unrecordedCount > 0 ? `${unrecordedCount} 层待总结，追平后表格与纪要即同步` : '全部已同步' }}</p>
 							<p v-else>未检测到聊天</p>
 						</div>
-						<button v-if="chatActive && unrecordedCount > 0" class="cn-btn cn-btn--sm" @click="go('/tables')">
+						<button v-if="chatActive && unrecordedCount > 0" class="cn-btn cn-btn--sm" @click="go('/tables?tab=fill')">
 							去追平
 						</button>
 					</div>

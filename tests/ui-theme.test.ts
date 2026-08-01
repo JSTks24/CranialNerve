@@ -86,7 +86,29 @@ describe('UI 主题守卫（深翠框景）', () => {
   })
 
   it('运行策略与菜单分组样式已入 theme.css', () => {
-    const classes = ['.cn-seg', '.cn-seg__item--active', '.strategy-row', '.strategy-num', '.strategy-warn', '.cn-menu__section']
+    const classes = ['.cn-tabs', '.cn-tabs__indicator', '.cn-tabs__item--active', '.strategy-row', '.strategy-num', '.strategy-warn', '.cn-menu__section']
     for (const cls of classes) expect(theme, `缺少样式 ${cls}`).toContain(cls)
+  })
+
+  it('CNTabs 滑块组件含滑动指示片', () => {
+    const tabsComp = readProjectFile('src/ui/components/CNTabs.vue')
+    expect(tabsComp).toContain('--tab-x')
+    expect(tabsComp).toContain('ResizeObserver')
+    expect(theme).toContain('--tab-x')
+    expect(theme).toContain('--tab-w')
+    expect(theme).toContain('translateX(var(--tab-x))')
+  })
+
+  it('禁 left/top 过渡（动效铁律）', () => {
+    expect(theme).not.toMatch(/transition:\s*[^;}]*\bleft\b/)
+    expect(theme).not.toMatch(/transition:\s*[^;}]*\btop\b/)
+  })
+
+  it('表格表头用 surface-2 弱字底', () => {
+    expect(theme).toMatch(/\.cn-table th \{[\s\S]*?background:\s*var\(--cn-surface-2\)/)
+  })
+
+  it('首页统计带非三等分', () => {
+    expect(theme).not.toContain('repeat(3, minmax(0, 1fr))')
   })
 })

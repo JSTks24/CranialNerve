@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 defineProps<{
@@ -53,6 +53,40 @@ const pageTitle = computed(() => {
 function go(key: string) {
   router.push('/' + key)
 }
+
+const menuRef = ref<HTMLElement | null>(null)
+const itemRefs = new Map<string, HTMLElement>()
+
+const setItemRef = (el: unknown, key: string) => {
+  if (el instanceof HTMLElement) itemRefs.set(key, el)
+  else itemRefs.delete(key)
+}
+
+const updateIndicator = () => {
+  const menu = menuRef.value
+  const active = itemRefs.get(currentKey.value)
+  if (!menu || !active) return
+  menu.style.setProperty('--menu-y', `${active.offsetTop}px`)
+  menu.style.setProperty('--menu-h', `${active.offsetHeight}px`)
+}
+
+let ro: ResizeObserver | null = null
+
+watch(currentKey, async () => {
+  await nextTick()
+  updateIndicator()
+})
+
+onMounted(() => {
+  updateIndicator()
+  ro = new ResizeObserver(() => updateIndicator())
+  if (menuRef.value) ro.observe(menuRef.value)
+})
+
+onBeforeUnmount(() => {
+  ro?.disconnect()
+  itemRefs.clear()
+})
 </script>
 
 <template>
@@ -62,11 +96,13 @@ function go(key: string) {
         <i class="fa-solid fa-brain cn-brand__icon"></i>
         <span class="cn-brand__name">CranialNerve</span>
       </div>
-      <nav class="cn-menu">
+      <nav class="cn-menu" ref="menuRef">
+        <span class="cn-menu__indicator" aria-hidden="true" />
         <button
           type="button"
           class="cn-menu__item"
           :class="{ 'cn-menu__item--active': homeItem.key === currentKey }"
+          :ref="(el) => setItemRef(el, homeItem.key)"
           @click="go(homeItem.key)"
         >
           <i class="fa-solid" :class="homeItem.icon"></i>
@@ -80,6 +116,7 @@ function go(key: string) {
             type="button"
             class="cn-menu__item"
             :class="{ 'cn-menu__item--active': item.key === currentKey }"
+            :ref="(el) => setItemRef(el, item.key)"
             @click="go(item.key)"
           >
             <i class="fa-solid" :class="item.icon"></i>
@@ -91,6 +128,7 @@ function go(key: string) {
           type="button"
           class="cn-menu__item cn-menu__item--debug"
           :class="{ 'cn-menu__item--active': debugItem.key === currentKey }"
+          :ref="(el) => setItemRef(el, debugItem.key)"
           @click="go(debugItem.key)"
         >
           <i class="fa-solid" :class="debugItem.icon"></i>

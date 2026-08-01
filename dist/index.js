@@ -8197,7 +8197,7 @@ function defineStore(id, setup, setupOptions) {
 }
 //#endregion
 //#region src/ui/theme.css?inline
-var theme_default = ":root {\n  --cn-z-app: 10000;\n  --cn-z-toast: 10010;\n  --cn-z-modal: 10020;\n  --cn-z-dialog: 10020;\n}\n\n#cn_app {\n  --cn-bg: #ecf3ee;\n  --cn-surface: #ffffff;\n  --cn-surface-2: #f2f7f4;\n  --cn-surface-3: #e6efe9;\n  --cn-primary-mist: #f0f9f4;\n  --cn-primary-soft: #def3e6;\n  --cn-border-green: #c9e9d6;\n  --cn-primary-bright: #35b37a;\n  --cn-primary: #128252;\n  --cn-primary-hover: #0d6c44;\n  --cn-primary-active: #0a5737;\n  --cn-primary-deep: #0f7a4d;\n  --cn-grad-primary: linear-gradient(135deg, #30b57a 0%, #15955f 50%, #0f7a4d 100%);\n  --cn-ink: #0e2318;\n  --cn-ink-2: #16311f;\n  --cn-ink-line: rgba(255, 255, 255, 0.08);\n  --cn-ink-text: #d7e6dc;\n  --cn-ink-text-2: #7f9c8b;\n  --cn-text: #1e2c24;\n  --cn-text-2: #54675c;\n  --cn-text-3: #8ca196;\n  --cn-border: #d8e4db;\n  --cn-border-strong: #c3d4c7;\n  --cn-danger: #d64545;\n  --cn-danger-soft: #fbeeee;\n  --cn-warn: #c97a10;\n  --cn-warn-soft: #fbf3e2;\n  --cn-radius: 10px;\n  --cn-radius-sm: 7px;\n  --cn-radius-lg: 14px;\n  --cn-radius-pill: 999px;\n  --cn-shadow: 0 1px 2px rgba(16, 42, 28, 0.05), 0 4px 14px -4px rgba(16, 42, 28, 0.08);\n  --cn-shadow-lift: 0 2px 6px rgba(16, 42, 28, 0.06), 0 16px 40px -12px rgba(16, 42, 28, 0.16);\n  --cn-shadow-pill: 0 2px 6px -1px rgba(12, 94, 60, 0.32);\n  --cn-ease: cubic-bezier(0.4, 0, 0.2, 1);\n  --cn-ease-pill: cubic-bezier(0.3, 1.35, 0.5, 1);\n  --cn-dur-fast: 0.15s;\n  --cn-dur: 0.22s;\n  --cn-dur-slow: 0.3s;\n  --cn-font:\n    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei',\n    sans-serif;\n  --cn-font-mono: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  color: var(--cn-text);\n  font-family: var(--cn-font);\n  font-size: 15px;\n  line-height: 1.5;\n}\n\n#cn_app,\n#cn_app * {\n  box-sizing: border-box;\n}\n\n#cn_app button {\n  appearance: none;\n  -webkit-appearance: none;\n  margin: 0;\n  font: inherit;\n  color: var(--cn-text) !important;\n  background: var(--cn-surface);\n  cursor: pointer;\n  -webkit-tap-highlight-color: transparent;\n}\n\n#cn_app i {\n  font-size: inherit;\n  line-height: 1;\n  font-style: normal;\n  vertical-align: baseline;\n}\n\n#cn_app .cn-content i {\n  font-size: 0.85em;\n}\n\n#cn_app input,\n#cn_app select,\n#cn_app textarea {\n  appearance: none;\n  -webkit-appearance: none;\n  margin: 0;\n  font: inherit;\n  color: var(--cn-text);\n  background: var(--cn-surface);\n  border: none;\n  outline: none;\n  -webkit-tap-highlight-color: transparent;\n}\n\n#cn_app select option {\n  color: var(--cn-text) !important;\n  background: var(--cn-surface) !important;\n}\n\n#cn_app button:focus:not(:focus-visible),\n#cn_app input:focus:not(:focus-visible),\n#cn_app select:focus:not(:focus-visible),\n#cn_app textarea:focus:not(:focus-visible) {\n  outline: none;\n}\n\n#cn_app ul {\n  margin: 0;\n  padding: 0;\n}\n\n#cn_app a {\n  color: inherit;\n  text-decoration: none;\n}\n\n#cn_app h1,\n#cn_app h2,\n#cn_app h3,\n#cn_app h4,\n#cn_app h5,\n#cn_app h6 {\n  margin: 0;\n  font-size: inherit;\n  font-weight: inherit;\n}\n\n#cn_app label {\n  display: inline-block;\n  margin: 0;\n  font-weight: inherit;\n  cursor: inherit;\n}\n\n#cn_app .cn-btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  height: 32px;\n  padding: 0 15px;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface) !important;\n  color: var(--cn-text) !important;\n  font-size: 14px;\n  line-height: 1;\n  white-space: nowrap;\n  transition: all 0.15s ease;\n  user-select: none;\n}\n#cn_app .cn-btn:hover:not(:disabled) {\n  border-color: var(--cn-primary) !important;\n  color: var(--cn-primary) !important;\n}\n#cn_app .cn-btn:disabled {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n#cn_app .cn-btn--primary {\n  background: var(--cn-grad-primary) !important;\n  border-color: transparent !important;\n  color: #fff !important;\n  box-shadow: var(--cn-shadow-pill), inset 0 1px 0 rgba(255, 255, 255, 0.25);\n}\n#cn_app .cn-btn--primary:hover:not(:disabled) {\n  background: var(--cn-primary-hover) !important;\n  border-color: transparent !important;\n  color: #fff !important;\n}\n#cn_app .cn-btn--sm {\n  height: 26px;\n  padding: 0 11px;\n  font-size: 13px;\n}\n#cn_app .cn-btn--text {\n  border-color: transparent;\n  background: transparent;\n  color: var(--cn-text-2);\n}\n#cn_app .cn-btn--text:hover:not(:disabled) {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n  border-color: transparent;\n}\n#cn_app .cn-btn--soft {\n  background: var(--cn-primary-soft) !important;\n  border-color: transparent !important;\n  color: var(--cn-primary-active) !important;\n}\n#cn_app .cn-btn--soft:hover:not(:disabled) {\n  background: var(--cn-primary) !important;\n  color: #fff !important;\n}\n\n#cn_app .cn-input,\n#cn_app .cn-select,\n#cn_app .cn-textarea {\n  display: block;\n  width: 100%;\n  height: 32px;\n  padding: 4px 11px;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface) !important;\n  color: var(--cn-text) !important;\n  font-size: 14px;\n  transition:\n    border-color 0.15s ease,\n    box-shadow 0.15s ease;\n}\n#cn_app .cn-textarea {\n  height: auto;\n  min-height: 80px;\n  line-height: 1.5;\n  resize: vertical;\n}\n#cn_app .cn-input:hover,\n#cn_app .cn-select:hover,\n#cn_app .cn-textarea:hover {\n  border-color: var(--cn-primary-hover) !important;\n}\n#cn_app .cn-input:focus,\n#cn_app .cn-select:focus,\n#cn_app .cn-textarea:focus {\n  border-color: var(--cn-primary) !important;\n  box-shadow: 0 0 0 3px rgba(18, 130, 82, 0.16) !important;\n  outline: none !important;\n}\n#cn_app .cn-input::placeholder,\n#cn_app .cn-textarea::placeholder {\n  color: var(--cn-text-3);\n}\n#cn_app .cn-select {\n  padding-right: 28px;\n  background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%238ca196' d='M8 11L3 6h10z'/%3E%3C/svg%3E\");\n  background-repeat: no-repeat;\n  background-position: right 10px center;\n  background-size: 12px;\n  cursor: pointer;\n}\n\n#cn_app .cn-card {\n  background: var(--cn-surface) !important;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  box-shadow: var(--cn-shadow);\n  overflow: hidden;\n}\n#cn_app .cn-card__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n  padding: 14px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 16px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .cn-card__body {\n  padding: 16px;\n}\n\n#cn_app .cn-field {\n  margin-bottom: 16px;\n}\n#cn_app .cn-field__label {\n  display: block;\n  margin-bottom: 6px;\n  color: var(--cn-text-2);\n  font-size: 14px;\n}\n\n#cn_app .cn-table {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: 13px;\n}\n#cn_app .cn-table th,\n#cn_app .cn-table td {\n  padding: 8px 12px;\n  border: 1px solid var(--cn-border) !important;\n  text-align: left;\n  white-space: nowrap;\n}\n#cn_app .cn-table th {\n  background: var(--cn-primary-soft);\n  color: var(--cn-text);\n  font-weight: 600;\n}\n#cn_app .cn-table tbody tr:nth-child(even) {\n  background: var(--cn-surface-2);\n}\n#cn_app .cn-table tbody tr:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cn-table__op {\n  width: 50px;\n  text-align: center;\n  white-space: nowrap;\n}\n\n#cn_app .cn-table__rownum {\n  width: 40px;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 12px;\n  white-space: nowrap;\n}\n\n#cn_app .tables-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .tables-toolbar {\n  display: flex;\n  gap: 8px;\n}\n\n#cn_app .table-wrap-card {\n  overflow: visible;\n}\n\n#cn_app .table-tabs {\n  display: flex;\n  gap: 4px;\n  padding: 4px;\n  margin: 12px 12px 8px;\n  background: var(--cn-primary-mist);\n  border-radius: var(--cn-radius);\n  overflow-x: auto;\n}\n\n#cn_app .table-tab {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  gap: 1px;\n  padding: 6px 14px;\n  border: 0;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2);\n  cursor: pointer;\n  white-space: nowrap;\n  flex-shrink: 0;\n  transition:\n    background var(--cn-dur-fast) var(--cn-ease),\n    color var(--cn-dur-fast) var(--cn-ease),\n    box-shadow var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .table-tab:hover {\n  color: var(--cn-text);\n}\n\n#cn_app .table-tab--active {\n  background: var(--cn-surface);\n  color: var(--cn-primary);\n  font-weight: 600;\n  box-shadow: 0 1px 2px rgba(16, 42, 28, 0.1);\n}\n\n#cn_app .table-tab__zh {\n  font-size: 14px;\n  line-height: 1.2;\n}\n\n#cn_app .table-tab__en {\n  font-size: 11px;\n  opacity: 0.65;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n}\n\n#cn_app .table-tab--active .table-tab__en {\n  opacity: 0.8;\n  color: var(--cn-primary);\n}\n\n#cn_app .table-body {\n  background: var(--cn-surface);\n  overflow: hidden;\n}\n\n#cn_app .table-body__meta {\n  flex: 1;\n  color: var(--cn-text-3);\n  font-size: 12px;\n}\n\n#cn_app .table-body__foot {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 10px 16px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .table-row-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 12px;\n  padding: 16px;\n}\n\n#cn_app .table-row-card {\n  flex: 0 0 auto;\n  width: 340px;\n  max-width: 100%;\n}\n\n#cn_app .table-row-card__body {\n  padding: 14px 16px;\n}\n\n#cn_app .table-row-card__field {\n  margin-bottom: 10px;\n}\n\n#cn_app .table-row-card__field:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .table-row-card__label {\n  display: block;\n  margin-bottom: 4px;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n}\n\n#cn_app .table-row-card__label-en {\n  font-weight: 400;\n  color: var(--cn-primary-active);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 11px;\n  margin-left: 6px;\n  opacity: 0.6;\n}\n\n#cn_app .table-row-card__value {\n  min-height: 28px;\n  padding: 6px 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-surface-3);\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n#cn_app .table-row-card__value:focus {\n  background: var(--cn-surface);\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 3px rgba(18, 130, 82, 0.16);\n}\n\n#cn_app .table-row-card--editing {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 3px rgba(18, 130, 82, 0.2);\n}\n\n#cn_app .table-row-card__foot {\n  display: flex;\n  justify-content: flex-end;\n  gap: 6px;\n  padding: 6px 12px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .chronicle-item--editing {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 3px rgba(18, 130, 82, 0.2);\n}\n\n#cn_app .cell-edit {\n  min-width: 60px;\n  min-height: 20px;\n  padding: 2px 4px;\n  border-radius: var(--cn-radius-sm);\n  outline: none;\n  white-space: normal;\n  word-break: break-word;\n  cursor: text;\n  transition: background 0.15s ease;\n}\n\n#cn_app .cell-edit:empty::before {\n  content: '\\00a0';\n  display: inline;\n}\n\n#cn_app .cell-edit:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cell-edit:focus {\n  background: var(--cn-surface);\n  box-shadow: 0 0 0 3px rgba(18, 130, 82, 0.16);\n}\n\n#cn_app .chronicle-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .chronicle-gen-off-tip {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 14px;\n  background: var(--cn-warn-soft);\n  border: 1px solid var(--cn-warn);\n  border-radius: var(--cn-radius-sm);\n  color: var(--cn-warn);\n  font-size: 13px;\n}\n#cn_app .chronicle-gen-off-tip i {\n  color: var(--cn-warn);\n}\n\n#cn_app .chronicle-toolbar {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n\n#cn_app .chronicle-toolbar__search {\n  flex: 1;\n  max-width: 360px;\n  height: 32px;\n}\n\n#cn_app .chronicle-toolbar__count {\n  flex: 1;\n  text-align: right;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .chronicle-list {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .chronicle-item__key {\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-weight: 700;\n  color: var(--cn-primary-active);\n}\n\n#cn_app .chronicle-fields {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  gap: 12px;\n  margin-bottom: 12px;\n}\n\n#cn_app .chronicle-field {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  min-width: 0;\n}\n\n#cn_app .chronicle-field--full {\n  margin-bottom: 12px;\n}\n\n#cn_app .chronicle-field:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .chronicle-field__label {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n}\n\n#cn_app .chronicle-field__value {\n  min-height: 32px;\n  padding: 6px 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-surface-3);\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n#cn_app .chronicle-field__value:focus {\n  background: var(--cn-surface);\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 3px rgba(18, 130, 82, 0.16);\n}\n\n#cn_app .cn-empty {\n  padding: 40px 0;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .cn-tag {\n  display: inline-flex;\n  align-items: center;\n  padding: 0 8px;\n  height: 22px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-size: 12px;\n  font-weight: 500;\n}\n\n#cn_app .cn-space {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n}\n#cn_app .cn-space--block {\n  display: flex;\n}\n\n#cn_app .cn-shell {\n  display: flex;\n  height: 100vh;\n  width: 100%;\n  overflow: hidden;\n}\n#cn_app .cn-sider {\n  flex: 0 0 220px;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-ink);\n  border-right: 1px solid var(--cn-ink-2);\n}\n#cn_app .cn-brand {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  height: 56px;\n  padding: 0 20px;\n  border-bottom: 1px solid var(--cn-ink-line);\n}\n#cn_app .cn-brand__icon {\n  font-size: 20px;\n  color: var(--cn-primary-bright);\n}\n#cn_app .cn-brand__name {\n  font-size: 16px;\n  font-weight: 800;\n  letter-spacing: -0.02em;\n  background: var(--cn-grad-primary);\n  -webkit-background-clip: text;\n  background-clip: text;\n  -webkit-text-fill-color: transparent;\n}\n#cn_app .cn-menu {\n  flex: 1;\n  padding: 12px 10px;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  overflow-y: auto;\n}\n#cn_app .cn-menu__item {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  width: 100%;\n  padding: 9px 12px;\n  border: 0;\n  background: transparent;\n  border-radius: var(--cn-radius);\n  color: var(--cn-ink-text-2) !important;\n  font-size: 14px;\n  text-align: left;\n  transition: all var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .cn-menu__item:hover {\n  background: var(--cn-ink-2);\n  color: var(--cn-ink-text) !important;\n}\n#cn_app .cn-menu__item--active {\n  background: var(--cn-grad-primary);\n  color: #fff !important;\n  font-weight: 500;\n  box-shadow: var(--cn-shadow-pill), inset 0 1px 0 rgba(255, 255, 255, 0.22);\n}\n#cn_app .cn-menu__item--active:hover {\n  background: var(--cn-grad-primary);\n  color: #fff !important;\n}\n#cn_app .cn-menu__item i {\n  width: 16px;\n  text-align: center;\n  font-size: 14px;\n}\n#cn_app .cn-main {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n#cn_app .cn-header {\n  flex: 0 0 56px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 0 24px;\n  background: var(--cn-surface);\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-header__title {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .cn-content {\n  flex: 1;\n  position: relative;\n  padding: 20px;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n  background: var(--cn-bg);\n}\n#cn_app .cn-content::before {\n  content: '';\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  background: radial-gradient(720px 320px at 88% -12%, rgba(53, 179, 122, 0.07), transparent 72%);\n}\n\n#cn_app .toolbar {\n  margin-bottom: 16px;\n}\n#cn_app .model-row {\n  margin-top: 8px;\n}\n\n#cn_app .table-wrap {\n  overflow-x: auto;\n}\n#cn_app .pager {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  justify-content: flex-end;\n  margin-top: 12px;\n}\n#cn_app .pager__info {\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .cn-list {\n  list-style: none;\n}\n#cn_app .cn-list__item {\n  display: flex;\n  gap: 12px;\n  padding: 10px 0;\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-list__item:last-child {\n  border-bottom: 0;\n}\n#cn_app .cn-list__key {\n  flex: 0 0 80px;\n  color: var(--cn-primary-active);\n  font-weight: 600;\n  font-size: 13px;\n}\n#cn_app .cn-list__summary {\n  color: var(--cn-text-2);\n  line-height: 1.6;\n  flex: 1;\n  min-width: 0;\n}\n\n#cn_app .search-input {\n  width: 220px;\n  height: 28px;\n  font-size: 13px;\n}\n\n#cn_app .cn-range {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 100%;\n  height: 6px;\n  border-radius: 3px;\n  background: linear-gradient(\n    to right,\n    var(--cn-primary-bright) 0%,\n    var(--cn-primary) var(--cn-range-pct, 50%),\n    var(--cn-surface-3) var(--cn-range-pct, 50%),\n    var(--cn-surface-3) 100%\n  ) !important;\n  outline: none;\n  cursor: pointer;\n  margin: 0;\n  border: none;\n}\n\n#cn_app .cn-range::-webkit-slider-thumb {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: var(--cn-surface);\n  border: 2px solid var(--cn-primary);\n  box-shadow: 0 1px 3px rgba(16, 42, 28, 0.25);\n  cursor: pointer;\n}\n\n#cn_app .cn-range::-moz-range-thumb {\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: var(--cn-surface);\n  border: 2px solid var(--cn-primary);\n  box-shadow: 0 1px 3px rgba(16, 42, 28, 0.25);\n  cursor: pointer;\n}\n\n#cn_app .cn-range::-moz-range-track {\n  background: transparent;\n  border: 0;\n}\n\n#cn_app .range-row {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n\n#cn_app .range-val {\n  font-weight: 600;\n  color: var(--cn-primary);\n  min-width: 36px;\n  text-align: right;\n  font-size: 14px;\n}\n\n#cn_app .range-num {\n  width: 72px;\n  flex-shrink: 0;\n  text-align: center;\n  font-weight: 600;\n  color: var(--cn-primary);\n}\n\n#cn_app .range-num::-webkit-inner-spin-button {\n  opacity: 1;\n}\n\n#cn_app .prompt-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  height: 100%;\n  overflow: hidden;\n}\n\n#cn_app .prompt-head {\n  margin-bottom: -1px;\n  position: relative;\n  z-index: 2;\n}\n\n#cn_app .scene-tabs {\n  display: inline-flex;\n  gap: 4px;\n  padding: 4px;\n  background: var(--cn-primary-mist);\n  border: 1px solid var(--cn-border-green);\n  border-radius: var(--cn-radius);\n}\n\n#cn_app .scene-tab {\n  padding: 6px 18px;\n  border: 0;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2);\n  font-size: 14px;\n  cursor: pointer;\n  transition:\n    background var(--cn-dur-fast) var(--cn-ease),\n    color var(--cn-dur-fast) var(--cn-ease),\n    box-shadow var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .scene-tab:hover {\n  color: var(--cn-text);\n}\n\n#cn_app .scene-tab--active {\n  background: var(--cn-grad-primary);\n  color: #fff;\n  font-weight: 600;\n  box-shadow: var(--cn-shadow-pill), inset 0 1px 0 rgba(255, 255, 255, 0.25);\n}\n\n#cn_app .prompt-head .scene-tabs + .scene-tabs .scene-tab--active {\n  background: var(--cn-surface);\n  color: var(--cn-primary);\n  box-shadow: 0 1px 2px rgba(16, 42, 28, 0.1);\n}\n\n#cn_app .prompt-split {\n  display: grid;\n  grid-template-columns: 220px 1fr;\n  gap: 16px;\n  align-items: start;\n}\n\n#cn_app .preset-list {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n\n#cn_app .preset-list__item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 6px;\n  padding: 9px 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  color: var(--cn-text-2);\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .preset-list__item:hover {\n  border-color: var(--cn-primary-hover);\n  color: var(--cn-text);\n}\n\n#cn_app .preset-list__item--active {\n  border-color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-weight: 500;\n}\n\n#cn_app .preset-list__name {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .preset-list__card {\n  color: var(--cn-primary);\n  font-size: 12px;\n  margin-right: 2px;\n}\n\n#cn_app .preset-list__default {\n  flex: 0 0 auto;\n  color: var(--cn-warn);\n  font-size: 12px;\n}\n\n#cn_app .preset-list__count {\n  flex: 0 0 auto;\n  font-size: 11px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .prompt-editor__desc {\n  color: var(--cn-text-3);\n  font-size: 12px;\n  font-weight: 400;\n}\n\n#cn_app .block-list {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .block {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface-2);\n  overflow: hidden;\n}\n\n#cn_app .block--ghost {\n  opacity: 0.4;\n  border-style: dashed;\n  border-color: var(--cn-primary);\n}\n\n#cn_app .block-head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 8px 10px;\n  border-bottom: 1px solid var(--cn-border);\n  background: var(--cn-surface);\n}\n\n#cn_app .block-head__grip {\n  color: var(--cn-text-3);\n  font-size: 14px;\n  cursor: grab;\n}\n\n#cn_app .block-head__grip:active {\n  cursor: grabbing;\n}\n\n#cn_app .block-head__name {\n  flex: 1;\n  height: 28px;\n  font-size: 13px;\n  font-weight: 600;\n}\n\n#cn_app .block-segs {\n  min-height: 48px;\n  padding: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n\n#cn_app .block-add {\n  display: flex;\n  gap: 4px;\n  padding: 6px 8px 8px;\n  border-top: 1px solid var(--cn-border);\n  background: var(--cn-surface);\n}\n\n#cn_app .block-add-btn {\n  margin-top: 14px;\n}\n\n#cn_app .seg-add-row {\n  display: flex;\n  gap: 8px;\n  margin-top: 14px;\n}\n\n#cn_app .seg-item {\n  margin-bottom: 10px;\n  padding: 10px 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface-2);\n  transition:\n    box-shadow var(--cn-dur-fast) var(--cn-ease),\n    border-color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .seg-item:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .seg-item:hover {\n  border-color: var(--cn-primary-hover);\n  box-shadow: 0 1px 4px rgba(18, 130, 82, 0.12);\n}\n\n#cn_app .seg-item--ghost {\n  opacity: 0.4;\n  border-style: dashed;\n  border-color: var(--cn-primary);\n}\n\n#cn_app .seg-item__bar {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  margin-bottom: 8px;\n}\n\n#cn_app .seg-item__grip {\n  color: var(--cn-text-3);\n  font-size: 14px;\n  cursor: grab;\n}\n\n#cn_app .seg-item__grip:active {\n  cursor: grabbing;\n}\n\n#cn_app .seg-item__role {\n  height: 22px;\n  padding: 0 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: 11px;\n  background: var(--cn-surface);\n  color: var(--cn-text-2);\n  font-size: 11px;\n  font-weight: 700;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .seg-item__role:hover {\n  border-color: var(--cn-primary);\n  color: var(--cn-primary);\n}\n\n#cn_app .seg-item__name {\n  flex: 1;\n  min-width: 0;\n  height: 28px;\n  font-size: 13px;\n  font-weight: 600;\n}\n\n#cn_app .seg-item__seq {\n  flex: 0 0 auto;\n  font-size: 12px;\n  color: var(--cn-primary);\n  font-weight: 600;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n}\n\n#cn_app .seg-item__edit {\n  display: block;\n  width: 100%;\n  min-height: 120px;\n  padding: 8px 11px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  color: var(--cn-text);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.6;\n  white-space: pre-wrap;\n  word-wrap: break-word;\n  outline: none;\n  transition:\n    border-color 0.15s ease,\n    box-shadow 0.15s ease;\n  box-sizing: border-box;\n  overflow: hidden;\n  max-height: 320px;\n}\n\n#cn_app .seg-item__edit:focus-within {\n  border-color: var(--cn-primary);\n  background: var(--cn-surface);\n  box-shadow: 0 0 0 3px rgba(18, 130, 82, 0.16);\n}\n\n#cn_app .seg-var {\n  color: var(--cn-primary-active);\n  background: var(--cn-primary-soft);\n  border: 1px solid var(--cn-primary);\n  border-radius: 3px;\n  padding: 0 4px;\n  font-weight: 600;\n  cursor: help;\n}\n\n#cn_app .seg-var:hover {\n  background: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .seg-item__edit .cm-editor {\n  background: transparent;\n  color: inherit;\n  height: 100%;\n}\n\n#cn_app .seg-item__edit .cm-scroller {\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.6;\n}\n\n#cn_app .seg-item__edit .cm-content {\n  padding: 0;\n  caret-color: var(--cn-primary);\n  min-height: 104px;\n}\n\n#cn_app .seg-item__edit .cm-focused {\n  outline: none;\n}\n\n#cn_app .prompt-foot {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 16px;\n}\n\n#cn_app .prompt-foot__hint {\n  color: var(--cn-text-3);\n  font-size: 12px;\n  line-height: 1.6;\n}\n\n#cn_app .prompt-foot__hint code {\n  padding: 1px 5px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 11px;\n}\n\n#cn_app .prompt-wrap {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n  min-height: 0;\n}\n\n#cn_app .prompt-wrap .prompt-head {\n  margin: 0;\n  padding: 14px 16px 12px;\n  border-bottom: 1px solid var(--cn-border);\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  align-items: flex-start;\n}\n\n#cn_app .prompt-wrap .prompt-split {\n  flex: 1;\n  min-height: 0;\n  padding: 16px;\n  gap: 16px;\n  overflow: hidden;\n  align-items: stretch;\n  grid-template-rows: minmax(0, 1fr);\n}\n\n#cn_app .prompt-side {\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n  overflow: hidden;\n}\n\n#cn_app .prompt-editor {\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n  overflow: hidden;\n}\n\n#cn_app .prompt-editor .cn-card__head {\n  padding: 0 0 12px;\n  border-bottom: 1px solid var(--cn-border);\n  margin-bottom: 16px;\n}\n\n#cn_app .prompt-side .cn-card__head {\n  padding: 0 0 12px;\n  border-bottom: 1px solid var(--cn-border);\n  margin-bottom: 12px;\n}\n\n#cn_app .prompt-side .cn-card__body {\n  padding: 0;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .prompt-editor .cn-card__body {\n  padding: 0;\n  flex: 1;\n  min-height: 0;\n  overflow: hidden;\n  display: flex;\n  flex-direction: column;\n}\n\n/* 模板/纪要表编辑区：body 内部纵向滚动（head 与左侧不滚）。\n   提示词配置的 .block-list 自身已 overflow-y:auto，无需此规则。\n   特异性需高于 .prompt-editor .cn-card__body 的 overflow:hidden 才能生效。 */\n#cn_app .prompt-editor .cn-card__body.template-editor-body {\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n\n#cn_app .cn-modal-mask {\n  position: fixed;\n  inset: 0;\n  z-index: var(--cn-z-modal);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(14, 35, 24, 0.45);\n  backdrop-filter: blur(4px);\n}\n\n#cn_app .cn-modal {\n  width: 90vw;\n  max-width: 1100px;\n  height: 90vh;\n  max-height: 800px;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius-lg);\n  box-shadow: var(--cn-shadow-lift);\n  overflow: hidden;\n}\n\n#cn_app .cn-modal__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 15px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n\n#cn_app .cn-modal__code {\n  margin: 0;\n  padding: 20px;\n  overflow: auto;\n  background: var(--cn-ink);\n  color: var(--cn-ink-text);\n  font-family: var(--cn-font-mono);\n  font-size: 13px;\n  line-height: 1.7;\n  white-space: pre-wrap;\n  word-break: break-word;\n  flex: 1;\n  min-height: 0;\n}\n\n#cn_app .model-picker-modal {\n  width: 90vw;\n  max-width: 520px;\n  height: auto;\n  max-height: 70vh;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius-lg);\n  box-shadow: var(--cn-shadow-lift);\n  overflow: hidden;\n}\n\n#cn_app .model-picker__search {\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .model-picker__list {\n  overflow-y: auto;\n  padding: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n}\n\n#cn_app .model-picker__item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  width: 100%;\n  padding: 10px 14px;\n  border: none;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text);\n  font-size: 14px;\n  text-align: left;\n  cursor: pointer;\n  transition: background 0.1s;\n}\n\n#cn_app .model-picker__item:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .model-picker__item--picked {\n  background: var(--cn-primary-soft);\n  font-weight: 500;\n}\n\n#cn_app .model-picker__name {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .model-picker__check {\n  color: var(--cn-primary);\n  font-size: 14px;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-btn--danger {\n  background: var(--cn-danger);\n  border-color: var(--cn-danger);\n  color: #fff;\n}\n\n#cn_app .cn-btn--danger:hover:not(:disabled) {\n  background: #c13a3a;\n  border-color: #c13a3a;\n  color: #fff;\n}\n\n#cn_app .cn-dialog-mask {\n  position: fixed;\n  inset: 0;\n  z-index: var(--cn-z-dialog);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(14, 35, 24, 0.45);\n  backdrop-filter: blur(4px);\n  opacity: 0;\n  transition: opacity var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .cn-dialog-mask--show {\n  opacity: 1;\n}\n\n#cn_app .cn-dialog {\n  position: relative;\n  width: min(420px, 85vw);\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius-lg);\n  box-shadow: var(--cn-shadow-lift);\n  overflow: hidden;\n  transform: scale(0.96);\n  opacity: 0;\n  transition: opacity var(--cn-dur) var(--cn-ease), transform var(--cn-dur) var(--cn-ease);\n}\n\n#cn_app .cn-dialog-mask--show .cn-dialog {\n  transform: scale(1);\n  opacity: 1;\n}\n\n#cn_app .cn-dialog__bar {\n  position: absolute;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  width: 4px;\n  background: var(--cn-primary);\n}\n\n#cn_app .cn-dialog--danger .cn-dialog__bar {\n  background: var(--cn-danger);\n}\n\n#cn_app .cn-dialog__hd {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 14px 16px 14px 20px;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .cn-dialog__brand-ico {\n  color: var(--cn-primary);\n  font-size: 16px;\n}\n\n#cn_app .cn-dialog--danger .cn-dialog__brand-ico {\n  color: var(--cn-danger);\n}\n\n#cn_app .cn-dialog__brand {\n  font-size: 13px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n  letter-spacing: 0.5px;\n}\n\n#cn_app .cn-dialog__title {\n  font-size: 16px;\n  font-weight: 600;\n  color: var(--cn-text);\n  margin-left: auto;\n}\n\n#cn_app .cn-dialog__close {\n  margin-left: 4px;\n  color: var(--cn-text-3);\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-size: 14px;\n  padding: 2px 4px;\n  line-height: 1;\n  transition: color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .cn-dialog__close:hover {\n  color: var(--cn-text);\n}\n\n#cn_app .cn-dialog__body {\n  padding: 16px 20px;\n  color: var(--cn-text-2);\n  font-size: 14px;\n  line-height: 1.6;\n  white-space: pre-wrap;\n}\n\n#cn_app .cn-dialog__foot {\n  display: flex;\n  justify-content: flex-end;\n  gap: 8px;\n  padding: 12px 20px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .cn-dialog__foot .cn-btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  height: 32px;\n  padding: 0 15px;\n  border: 1px solid var(--cn-primary);\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-primary-hover);\n  font-size: 14px;\n  cursor: pointer;\n  transition: background var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .cn-dialog__foot .cn-btn:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cn-dialog__foot .cn-btn--primary {\n  background: var(--cn-primary);\n  border-color: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .cn-dialog__foot .cn-btn--primary:hover {\n  background: var(--cn-primary-hover);\n  border-color: var(--cn-primary-hover);\n}\n\n#cn_app .cn-dialog__foot .cn-btn--danger {\n  background: var(--cn-danger);\n  border-color: var(--cn-danger);\n  color: #fff;\n}\n\n#cn_app .cn-dialog__foot .cn-btn--danger:hover {\n  background: #c13a3a;\n  border-color: #c13a3a;\n}\n\n.cn-has-recall .mes_text > :not(.cn-recall-host):not(#curEditTextarea) {\n  display: none;\n}\n\n.cn-recall-host {\n  display: block;\n}\n\n#cn_app .api-page {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) 340px;\n  gap: 24px;\n  align-items: start;\n}\n\n#cn_app .api-group {\n  display: grid;\n  grid-template-columns: 180px minmax(0, 1fr);\n  gap: 12px;\n  min-width: 0;\n  align-items: start;\n}\n\n#cn_app .api-preset-list {\n  min-width: 0;\n}\n\n#cn_app .api-preset-list__body {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  padding: 8px;\n}\n\n#cn_app .api-preset-item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 6px;\n  padding: 8px 10px;\n  border: 1px solid transparent;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2);\n  font-size: 13px;\n  cursor: pointer;\n  text-align: left;\n  transition: background var(--cn-dur-fast) var(--cn-ease), color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-preset-item:hover:not(:disabled) {\n  background: var(--cn-surface-2);\n}\n\n#cn_app .api-preset-item--active {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n  font-weight: 600;\n  border-color: var(--cn-border-green);\n}\n\n#cn_app .api-preset-item:disabled {\n  cursor: default;\n  opacity: 1;\n}\n\n#cn_app .api-preset-item__name {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .api-preset-item__star {\n  color: var(--cn-primary);\n  font-size: 11px;\n  flex-shrink: 0;\n}\n\n#cn_app .api-preset-list__new {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  padding: 8px 10px;\n  border: 1px dashed var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2);\n  font-size: 13px;\n  cursor: pointer;\n  margin-top: 4px;\n  transition: border-color var(--cn-dur-fast) var(--cn-ease), color var(--cn-dur-fast) var(--cn-ease), background var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-preset-list__new:hover {\n  border-color: var(--cn-primary);\n  color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .api-preset-list__del {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  padding: 6px 10px;\n  border: none;\n  background: transparent;\n  color: var(--cn-text-3);\n  font-size: 12px;\n  cursor: pointer;\n  text-align: left;\n  margin-top: 2px;\n  transition: color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-preset-list__del:hover {\n  color: var(--cn-danger);\n}\n\n#cn_app .api-editor {\n  min-width: 0;\n}\n\n#cn_app .cn-input--nospin::-webkit-outer-spin-button,\n#cn_app .cn-input--nospin::-webkit-inner-spin-button {\n  -webkit-appearance: none;\n  margin: 0;\n}\n\n#cn_app .cn-input--nospin {\n  -moz-appearance: textfield;\n  appearance: textfield;\n}\n\n#cn_app .api-head-desc {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 400;\n}\n\n#cn_app .api-vector .cn-card__head > span:first-child {\n  white-space: nowrap;\n  flex-shrink: 0;\n}\n\n#cn_app .api-vector .api-head-desc {\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  min-width: 0;\n}\n\n#cn_app .api-section-divider {\n  border-top: 1px solid var(--cn-border);\n  margin: 14px 0;\n}\n\n#cn_app .api-form-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0 16px;\n}\n\n#cn_app .api-sampling-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0 16px;\n}\n\n#cn_app .api-advanced-toggle {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  color: var(--cn-text-2);\n  font-size: 13px;\n  padding: 4px 0;\n  transition: color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-advanced-toggle:hover {\n  color: var(--cn-primary);\n}\n\n#cn_app .api-advanced-toggle__icon {\n  font-size: 10px;\n  transition: transform var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-advanced-toggle__icon--open {\n  transform: rotate(90deg);\n}\n\n#cn_app .api-advanced {\n  padding-top: 8px;\n}\n\n#cn_app .api-actions {\n  display: flex;\n  justify-content: flex-end;\n  gap: 8px;\n  border-top: 1px solid var(--cn-border);\n  margin-top: 14px;\n  padding-top: 14px;\n}\n\n#cn_app .model-row {\n  display: flex;\n  gap: 8px;\n  align-items: center;\n}\n\n#cn_app .model-select {\n  margin-top: 6px;\n  width: 100%;\n}\n\n@media (max-width: 900px) {\n  #cn_app .api-page {\n    grid-template-columns: 1fr;\n  }\n  #cn_app .api-group {\n    grid-template-columns: 1fr;\n  }\n  #cn_app .mf-page {\n    grid-template-columns: 1fr;\n  }\n}\n\n#cn_app .welcome-root {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  min-width: 0;\n}\n\n#cn_app .welcome-hero {\n  position: relative;\n  display: flex;\n  align-items: flex-start;\n  justify-content: space-between;\n  gap: 16px;\n  padding: 22px 24px;\n  background: var(--cn-surface);\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-lg);\n  box-shadow: var(--cn-shadow);\n  overflow: hidden;\n}\n\n#cn_app .welcome-hero::after {\n  content: '';\n  position: absolute;\n  top: -130px;\n  right: -90px;\n  width: 380px;\n  height: 300px;\n  border-radius: 50%;\n  background: radial-gradient(closest-side, rgba(53, 179, 122, 0.14), transparent);\n  pointer-events: none;\n}\n\n#cn_app .welcome-hero__left {\n  min-width: 0;\n  position: relative;\n  z-index: 1;\n}\n\n#cn_app .welcome-hero__title {\n  margin: 0 0 6px 0;\n  font-size: 26px;\n  font-weight: 800;\n  letter-spacing: -0.02em;\n  background: var(--cn-grad-primary);\n  -webkit-background-clip: text;\n  background-clip: text;\n  -webkit-text-fill-color: transparent;\n}\n\n#cn_app .welcome-hero__sub {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-hero__actions {\n  display: flex;\n  gap: 8px;\n  flex-shrink: 0;\n  position: relative;\n  z-index: 1;\n}\n\n#cn_app .welcome-stats {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n  gap: 14px;\n}\n\n#cn_app .welcome-stat {\n  display: grid;\n  grid-template-columns: 44px minmax(0, 1fr);\n  grid-template-rows: auto auto;\n  column-gap: 12px;\n  align-items: center;\n  padding: 14px 16px;\n  background: var(--cn-surface);\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  box-shadow: var(--cn-shadow);\n}\n\n#cn_app .welcome-stat__icon {\n  grid-row: 1 / 3;\n  width: 44px;\n  height: 44px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 18px;\n}\n\n#cn_app .welcome-stat__num {\n  font-family: var(--cn-font-mono);\n  font-size: 22px;\n  font-weight: 700;\n  color: var(--cn-text);\n  line-height: 1.1;\n  word-break: break-all;\n}\n\n#cn_app .welcome-stat__num--text {\n  font-family: var(--cn-font);\n  font-size: 15px;\n  font-weight: 600;\n}\n\n#cn_app .welcome-stat__label {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  margin-top: 3px;\n}\n\n#cn_app .welcome-panels {\n  display: grid;\n  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);\n  gap: 14px;\n  align-items: start;\n}\n\n#cn_app .welcome-badge {\n  padding: 2px 10px;\n  border-radius: 999px;\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-family: var(--cn-font-mono);\n  font-size: 12px;\n  font-weight: 600;\n}\n\n#cn_app .welcome-step {\n  display: grid;\n  grid-template-columns: 28px minmax(0, 1fr) auto;\n  gap: 12px;\n  align-items: center;\n  padding: 11px 16px;\n}\n\n#cn_app .welcome-step + .welcome-step {\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .welcome-step__bead {\n  width: 28px;\n  height: 28px;\n  border-radius: 50%;\n  background: var(--cn-surface-3);\n  color: var(--cn-text-3);\n  font-family: var(--cn-font-mono);\n  font-size: 12px;\n  font-weight: 700;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-step--ok .welcome-step__bead {\n  background: var(--cn-grad-primary);\n  color: #fff;\n  box-shadow: var(--cn-shadow-pill);\n}\n\n#cn_app .welcome-step__body {\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  gap: 1px;\n}\n\n#cn_app .welcome-step__name {\n  font-size: 14px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n\n#cn_app .welcome-step__desc {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-step__status {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  white-space: nowrap;\n}\n\n#cn_app .welcome-step--ok .welcome-step__status {\n  color: var(--cn-primary);\n  font-weight: 600;\n}\n\n#cn_app .welcome-health-item {\n  display: grid;\n  grid-template-columns: 32px minmax(0, 1fr) auto;\n  gap: 12px;\n  align-items: center;\n  padding: 12px 16px;\n}\n\n#cn_app .welcome-health-item + .welcome-health-item {\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .welcome-health-item__icon {\n  width: 32px;\n  height: 32px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-surface-3);\n  color: var(--cn-text-3);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 14px;\n}\n\n#cn_app .welcome-health-item--ok .welcome-health-item__icon {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n}\n\n#cn_app .welcome-health-item--warn .welcome-health-item__icon {\n  background: var(--cn-warn-soft);\n  color: var(--cn-warn);\n}\n\n#cn_app .welcome-health-item__body {\n  min-width: 0;\n}\n\n#cn_app .welcome-health-item__body strong {\n  display: block;\n  font-size: 14px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n\n#cn_app .welcome-health-item__body p {\n  margin: 2px 0 0;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n@media (max-width: 900px) {\n  #cn_app .welcome-panels {\n    grid-template-columns: 1fr;\n  }\n}\n\n@media (max-width: 720px) {\n  #cn_app .welcome-stats {\n    grid-template-columns: 1fr;\n  }\n}\n\n#cn_app .cn-check {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 13px;\n  color: var(--cn-text);\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .cn-check input[type='checkbox'] {\n  appearance: auto;\n  -webkit-appearance: auto;\n  background: transparent !important;\n  accent-color: var(--cn-primary);\n  width: 16px;\n  height: 16px;\n  cursor: pointer;\n  margin: 0;\n}\n\n#cn_app .cn-switch {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .cn-switch input[type='checkbox'] {\n  display: none;\n}\n\n#cn_app .cn-switch__track {\n  width: 36px;\n  height: 20px;\n  border-radius: 10px;\n  background: var(--cn-border-strong);\n  position: relative;\n  transition: background 0.2s;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-switch__track::after {\n  content: '';\n  position: absolute;\n  top: 2px;\n  left: 2px;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: #fff;\n  transition: left 0.2s;\n}\n\n#cn_app .cn-switch input:checked + .cn-switch__track {\n  background: var(--cn-grad-primary);\n}\n\n#cn_app .cn-switch input:checked + .cn-switch__track::after {\n  left: 18px;\n}\n\n#cn_app .cn-switch__label {\n  font-size: 13px;\n  color: var(--cn-text-2);\n}\n\n/* ── 表格模板编辑器 ── */\n\n#cn_app .tpl-table-card {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  margin-bottom: 10px;\n  overflow: hidden;\n  flex-shrink: 0;\n}\n\n#cn_app .tpl-table-card--active {\n  border-color: var(--cn-primary);\n}\n\n#cn_app .tpl-table-card__head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  min-height: 42px;\n  padding: 10px 12px;\n  background: var(--cn-surface-2);\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .tpl-table-card--active .tpl-table-card__head {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .tpl-table-card__name {\n  font-weight: 600;\n  font-size: 14px;\n  color: var(--cn-text);\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .tpl-table-card__meta {\n  font-size: 12px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .tpl-table-card__body {\n  padding: 12px 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .template-editor-body {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .template-editor-empty {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 12px;\n  padding: 40px 20px;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .tpl-row {\n  display: flex;\n  gap: 12px;\n}\n\n#cn_app .tpl-field {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n\n#cn_app .tpl-label {\n  font-size: 13px;\n  font-weight: 600;\n  color: var(--cn-text-2);\n}\n\n#cn_app .tpl-section {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  padding: 4px 0;\n}\n\n#cn_app .tpl-section__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n#cn_app .tpl-textarea {\n  width: 100%;\n  min-height: 48px;\n  resize: vertical;\n}\n\n#cn_app .tpl-cols {\n  display: flex;\n  flex-direction: column;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  overflow: hidden;\n}\n\n#cn_app .tpl-col-head,\n#cn_app .tpl-col-row {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  padding: 6px 8px;\n}\n\n#cn_app .tpl-col-head {\n  background: var(--cn-surface-2);\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 12px;\n  font-weight: 600;\n  color: var(--cn-text-2);\n}\n\n#cn_app .tpl-col-row {\n  border-bottom: 1px solid var(--cn-surface-2);\n}\n\n#cn_app .tpl-col-row:last-child {\n  border-bottom: none;\n}\n\n#cn_app .tpl-col-cell {\n  font-size: 13px;\n}\n\n#cn_app .tpl-col-cell.name {\n  width: 100px;\n  flex-shrink: 0;\n}\n#cn_app .tpl-col-cell.type {\n  width: 76px;\n  flex-shrink: 0;\n}\n#cn_app .tpl-col-cell.flags {\n  width: 96px;\n  flex-shrink: 0;\n  display: flex;\n  gap: 5px;\n  align-items: center;\n}\n#cn_app .tpl-col-cell.note {\n  flex: 1;\n  min-width: 90px;\n}\n#cn_app .tpl-col-cell.del {\n  width: 28px;\n  flex-shrink: 0;\n}\n#cn_app .tpl-col-cell.role {\n  width: 92px;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-btn--xs {\n  padding: 0 4px;\n  height: 22px;\n  font-size: 11px;\n  border-radius: 3px;\n  line-height: 20px;\n}\n\n#cn_app .prompt-empty {\n  padding: 20px;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .prompt-side-foot {\n  display: flex;\n  gap: 6px;\n  padding: 10px 12px;\n  border-top: 1px solid var(--cn-border);\n  flex-shrink: 0;\n  margin-top: auto;\n}\n\n@media (max-width: 720px) {\n  #cn_app .prompt-split {\n    grid-template-columns: 1fr;\n  }\n}\n\n#cn_app .cn-menu__spacer {\n  flex: 1;\n}\n\n#cn_app .cn-menu__item--debug {\n  margin-top: auto;\n}\n\n#cn_app .debug-page {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  height: 100%;\n}\n\n#cn_app .debug-tabs {\n  display: inline-flex;\n  gap: 4px;\n  padding: 4px;\n  background: var(--cn-primary-mist);\n  border-radius: var(--cn-radius);\n  align-self: flex-start;\n}\n\n#cn_app .debug-tab {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  padding: 6px 14px;\n  border: none;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  cursor: pointer;\n  font-size: 13px;\n  color: var(--cn-text-2);\n  transition:\n    background var(--cn-dur-fast) var(--cn-ease),\n    color var(--cn-dur-fast) var(--cn-ease),\n    box-shadow var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .debug-tab--active {\n  background: var(--cn-surface);\n  color: var(--cn-primary);\n  font-weight: 600;\n  box-shadow: 0 1px 2px rgba(16, 42, 28, 0.1);\n}\n\n#cn_app .debug-tab__badge {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-width: 18px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: 9px;\n  font-size: 11px;\n  color: #fff;\n  background: var(--cn-primary);\n}\n\n#cn_app .debug-panel {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  overflow: hidden;\n}\n\n#cn_app .debug-toolbar {\n  display: flex;\n  gap: 6px;\n  flex-wrap: wrap;\n  align-items: center;\n}\n\n#cn_app .debug-toolbar__select {\n  width: auto;\n  min-width: 80px;\n}\n\n#cn_app .debug-toolbar__search {\n  flex: 1;\n  min-width: 120px;\n}\n\n#cn_app .debug-toolbar__hint {\n  display: flex;\n  gap: 16px;\n  font-size: 11px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .debug-log-list {\n  flex: 1;\n  overflow-y: auto;\n  font-family: 'Consolas', 'Courier New', monospace;\n  font-size: 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: 6px;\n  background: var(--cn-bg);\n}\n\n#cn_app .debug-log-row {\n  display: grid;\n  grid-template-columns: 90px 44px 80px 1fr;\n  padding: 3px 8px;\n  border-bottom: 1px solid var(--cn-border);\n  align-items: baseline;\n  gap: 4px;\n}\n\n#cn_app .debug-log-row:last-child {\n  border-bottom: none;\n}\n\n#cn_app .debug-log-row--error {\n  background: rgba(214, 69, 69, 0.07);\n}\n\n#cn_app .debug-log-row--warn {\n  background: rgba(201, 122, 16, 0.05);\n}\n\n#cn_app .debug-log-row__time {\n  color: var(--cn-text-3);\n  white-space: nowrap;\n}\n\n#cn_app .debug-log-row__level {\n  font-weight: 600;\n  font-size: 10px;\n  padding: 1px 4px;\n  border-radius: 3px;\n  text-align: center;\n}\n\n#cn_app .debug-log-row__level--error {\n  color: var(--cn-danger);\n  background: rgba(214, 69, 69, 0.12);\n}\n\n#cn_app .debug-log-row__level--warn {\n  color: var(--cn-warn);\n  background: rgba(201, 122, 16, 0.12);\n}\n\n#cn_app .debug-log-row__tag {\n  color: var(--cn-primary);\n}\n\n#cn_app .debug-log-row__msg {\n  color: var(--cn-text);\n  word-break: break-all;\n}\n\n#cn_app .debug-status-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));\n  gap: 12px;\n}\n\n#cn_app .debug-status-item {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 6px 0;\n}\n\n#cn_app .debug-status-item + .debug-status-item {\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .debug-status-item__label {\n  color: var(--cn-text-2);\n  font-size: 13px;\n}\n\n#cn_app .debug-status-item__value {\n  color: var(--cn-text);\n  font-size: 13px;\n  font-weight: 500;\n}\n\n#cn_app .debug-ok {\n  color: var(--cn-primary) !important;\n}\n\n#cn_app .debug-err {\n  color: var(--cn-danger) !important;\n}\n\n#cn_app .debug-status-actions {\n  display: flex;\n  gap: 6px;\n  padding-top: 8px;\n}\n\n#cn_app .preset-list,\n#cn_app .template-editor-body,\n#cn_app .table-row-grid,\n#cn_app .chronicle-list,\n#cn_app .block-list {\n  position: relative;\n}\n\n#cn_app .cn-route-enter-active,\n#cn_app .cn-route-leave-active {\n  transition: opacity var(--cn-dur) var(--cn-ease);\n}\n#cn_app .cn-route-enter-from,\n#cn_app .cn-route-leave-to {\n  opacity: 0;\n}\n\n#cn_app .cn-list-enter-active,\n#cn_app .cn-list-leave-active {\n  transition:\n    opacity var(--cn-dur-fast) var(--cn-ease),\n    transform var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .cn-list-enter-from {\n  opacity: 0;\n  transform: translateY(-6px);\n}\n#cn_app .cn-list-leave-to {\n  opacity: 0;\n  transform: translateY(4px);\n}\n#cn_app .cn-list-move {\n  transition: transform var(--cn-dur) var(--cn-ease);\n}\n\n#cn_app .cn-modal-enter-active,\n#cn_app .cn-modal-leave-active {\n  transition: opacity var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .cn-modal-enter-from,\n#cn_app .cn-modal-leave-to {\n  opacity: 0;\n}\n#cn_app .cn-modal-enter-active .cn-modal,\n#cn_app .cn-modal-leave-active .cn-modal {\n  transition:\n    opacity var(--cn-dur) var(--cn-ease),\n    transform var(--cn-dur) var(--cn-ease);\n}\n#cn_app .cn-modal-enter-from .cn-modal,\n#cn_app .cn-modal-leave-to .cn-modal {\n  opacity: 0;\n  transform: scale(0.96);\n}\n\n#cn_app .cn-input--error,\n#cn_app .cn-select--error,\n#cn_app .cn-textarea--error {\n  border-color: var(--cn-danger) !important;\n  box-shadow: 0 0 0 3px rgba(214, 69, 69, 0.15) !important;\n}\n\n#cn_app .cn-fold-enter-active,\n#cn_app .cn-fold-leave-active {\n  transition:\n    opacity var(--cn-dur) var(--cn-ease),\n    transform var(--cn-dur) var(--cn-ease);\n}\n#cn_app .cn-fold-enter-from {\n  opacity: 0;\n  transform: translateY(-6px);\n}\n#cn_app .cn-fold-leave-to {\n  opacity: 0;\n  transform: translateY(-4px);\n}\n\n#cn_app .cn-menu__section {\n  padding: 14px 12px 6px;\n  font-size: 11px;\n  font-weight: 600;\n  letter-spacing: 1.5px;\n  color: var(--cn-ink-text-2);\n  opacity: 0.75;\n}\n\n#cn_app .cn-seg {\n  display: inline-flex;\n  gap: 4px;\n  padding: 4px;\n  background: var(--cn-primary-mist);\n  border-radius: var(--cn-radius);\n}\n\n#cn_app .cn-seg__item {\n  padding: 6px 14px;\n  border: 0;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2);\n  font-size: 13px;\n  cursor: pointer;\n  white-space: nowrap;\n  transition:\n    background var(--cn-dur-fast) var(--cn-ease),\n    color var(--cn-dur-fast) var(--cn-ease),\n    box-shadow var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .cn-seg__item:hover {\n  color: var(--cn-text);\n}\n\n#cn_app .cn-seg__item--active {\n  background: var(--cn-surface);\n  color: var(--cn-primary);\n  font-weight: 600;\n  box-shadow: 0 1px 2px rgba(16, 42, 28, 0.1);\n}\n\n#cn_app .strategy-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  height: 100%;\n  overflow: hidden;\n}\n\n#cn_app .strategy-head {\n  padding: 12px;\n}\n\n#cn_app .strategy-body {\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .strategy-section__head {\n  padding: 12px 16px 8px;\n}\n\n#cn_app .strategy-section__title {\n  font-size: 12px;\n  font-weight: 600;\n  letter-spacing: 1.5px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .strategy-row {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) auto;\n  align-items: center;\n  gap: 16px;\n  padding: 11px 16px;\n}\n\n#cn_app .strategy-row + .strategy-row {\n  border-top: 1px solid var(--cn-surface-2);\n}\n\n#cn_app .strategy-row__text {\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n}\n\n#cn_app .strategy-row__label {\n  font-size: 14px;\n  font-weight: 500;\n  color: var(--cn-text);\n}\n\n#cn_app .strategy-row__desc {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .strategy-num {\n  width: 96px;\n}\n\n#cn_app .strategy-select {\n  width: 220px;\n}\n\n#cn_app .strategy-warn {\n  display: flex;\n  align-items: flex-start;\n  gap: 8px;\n  padding: 10px 16px 12px;\n  border-top: 1px solid var(--cn-surface-2);\n  background: var(--cn-warn-soft);\n  color: var(--cn-warn);\n  font-size: 12px;\n  font-weight: 600;\n  line-height: 1.5;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  #cn_app *,\n  #cn_app *::before,\n  #cn_app *::after {\n    animation-duration: 0.01ms !important;\n    animation-iteration-count: 1 !important;\n    transition-duration: 0.01ms !important;\n  }\n}\n\n#cn_app .mf-page {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);\n  gap: 16px;\n  align-items: start;\n}\n#cn_app .mf-left,\n#cn_app .mf-right {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  min-width: 0;\n}\n#cn_app .page-tabs {\n  display: inline-flex;\n  gap: 4px;\n  padding: 4px;\n  background: var(--cn-primary-mist);\n  border-radius: var(--cn-radius);\n  margin-bottom: 16px;\n}\n#cn_app .page-tab {\n  padding: 6px 16px;\n  border: 0;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  font-size: 14px;\n  color: var(--cn-text-2);\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  transition:\n    background var(--cn-dur-fast) var(--cn-ease),\n    color var(--cn-dur-fast) var(--cn-ease),\n    box-shadow var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .page-tab:hover {\n  color: var(--cn-text);\n}\n#cn_app .page-tab--active {\n  background: var(--cn-surface);\n  color: var(--cn-primary);\n  font-weight: 600;\n  box-shadow: 0 1px 2px rgba(16, 42, 28, 0.1);\n}\n#cn_app .mf-card {\n  background: var(--cn-surface);\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  overflow: hidden;\n}\n#cn_app .mf-card__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  background: var(--cn-surface-2);\n}\n#cn_app .mf-card__title {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 15px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .mf-card__icon {\n  color: var(--cn-primary);\n  font-size: 14px;\n}\n#cn_app .mf-card__actions {\n  display: flex;\n  gap: 4px;\n}\n#cn_app .mf-card__body {\n  padding: 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n}\n#cn_app .mf-stats {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 8px;\n}\n#cn_app .mf-stat {\n  background: var(--cn-surface-2);\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  padding: 10px 8px;\n  text-align: center;\n}\n#cn_app .mf-stat__num {\n  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;\n  font-size: 22px;\n  font-weight: 600;\n  color: var(--cn-primary);\n  line-height: 1.1;\n}\n#cn_app .mf-stat__label {\n  font-size: 11px;\n  color: var(--cn-text-3);\n  margin-top: 4px;\n}\n#cn_app .mf-table-wrap {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  overflow: hidden;\n}\n#cn_app .mf-table {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: 13px;\n}\n#cn_app .mf-table th {\n  background: var(--cn-surface-2);\n  color: var(--cn-text-3);\n  font-weight: 400;\n  text-align: left;\n  padding: 8px 12px;\n  font-size: 11px;\n  letter-spacing: 0.5px;\n}\n#cn_app .mf-table td {\n  padding: 8px 12px;\n  border-top: 1px solid var(--cn-border);\n  color: var(--cn-text);\n}\n#cn_app .mf-table__name {\n  font-weight: 500;\n}\n#cn_app .mf-table__display {\n  font-weight: 500;\n}\n#cn_app .mf-table__raw {\n  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;\n  font-size: 11px;\n  color: var(--cn-text-3);\n  margin-left: 6px;\n}\n#cn_app .mf-table__empty {\n  text-align: center;\n  color: var(--cn-text-3);\n  padding: 16px;\n}\n#cn_app .mf-tag {\n  display: inline-block;\n  padding: 1px 8px;\n  border-radius: 999px;\n  font-size: 11px;\n  background: var(--cn-surface-2);\n  color: var(--cn-text-2);\n  border: 1px solid var(--cn-border);\n}\n#cn_app .mf-tag--chronicle {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  border-color: var(--cn-border-green);\n}\n#cn_app .mf-check {\n  display: inline-flex;\n  cursor: pointer;\n}\n#cn_app .mf-check input {\n  width: 16px;\n  height: 16px;\n  accent-color: var(--cn-primary);\n  cursor: pointer;\n}\n#cn_app .mf-badge {\n  font-size: 11px;\n  padding: 2px 10px;\n  border-radius: 999px;\n  font-weight: 500;\n}\n#cn_app .mf-badge--ok {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n}\n#cn_app .mf-badge--warn {\n  background: var(--cn-warn-soft);\n  color: var(--cn-warn);\n}\n#cn_app .mf-field {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n#cn_app .mf-field__label {\n  font-size: 12px;\n  color: var(--cn-text-2);\n}\n#cn_app .mf-grid-2 {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 12px;\n}\n#cn_app .mf-field__hint {\n  font-size: 12px;\n  color: var(--cn-text-3);\n}\n#cn_app .mf-range {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n}\n#cn_app .mf-range__sep {\n  color: var(--cn-text-3);\n}\n#cn_app .mf-switch {\n  position: relative;\n  width: 36px;\n  height: 20px;\n}\n#cn_app .mf-switch input {\n  opacity: 0;\n  width: 0;\n  height: 0;\n}\n#cn_app .mf-switch__track {\n  position: absolute;\n  inset: 0;\n  background: var(--cn-border);\n  border-radius: 999px;\n  transition: background var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .mf-switch__track::after {\n  content: '';\n  position: absolute;\n  top: 2px;\n  left: 2px;\n  width: 16px;\n  height: 16px;\n  background: var(--cn-surface);\n  border-radius: 50%;\n  transition: transform var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .mf-switch input:checked + .mf-switch__track {\n  background: var(--cn-grad-primary);\n}\n#cn_app .mf-switch input:checked + .mf-switch__track::after {\n  transform: translateX(16px);\n}\n#cn_app .mf-actions {\n  display: flex;\n  gap: 12px;\n  margin-top: 4px;\n}\n#cn_app .mf-btn {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 14px;\n  border-radius: var(--cn-radius-sm);\n  font-size: 13px;\n  font-weight: 500;\n  border: 1px solid transparent;\n  transition: background var(--cn-dur-fast) var(--cn-ease), transform 0.05s;\n  cursor: pointer;\n}\n#cn_app .mf-btn:active:not(:disabled) {\n  transform: translateY(1px);\n}\n#cn_app .mf-btn:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n#cn_app .mf-btn--primary {\n  background: var(--cn-grad-primary);\n  color: #fff !important;\n  box-shadow: var(--cn-shadow-pill), inset 0 1px 0 rgba(255, 255, 255, 0.25);\n}\n#cn_app .mf-btn--primary:hover:not(:disabled) {\n  background: var(--cn-primary-hover);\n}\n#cn_app .mf-btn--danger {\n  background: var(--cn-surface);\n  border-color: var(--cn-danger);\n  color: var(--cn-text) !important;\n}\n#cn_app .mf-btn--danger:hover:not(:disabled) {\n  background: var(--cn-danger-soft);\n}\n#cn_app .mf-btn--secondary {\n  background: var(--cn-surface);\n  border-color: var(--cn-border);\n  color: var(--cn-text) !important;\n}\n#cn_app .mf-btn--secondary:hover:not(:disabled) {\n  background: var(--cn-surface-2);\n}\n#cn_app .mf-btn--text {\n  background: transparent;\n  padding: 4px 8px;\n  font-size: 12px;\n  color: var(--cn-primary) !important;\n}\n#cn_app .mf-icon--spin {\n  animation: mf-spin 1s linear infinite;\n}\n@keyframes mf-spin {\n  to { transform: rotate(360deg); }\n}\n#cn_app .mf-steps {\n  display: flex;\n  align-items: center;\n  gap: 0;\n}\n#cn_app .mf-step {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 4px;\n  flex-shrink: 0;\n}\n#cn_app .mf-step__dot {\n  width: 24px;\n  height: 24px;\n  border-radius: 50%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 11px;\n  background: var(--cn-surface-2);\n  border: 1px solid var(--cn-border);\n  color: var(--cn-text-3);\n  transition: all var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .mf-step--active .mf-step__dot {\n  background: var(--cn-primary);\n  border-color: var(--cn-primary);\n  color: #fff;\n}\n#cn_app .mf-step--done .mf-step__dot {\n  background: var(--cn-primary-soft);\n  border-color: var(--cn-primary);\n  color: var(--cn-primary-active);\n}\n#cn_app .mf-step__label {\n  font-size: 11px;\n  color: var(--cn-text-2);\n}\n#cn_app .mf-step--active .mf-step__label {\n  color: var(--cn-primary-active);\n  font-weight: 500;\n}\n#cn_app .mf-step__line {\n  flex: 1;\n  height: 2px;\n  background: var(--cn-border);\n  margin: 0 6px 18px;\n  transition: background var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .mf-step__line--done {\n  background: var(--cn-primary);\n}\n#cn_app .mf-progress {\n  height: 6px;\n  background: var(--cn-surface-2);\n  border-radius: 999px;\n  overflow: hidden;\n}\n#cn_app .mf-progress__bar {\n  height: 100%;\n  background: var(--cn-grad-primary);\n  border-radius: 999px;\n  transition: width 0.3s var(--cn-ease);\n}\n#cn_app .mf-progress__meta {\n  display: flex;\n  justify-content: space-between;\n  font-size: 12px;\n  color: var(--cn-text-2);\n}\n#cn_app .mf-progress__error {\n  color: var(--cn-danger);\n}\n#cn_app .mf-result {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 14px;\n  padding: 8px 0;\n}\n#cn_app .mf-result--ok {\n  color: var(--cn-primary-active);\n}\n#cn_app .mf-result--err {\n  color: var(--cn-danger);\n}\n";
+var theme_default = ":root {\n  --cn-z-app: 10000;\n  --cn-z-toast: 10010;\n  --cn-z-modal: 10020;\n  --cn-z-dialog: 10020;\n}\n\n#cn_app {\n  --cn-bg: #ecf3ee;\n  --cn-surface: #ffffff;\n  --cn-surface-2: #f2f7f4;\n  --cn-surface-3: #e6efe9;\n  --cn-primary-mist: #f0f9f4;\n  --cn-primary-soft: #def3e6;\n  --cn-border-green: #c9e9d6;\n  --cn-primary-bright: #35b37a;\n  --cn-primary: #128252;\n  --cn-primary-hover: #0d6c44;\n  --cn-primary-active: #0a5737;\n  --cn-primary-deep: #0f7a4d;\n  --cn-grad-primary: linear-gradient(135deg, #30b57a 0%, #15955f 50%, #0f7a4d 100%);\n  --cn-ink: #0e2318;\n  --cn-ink-2: #16311f;\n  --cn-ink-line: rgba(255, 255, 255, 0.08);\n  --cn-ink-text: #d7e6dc;\n  --cn-ink-text-2: #7f9c8b;\n  --cn-text: #1e2c24;\n  --cn-text-2: #54675c;\n  --cn-text-3: #8ca196;\n  --cn-border: #d8e4db;\n  --cn-border-strong: #c3d4c7;\n  --cn-danger: #d64545;\n  --cn-danger-soft: #fbeeee;\n  --cn-warn: #c97a10;\n  --cn-warn-soft: #fbf3e2;\n  --cn-radius: 10px;\n  --cn-radius-sm: 7px;\n  --cn-radius-lg: 14px;\n  --cn-radius-pill: 999px;\n  --cn-shadow: 0 1px 2px rgba(16, 42, 28, 0.05), 0 4px 14px -4px rgba(16, 42, 28, 0.08);\n  --cn-shadow-lift: 0 2px 6px rgba(16, 42, 28, 0.06), 0 16px 40px -12px rgba(16, 42, 28, 0.16);\n  --cn-shadow-pill: 0 2px 6px -1px rgba(12, 94, 60, 0.32);\n  --cn-ease: cubic-bezier(0.4, 0, 0.2, 1);\n  --cn-ease-pill: cubic-bezier(0.3, 1.35, 0.5, 1);\n  --cn-dur-fast: 0.15s;\n  --cn-dur: 0.22s;\n  --cn-dur-slow: 0.3s;\n  --cn-font:\n    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei',\n    sans-serif;\n  --cn-font-mono: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  color: var(--cn-text);\n  font-family: var(--cn-font);\n  font-size: 15px;\n  line-height: 1.5;\n}\n\n#cn_app,\n#cn_app * {\n  box-sizing: border-box;\n}\n\n#cn_app button {\n  appearance: none;\n  -webkit-appearance: none;\n  margin: 0;\n  font: inherit;\n  color: var(--cn-text) !important;\n  background: var(--cn-surface);\n  cursor: pointer;\n  -webkit-tap-highlight-color: transparent;\n}\n\n#cn_app i {\n  font-size: inherit;\n  line-height: 1;\n  font-style: normal;\n  vertical-align: baseline;\n}\n\n#cn_app .cn-content i {\n  font-size: 0.85em;\n}\n\n#cn_app input,\n#cn_app select,\n#cn_app textarea {\n  appearance: none;\n  -webkit-appearance: none;\n  margin: 0;\n  font: inherit;\n  color: var(--cn-text);\n  background: var(--cn-surface);\n  border: none;\n  outline: none;\n  -webkit-tap-highlight-color: transparent;\n}\n\n#cn_app select option {\n  color: var(--cn-text) !important;\n  background: var(--cn-surface) !important;\n}\n\n#cn_app button:focus:not(:focus-visible),\n#cn_app input:focus:not(:focus-visible),\n#cn_app select:focus:not(:focus-visible),\n#cn_app textarea:focus:not(:focus-visible) {\n  outline: none;\n}\n\n#cn_app ul {\n  margin: 0;\n  padding: 0;\n}\n\n#cn_app a {\n  color: inherit;\n  text-decoration: none;\n}\n\n#cn_app h1,\n#cn_app h2,\n#cn_app h3,\n#cn_app h4,\n#cn_app h5,\n#cn_app h6 {\n  margin: 0;\n  font-size: inherit;\n  font-weight: inherit;\n}\n\n#cn_app label {\n  display: inline-block;\n  margin: 0;\n  font-weight: inherit;\n  cursor: inherit;\n}\n\n#cn_app .cn-btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  height: 32px;\n  padding: 0 15px;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface) !important;\n  color: var(--cn-text) !important;\n  font-size: 14px;\n  line-height: 1;\n  white-space: nowrap;\n  transition: all 0.15s ease;\n  user-select: none;\n}\n#cn_app .cn-btn:hover:not(:disabled) {\n  border-color: var(--cn-primary) !important;\n  color: var(--cn-primary) !important;\n}\n#cn_app .cn-btn:disabled {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n#cn_app .cn-btn--primary {\n  background: var(--cn-grad-primary) !important;\n  border-color: transparent !important;\n  color: #fff !important;\n  box-shadow: var(--cn-shadow-pill), inset 0 1px 0 rgba(255, 255, 255, 0.25);\n}\n#cn_app .cn-btn--primary:hover:not(:disabled) {\n  background: var(--cn-primary-hover) !important;\n  border-color: transparent !important;\n  color: #fff !important;\n}\n#cn_app .cn-btn--sm {\n  height: 26px;\n  padding: 0 11px;\n  font-size: 13px;\n}\n#cn_app .cn-btn--text {\n  border-color: transparent;\n  background: transparent;\n  color: var(--cn-text-2);\n}\n#cn_app .cn-btn--text:hover:not(:disabled) {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n  border-color: transparent;\n}\n#cn_app .cn-btn--soft {\n  background: var(--cn-primary-soft) !important;\n  border-color: transparent !important;\n  color: var(--cn-primary-active) !important;\n}\n#cn_app .cn-btn--soft:hover:not(:disabled) {\n  background: var(--cn-primary) !important;\n  color: #fff !important;\n}\n\n#cn_app .cn-input,\n#cn_app .cn-select,\n#cn_app .cn-textarea {\n  display: block;\n  width: 100%;\n  height: 32px;\n  padding: 4px 11px;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface) !important;\n  color: var(--cn-text) !important;\n  font-size: 14px;\n  transition:\n    border-color 0.15s ease,\n    box-shadow 0.15s ease;\n}\n#cn_app .cn-textarea {\n  height: auto;\n  min-height: 80px;\n  line-height: 1.5;\n  resize: vertical;\n}\n\n#cn_app .cn-input:disabled,\n#cn_app .cn-select:disabled,\n#cn_app .cn-textarea:disabled {\n  background: var(--cn-surface-2) !important;\n  color: var(--cn-text-3) !important;\n  cursor: not-allowed;\n}\n#cn_app .cn-input:hover,\n#cn_app .cn-select:hover,\n#cn_app .cn-textarea:hover {\n  border-color: var(--cn-primary-hover) !important;\n}\n#cn_app .cn-input:focus,\n#cn_app .cn-select:focus,\n#cn_app .cn-textarea:focus {\n  border-color: var(--cn-primary) !important;\n  box-shadow: 0 0 0 3px rgba(18, 130, 82, 0.16) !important;\n  outline: none !important;\n}\n#cn_app .cn-input::placeholder,\n#cn_app .cn-textarea::placeholder {\n  color: var(--cn-text-3);\n}\n#cn_app .cn-select {\n  padding-right: 28px;\n  background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%238ca196' d='M8 11L3 6h10z'/%3E%3C/svg%3E\");\n  background-repeat: no-repeat;\n  background-position: right 10px center;\n  background-size: 12px;\n  cursor: pointer;\n}\n\n#cn_app .cn-card {\n  background: var(--cn-surface) !important;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  box-shadow: var(--cn-shadow);\n  overflow: hidden;\n}\n#cn_app .cn-card__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n  padding: 14px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 16px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .cn-card__body {\n  padding: 16px;\n}\n\n#cn_app .cn-field {\n  margin-bottom: 16px;\n}\n#cn_app .cn-field__label {\n  display: block;\n  margin-bottom: 6px;\n  color: var(--cn-text-2);\n  font-size: 14px;\n}\n\n#cn_app .cn-table {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: 13px;\n}\n#cn_app .cn-table th,\n#cn_app .cn-table td {\n  padding: 8px 12px;\n  border: 1px solid var(--cn-border) !important;\n  text-align: left;\n  white-space: nowrap;\n}\n#cn_app .cn-table th {\n  background: var(--cn-surface-2);\n  color: var(--cn-text-2);\n  font-weight: 600;\n  letter-spacing: 0.02em;\n}\n#cn_app .cn-table tbody tr:nth-child(even) {\n  background: var(--cn-surface-2);\n}\n#cn_app .cn-table tbody tr:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cn-table__op {\n  width: 50px;\n  text-align: center;\n  white-space: nowrap;\n}\n\n#cn_app .cn-table__rownum {\n  width: 40px;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 12px;\n  white-space: nowrap;\n}\n\n#cn_app .tables-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .tables-toolbar {\n  display: flex;\n  gap: 8px;\n}\n\n#cn_app .table-wrap-card {\n  overflow: visible;\n}\n\n#cn_app .table-body {\n  background: var(--cn-surface);\n  overflow: hidden;\n}\n\n#cn_app .table-body__meta {\n  flex: 1;\n  color: var(--cn-text-3);\n  font-size: 12px;\n}\n\n#cn_app .table-body__foot {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 10px 16px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .table-row-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 12px;\n  padding: 16px;\n}\n\n#cn_app .table-row-card {\n  flex: 0 0 auto;\n  width: 340px;\n  max-width: 100%;\n}\n\n#cn_app .table-row-card__body {\n  padding: 14px 16px;\n}\n\n#cn_app .table-row-card__field {\n  margin-bottom: 10px;\n}\n\n#cn_app .table-row-card__field:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .table-row-card__label {\n  display: block;\n  margin-bottom: 4px;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n}\n\n#cn_app .table-row-card__label-en {\n  font-weight: 400;\n  color: var(--cn-primary-active);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 11px;\n  margin-left: 6px;\n  opacity: 0.6;\n}\n\n#cn_app .table-row-card__value {\n  min-height: 28px;\n  padding: 6px 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-surface-3);\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n#cn_app .table-row-card__value:focus {\n  background: var(--cn-surface);\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 3px rgba(18, 130, 82, 0.16);\n}\n\n#cn_app .table-row-card--editing {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 3px rgba(18, 130, 82, 0.2);\n}\n\n#cn_app .table-row-card__foot {\n  display: flex;\n  justify-content: flex-end;\n  gap: 6px;\n  padding: 6px 12px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .chronicle-item--editing {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 3px rgba(18, 130, 82, 0.2);\n}\n\n#cn_app .cell-edit {\n  min-width: 60px;\n  min-height: 20px;\n  padding: 2px 4px;\n  border-radius: var(--cn-radius-sm);\n  outline: none;\n  white-space: normal;\n  word-break: break-word;\n  cursor: text;\n  transition: background 0.15s ease;\n}\n\n#cn_app .cell-edit:empty::before {\n  content: '\\00a0';\n  display: inline;\n}\n\n#cn_app .cell-edit:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cell-edit:focus {\n  background: var(--cn-surface);\n  box-shadow: 0 0 0 3px rgba(18, 130, 82, 0.16);\n}\n\n#cn_app .chronicle-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .chronicle-gen-off-tip {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 14px;\n  background: var(--cn-warn-soft);\n  border: 1px solid var(--cn-warn);\n  border-radius: var(--cn-radius-sm);\n  color: var(--cn-warn);\n  font-size: 13px;\n}\n#cn_app .chronicle-gen-off-tip i {\n  color: var(--cn-warn);\n}\n\n#cn_app .chronicle-toolbar {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n\n#cn_app .chronicle-toolbar__search {\n  flex: 1;\n  max-width: 360px;\n  height: 32px;\n}\n\n#cn_app .chronicle-toolbar__count {\n  flex: 1;\n  text-align: right;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .chronicle-list {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .chronicle-item__key {\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-weight: 700;\n  color: var(--cn-primary-active);\n}\n\n#cn_app .chronicle-fields {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  gap: 12px;\n  margin-bottom: 12px;\n}\n\n#cn_app .chronicle-field {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  min-width: 0;\n}\n\n#cn_app .chronicle-field--full {\n  margin-bottom: 12px;\n}\n\n#cn_app .chronicle-field:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .chronicle-field__label {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n}\n\n#cn_app .chronicle-field__value {\n  min-height: 32px;\n  padding: 6px 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-surface-3);\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n#cn_app .chronicle-field__value:focus {\n  background: var(--cn-surface);\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 3px rgba(18, 130, 82, 0.16);\n}\n\n#cn_app .cn-empty {\n  padding: 40px 0;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .cn-empty--compact {\n  padding: 24px 0;\n}\n\n#cn_app .cn-btn--block {\n  width: 100%;\n  margin-top: 8px;\n}\n\n#cn_app .cn-tabs {\n  position: relative;\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  padding: 4px;\n  background: var(--cn-primary-mist);\n  border-radius: var(--cn-radius-pill);\n  align-self: flex-start;\n  --tab-x: 0px;\n  --tab-w: 0px;\n}\n\n#cn_app .cn-tabs--scrollable {\n  display: flex;\n  align-self: stretch;\n  overflow-x: auto;\n  border-radius: var(--cn-radius);\n}\n\n#cn_app .cn-tabs__indicator {\n  position: absolute;\n  top: 4px;\n  left: 0;\n  height: calc(100% - 8px);\n  width: var(--tab-w);\n  transform: translateX(var(--tab-x));\n  border-radius: var(--cn-radius-sm);\n  transition: transform var(--cn-dur) var(--cn-ease-pill), width var(--cn-dur) var(--cn-ease-pill);\n  z-index: 0;\n  pointer-events: none;\n}\n\n#cn_app .cn-tabs--l1 .cn-tabs__indicator {\n  background: var(--cn-grad-primary);\n  box-shadow: var(--cn-shadow-pill), inset 0 1px 0 rgba(255, 255, 255, 0.25);\n}\n\n#cn_app .cn-tabs--l2 .cn-tabs__indicator,\n#cn_app .cn-tabs--l3 .cn-tabs__indicator {\n  background: var(--cn-surface);\n  box-shadow: 0 1px 2px rgba(16, 42, 28, 0.1);\n}\n\n#cn_app .cn-tabs__item {\n  position: relative;\n  z-index: 1;\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  padding: 6px 16px;\n  border: 0;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2) !important;\n  font-size: 14px;\n  cursor: pointer;\n  white-space: nowrap;\n  flex-shrink: 0;\n  transition: color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .cn-tabs--l3 .cn-tabs__item {\n  flex-direction: column;\n  align-items: flex-start;\n  padding: 6px 14px;\n}\n\n#cn_app .cn-tabs__item:hover {\n  color: var(--cn-text) !important;\n}\n\n#cn_app .cn-tabs--l1 .cn-tabs__item--active {\n  color: #fff !important;\n  font-weight: 600;\n}\n\n#cn_app .cn-tabs--l2 .cn-tabs__item--active,\n#cn_app .cn-tabs--l3 .cn-tabs__item--active {\n  color: var(--cn-primary) !important;\n  font-weight: 600;\n}\n\n#cn_app .cn-tabs__label {\n  display: inline-flex;\n  flex-direction: column;\n  align-items: flex-start;\n  line-height: 1.2;\n}\n\n#cn_app .cn-tabs__label-zh {\n  font-size: 14px;\n}\n\n#cn_app .cn-tabs__label-en {\n  font-size: 11px;\n  font-family: var(--cn-font-mono);\n  color: var(--cn-text-3);\n}\n\n#cn_app .cn-tabs--l1 .cn-tabs__item--active .cn-tabs__label-en {\n  color: #fff;\n}\n\n#cn_app .cn-tabs--l3 .cn-tabs__item--active .cn-tabs__label-en {\n  color: var(--cn-primary);\n}\n\n#cn_app .cn-tabs__badge {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-width: 18px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: var(--cn-radius-pill);\n  background: var(--cn-primary);\n  color: #fff;\n  font-size: 11px;\n  font-weight: 600;\n}\n\n#cn_app .cn-tabs--l1 .cn-tabs__item--active .cn-tabs__badge {\n  background: rgba(255, 255, 255, 0.25);\n  color: #fff;\n}\n\n#cn_app .cn-tag {\n  display: inline-flex;\n  align-items: center;\n  padding: 0 8px;\n  height: 22px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-size: 12px;\n  font-weight: 500;\n}\n\n#cn_app .cn-space {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n}\n#cn_app .cn-space--block {\n  display: flex;\n}\n\n#cn_app .cn-shell {\n  display: flex;\n  height: 100vh;\n  width: 100%;\n  overflow: hidden;\n}\n#cn_app .cn-sider {\n  flex: 0 0 220px;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-ink);\n  border-right: 1px solid var(--cn-ink-2);\n}\n#cn_app .cn-brand {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  height: 56px;\n  padding: 0 20px;\n  border-bottom: 1px solid var(--cn-ink-line);\n}\n#cn_app .cn-brand__icon {\n  font-size: 20px;\n  color: var(--cn-primary-bright);\n}\n#cn_app .cn-brand__name {\n  font-size: 16px;\n  font-weight: 800;\n  letter-spacing: -0.02em;\n  background: var(--cn-grad-primary);\n  -webkit-background-clip: text;\n  background-clip: text;\n  -webkit-text-fill-color: transparent;\n}\n#cn_app .cn-menu {\n  flex: 1;\n  padding: 12px 10px;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  overflow-y: auto;\n  position: relative;\n  --menu-y: 0px;\n  --menu-h: 0px;\n}\n#cn_app .cn-menu__item {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  width: 100%;\n  padding: 9px 12px;\n  border: 0;\n  background: transparent;\n  position: relative;\n  z-index: 1;\n  border-radius: var(--cn-radius);\n  color: var(--cn-ink-text-2) !important;\n  font-size: 14px;\n  text-align: left;\n  transition: color var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .cn-menu__item:hover {\n  background: var(--cn-ink-2);\n  color: var(--cn-ink-text) !important;\n}\n#cn_app .cn-menu__item--active {\n  color: #fff !important;\n  font-weight: 500;\n}\n#cn_app .cn-menu__item--active:hover {\n  background: transparent;\n  color: #fff !important;\n}\n\n#cn_app .cn-menu__indicator {\n  position: absolute;\n  top: 0;\n  left: 10px;\n  right: 10px;\n  height: var(--menu-h);\n  transform: translateY(var(--menu-y));\n  background: var(--cn-grad-primary);\n  border-radius: var(--cn-radius);\n  box-shadow: var(--cn-shadow-pill), inset 0 1px 0 rgba(255, 255, 255, 0.22);\n  transition: transform var(--cn-dur) var(--cn-ease-pill);\n  z-index: 0;\n  pointer-events: none;\n}\n#cn_app .cn-menu__item i {\n  width: 16px;\n  text-align: center;\n  font-size: 14px;\n}\n#cn_app .cn-main {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n#cn_app .cn-header {\n  flex: 0 0 56px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 0 24px;\n  background: var(--cn-surface);\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-header__title {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .cn-content {\n  flex: 1;\n  position: relative;\n  padding: 20px;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n  background: var(--cn-bg);\n}\n#cn_app .cn-content::before {\n  content: '';\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  background: radial-gradient(720px 320px at 88% -12%, rgba(53, 179, 122, 0.07), transparent 72%);\n}\n\n#cn_app .toolbar {\n  margin-bottom: 16px;\n}\n#cn_app .model-row {\n  margin-top: 8px;\n}\n\n#cn_app .table-wrap {\n  overflow-x: auto;\n}\n#cn_app .pager {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  justify-content: flex-end;\n  margin-top: 12px;\n}\n#cn_app .pager__info {\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .cn-list {\n  list-style: none;\n}\n#cn_app .cn-list__item {\n  display: flex;\n  gap: 12px;\n  padding: 10px 0;\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-list__item:last-child {\n  border-bottom: 0;\n}\n#cn_app .cn-list__key {\n  flex: 0 0 80px;\n  color: var(--cn-primary-active);\n  font-weight: 600;\n  font-size: 13px;\n}\n#cn_app .cn-list__summary {\n  color: var(--cn-text-2);\n  line-height: 1.6;\n  flex: 1;\n  min-width: 0;\n}\n\n#cn_app .search-input {\n  width: 220px;\n  height: 28px;\n  font-size: 13px;\n}\n\n#cn_app .cn-range {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 100%;\n  height: 6px;\n  border-radius: 3px;\n  background: linear-gradient(\n    to right,\n    var(--cn-primary-bright) 0%,\n    var(--cn-primary) var(--cn-range-pct, 50%),\n    var(--cn-surface-3) var(--cn-range-pct, 50%),\n    var(--cn-surface-3) 100%\n  ) !important;\n  outline: none;\n  cursor: pointer;\n  margin: 0;\n  border: none;\n}\n\n#cn_app .cn-range::-webkit-slider-thumb {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: var(--cn-surface);\n  border: 2px solid var(--cn-primary);\n  box-shadow: 0 1px 3px rgba(16, 42, 28, 0.25);\n  cursor: pointer;\n}\n\n#cn_app .cn-range::-moz-range-thumb {\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: var(--cn-surface);\n  border: 2px solid var(--cn-primary);\n  box-shadow: 0 1px 3px rgba(16, 42, 28, 0.25);\n  cursor: pointer;\n}\n\n#cn_app .cn-range::-moz-range-track {\n  background: transparent;\n  border: 0;\n}\n\n#cn_app .range-row {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n\n#cn_app .range-val {\n  font-weight: 600;\n  color: var(--cn-primary);\n  min-width: 36px;\n  text-align: right;\n  font-size: 14px;\n}\n\n#cn_app .range-num {\n  width: 72px;\n  flex-shrink: 0;\n  text-align: center;\n  font-weight: 600;\n  color: var(--cn-primary);\n}\n\n#cn_app .range-num::-webkit-inner-spin-button {\n  opacity: 1;\n}\n\n#cn_app .prompt-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  height: 100%;\n  overflow: hidden;\n}\n\n#cn_app .prompt-head {\n  margin-bottom: -1px;\n  position: relative;\n  z-index: 2;\n}\n\n#cn_app .prompt-split {\n  display: grid;\n  grid-template-columns: 220px 1fr;\n  gap: 16px;\n  align-items: start;\n}\n\n#cn_app .preset-list {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n\n#cn_app .preset-list__item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 6px;\n  padding: 9px 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  color: var(--cn-text-2);\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .preset-list__item:hover {\n  border-color: var(--cn-primary-hover);\n  color: var(--cn-text);\n}\n\n#cn_app .preset-list__item--active {\n  border-color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-weight: 500;\n}\n\n#cn_app .preset-list__name {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .preset-list__card {\n  color: var(--cn-primary);\n  font-size: 12px;\n  margin-right: 2px;\n}\n\n#cn_app .preset-list__default {\n  flex: 0 0 auto;\n  color: var(--cn-warn);\n  font-size: 12px;\n}\n\n#cn_app .preset-list__count {\n  flex: 0 0 auto;\n  font-size: 11px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .prompt-editor__desc {\n  color: var(--cn-text-3);\n  font-size: 12px;\n  font-weight: 400;\n}\n\n#cn_app .block-list {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .block {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface-2);\n  overflow: hidden;\n}\n\n#cn_app .block--ghost {\n  opacity: 0.4;\n  border-style: dashed;\n  border-color: var(--cn-primary);\n}\n\n#cn_app .block-head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 8px 10px;\n  border-bottom: 1px solid var(--cn-border);\n  background: var(--cn-surface);\n}\n\n#cn_app .block-head__grip {\n  color: var(--cn-text-3);\n  font-size: 14px;\n  cursor: grab;\n}\n\n#cn_app .block-head__grip:active {\n  cursor: grabbing;\n}\n\n#cn_app .block-head__name {\n  flex: 1;\n  height: 28px;\n  font-size: 13px;\n  font-weight: 600;\n}\n\n#cn_app .block-segs {\n  min-height: 48px;\n  padding: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n\n#cn_app .block-add {\n  display: flex;\n  gap: 4px;\n  padding: 6px 8px 8px;\n  border-top: 1px solid var(--cn-border);\n  background: var(--cn-surface);\n}\n\n#cn_app .block-add-btn {\n  margin-top: 14px;\n}\n\n#cn_app .seg-add-row {\n  display: flex;\n  gap: 8px;\n  margin-top: 14px;\n}\n\n#cn_app .seg-item {\n  margin-bottom: 10px;\n  padding: 10px 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface-2);\n  transition:\n    box-shadow var(--cn-dur-fast) var(--cn-ease),\n    border-color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .seg-item:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .seg-item:hover {\n  border-color: var(--cn-primary-hover);\n  box-shadow: 0 1px 4px rgba(18, 130, 82, 0.12);\n}\n\n#cn_app .seg-item--ghost {\n  opacity: 0.4;\n  border-style: dashed;\n  border-color: var(--cn-primary);\n}\n\n#cn_app .seg-item__bar {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  margin-bottom: 8px;\n}\n\n#cn_app .seg-item__grip {\n  color: var(--cn-text-3);\n  font-size: 14px;\n  cursor: grab;\n}\n\n#cn_app .seg-item__grip:active {\n  cursor: grabbing;\n}\n\n#cn_app .seg-item__role {\n  height: 22px;\n  padding: 0 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: 11px;\n  background: var(--cn-surface);\n  color: var(--cn-text-2);\n  font-size: 11px;\n  font-weight: 700;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .seg-item__role:hover {\n  border-color: var(--cn-primary);\n  color: var(--cn-primary);\n}\n\n#cn_app .seg-item__name {\n  flex: 1;\n  min-width: 0;\n  height: 28px;\n  font-size: 13px;\n  font-weight: 600;\n}\n\n#cn_app .seg-item__seq {\n  flex: 0 0 auto;\n  font-size: 12px;\n  color: var(--cn-primary);\n  font-weight: 600;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n}\n\n#cn_app .seg-item__edit {\n  display: block;\n  width: 100%;\n  min-height: 120px;\n  padding: 8px 11px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  color: var(--cn-text);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.6;\n  white-space: pre-wrap;\n  word-wrap: break-word;\n  outline: none;\n  transition:\n    border-color 0.15s ease,\n    box-shadow 0.15s ease;\n  box-sizing: border-box;\n  overflow: hidden;\n  max-height: 320px;\n}\n\n#cn_app .seg-item__edit:focus-within {\n  border-color: var(--cn-primary);\n  background: var(--cn-surface);\n  box-shadow: 0 0 0 3px rgba(18, 130, 82, 0.16);\n}\n\n#cn_app .seg-var {\n  color: var(--cn-primary-active);\n  background: var(--cn-primary-soft);\n  border: 1px solid var(--cn-primary);\n  border-radius: 3px;\n  padding: 0 4px;\n  font-weight: 600;\n  cursor: help;\n}\n\n#cn_app .seg-var:hover {\n  background: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .seg-item__edit .cm-editor {\n  background: transparent;\n  color: inherit;\n  height: 100%;\n}\n\n#cn_app .seg-item__edit .cm-scroller {\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.6;\n}\n\n#cn_app .seg-item__edit .cm-content {\n  padding: 0;\n  caret-color: var(--cn-primary);\n  min-height: 104px;\n}\n\n#cn_app .seg-item__edit .cm-focused {\n  outline: none;\n}\n\n#cn_app .prompt-foot {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 16px;\n}\n\n#cn_app .prompt-foot__hint {\n  color: var(--cn-text-3);\n  font-size: 12px;\n  line-height: 1.6;\n}\n\n#cn_app .prompt-foot__hint code {\n  padding: 1px 5px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 11px;\n}\n\n#cn_app .prompt-wrap {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n  min-height: 0;\n}\n\n#cn_app .prompt-wrap .prompt-head {\n  margin: 0;\n  padding: 14px 16px 12px;\n  border-bottom: 1px solid var(--cn-border);\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  align-items: flex-start;\n}\n\n#cn_app .prompt-wrap .prompt-split {\n  flex: 1;\n  min-height: 0;\n  padding: 16px;\n  gap: 16px;\n  overflow: hidden;\n  align-items: stretch;\n  grid-template-rows: minmax(0, 1fr);\n}\n\n#cn_app .prompt-side {\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n  overflow: hidden;\n}\n\n#cn_app .prompt-editor {\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n  overflow: hidden;\n}\n\n#cn_app .prompt-editor .cn-card__head {\n  padding: 0 0 12px;\n  border-bottom: 1px solid var(--cn-border);\n  margin-bottom: 16px;\n}\n\n#cn_app .prompt-side .cn-card__head {\n  padding: 0 0 12px;\n  border-bottom: 1px solid var(--cn-border);\n  margin-bottom: 12px;\n}\n\n#cn_app .prompt-side .cn-card__body {\n  padding: 0;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .prompt-editor .cn-card__body {\n  padding: 0;\n  flex: 1;\n  min-height: 0;\n  overflow: hidden;\n  display: flex;\n  flex-direction: column;\n}\n\n/* 模板/纪要表编辑区：body 内部纵向滚动（head 与左侧不滚）。\n   提示词配置的 .block-list 自身已 overflow-y:auto，无需此规则。\n   特异性需高于 .prompt-editor .cn-card__body 的 overflow:hidden 才能生效。 */\n#cn_app .prompt-editor .cn-card__body.template-editor-body {\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n\n#cn_app .cn-modal-mask {\n  position: fixed;\n  inset: 0;\n  z-index: var(--cn-z-modal);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(14, 35, 24, 0.45);\n  backdrop-filter: blur(4px);\n}\n\n#cn_app .cn-modal {\n  width: 90vw;\n  max-width: 1100px;\n  height: 90vh;\n  max-height: 800px;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius-lg);\n  box-shadow: var(--cn-shadow-lift);\n  overflow: hidden;\n}\n\n#cn_app .cn-modal__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 15px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n\n#cn_app .cn-modal__code {\n  margin: 0;\n  padding: 20px;\n  overflow: auto;\n  background: var(--cn-ink);\n  color: var(--cn-ink-text);\n  font-family: var(--cn-font-mono);\n  font-size: 13px;\n  line-height: 1.7;\n  white-space: pre-wrap;\n  word-break: break-word;\n  flex: 1;\n  min-height: 0;\n}\n\n#cn_app .model-picker-modal {\n  width: 90vw;\n  max-width: 520px;\n  height: auto;\n  max-height: 70vh;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius-lg);\n  box-shadow: var(--cn-shadow-lift);\n  overflow: hidden;\n}\n\n#cn_app .model-picker__search {\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .model-picker__list {\n  overflow-y: auto;\n  padding: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n}\n\n#cn_app .model-picker__item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  width: 100%;\n  padding: 10px 14px;\n  border: none;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text);\n  font-size: 14px;\n  text-align: left;\n  cursor: pointer;\n  transition: background 0.1s;\n}\n\n#cn_app .model-picker__item:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .model-picker__item--picked {\n  background: var(--cn-primary-soft);\n  font-weight: 500;\n}\n\n#cn_app .model-picker__name {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .model-picker__check {\n  color: var(--cn-primary);\n  font-size: 14px;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-btn--danger {\n  background: var(--cn-danger);\n  border-color: var(--cn-danger);\n  color: #fff;\n}\n\n#cn_app .cn-btn--danger:hover:not(:disabled) {\n  background: #c13a3a;\n  border-color: #c13a3a;\n  color: #fff;\n}\n\n#cn_app .cn-dialog-mask {\n  position: fixed;\n  inset: 0;\n  z-index: var(--cn-z-dialog);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(14, 35, 24, 0.45);\n  backdrop-filter: blur(4px);\n  opacity: 0;\n  transition: opacity var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .cn-dialog-mask--show {\n  opacity: 1;\n}\n\n#cn_app .cn-dialog {\n  position: relative;\n  width: min(420px, 85vw);\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius-lg);\n  box-shadow: var(--cn-shadow-lift);\n  overflow: hidden;\n  transform: scale(0.96);\n  opacity: 0;\n  transition: opacity var(--cn-dur) var(--cn-ease), transform var(--cn-dur) var(--cn-ease);\n}\n\n#cn_app .cn-dialog-mask--show .cn-dialog {\n  transform: scale(1);\n  opacity: 1;\n}\n\n#cn_app .cn-dialog__bar {\n  position: absolute;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  width: 4px;\n  background: var(--cn-primary);\n}\n\n#cn_app .cn-dialog--danger .cn-dialog__bar {\n  background: var(--cn-danger);\n}\n\n#cn_app .cn-dialog__hd {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 14px 16px 14px 20px;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .cn-dialog__brand-ico {\n  color: var(--cn-primary);\n  font-size: 16px;\n}\n\n#cn_app .cn-dialog--danger .cn-dialog__brand-ico {\n  color: var(--cn-danger);\n}\n\n#cn_app .cn-dialog__brand {\n  font-size: 13px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n  letter-spacing: 0.5px;\n}\n\n#cn_app .cn-dialog__title {\n  font-size: 16px;\n  font-weight: 600;\n  color: var(--cn-text);\n  margin-left: auto;\n}\n\n#cn_app .cn-dialog__close {\n  margin-left: 4px;\n  color: var(--cn-text-3);\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-size: 14px;\n  padding: 2px 4px;\n  line-height: 1;\n  transition: color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .cn-dialog__close:hover {\n  color: var(--cn-text);\n}\n\n#cn_app .cn-dialog__body {\n  padding: 16px 20px;\n  color: var(--cn-text-2);\n  font-size: 14px;\n  line-height: 1.6;\n  white-space: pre-wrap;\n}\n\n#cn_app .cn-dialog__foot {\n  display: flex;\n  justify-content: flex-end;\n  gap: 8px;\n  padding: 12px 20px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .cn-dialog__foot .cn-btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  height: 32px;\n  padding: 0 15px;\n  border: 1px solid var(--cn-primary);\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-primary-hover);\n  font-size: 14px;\n  cursor: pointer;\n  transition: background var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .cn-dialog__foot .cn-btn:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cn-dialog__foot .cn-btn--primary {\n  background: var(--cn-primary);\n  border-color: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .cn-dialog__foot .cn-btn--primary:hover {\n  background: var(--cn-primary-hover);\n  border-color: var(--cn-primary-hover);\n}\n\n#cn_app .cn-dialog__foot .cn-btn--danger {\n  background: var(--cn-danger);\n  border-color: var(--cn-danger);\n  color: #fff;\n}\n\n#cn_app .cn-dialog__foot .cn-btn--danger:hover {\n  background: #c13a3a;\n  border-color: #c13a3a;\n}\n\n.cn-has-recall .mes_text > :not(.cn-recall-host):not(#curEditTextarea) {\n  display: none;\n}\n\n.cn-recall-host {\n  display: block;\n}\n\n#cn_app .api-page {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) 340px;\n  gap: 24px;\n  align-items: start;\n}\n\n#cn_app .api-group {\n  display: grid;\n  grid-template-columns: 180px minmax(0, 1fr);\n  gap: 12px;\n  min-width: 0;\n  align-items: start;\n}\n\n#cn_app .api-preset-list {\n  min-width: 0;\n}\n\n#cn_app .api-preset-list__body {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  padding: 8px;\n}\n\n#cn_app .api-preset-item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 6px;\n  padding: 8px 10px;\n  border: 1px solid transparent;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2);\n  font-size: 13px;\n  cursor: pointer;\n  text-align: left;\n  transition: background var(--cn-dur-fast) var(--cn-ease), color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-preset-item:hover:not(:disabled) {\n  background: var(--cn-surface-2);\n}\n\n#cn_app .api-preset-item--active {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n  font-weight: 600;\n  border-color: var(--cn-border-green);\n}\n\n#cn_app .api-preset-item:disabled {\n  cursor: default;\n  opacity: 1;\n}\n\n#cn_app .api-preset-item__name {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .api-preset-item__star {\n  color: var(--cn-primary);\n  font-size: 11px;\n  flex-shrink: 0;\n}\n\n#cn_app .api-preset-list__new {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  padding: 8px 10px;\n  border: 1px dashed var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2);\n  font-size: 13px;\n  cursor: pointer;\n  margin-top: 4px;\n  transition: border-color var(--cn-dur-fast) var(--cn-ease), color var(--cn-dur-fast) var(--cn-ease), background var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-preset-list__new:hover {\n  border-color: var(--cn-primary);\n  color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .api-preset-list__del {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  padding: 6px 10px;\n  border: none;\n  background: transparent;\n  color: var(--cn-text-3);\n  font-size: 12px;\n  cursor: pointer;\n  text-align: left;\n  margin-top: 2px;\n  transition: color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-preset-list__del:hover {\n  color: var(--cn-danger);\n}\n\n#cn_app .api-editor {\n  min-width: 0;\n}\n\n#cn_app .cn-input--nospin::-webkit-outer-spin-button,\n#cn_app .cn-input--nospin::-webkit-inner-spin-button {\n  -webkit-appearance: none;\n  margin: 0;\n}\n\n#cn_app .cn-input--nospin {\n  -moz-appearance: textfield;\n  appearance: textfield;\n}\n\n#cn_app .api-head-desc {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 400;\n}\n\n#cn_app .api-vector .cn-card__head > span:first-child {\n  white-space: nowrap;\n  flex-shrink: 0;\n}\n\n#cn_app .api-vector .api-head-desc {\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  min-width: 0;\n}\n\n#cn_app .api-section-divider {\n  border-top: 1px solid var(--cn-border);\n  margin: 14px 0;\n}\n\n#cn_app .api-form-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0 16px;\n}\n\n#cn_app .api-sampling-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0 16px;\n}\n\n#cn_app .api-advanced-toggle {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  color: var(--cn-text-2);\n  font-size: 13px;\n  padding: 4px 0;\n  transition: color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-advanced-toggle:hover {\n  color: var(--cn-primary);\n}\n\n#cn_app .api-advanced-toggle__icon {\n  font-size: 10px;\n  transition: transform var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-advanced-toggle__icon--open {\n  transform: rotate(90deg);\n}\n\n#cn_app .api-advanced {\n  padding-top: 8px;\n}\n\n#cn_app .api-actions {\n  display: flex;\n  justify-content: flex-end;\n  gap: 8px;\n  border-top: 1px solid var(--cn-border);\n  margin-top: 14px;\n  padding-top: 14px;\n}\n\n#cn_app .model-row {\n  display: flex;\n  gap: 8px;\n  align-items: center;\n}\n\n#cn_app .model-select {\n  margin-top: 6px;\n  width: 100%;\n}\n\n@media (max-width: 900px) {\n  #cn_app .api-page {\n    grid-template-columns: 1fr;\n  }\n  #cn_app .api-group {\n    grid-template-columns: 1fr;\n  }\n  #cn_app .mf-page {\n    grid-template-columns: 1fr;\n  }\n}\n\n#cn_app .welcome-root {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  min-width: 0;\n}\n\n#cn_app .welcome-hero {\n  position: relative;\n  display: flex;\n  align-items: flex-start;\n  justify-content: space-between;\n  gap: 16px;\n  padding: 22px 24px;\n  background: var(--cn-surface);\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-lg);\n  box-shadow: var(--cn-shadow);\n  overflow: hidden;\n}\n\n#cn_app .welcome-hero::after {\n  content: '';\n  position: absolute;\n  top: -130px;\n  right: -90px;\n  width: 380px;\n  height: 300px;\n  border-radius: 50%;\n  background: radial-gradient(closest-side, rgba(53, 179, 122, 0.14), transparent);\n  pointer-events: none;\n}\n\n#cn_app .welcome-hero__left {\n  min-width: 0;\n  position: relative;\n  z-index: 1;\n}\n\n#cn_app .welcome-hero__title {\n  margin: 0 0 6px 0;\n  font-size: 26px;\n  font-weight: 800;\n  letter-spacing: -0.02em;\n  background: var(--cn-grad-primary);\n  -webkit-background-clip: text;\n  background-clip: text;\n  -webkit-text-fill-color: transparent;\n}\n\n#cn_app .welcome-hero__sub {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-hero__actions {\n  display: flex;\n  gap: 8px;\n  flex-shrink: 0;\n  position: relative;\n  z-index: 1;\n}\n\n#cn_app .welcome-stats {\n  display: grid;\n  grid-template-columns: minmax(0, 2fr) minmax(0, 2fr) minmax(0, 3fr);\n  gap: 14px;\n}\n\n#cn_app .welcome-stat {\n  display: grid;\n  grid-template-columns: 44px minmax(0, 1fr);\n  grid-template-rows: auto auto;\n  column-gap: 12px;\n  align-items: center;\n  padding: 14px 16px;\n  background: var(--cn-surface);\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  box-shadow: var(--cn-shadow);\n}\n\n#cn_app .welcome-stat__icon {\n  grid-row: 1 / 3;\n  width: 44px;\n  height: 44px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 18px;\n}\n\n#cn_app .welcome-stat__num {\n  font-family: var(--cn-font-mono);\n  font-size: 22px;\n  font-weight: 700;\n  color: var(--cn-text);\n  line-height: 1.1;\n  word-break: break-all;\n}\n\n#cn_app .welcome-stat__num--text {\n  font-family: var(--cn-font);\n  font-size: 15px;\n  font-weight: 600;\n}\n\n#cn_app .welcome-stat__label {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  margin-top: 3px;\n}\n\n#cn_app .welcome-panels {\n  display: grid;\n  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);\n  gap: 14px;\n  align-items: start;\n}\n\n#cn_app .welcome-badge {\n  padding: 2px 10px;\n  border-radius: 999px;\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-family: var(--cn-font-mono);\n  font-size: 12px;\n  font-weight: 600;\n}\n\n#cn_app .welcome-step {\n  display: grid;\n  grid-template-columns: 28px minmax(0, 1fr) auto;\n  gap: 12px;\n  align-items: center;\n  padding: 11px 16px;\n}\n\n#cn_app .welcome-step + .welcome-step {\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .welcome-step__bead {\n  width: 28px;\n  height: 28px;\n  border-radius: 50%;\n  background: var(--cn-surface-3);\n  color: var(--cn-text-3);\n  font-family: var(--cn-font-mono);\n  font-size: 12px;\n  font-weight: 700;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-step--ok .welcome-step__bead {\n  background: var(--cn-grad-primary);\n  color: #fff;\n  box-shadow: var(--cn-shadow-pill);\n}\n\n#cn_app .welcome-step__body {\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  gap: 1px;\n}\n\n#cn_app .welcome-step__name {\n  font-size: 14px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n\n#cn_app .welcome-step__desc {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-step__status {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  white-space: nowrap;\n}\n\n#cn_app .welcome-step--ok .welcome-step__status {\n  color: var(--cn-primary);\n  font-weight: 600;\n}\n\n#cn_app .welcome-health-item {\n  display: grid;\n  grid-template-columns: 32px minmax(0, 1fr) auto;\n  gap: 12px;\n  align-items: center;\n  padding: 12px 16px;\n}\n\n#cn_app .welcome-health-item + .welcome-health-item {\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .welcome-health-item__icon {\n  width: 32px;\n  height: 32px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-surface-3);\n  color: var(--cn-text-3);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 14px;\n}\n\n#cn_app .welcome-health-item--ok .welcome-health-item__icon {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n}\n\n#cn_app .welcome-health-item--warn .welcome-health-item__icon {\n  background: var(--cn-warn-soft);\n  color: var(--cn-warn);\n}\n\n#cn_app .welcome-health-item__body {\n  min-width: 0;\n}\n\n#cn_app .welcome-health-item__body strong {\n  display: block;\n  font-size: 14px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n\n#cn_app .welcome-health-item__body p {\n  margin: 2px 0 0;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n@media (max-width: 900px) {\n  #cn_app .welcome-panels {\n    grid-template-columns: 1fr;\n  }\n}\n\n@media (max-width: 720px) {\n  #cn_app .welcome-stats {\n    grid-template-columns: 1fr;\n  }\n}\n\n#cn_app .cn-check {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 13px;\n  color: var(--cn-text);\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .cn-check input[type='checkbox'] {\n  appearance: auto;\n  -webkit-appearance: auto;\n  background: transparent !important;\n  accent-color: var(--cn-primary);\n  width: 16px;\n  height: 16px;\n  cursor: pointer;\n  margin: 0;\n}\n\n#cn_app .cn-switch {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .cn-switch input[type='checkbox'] {\n  display: none;\n}\n\n#cn_app .cn-switch__track {\n  width: 36px;\n  height: 20px;\n  border-radius: 10px;\n  background: var(--cn-border-strong);\n  position: relative;\n  transition: background 0.2s;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-switch__track::after {\n  content: '';\n  position: absolute;\n  top: 2px;\n  left: 2px;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: #fff;\n  transition: transform var(--cn-dur) var(--cn-ease-pill);\n}\n\n#cn_app .cn-switch input:checked + .cn-switch__track {\n  background: var(--cn-grad-primary);\n}\n\n#cn_app .cn-switch input:checked + .cn-switch__track::after {\n  transform: translateX(16px);\n}\n\n#cn_app .cn-switch__label {\n  font-size: 13px;\n  color: var(--cn-text-2);\n}\n\n/* ── 表格模板编辑器 ── */\n\n#cn_app .tpl-table-card {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  margin-bottom: 10px;\n  overflow: hidden;\n  flex-shrink: 0;\n}\n\n#cn_app .tpl-table-card--active {\n  border-color: var(--cn-primary);\n}\n\n#cn_app .tpl-table-card__head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  min-height: 42px;\n  padding: 10px 12px;\n  background: var(--cn-surface-2);\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .tpl-table-card--active .tpl-table-card__head {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .tpl-table-card__name {\n  font-weight: 600;\n  font-size: 14px;\n  color: var(--cn-text);\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .tpl-table-card__meta {\n  font-size: 12px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .tpl-table-card__body {\n  padding: 12px 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .template-editor-body {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .template-editor-empty {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 12px;\n  padding: 40px 20px;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .tpl-row {\n  display: flex;\n  gap: 12px;\n}\n\n#cn_app .tpl-field {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n\n#cn_app .tpl-label {\n  font-size: 13px;\n  font-weight: 600;\n  color: var(--cn-text-2);\n}\n\n#cn_app .tpl-section {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  padding: 4px 0;\n}\n\n#cn_app .tpl-section__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n#cn_app .tpl-textarea {\n  width: 100%;\n  min-height: 48px;\n  resize: vertical;\n}\n\n#cn_app .tpl-cols {\n  display: flex;\n  flex-direction: column;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  overflow: hidden;\n}\n\n#cn_app .tpl-col-head,\n#cn_app .tpl-col-row {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  padding: 6px 8px;\n}\n\n#cn_app .tpl-col-head {\n  background: var(--cn-surface-2);\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 12px;\n  font-weight: 600;\n  color: var(--cn-text-2);\n}\n\n#cn_app .tpl-col-row {\n  border-bottom: 1px solid var(--cn-surface-2);\n}\n\n#cn_app .tpl-col-row:last-child {\n  border-bottom: none;\n}\n\n#cn_app .tpl-col-cell {\n  font-size: 13px;\n}\n\n#cn_app .tpl-col-cell.name {\n  width: 100px;\n  flex-shrink: 0;\n}\n#cn_app .tpl-col-cell.type {\n  width: 76px;\n  flex-shrink: 0;\n}\n#cn_app .tpl-col-cell.flags {\n  width: 96px;\n  flex-shrink: 0;\n  display: flex;\n  gap: 5px;\n  align-items: center;\n}\n#cn_app .tpl-col-cell.note {\n  flex: 1;\n  min-width: 90px;\n}\n#cn_app .tpl-col-cell.del {\n  width: 28px;\n  flex-shrink: 0;\n}\n#cn_app .tpl-col-cell.role {\n  width: 92px;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-btn--xs {\n  padding: 0 4px;\n  height: 22px;\n  font-size: 11px;\n  border-radius: 3px;\n  line-height: 20px;\n}\n\n#cn_app .prompt-empty {\n  padding: 20px;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .prompt-side-foot {\n  display: flex;\n  gap: 6px;\n  padding: 10px 12px;\n  border-top: 1px solid var(--cn-border);\n  flex-shrink: 0;\n  margin-top: auto;\n}\n\n@media (max-width: 720px) {\n  #cn_app .prompt-split {\n    grid-template-columns: 1fr;\n  }\n}\n\n#cn_app .cn-menu__spacer {\n  flex: 1;\n}\n\n#cn_app .cn-menu__item--debug {\n  margin-top: auto;\n}\n\n#cn_app .debug-page {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  height: 100%;\n}\n\n#cn_app .debug-panel {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  overflow: hidden;\n}\n\n#cn_app .debug-toolbar {\n  display: flex;\n  gap: 6px;\n  flex-wrap: wrap;\n  align-items: center;\n}\n\n#cn_app .debug-toolbar__select {\n  width: auto;\n  min-width: 80px;\n}\n\n#cn_app .debug-toolbar__search {\n  flex: 1;\n  min-width: 120px;\n}\n\n#cn_app .debug-toolbar__hint {\n  display: flex;\n  gap: 16px;\n  font-size: 11px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .debug-log-list {\n  flex: 1;\n  overflow-y: auto;\n  font-family: 'Consolas', 'Courier New', monospace;\n  font-size: 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: 6px;\n  background: var(--cn-bg);\n}\n\n#cn_app .debug-log-row {\n  display: grid;\n  grid-template-columns: 90px 44px 80px 1fr;\n  padding: 3px 8px;\n  border-bottom: 1px solid var(--cn-border);\n  align-items: baseline;\n  gap: 4px;\n}\n\n#cn_app .debug-log-row:last-child {\n  border-bottom: none;\n}\n\n#cn_app .debug-log-row--error {\n  background: rgba(214, 69, 69, 0.07);\n}\n\n#cn_app .debug-log-row--warn {\n  background: rgba(201, 122, 16, 0.05);\n}\n\n#cn_app .debug-log-row__time {\n  color: var(--cn-text-3);\n  white-space: nowrap;\n}\n\n#cn_app .debug-log-row__level {\n  font-weight: 600;\n  font-size: 10px;\n  padding: 1px 4px;\n  border-radius: 3px;\n  text-align: center;\n}\n\n#cn_app .debug-log-row__level--error {\n  color: var(--cn-danger);\n  background: rgba(214, 69, 69, 0.12);\n}\n\n#cn_app .debug-log-row__level--warn {\n  color: var(--cn-warn);\n  background: rgba(201, 122, 16, 0.12);\n}\n\n#cn_app .debug-log-row__tag {\n  color: var(--cn-primary);\n}\n\n#cn_app .debug-log-row__msg {\n  color: var(--cn-text);\n  word-break: break-all;\n}\n\n#cn_app .debug-status-grid {\n  display: grid;\n  grid-template-columns: 3fr 2fr;\n  gap: 12px;\n}\n\n@media (max-width: 860px) {\n  #cn_app .debug-status-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n#cn_app .debug-status-item {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 6px 0;\n}\n\n#cn_app .debug-status-item + .debug-status-item {\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .debug-status-item__label {\n  color: var(--cn-text-2);\n  font-size: 13px;\n}\n\n#cn_app .debug-status-item__value {\n  color: var(--cn-text);\n  font-size: 13px;\n  font-weight: 500;\n}\n\n#cn_app .debug-ok {\n  color: var(--cn-primary) !important;\n}\n\n#cn_app .debug-err {\n  color: var(--cn-danger) !important;\n}\n\n#cn_app .debug-status-actions {\n  display: flex;\n  gap: 6px;\n  padding-top: 8px;\n}\n\n#cn_app .preset-list,\n#cn_app .template-editor-body,\n#cn_app .table-row-grid,\n#cn_app .chronicle-list,\n#cn_app .block-list {\n  position: relative;\n}\n\n#cn_app .cn-route-enter-active,\n#cn_app .cn-route-leave-active {\n  transition: opacity var(--cn-dur) var(--cn-ease);\n}\n#cn_app .cn-route-enter-from,\n#cn_app .cn-route-leave-to {\n  opacity: 0;\n}\n\n#cn_app .cn-list-enter-active,\n#cn_app .cn-list-leave-active {\n  transition:\n    opacity var(--cn-dur-fast) var(--cn-ease),\n    transform var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .cn-list-enter-from {\n  opacity: 0;\n  transform: translateY(-6px);\n}\n#cn_app .cn-list-leave-to {\n  opacity: 0;\n  transform: translateY(4px);\n}\n#cn_app .cn-list-move {\n  transition: transform var(--cn-dur) var(--cn-ease);\n}\n\n#cn_app .cn-modal-enter-active,\n#cn_app .cn-modal-leave-active {\n  transition: opacity var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .cn-modal-enter-from,\n#cn_app .cn-modal-leave-to {\n  opacity: 0;\n}\n#cn_app .cn-modal-enter-active .cn-modal,\n#cn_app .cn-modal-leave-active .cn-modal {\n  transition:\n    opacity var(--cn-dur) var(--cn-ease),\n    transform var(--cn-dur) var(--cn-ease);\n}\n#cn_app .cn-modal-enter-from .cn-modal,\n#cn_app .cn-modal-leave-to .cn-modal {\n  opacity: 0;\n  transform: scale(0.96);\n}\n\n#cn_app .cn-input--error,\n#cn_app .cn-select--error,\n#cn_app .cn-textarea--error {\n  border-color: var(--cn-danger) !important;\n  box-shadow: 0 0 0 3px rgba(214, 69, 69, 0.15) !important;\n}\n\n#cn_app .cn-fold-enter-active,\n#cn_app .cn-fold-leave-active {\n  transition:\n    opacity var(--cn-dur) var(--cn-ease),\n    transform var(--cn-dur) var(--cn-ease);\n}\n#cn_app .cn-fold-enter-from {\n  opacity: 0;\n  transform: translateY(-6px);\n}\n#cn_app .cn-fold-leave-to {\n  opacity: 0;\n  transform: translateY(-4px);\n}\n\n#cn_app .cn-menu__section {\n  padding: 14px 12px 6px;\n  font-size: 12px;\n  font-weight: 700;\n  letter-spacing: 1px;\n  color: var(--cn-ink-text);\n}\n\n#cn_app .strategy-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  height: 100%;\n  overflow: hidden;\n}\n\n#cn_app .strategy-head {\n  padding: 12px;\n}\n\n#cn_app .strategy-body {\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .strategy-section__head {\n  padding: 12px 16px 8px;\n}\n\n#cn_app .strategy-section__title {\n  font-size: 12px;\n  font-weight: 600;\n  letter-spacing: 1.5px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .strategy-row {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) auto;\n  align-items: center;\n  gap: 16px;\n  padding: 11px 16px;\n}\n\n#cn_app .strategy-row + .strategy-row {\n  border-top: 1px solid var(--cn-surface-2);\n}\n\n#cn_app .strategy-row__text {\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n}\n\n#cn_app .strategy-row__label {\n  font-size: 14px;\n  font-weight: 500;\n  color: var(--cn-text);\n}\n\n#cn_app .strategy-row__desc {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .strategy-num {\n  width: 96px;\n}\n\n#cn_app .strategy-select {\n  width: 220px;\n}\n\n#cn_app .strategy-warn {\n  display: flex;\n  align-items: flex-start;\n  gap: 8px;\n  padding: 10px 16px 12px;\n  border-top: 1px solid var(--cn-surface-2);\n  background: var(--cn-warn-soft);\n  color: var(--cn-warn);\n  font-size: 12px;\n  font-weight: 600;\n  line-height: 1.5;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  #cn_app *,\n  #cn_app *::before,\n  #cn_app *::after {\n    animation-duration: 0.01ms !important;\n    animation-iteration-count: 1 !important;\n    transition-duration: 0.01ms !important;\n  }\n}\n\n#cn_app .mf-page {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);\n  gap: 16px;\n  align-items: start;\n}\n#cn_app .mf-left,\n#cn_app .mf-right {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  min-width: 0;\n}\n#cn_app .mf-card {\n  background: var(--cn-surface);\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  overflow: hidden;\n}\n#cn_app .mf-card__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  background: var(--cn-surface-2);\n}\n#cn_app .mf-card__title {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 15px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .mf-card__icon {\n  color: var(--cn-primary);\n  font-size: 14px;\n}\n#cn_app .mf-card__actions {\n  display: flex;\n  gap: 4px;\n}\n#cn_app .mf-card__body {\n  padding: 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n}\n#cn_app .mf-stats {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 8px;\n}\n#cn_app .mf-stat {\n  background: var(--cn-surface-2);\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  padding: 10px 8px;\n  text-align: center;\n}\n#cn_app .mf-stat__num {\n  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;\n  font-size: 22px;\n  font-weight: 600;\n  color: var(--cn-primary);\n  line-height: 1.1;\n}\n#cn_app .mf-stat__label {\n  font-size: 11px;\n  color: var(--cn-text-3);\n  margin-top: 4px;\n}\n#cn_app .mf-table-wrap {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  overflow: hidden;\n}\n#cn_app .mf-table {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: 13px;\n}\n#cn_app .mf-table th {\n  background: var(--cn-surface-2);\n  color: var(--cn-text-3);\n  font-weight: 400;\n  text-align: left;\n  padding: 8px 12px;\n  font-size: 11px;\n  letter-spacing: 0.5px;\n}\n#cn_app .mf-table td {\n  padding: 8px 12px;\n  border-top: 1px solid var(--cn-border);\n  color: var(--cn-text);\n}\n#cn_app .mf-table__name {\n  font-weight: 500;\n}\n#cn_app .mf-table__display {\n  font-weight: 500;\n}\n#cn_app .mf-table__raw {\n  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;\n  font-size: 11px;\n  color: var(--cn-text-3);\n  margin-left: 6px;\n}\n#cn_app .mf-table__empty {\n  text-align: center;\n  color: var(--cn-text-3);\n  padding: 16px;\n}\n#cn_app .mf-tag {\n  display: inline-block;\n  padding: 1px 8px;\n  border-radius: 999px;\n  font-size: 11px;\n  background: var(--cn-surface-2);\n  color: var(--cn-text-2);\n  border: 1px solid var(--cn-border);\n}\n#cn_app .mf-tag--chronicle {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  border-color: var(--cn-border-green);\n}\n#cn_app .mf-check {\n  display: inline-flex;\n  cursor: pointer;\n}\n#cn_app .mf-check input {\n  width: 16px;\n  height: 16px;\n  accent-color: var(--cn-primary);\n  cursor: pointer;\n}\n#cn_app .mf-badge {\n  font-size: 11px;\n  padding: 2px 10px;\n  border-radius: 999px;\n  font-weight: 500;\n}\n#cn_app .mf-badge--ok {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n}\n#cn_app .mf-badge--warn {\n  background: var(--cn-warn-soft);\n  color: var(--cn-warn);\n}\n#cn_app .mf-field {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n#cn_app .mf-field__label {\n  font-size: 12px;\n  color: var(--cn-text-2);\n}\n#cn_app .mf-grid-2 {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 12px;\n}\n#cn_app .mf-field__hint {\n  font-size: 12px;\n  color: var(--cn-text-3);\n}\n#cn_app .mf-range {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n}\n#cn_app .mf-range__sep {\n  color: var(--cn-text-3);\n}\n#cn_app .mf-switch {\n  position: relative;\n  width: 36px;\n  height: 20px;\n}\n#cn_app .mf-switch input {\n  opacity: 0;\n  width: 0;\n  height: 0;\n}\n#cn_app .mf-switch__track {\n  position: absolute;\n  inset: 0;\n  background: var(--cn-border);\n  border-radius: 999px;\n  transition: background var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .mf-switch__track::after {\n  content: '';\n  position: absolute;\n  top: 2px;\n  left: 2px;\n  width: 16px;\n  height: 16px;\n  background: var(--cn-surface);\n  border-radius: 50%;\n  transition: transform var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .mf-switch input:checked + .mf-switch__track {\n  background: var(--cn-grad-primary);\n}\n#cn_app .mf-switch input:checked + .mf-switch__track::after {\n  transform: translateX(16px);\n}\n#cn_app .mf-actions {\n  display: flex;\n  gap: 12px;\n  margin-top: 4px;\n}\n#cn_app .mf-btn {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 14px;\n  border-radius: var(--cn-radius-sm);\n  font-size: 13px;\n  font-weight: 500;\n  border: 1px solid transparent;\n  transition: background var(--cn-dur-fast) var(--cn-ease), transform 0.05s;\n  cursor: pointer;\n}\n#cn_app .mf-btn:active:not(:disabled) {\n  transform: translateY(1px);\n}\n#cn_app .mf-btn:disabled {\n  opacity: 0.5;\n  cursor: not-allowed;\n}\n#cn_app .mf-btn--primary {\n  background: var(--cn-grad-primary);\n  color: #fff !important;\n  box-shadow: var(--cn-shadow-pill), inset 0 1px 0 rgba(255, 255, 255, 0.25);\n}\n#cn_app .mf-btn--primary:hover:not(:disabled) {\n  background: var(--cn-primary-hover);\n}\n#cn_app .mf-btn--danger {\n  background: var(--cn-surface);\n  border-color: var(--cn-danger);\n  color: var(--cn-text) !important;\n}\n#cn_app .mf-btn--danger:hover:not(:disabled) {\n  background: var(--cn-danger-soft);\n}\n#cn_app .mf-btn--secondary {\n  background: var(--cn-surface);\n  border-color: var(--cn-border);\n  color: var(--cn-text) !important;\n}\n#cn_app .mf-btn--secondary:hover:not(:disabled) {\n  background: var(--cn-surface-2);\n}\n#cn_app .mf-btn--text {\n  background: transparent;\n  padding: 4px 8px;\n  font-size: 12px;\n  color: var(--cn-primary) !important;\n}\n#cn_app .mf-icon--spin {\n  animation: mf-spin 1s linear infinite;\n}\n@keyframes mf-spin {\n  to { transform: rotate(360deg); }\n}\n#cn_app .mf-steps {\n  display: flex;\n  align-items: center;\n  gap: 0;\n}\n#cn_app .mf-step {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 4px;\n  flex-shrink: 0;\n}\n#cn_app .mf-step__dot {\n  width: 24px;\n  height: 24px;\n  border-radius: 50%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  font-size: 11px;\n  background: var(--cn-surface-2);\n  border: 1px solid var(--cn-border);\n  color: var(--cn-text-3);\n  transition: all var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .mf-step--active .mf-step__dot {\n  background: var(--cn-primary);\n  border-color: var(--cn-primary);\n  color: #fff;\n}\n#cn_app .mf-step--done .mf-step__dot {\n  background: var(--cn-primary-soft);\n  border-color: var(--cn-primary);\n  color: var(--cn-primary-active);\n}\n#cn_app .mf-step__label {\n  font-size: 11px;\n  color: var(--cn-text-2);\n}\n#cn_app .mf-step--active .mf-step__label {\n  color: var(--cn-primary-active);\n  font-weight: 500;\n}\n#cn_app .mf-step__line {\n  flex: 1;\n  height: 2px;\n  background: var(--cn-border);\n  margin: 0 6px 18px;\n  transition: background var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .mf-step__line--done {\n  background: var(--cn-primary);\n}\n#cn_app .mf-progress {\n  height: 6px;\n  background: var(--cn-surface-2);\n  border-radius: 999px;\n  overflow: hidden;\n}\n#cn_app .mf-progress__bar {\n  height: 100%;\n  background: var(--cn-grad-primary);\n  border-radius: 999px;\n  transition: width 0.3s var(--cn-ease);\n}\n#cn_app .mf-progress__meta {\n  display: flex;\n  justify-content: space-between;\n  font-size: 12px;\n  color: var(--cn-text-2);\n}\n#cn_app .mf-progress__error {\n  color: var(--cn-danger);\n}\n#cn_app .mf-result {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 14px;\n  padding: 8px 0;\n}\n#cn_app .mf-result--ok {\n  color: var(--cn-primary-active);\n}\n#cn_app .mf-result--err {\n  color: var(--cn-danger);\n}\n";
 //#endregion
 //#region __vite-browser-external
 var require___vite_browser_external = /* @__PURE__ */ __commonJSMin(((exports, module) => {
@@ -16634,15 +16634,14 @@ function useRoute(_name) {
 }
 //#endregion
 //#region src/ui/App.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$8 = { class: "cn-shell" };
-var _hoisted_2$8 = { class: "cn-sider" };
-var _hoisted_3$8 = { class: "cn-menu" };
-var _hoisted_4$8 = { class: "cn-menu__section" };
-var _hoisted_5$8 = ["onClick"];
-var _hoisted_6$8 = { class: "cn-main" };
-var _hoisted_7$8 = { class: "cn-header" };
-var _hoisted_8$8 = { class: "cn-header__title" };
-var _hoisted_9$8 = { class: "cn-content" };
+var _hoisted_1$9 = { class: "cn-shell" };
+var _hoisted_2$9 = { class: "cn-sider" };
+var _hoisted_3$9 = { class: "cn-menu__section" };
+var _hoisted_4$9 = ["onClick"];
+var _hoisted_5$9 = { class: "cn-main" };
+var _hoisted_6$8 = { class: "cn-header" };
+var _hoisted_7$8 = { class: "cn-header__title" };
+var _hoisted_8$8 = { class: "cn-content" };
 //#endregion
 //#region src/ui/App.vue
 var App_default = /* @__PURE__ */ defineComponent({
@@ -16706,35 +16705,74 @@ var App_default = /* @__PURE__ */ defineComponent({
 		function go(key) {
 			router.push("/" + key);
 		}
+		const menuRef = /* @__PURE__ */ ref(null);
+		const itemRefs = /* @__PURE__ */ new Map();
+		const setItemRef = (el, key) => {
+			if (el instanceof HTMLElement) itemRefs.set(key, el);
+			else itemRefs.delete(key);
+		};
+		const updateIndicator = () => {
+			const menu = menuRef.value;
+			const active = itemRefs.get(currentKey.value);
+			if (!menu || !active) return;
+			menu.style.setProperty("--menu-y", `${active.offsetTop}px`);
+			menu.style.setProperty("--menu-h", `${active.offsetHeight}px`);
+		};
+		let ro = null;
+		watch(currentKey, async () => {
+			await nextTick();
+			updateIndicator();
+		});
+		onMounted(() => {
+			updateIndicator();
+			ro = new ResizeObserver(() => updateIndicator());
+			if (menuRef.value) ro.observe(menuRef.value);
+		});
+		onBeforeUnmount(() => {
+			ro?.disconnect();
+			itemRefs.clear();
+		});
 		return (_ctx, _cache) => {
 			const _component_RouterView = resolveComponent("RouterView");
-			return openBlock(), createElementBlock("div", _hoisted_1$8, [createBaseVNode("aside", _hoisted_2$8, [_cache[4] || (_cache[4] = createBaseVNode("div", { class: "cn-brand" }, [createBaseVNode("i", { class: "fa-solid fa-brain cn-brand__icon" }), createBaseVNode("span", { class: "cn-brand__name" }, "CranialNerve")], -1)), createBaseVNode("nav", _hoisted_3$8, [
+			return openBlock(), createElementBlock("div", _hoisted_1$9, [createBaseVNode("aside", _hoisted_2$9, [_cache[5] || (_cache[5] = createBaseVNode("div", { class: "cn-brand" }, [createBaseVNode("i", { class: "fa-solid fa-brain cn-brand__icon" }), createBaseVNode("span", { class: "cn-brand__name" }, "CranialNerve")], -1)), createBaseVNode("nav", {
+				class: "cn-menu",
+				ref_key: "menuRef",
+				ref: menuRef
+			}, [
+				_cache[3] || (_cache[3] = createBaseVNode("span", {
+					class: "cn-menu__indicator",
+					"aria-hidden": "true"
+				}, null, -1)),
 				createBaseVNode("button", {
 					type: "button",
 					class: normalizeClass(["cn-menu__item", { "cn-menu__item--active": homeItem.key === currentKey.value }]),
+					ref: (el) => setItemRef(el, homeItem.key),
 					onClick: _cache[0] || (_cache[0] = ($event) => go(homeItem.key))
 				}, [createBaseVNode("i", { class: normalizeClass(["fa-solid", homeItem.icon]) }, null, 2), createBaseVNode("span", null, toDisplayString(homeItem.label), 1)], 2),
 				(openBlock(), createElementBlock(Fragment, null, renderList(menuSections, (section) => {
-					return openBlock(), createElementBlock(Fragment, { key: section.label }, [createBaseVNode("div", _hoisted_4$8, toDisplayString(section.label), 1), (openBlock(true), createElementBlock(Fragment, null, renderList(section.items, (item) => {
+					return openBlock(), createElementBlock(Fragment, { key: section.label }, [createBaseVNode("div", _hoisted_3$9, toDisplayString(section.label), 1), (openBlock(true), createElementBlock(Fragment, null, renderList(section.items, (item) => {
 						return openBlock(), createElementBlock("button", {
 							key: item.key,
 							type: "button",
 							class: normalizeClass(["cn-menu__item", { "cn-menu__item--active": item.key === currentKey.value }]),
+							ref_for: true,
+							ref: (el) => setItemRef(el, item.key),
 							onClick: ($event) => go(item.key)
-						}, [createBaseVNode("i", { class: normalizeClass(["fa-solid", item.icon]) }, null, 2), createBaseVNode("span", null, toDisplayString(item.label), 1)], 10, _hoisted_5$8);
+						}, [createBaseVNode("i", { class: normalizeClass(["fa-solid", item.icon]) }, null, 2), createBaseVNode("span", null, toDisplayString(item.label), 1)], 10, _hoisted_4$9);
 					}), 128))], 64);
 				}), 64)),
-				_cache[3] || (_cache[3] = createBaseVNode("div", { class: "cn-menu__spacer" }, null, -1)),
+				_cache[4] || (_cache[4] = createBaseVNode("div", { class: "cn-menu__spacer" }, null, -1)),
 				createBaseVNode("button", {
 					type: "button",
 					class: normalizeClass(["cn-menu__item cn-menu__item--debug", { "cn-menu__item--active": debugItem.key === currentKey.value }]),
+					ref: (el) => setItemRef(el, debugItem.key),
 					onClick: _cache[1] || (_cache[1] = ($event) => go(debugItem.key))
 				}, [createBaseVNode("i", { class: normalizeClass(["fa-solid", debugItem.icon]) }, null, 2), createBaseVNode("span", null, toDisplayString(debugItem.label), 1)], 2)
-			])]), createBaseVNode("div", _hoisted_6$8, [createBaseVNode("header", _hoisted_7$8, [createBaseVNode("h1", _hoisted_8$8, toDisplayString(pageTitle.value), 1), createBaseVNode("button", {
+			], 512)]), createBaseVNode("div", _hoisted_5$9, [createBaseVNode("header", _hoisted_6$8, [createBaseVNode("h1", _hoisted_7$8, toDisplayString(pageTitle.value), 1), createBaseVNode("button", {
 				type: "button",
 				class: "cn-btn cn-btn--text",
 				onClick: _cache[2] || (_cache[2] = (...args) => __props.onClose && __props.onClose(...args))
-			}, [..._cache[5] || (_cache[5] = [createBaseVNode("i", { class: "fa-solid fa-xmark" }, null, -1), createBaseVNode("span", null, "关闭", -1)])])]), createBaseVNode("main", _hoisted_9$8, [createVNode(_component_RouterView, null, {
+			}, [..._cache[6] || (_cache[6] = [createBaseVNode("i", { class: "fa-solid fa-xmark" }, null, -1), createBaseVNode("span", null, "关闭", -1)])])]), createBaseVNode("main", _hoisted_8$8, [createVNode(_component_RouterView, null, {
 				default: withCtx(({ Component }) => [(openBlock(), createBlock(KeepAlive, null, [(openBlock(), createBlock(resolveDynamicComponent(Component)))], 1024))]),
 				_: 1
 			})])])]);
@@ -16743,11 +16781,11 @@ var App_default = /* @__PURE__ */ defineComponent({
 });
 //#endregion
 //#region src/ui/pages/Welcome.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$7 = { class: "welcome-root" };
-var _hoisted_2$7 = { class: "welcome-hero" };
-var _hoisted_3$7 = { class: "welcome-hero__actions" };
-var _hoisted_4$7 = ["disabled"];
-var _hoisted_5$7 = { class: "welcome-stats" };
+var _hoisted_1$8 = { class: "welcome-root" };
+var _hoisted_2$8 = { class: "welcome-hero" };
+var _hoisted_3$8 = { class: "welcome-hero__actions" };
+var _hoisted_4$8 = ["disabled"];
+var _hoisted_5$8 = { class: "welcome-stats" };
 var _hoisted_6$7 = { class: "welcome-stat" };
 var _hoisted_7$7 = { class: "welcome-stat__num" };
 var _hoisted_8$7 = { class: "welcome-stat" };
@@ -16763,11 +16801,11 @@ var _hoisted_17$7 = {
 	key: 0,
 	class: "fa-solid fa-check"
 };
-var _hoisted_18$7 = { key: 1 };
-var _hoisted_19$7 = { class: "welcome-step__body" };
-var _hoisted_20$7 = { class: "welcome-step__name" };
-var _hoisted_21$6 = { class: "welcome-step__desc" };
-var _hoisted_22$6 = ["onClick"];
+var _hoisted_18$6 = { key: 1 };
+var _hoisted_19$6 = { class: "welcome-step__body" };
+var _hoisted_20$6 = { class: "welcome-step__name" };
+var _hoisted_21$5 = { class: "welcome-step__desc" };
+var _hoisted_22$5 = ["onClick"];
 var _hoisted_23$5 = {
 	key: 1,
 	class: "welcome-step__status"
@@ -16922,16 +16960,16 @@ var Welcome_default = /* @__PURE__ */ defineComponent({
 		onActivated(refresh);
 		refresh();
 		return (_ctx, _cache) => {
-			return openBlock(), createElementBlock("div", _hoisted_1$7, [
-				createBaseVNode("section", _hoisted_2$7, [_cache[3] || (_cache[3] = createBaseVNode("div", { class: "welcome-hero__left" }, [createBaseVNode("h1", { class: "welcome-hero__title" }, "CranialNerve"), createBaseVNode("p", { class: "welcome-hero__sub" }, "新一代简约强大的类数据库综合工具，致力于提供更好的游玩体验")], -1)), createBaseVNode("div", _hoisted_3$7, [createBaseVNode("button", {
+			return openBlock(), createElementBlock("div", _hoisted_1$8, [
+				createBaseVNode("section", _hoisted_2$8, [_cache[3] || (_cache[3] = createBaseVNode("div", { class: "welcome-hero__left" }, [createBaseVNode("h1", { class: "welcome-hero__title" }, "CranialNerve"), createBaseVNode("p", { class: "welcome-hero__sub" }, "新一代简约强大的类数据库综合工具，致力于提供更好的游玩体验")], -1)), createBaseVNode("div", _hoisted_3$8, [createBaseVNode("button", {
 					class: "cn-btn",
 					disabled: !chatActive.value,
 					onClick: onExportSnapshot
-				}, [..._cache[1] || (_cache[1] = [createBaseVNode("i", { class: "fa-solid fa-download" }, null, -1), createTextVNode("导出快照 ", -1)])], 8, _hoisted_4$7), createBaseVNode("button", {
+				}, [..._cache[1] || (_cache[1] = [createBaseVNode("i", { class: "fa-solid fa-download" }, null, -1), createTextVNode("导出快照 ", -1)])], 8, _hoisted_4$8), createBaseVNode("button", {
 					class: "cn-btn cn-btn--soft",
 					onClick: resetDefaults
 				}, [..._cache[2] || (_cache[2] = [createBaseVNode("i", { class: "fa-solid fa-rotate-left" }, null, -1), createTextVNode("恢复默认设置 ", -1)])])])]),
-				createBaseVNode("section", _hoisted_5$7, [
+				createBaseVNode("section", _hoisted_5$8, [
 					createBaseVNode("div", _hoisted_6$7, [
 						_cache[4] || (_cache[4] = createBaseVNode("div", { class: "welcome-stat__icon" }, [createBaseVNode("i", { class: "fa-solid fa-table" })], -1)),
 						createBaseVNode("div", _hoisted_7$7, toDisplayString(chatActive.value ? tableCount.value : "—"), 1),
@@ -16953,13 +16991,13 @@ var Welcome_default = /* @__PURE__ */ defineComponent({
 						key: step.name,
 						class: normalizeClass(["welcome-step", { "welcome-step--ok": step.ok }])
 					}, [
-						createBaseVNode("div", _hoisted_16$7, [step.ok ? (openBlock(), createElementBlock("i", _hoisted_17$7)) : (openBlock(), createElementBlock("span", _hoisted_18$7, toDisplayString(i + 1), 1))]),
-						createBaseVNode("div", _hoisted_19$7, [createBaseVNode("span", _hoisted_20$7, toDisplayString(step.name), 1), createBaseVNode("span", _hoisted_21$6, toDisplayString(step.ok ? step.okDesc : step.todoDesc), 1)]),
+						createBaseVNode("div", _hoisted_16$7, [step.ok ? (openBlock(), createElementBlock("i", _hoisted_17$7)) : (openBlock(), createElementBlock("span", _hoisted_18$6, toDisplayString(i + 1), 1))]),
+						createBaseVNode("div", _hoisted_19$6, [createBaseVNode("span", _hoisted_20$6, toDisplayString(step.name), 1), createBaseVNode("span", _hoisted_21$5, toDisplayString(step.ok ? step.okDesc : step.todoDesc), 1)]),
 						step.actionPath ? (openBlock(), createElementBlock("button", {
 							key: 0,
 							class: "cn-btn cn-btn--sm cn-btn--soft",
 							onClick: ($event) => go(step.actionPath)
-						}, toDisplayString(step.actionLabel), 9, _hoisted_22$6)) : (openBlock(), createElementBlock("span", _hoisted_23$5, toDisplayString(step.ok ? "已就绪" : "未完成"), 1))
+						}, toDisplayString(step.actionLabel), 9, _hoisted_22$5)) : (openBlock(), createElementBlock("span", _hoisted_23$5, toDisplayString(step.ok ? "已就绪" : "未完成"), 1))
 					], 2);
 				}), 128))])]), createBaseVNode("section", _hoisted_24$5, [_cache[17] || (_cache[17] = createBaseVNode("div", { class: "cn-card__head" }, [createBaseVNode("span", null, "运行状态")], -1)), createBaseVNode("div", null, [
 					createBaseVNode("div", { class: normalizeClass(["welcome-health-item", chatActive.value ? unrecordedCount.value > 0 ? "welcome-health-item--warn" : "welcome-health-item--ok" : ""]) }, [
@@ -16968,7 +17006,7 @@ var Welcome_default = /* @__PURE__ */ defineComponent({
 						chatActive.value && unrecordedCount.value > 0 ? (openBlock(), createElementBlock("button", {
 							key: 0,
 							class: "cn-btn cn-btn--sm",
-							onClick: _cache[0] || (_cache[0] = ($event) => go("/tables"))
+							onClick: _cache[0] || (_cache[0] = ($event) => go("/tables?tab=fill"))
 						}, " 去追平 ")) : createCommentVNode("", true)
 					], 2),
 					createBaseVNode("div", { class: normalizeClass(["welcome-health-item", chatActive.value ? snapshotCount.value > 0 ? "welcome-health-item--ok" : "welcome-health-item--warn" : ""]) }, [_cache[14] || (_cache[14] = createBaseVNode("div", { class: "welcome-health-item__icon" }, [createBaseVNode("i", { class: "fa-solid fa-database" })], -1)), createBaseVNode("div", _hoisted_28$5, [_cache[13] || (_cache[13] = createBaseVNode("strong", null, "数据库快照", -1)), chatActive.value ? (openBlock(), createElementBlock("p", _hoisted_29$5, toDisplayString(snapshotCount.value > 0 ? `已写入 ${snapshotCount.value} 个快照${snapshotIndex.value != null ? `，最近在第 ${snapshotIndex.value + 1} 楼` : ""}` : "尚无快照，进入对话后自动创建"), 1)) : (openBlock(), createElementBlock("p", _hoisted_30$5, "未检测到聊天"))])], 2),
@@ -16980,11 +17018,11 @@ var Welcome_default = /* @__PURE__ */ defineComponent({
 });
 //#endregion
 //#region src/ui/pages/ApiConfig.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$6 = { class: "api-page" };
-var _hoisted_2$6 = { class: "api-group" };
-var _hoisted_3$6 = { class: "cn-card api-preset-list" };
-var _hoisted_4$6 = { class: "cn-card__body api-preset-list__body" };
-var _hoisted_5$6 = ["onClick"];
+var _hoisted_1$7 = { class: "api-page" };
+var _hoisted_2$7 = { class: "api-group" };
+var _hoisted_3$7 = { class: "cn-card api-preset-list" };
+var _hoisted_4$7 = { class: "cn-card__body api-preset-list__body" };
+var _hoisted_5$7 = ["onClick"];
 var _hoisted_6$6 = { class: "api-preset-item__name" };
 var _hoisted_7$6 = {
 	key: 0,
@@ -16999,8 +17037,7 @@ var _hoisted_9$6 = { class: "cn-card api-editor" };
 var _hoisted_10$6 = { class: "cn-card__body" };
 var _hoisted_11$6 = {
 	key: 0,
-	class: "cn-empty",
-	style: { "padding": "24px 0" }
+	class: "cn-empty cn-empty--compact"
 };
 var _hoisted_12$6 = { class: "api-form-grid" };
 var _hoisted_13$6 = { class: "cn-field" };
@@ -17008,11 +17045,11 @@ var _hoisted_14$6 = { class: "cn-field" };
 var _hoisted_15$6 = { class: "cn-field" };
 var _hoisted_16$6 = { class: "cn-field" };
 var _hoisted_17$6 = { class: "model-row" };
-var _hoisted_18$6 = { class: "api-sampling-grid" };
-var _hoisted_19$6 = { class: "cn-field" };
-var _hoisted_20$6 = { class: "cn-field" };
-var _hoisted_21$5 = { class: "cn-field" };
-var _hoisted_22$5 = { class: "range-row" };
+var _hoisted_18$5 = { class: "api-sampling-grid" };
+var _hoisted_19$5 = { class: "cn-field" };
+var _hoisted_20$5 = { class: "cn-field" };
+var _hoisted_21$4 = { class: "cn-field" };
+var _hoisted_22$4 = { class: "range-row" };
 var _hoisted_23$4 = { class: "cn-field" };
 var _hoisted_24$4 = { class: "range-row" };
 var _hoisted_25$4 = { class: "cn-field" };
@@ -17028,28 +17065,28 @@ var _hoisted_31$4 = { class: "cn-field" };
 var _hoisted_32$4 = { class: "cn-field" };
 var _hoisted_33$4 = { class: "cn-field" };
 var _hoisted_34$4 = { class: "api-actions" };
-var _hoisted_35$4 = ["disabled"];
-var _hoisted_36$4 = { class: "cn-card api-vector" };
-var _hoisted_37$4 = { class: "cn-card__head" };
-var _hoisted_38$4 = {
+var _hoisted_35$3 = ["disabled"];
+var _hoisted_36$3 = { class: "cn-card api-vector" };
+var _hoisted_37$3 = { class: "cn-card__head" };
+var _hoisted_38$3 = {
 	class: "cn-switch",
 	style: { "margin-left": "auto" }
 };
-var _hoisted_39$4 = { class: "cn-card__body" };
-var _hoisted_40$4 = { class: "cn-field" };
-var _hoisted_41$4 = { class: "cn-field" };
-var _hoisted_42$4 = { class: "cn-field" };
-var _hoisted_43$4 = { class: "model-row" };
-var _hoisted_44$4 = { class: "cn-field" };
-var _hoisted_45$4 = { class: "cn-field" };
-var _hoisted_46$4 = { class: "cn-field" };
-var _hoisted_47$4 = { class: "cn-modal model-picker-modal" };
-var _hoisted_48$4 = { class: "cn-modal__head" };
+var _hoisted_39$3 = { class: "cn-card__body" };
+var _hoisted_40$3 = { class: "cn-field" };
+var _hoisted_41$3 = { class: "cn-field" };
+var _hoisted_42$3 = { class: "cn-field" };
+var _hoisted_43$3 = { class: "model-row" };
+var _hoisted_44$3 = { class: "cn-field" };
+var _hoisted_45$3 = { class: "cn-field" };
+var _hoisted_46$3 = { class: "cn-field" };
+var _hoisted_47$2 = { class: "cn-modal model-picker-modal" };
+var _hoisted_48$2 = { class: "cn-modal__head" };
 var _hoisted_49$2 = { class: "model-picker__search" };
 var _hoisted_50$2 = { class: "model-picker__list" };
-var _hoisted_51$2 = ["onClick"];
-var _hoisted_52$2 = { class: "model-picker__name" };
-var _hoisted_53$2 = {
+var _hoisted_51$1 = ["onClick"];
+var _hoisted_52$1 = { class: "model-picker__name" };
+var _hoisted_53$1 = {
 	key: 0,
 	class: "fa-solid fa-check model-picker__check"
 };
@@ -17290,13 +17327,13 @@ var ApiConfig_default = /* @__PURE__ */ defineComponent({
 		}
 		return (_ctx, _cache) => {
 			return openBlock(), createElementBlock(Fragment, null, [
-				createBaseVNode("div", _hoisted_1$6, [createBaseVNode("div", _hoisted_2$6, [createBaseVNode("div", _hoisted_3$6, [_cache[35] || (_cache[35] = createBaseVNode("div", { class: "cn-card__head" }, [createBaseVNode("span", null, "API 预设")], -1)), createBaseVNode("div", _hoisted_4$6, [
+				createBaseVNode("div", _hoisted_1$7, [createBaseVNode("div", _hoisted_2$7, [createBaseVNode("div", _hoisted_3$7, [_cache[35] || (_cache[35] = createBaseVNode("div", { class: "cn-card__head" }, [createBaseVNode("span", null, "API 预设")], -1)), createBaseVNode("div", _hoisted_4$7, [
 					(openBlock(true), createElementBlock(Fragment, null, renderList(presets.value, (p) => {
 						return openBlock(), createElementBlock("button", {
 							key: p.id,
 							class: normalizeClass(["api-preset-item", { "api-preset-item--active": !drafting.value && p.id === selectedId.value }]),
 							onClick: ($event) => selectPreset(p.id)
-						}, [createBaseVNode("span", _hoisted_6$6, toDisplayString(p.name), 1), p.id === activeId.value ? (openBlock(), createElementBlock("i", _hoisted_7$6)) : createCommentVNode("", true)], 10, _hoisted_5$6);
+						}, [createBaseVNode("span", _hoisted_6$6, toDisplayString(p.name), 1), p.id === activeId.value ? (openBlock(), createElementBlock("i", _hoisted_7$6)) : createCommentVNode("", true)], 10, _hoisted_5$7);
 					}), 128)),
 					drafting.value ? (openBlock(), createElementBlock("button", _hoisted_8$6, [..._cache[32] || (_cache[32] = [createBaseVNode("span", { class: "api-preset-item__name" }, "※ 新建（未保存）", -1)])])) : createCommentVNode("", true),
 					createBaseVNode("button", {
@@ -17334,8 +17371,8 @@ var ApiConfig_default = /* @__PURE__ */ defineComponent({
 						onClick: fetchModels
 					}, "获取模型列表")])]),
 					_cache[51] || (_cache[51] = createBaseVNode("div", { class: "api-section-divider" }, null, -1)),
-					createBaseVNode("div", _hoisted_18$6, [
-						createBaseVNode("div", _hoisted_19$6, [_cache[40] || (_cache[40] = createBaseVNode("label", { class: "cn-field__label" }, "maxTokens", -1)), withDirectives(createBaseVNode("input", {
+					createBaseVNode("div", _hoisted_18$5, [
+						createBaseVNode("div", _hoisted_19$5, [_cache[40] || (_cache[40] = createBaseVNode("label", { class: "cn-field__label" }, "maxTokens", -1)), withDirectives(createBaseVNode("input", {
 							class: "cn-input cn-input--nospin",
 							type: "number",
 							"onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => editing.value.maxTokens = $event),
@@ -17346,13 +17383,13 @@ var ApiConfig_default = /* @__PURE__ */ defineComponent({
 							void 0,
 							{ number: true }
 						]])]),
-						createBaseVNode("div", _hoisted_20$6, [_cache[41] || (_cache[41] = createBaseVNode("label", { class: "cn-field__label" }, "seed", -1)), withDirectives(createBaseVNode("input", {
+						createBaseVNode("div", _hoisted_20$5, [_cache[41] || (_cache[41] = createBaseVNode("label", { class: "cn-field__label" }, "seed", -1)), withDirectives(createBaseVNode("input", {
 							class: "cn-input cn-input--nospin",
 							type: "number",
 							"onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => seedInput.value = $event),
 							placeholder: "默认（随机）"
 						}, null, 512), [[vModelText, seedInput.value]])]),
-						createBaseVNode("div", _hoisted_21$5, [_cache[42] || (_cache[42] = createBaseVNode("label", { class: "cn-field__label" }, "temperature", -1)), createBaseVNode("div", _hoisted_22$5, [withDirectives(createBaseVNode("input", {
+						createBaseVNode("div", _hoisted_21$4, [_cache[42] || (_cache[42] = createBaseVNode("label", { class: "cn-field__label" }, "temperature", -1)), createBaseVNode("div", _hoisted_22$4, [withDirectives(createBaseVNode("input", {
 							type: "range",
 							min: "0",
 							max: "2",
@@ -17499,34 +17536,34 @@ var ApiConfig_default = /* @__PURE__ */ defineComponent({
 							class: "cn-btn",
 							disabled: editing.value.id === activeId.value,
 							onClick: setActive
-						}, toDisplayString(editing.value.id === activeId.value ? "当前使用中" : "设为当前"), 9, _hoisted_35$4)) : createCommentVNode("", true),
+						}, toDisplayString(editing.value.id === activeId.value ? "当前使用中" : "设为当前"), 9, _hoisted_35$3)) : createCommentVNode("", true),
 						drafting.value ? (openBlock(), createElementBlock("button", {
 							key: 1,
 							class: "cn-btn",
 							onClick: cancelDraft
 						}, "取消")) : createCommentVNode("", true)
 					])
-				], 64))])])]), createBaseVNode("div", _hoisted_36$4, [createBaseVNode("div", _hoisted_37$4, [
+				], 64))])])]), createBaseVNode("div", _hoisted_36$3, [createBaseVNode("div", _hoisted_37$3, [
 					_cache[55] || (_cache[55] = createBaseVNode("span", null, "向量检索", -1)),
 					_cache[56] || (_cache[56] = createBaseVNode("span", { class: "api-head-desc" }, "选开，需单独配置 Embedding API", -1)),
-					createBaseVNode("label", _hoisted_38$4, [withDirectives(createBaseVNode("input", {
+					createBaseVNode("label", _hoisted_38$3, [withDirectives(createBaseVNode("input", {
 						type: "checkbox",
 						"onUpdate:modelValue": _cache[19] || (_cache[19] = ($event) => vectorEnabled.value = $event),
 						onChange: saveVector
 					}, null, 544), [[vModelCheckbox, vectorEnabled.value]]), _cache[54] || (_cache[54] = createBaseVNode("span", { class: "cn-switch__track" }, null, -1))])
-				]), createBaseVNode("div", _hoisted_39$4, [
-					createBaseVNode("div", _hoisted_40$4, [_cache[57] || (_cache[57] = createBaseVNode("label", { class: "cn-field__label" }, "endpoint", -1)), withDirectives(createBaseVNode("input", {
+				]), createBaseVNode("div", _hoisted_39$3, [
+					createBaseVNode("div", _hoisted_40$3, [_cache[57] || (_cache[57] = createBaseVNode("label", { class: "cn-field__label" }, "endpoint", -1)), withDirectives(createBaseVNode("input", {
 						class: "cn-input",
 						"onUpdate:modelValue": _cache[20] || (_cache[20] = ($event) => vector.value.embeddingEndpoint = $event),
 						placeholder: "https://api.openai.com/v1/embeddings"
 					}, null, 512), [[vModelText, vector.value.embeddingEndpoint]])]),
-					createBaseVNode("div", _hoisted_41$4, [_cache[58] || (_cache[58] = createBaseVNode("label", { class: "cn-field__label" }, "apiKey", -1)), withDirectives(createBaseVNode("input", {
+					createBaseVNode("div", _hoisted_41$3, [_cache[58] || (_cache[58] = createBaseVNode("label", { class: "cn-field__label" }, "apiKey", -1)), withDirectives(createBaseVNode("input", {
 						class: "cn-input",
 						type: "password",
 						"onUpdate:modelValue": _cache[21] || (_cache[21] = ($event) => vector.value.embeddingApiKey = $event),
 						placeholder: "sk-..."
 					}, null, 512), [[vModelText, vector.value.embeddingApiKey]])]),
-					createBaseVNode("div", _hoisted_42$4, [_cache[59] || (_cache[59] = createBaseVNode("label", { class: "cn-field__label" }, "model", -1)), createBaseVNode("div", _hoisted_43$4, [withDirectives(createBaseVNode("input", {
+					createBaseVNode("div", _hoisted_42$3, [_cache[59] || (_cache[59] = createBaseVNode("label", { class: "cn-field__label" }, "model", -1)), createBaseVNode("div", _hoisted_43$3, [withDirectives(createBaseVNode("input", {
 						class: "cn-input",
 						"onUpdate:modelValue": _cache[22] || (_cache[22] = ($event) => vector.value.embeddingModel = $event),
 						placeholder: "text-embedding-3-small",
@@ -17536,29 +17573,25 @@ var ApiConfig_default = /* @__PURE__ */ defineComponent({
 						onClick: fetchVectorModels
 					}, "获取模型列表")])]),
 					_cache[63] || (_cache[63] = createBaseVNode("div", { class: "api-section-divider" }, null, -1)),
-					createBaseVNode("div", _hoisted_44$4, [_cache[60] || (_cache[60] = createBaseVNode("label", { class: "cn-field__label" }, "rerank endpoint", -1)), withDirectives(createBaseVNode("input", {
+					createBaseVNode("div", _hoisted_44$3, [_cache[60] || (_cache[60] = createBaseVNode("label", { class: "cn-field__label" }, "rerank endpoint", -1)), withDirectives(createBaseVNode("input", {
 						class: "cn-input",
 						"onUpdate:modelValue": _cache[23] || (_cache[23] = ($event) => vector.value.rerankEndpoint = $event),
 						placeholder: "可选"
 					}, null, 512), [[vModelText, vector.value.rerankEndpoint]])]),
-					createBaseVNode("div", _hoisted_45$4, [_cache[61] || (_cache[61] = createBaseVNode("label", { class: "cn-field__label" }, "rerank apiKey", -1)), withDirectives(createBaseVNode("input", {
+					createBaseVNode("div", _hoisted_45$3, [_cache[61] || (_cache[61] = createBaseVNode("label", { class: "cn-field__label" }, "rerank apiKey", -1)), withDirectives(createBaseVNode("input", {
 						class: "cn-input",
 						type: "password",
 						"onUpdate:modelValue": _cache[24] || (_cache[24] = ($event) => vector.value.rerankApiKey = $event),
 						placeholder: "可选"
 					}, null, 512), [[vModelText, vector.value.rerankApiKey]])]),
-					createBaseVNode("div", _hoisted_46$4, [_cache[62] || (_cache[62] = createBaseVNode("label", { class: "cn-field__label" }, "rerank model", -1)), withDirectives(createBaseVNode("input", {
+					createBaseVNode("div", _hoisted_46$3, [_cache[62] || (_cache[62] = createBaseVNode("label", { class: "cn-field__label" }, "rerank model", -1)), withDirectives(createBaseVNode("input", {
 						class: "cn-input",
 						"onUpdate:modelValue": _cache[25] || (_cache[25] = ($event) => vector.value.rerankModel = $event),
 						placeholder: "rerank-multilingual-v3.0"
 					}, null, 512), [[vModelText, vector.value.rerankModel]])]),
 					createBaseVNode("button", {
-						class: "cn-btn cn-btn--primary",
-						onClick: saveVector,
-						style: {
-							"margin-top": "8px",
-							"width": "100%"
-						}
+						class: "cn-btn cn-btn--primary cn-btn--block",
+						onClick: saveVector
 					}, " 保存向量配置 ")
 				])])]),
 				createVNode(Transition, { name: "cn-modal" }, {
@@ -17566,8 +17599,8 @@ var ApiConfig_default = /* @__PURE__ */ defineComponent({
 						key: 0,
 						class: "cn-modal-mask",
 						onClick: _cache[28] || (_cache[28] = withModifiers(($event) => modelPickerVisible.value = false, ["self"]))
-					}, [createBaseVNode("div", _hoisted_47$4, [
-						createBaseVNode("div", _hoisted_48$4, [createBaseVNode("span", null, "选择模型 - 共 " + toDisplayString(models.value.length) + " 个", 1), createBaseVNode("button", {
+					}, [createBaseVNode("div", _hoisted_47$2, [
+						createBaseVNode("div", _hoisted_48$2, [createBaseVNode("span", null, "选择模型 - 共 " + toDisplayString(models.value.length) + " 个", 1), createBaseVNode("button", {
 							class: "cn-btn cn-btn--sm cn-btn--text",
 							onClick: _cache[26] || (_cache[26] = ($event) => modelPickerVisible.value = false)
 						}, [..._cache[64] || (_cache[64] = [createBaseVNode("i", { class: "fa-solid fa-xmark" }, null, -1)])])]),
@@ -17581,7 +17614,7 @@ var ApiConfig_default = /* @__PURE__ */ defineComponent({
 								key: m,
 								class: normalizeClass(["model-picker__item", { "model-picker__item--picked": m === editing.value.model }]),
 								onClick: ($event) => pickModel(m)
-							}, [createBaseVNode("span", _hoisted_52$2, toDisplayString(m), 1), m === editing.value.model ? (openBlock(), createElementBlock("i", _hoisted_53$2)) : createCommentVNode("", true)], 10, _hoisted_51$2);
+							}, [createBaseVNode("span", _hoisted_52$1, toDisplayString(m), 1), m === editing.value.model ? (openBlock(), createElementBlock("i", _hoisted_53$1)) : createCommentVNode("", true)], 10, _hoisted_51$1);
 						}), 128)), filteredModels.value.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_54$1, toDisplayString(modelSearch.value ? "无匹配模型" : "无模型"), 1)) : createCommentVNode("", true)])
 					])])) : createCommentVNode("", true)]),
 					_: 1
@@ -17693,11 +17726,11 @@ function cleanup() {
 }
 //#endregion
 //#region src/ui/pages/ManualFill.vue?vue&type=script&setup=true&lang.ts
-var _hoisted_1$5 = { class: "mf-page" };
-var _hoisted_2$5 = { class: "mf-left" };
-var _hoisted_3$5 = { class: "mf-card" };
-var _hoisted_4$5 = { class: "mf-card__head" };
-var _hoisted_5$5 = { class: "mf-card__body" };
+var _hoisted_1$6 = { class: "mf-page" };
+var _hoisted_2$6 = { class: "mf-left" };
+var _hoisted_3$6 = { class: "mf-card" };
+var _hoisted_4$6 = { class: "mf-card__head" };
+var _hoisted_5$6 = { class: "mf-card__body" };
 var _hoisted_6$5 = { class: "mf-stats" };
 var _hoisted_7$5 = { class: "mf-stat" };
 var _hoisted_8$5 = { class: "mf-stat__num" };
@@ -17710,11 +17743,11 @@ var _hoisted_14$5 = { class: "mf-table-wrap" };
 var _hoisted_15$5 = { class: "mf-table" };
 var _hoisted_16$5 = { key: 0 };
 var _hoisted_17$5 = { class: "mf-table__name" };
-var _hoisted_18$5 = { class: "mf-table__display" };
-var _hoisted_19$5 = { class: "mf-table__raw" };
-var _hoisted_20$5 = { class: "mf-check" };
-var _hoisted_21$4 = ["value"];
-var _hoisted_22$4 = { class: "mf-right" };
+var _hoisted_18$4 = { class: "mf-table__display" };
+var _hoisted_19$4 = { class: "mf-table__raw" };
+var _hoisted_20$4 = { class: "mf-check" };
+var _hoisted_21$3 = ["value"];
+var _hoisted_22$3 = { class: "mf-right" };
 var _hoisted_23$3 = { class: "mf-card" };
 var _hoisted_24$3 = { class: "mf-card__body" };
 var _hoisted_25$3 = { class: "mf-field" };
@@ -17727,29 +17760,6 @@ var _hoisted_31$3 = { class: "mf-field__hint" };
 var _hoisted_32$3 = { class: "mf-actions" };
 var _hoisted_33$3 = ["disabled"];
 var _hoisted_34$3 = ["disabled"];
-var _hoisted_35$3 = {
-	key: 0,
-	class: "mf-card"
-};
-var _hoisted_36$3 = { class: "mf-card__head" };
-var _hoisted_37$3 = { class: "mf-card__title" };
-var _hoisted_38$3 = { class: "mf-card__body" };
-var _hoisted_39$3 = { class: "mf-steps" };
-var _hoisted_40$3 = { class: "mf-step__dot" };
-var _hoisted_41$3 = {
-	key: 0,
-	class: "fa-solid fa-check"
-};
-var _hoisted_42$3 = { key: 1 };
-var _hoisted_43$3 = { class: "mf-step__label" };
-var _hoisted_44$3 = { class: "mf-progress" };
-var _hoisted_45$3 = { class: "mf-progress__meta" };
-var _hoisted_46$3 = { key: 0 };
-var _hoisted_47$3 = { key: 1 };
-var _hoisted_48$3 = {
-	key: 2,
-	class: "mf-progress__error"
-};
 //#endregion
 //#region src/ui/pages/ManualFill.vue
 var ManualFill_default = /* @__PURE__ */ defineComponent({
@@ -17771,13 +17781,6 @@ var ManualFill_default = /* @__PURE__ */ defineComponent({
 		const manualBatch = /* @__PURE__ */ ref(cfg.value.tableFill.manualUpdateBatchSize);
 		const extraHint = /* @__PURE__ */ ref("");
 		const busy = /* @__PURE__ */ ref(false);
-		const phase = /* @__PURE__ */ ref(null);
-		const attempt = /* @__PURE__ */ ref(0);
-		const maxRetries = /* @__PURE__ */ ref(0);
-		const currentBucket = /* @__PURE__ */ ref(0);
-		const totalBuckets = /* @__PURE__ */ ref(0);
-		const errorMsg = /* @__PURE__ */ ref("");
-		const lastResult = /* @__PURE__ */ ref(null);
 		function defaultInput(r, fallback) {
 			return computed({
 				get: () => r.value === null ? String(fallback) : String(r.value),
@@ -17810,56 +17813,6 @@ var ManualFill_default = /* @__PURE__ */ defineComponent({
 			const aiInSlice = chat.slice(start, end + 1).filter((m) => !m.is_user && !m.is_system).length;
 			return `第 ${start}~${end} 层${aiInSlice > 0 ? `（AI ${aiBefore + 1}~${aiBefore + aiInSlice}）` : ""}`;
 		});
-		const steps = computed(() => {
-			const p = phase.value;
-			return [
-				{
-					label: "调用 AI",
-					done: p === "parsing" || p === "saving" || p === "complete",
-					active: p === "calling_ai" || p === "retry"
-				},
-				{
-					label: "解析结果",
-					done: p === "saving" || p === "complete",
-					active: p === "parsing"
-				},
-				{
-					label: "保存数据",
-					done: p === "complete",
-					active: p === "saving"
-				},
-				{
-					label: "完成",
-					done: false,
-					active: p === "complete"
-				}
-			];
-		});
-		const progressPercent = computed(() => {
-			if (phase.value === "complete" || phase.value === "error") return 100;
-			if (totalBuckets.value === 0) switch (phase.value) {
-				case "calling_ai":
-				case "retry": return 25;
-				case "parsing": return 50;
-				case "saving": return 75;
-				default: return 0;
-			}
-			const cur = currentBucket.value || 1;
-			let phasePct = 0;
-			switch (phase.value) {
-				case "calling_ai":
-				case "retry":
-					phasePct = 25;
-					break;
-				case "parsing":
-					phasePct = 50;
-					break;
-				case "saving":
-					phasePct = 75;
-					break;
-			}
-			return ((cur - 1) * 100 + phasePct) / totalBuckets.value;
-		});
 		function selectAllTables() {
 			selectedTables.value = availableTables.value.map((t) => t.name);
 			saveSelection();
@@ -17885,28 +17838,11 @@ var ManualFill_default = /* @__PURE__ */ defineComponent({
 			manualBatch.value = cfg.value.tableFill.manualUpdateBatchSize;
 			session.saveConfig(cfg.value);
 		}
-		function onProgress(p, detail) {
-			phase.value = p;
-			if (detail?.attempt != null) attempt.value = detail.attempt;
-			if (detail?.maxRetries != null) maxRetries.value = detail.maxRetries;
-			if (detail?.error) errorMsg.value = detail.error;
-			if (detail?.currentBucket != null) currentBucket.value = detail.currentBucket;
-			if (detail?.totalBuckets != null) totalBuckets.value = detail.totalBuckets;
-		}
-		function resetProgress() {
-			phase.value = null;
-			attempt.value = 0;
-			maxRetries.value = 0;
-			currentBucket.value = 0;
-			totalBuckets.value = 0;
-			errorMsg.value = "";
-			lastResult.value = null;
-		}
 		async function runRefill() {
 			if (busy.value || selectedTables.value.length === 0) return;
 			if (!await confirm("执行手动填表", "是否执行手动填表？若相关层数有数据，则数据会丢失。", "确认执行", true)) return;
 			busy.value = true;
-			resetProgress();
+			const prog = toast.progress("正在手动填表...");
 			try {
 				const result = await session.runManualRefill({
 					targetTables: selectedTables.value,
@@ -17914,21 +17850,12 @@ var ManualFill_default = /* @__PURE__ */ defineComponent({
 					contextDepth: manualDepth.value ?? void 0,
 					batchSize: manualBatch.value ?? void 0,
 					skipFloors: cfg.value.tableFill.skipFloors,
-					extraHint: extraHint.value.trim() || void 0,
-					onProgress
+					extraHint: extraHint.value.trim() || void 0
 				});
-				lastResult.value = result.ok ? {
-					ok: true,
-					text: "重填完成"
-				} : {
-					ok: false,
-					text: result.error ?? "重填失败"
-				};
+				if (result.ok) prog.done();
+				else prog.fail(result.error ?? "重填失败");
 			} catch (e) {
-				lastResult.value = {
-					ok: false,
-					text: e instanceof Error ? e.message : String(e)
-				};
+				prog.fail(e instanceof Error ? e.message : String(e));
 			} finally {
 				busy.value = false;
 			}
@@ -17937,27 +17864,18 @@ var ManualFill_default = /* @__PURE__ */ defineComponent({
 			if (busy.value) return;
 			if (!await confirm("追平未总结楼层", "将根据楼层范围补填表格与纪要（不清空数据）。留空=自动检测最近未总结楼层。", "确认追平")) return;
 			busy.value = true;
-			resetProgress();
+			const prog = toast.progress("正在追平未总结楼层...");
 			try {
 				const result = await session.runManualCatchUp({
 					targetTables: selectedTables.value.length > 0 ? selectedTables.value : void 0,
 					includeChronicle: includeChronicle.value,
 					batchSize: manualBatch.value ?? void 0,
-					extraHint: extraHint.value.trim() || void 0,
-					onProgress
+					extraHint: extraHint.value.trim() || void 0
 				});
-				lastResult.value = result.ok ? {
-					ok: true,
-					text: "追平完成"
-				} : {
-					ok: false,
-					text: result.error ?? "追平失败"
-				};
+				if (result.ok) prog.done();
+				else prog.fail(result.error ?? "追平失败");
 			} catch (e) {
-				lastResult.value = {
-					ok: false,
-					text: e instanceof Error ? e.message : String(e)
-				};
+				prog.fail(e instanceof Error ? e.message : String(e));
 			} finally {
 				busy.value = false;
 			}
@@ -17969,7 +17887,7 @@ var ManualFill_default = /* @__PURE__ */ defineComponent({
 			manualBatch.value = cfg.value.tableFill.manualUpdateBatchSize;
 		});
 		return (_ctx, _cache) => {
-			return openBlock(), createElementBlock("div", _hoisted_1$5, [createBaseVNode("div", _hoisted_2$5, [createBaseVNode("section", _hoisted_3$5, [createBaseVNode("header", _hoisted_4$5, [_cache[5] || (_cache[5] = createBaseVNode("div", { class: "mf-card__title" }, [createBaseVNode("i", { class: "fa-solid fa-chart-line mf-card__icon" }), createBaseVNode("span", null, "更新状态")], -1)), createBaseVNode("span", { class: normalizeClass(["mf-badge", unrecordedCount.value > 0 ? "mf-badge--warn" : "mf-badge--ok"]) }, toDisplayString(unrecordedCount.value > 0 ? `${unrecordedCount.value} 层待总结` : "已同步"), 3)]), createBaseVNode("div", _hoisted_5$5, [
+			return openBlock(), createElementBlock("div", _hoisted_1$6, [createBaseVNode("div", _hoisted_2$6, [createBaseVNode("section", _hoisted_3$6, [createBaseVNode("header", _hoisted_4$6, [_cache[5] || (_cache[5] = createBaseVNode("div", { class: "mf-card__title" }, [createBaseVNode("i", { class: "fa-solid fa-chart-line mf-card__icon" }), createBaseVNode("span", null, "更新状态")], -1)), createBaseVNode("span", { class: normalizeClass(["mf-badge", unrecordedCount.value > 0 ? "mf-badge--warn" : "mf-badge--ok"]) }, toDisplayString(unrecordedCount.value > 0 ? `${unrecordedCount.value} 层待总结` : "已同步"), 3)]), createBaseVNode("div", _hoisted_5$6, [
 				createBaseVNode("div", _hoisted_6$5, [
 					createBaseVNode("div", _hoisted_7$5, [createBaseVNode("div", _hoisted_8$5, toDisplayString(aiFloorCount.value), 1), _cache[6] || (_cache[6] = createBaseVNode("div", { class: "mf-stat__label" }, "AI 回复层", -1))]),
 					createBaseVNode("div", _hoisted_9$5, [createBaseVNode("div", _hoisted_10$5, toDisplayString(summarizedAiCount.value), 1), _cache[7] || (_cache[7] = createBaseVNode("div", { class: "mf-stat__label" }, "已总结", -1))]),
@@ -17980,14 +17898,14 @@ var ManualFill_default = /* @__PURE__ */ defineComponent({
 					colspan: "2",
 					class: "mf-table__empty"
 				}, "暂无可用表格", -1)])])) : createCommentVNode("", true), (openBlock(true), createElementBlock(Fragment, null, renderList(availableTables.value, (t) => {
-					return openBlock(), createElementBlock("tr", { key: t.name }, [createBaseVNode("td", _hoisted_17$5, [createBaseVNode("span", _hoisted_18$5, toDisplayString(t.displayName), 1), createBaseVNode("span", _hoisted_19$5, toDisplayString(t.name), 1)]), createBaseVNode("td", null, [createBaseVNode("label", _hoisted_20$5, [withDirectives(createBaseVNode("input", {
+					return openBlock(), createElementBlock("tr", { key: t.name }, [createBaseVNode("td", _hoisted_17$5, [createBaseVNode("span", _hoisted_18$4, toDisplayString(t.displayName), 1), createBaseVNode("span", _hoisted_19$4, toDisplayString(t.name), 1)]), createBaseVNode("td", null, [createBaseVNode("label", _hoisted_20$4, [withDirectives(createBaseVNode("input", {
 						type: "checkbox",
 						value: t.name,
 						"onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => selectedTables.value = $event),
 						onChange: saveSelection
-					}, null, 40, _hoisted_21$4), [[vModelCheckbox, selectedTables.value]]), _cache[10] || (_cache[10] = createBaseVNode("span", null, null, -1))])])]);
+					}, null, 40, _hoisted_21$3), [[vModelCheckbox, selectedTables.value]]), _cache[10] || (_cache[10] = createBaseVNode("span", null, null, -1))])])]);
 				}), 128))])])])
-			])])]), createBaseVNode("div", _hoisted_22$4, [createBaseVNode("section", _hoisted_23$3, [createBaseVNode("header", { class: "mf-card__head" }, [_cache[12] || (_cache[12] = createBaseVNode("div", { class: "mf-card__title" }, [createBaseVNode("i", { class: "fa-solid fa-sliders mf-card__icon" }), createBaseVNode("span", null, "手动填表")], -1)), createBaseVNode("div", { class: "mf-card__actions" }, [createBaseVNode("button", {
+			])])]), createBaseVNode("div", _hoisted_22$3, [createBaseVNode("section", _hoisted_23$3, [createBaseVNode("header", { class: "mf-card__head" }, [_cache[12] || (_cache[12] = createBaseVNode("div", { class: "mf-card__title" }, [createBaseVNode("i", { class: "fa-solid fa-sliders mf-card__icon" }), createBaseVNode("span", null, "手动填表")], -1)), createBaseVNode("div", { class: "mf-card__actions" }, [createBaseVNode("button", {
 				class: "mf-btn mf-btn--text",
 				type: "button",
 				onClick: selectAllTables
@@ -18046,29 +17964,100 @@ var ManualFill_default = /* @__PURE__ */ defineComponent({
 					disabled: busy.value,
 					onClick: runCatchUp
 				}, [_cache[22] || (_cache[22] = createBaseVNode("i", { class: "fa-solid fa-wand-magic-sparkles" }, null, -1)), createTextVNode(" " + toDisplayString(busy.value ? "追平中..." : "追平未总结楼层"), 1)], 8, _hoisted_34$3)])
-			])]), busy.value || lastResult.value ? (openBlock(), createElementBlock("section", _hoisted_35$3, [createBaseVNode("header", _hoisted_36$3, [createBaseVNode("div", _hoisted_37$3, [createBaseVNode("i", { class: normalizeClass(["fa-solid fa-circle-notch mf-card__icon", busy.value ? "mf-icon--spin" : ""]) }, null, 2), _cache[23] || (_cache[23] = createBaseVNode("span", null, "更新情况", -1))])]), createBaseVNode("div", _hoisted_38$3, [busy.value ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
-				createBaseVNode("div", _hoisted_39$3, [(openBlock(true), createElementBlock(Fragment, null, renderList(steps.value, (s, i) => {
-					return openBlock(), createElementBlock(Fragment, { key: s.label }, [createBaseVNode("div", { class: normalizeClass(["mf-step", {
-						"mf-step--active": s.active,
-						"mf-step--done": s.done
-					}]) }, [createBaseVNode("div", _hoisted_40$3, [s.done ? (openBlock(), createElementBlock("i", _hoisted_41$3)) : (openBlock(), createElementBlock("span", _hoisted_42$3, toDisplayString(i + 1), 1))]), createBaseVNode("span", _hoisted_43$3, toDisplayString(s.label), 1)], 2), i < steps.value.length - 1 ? (openBlock(), createElementBlock("div", {
+			])])])]);
+		};
+	}
+});
+//#endregion
+//#region src/ui/components/CNTabs.vue?vue&type=script&setup=true&lang.ts
+var _hoisted_1$5 = ["onClick"];
+var _hoisted_2$5 = { class: "cn-tabs__label" };
+var _hoisted_3$5 = { class: "cn-tabs__label-zh" };
+var _hoisted_4$5 = {
+	key: 0,
+	class: "cn-tabs__label-en"
+};
+var _hoisted_5$5 = {
+	key: 1,
+	class: "cn-tabs__badge"
+};
+//#endregion
+//#region src/ui/components/CNTabs.vue
+var CNTabs_default = /* @__PURE__ */ defineComponent({
+	__name: "CNTabs",
+	props: {
+		items: {},
+		modelValue: {},
+		level: { default: "l2" },
+		scrollable: {
+			type: Boolean,
+			default: void 0
+		}
+	},
+	emits: ["update:modelValue"],
+	setup(__props, { emit: __emit }) {
+		const props = __props;
+		const emit = __emit;
+		const rootRef = /* @__PURE__ */ ref(null);
+		const itemRefs = /* @__PURE__ */ new Map();
+		const setItemRef = (el, key) => {
+			if (el instanceof HTMLElement) itemRefs.set(key, el);
+			else itemRefs.delete(key);
+		};
+		const isScrollable = computed(() => props.scrollable ?? props.level === "l3");
+		const updateIndicator = () => {
+			const root = rootRef.value;
+			const active = props.modelValue ? itemRefs.get(props.modelValue) : null;
+			if (!root || !active) return;
+			root.style.setProperty("--tab-x", `${active.offsetLeft}px`);
+			root.style.setProperty("--tab-w", `${active.offsetWidth}px`);
+		};
+		const onScroll = () => updateIndicator();
+		let ro = null;
+		watch(() => props.modelValue, async () => {
+			await nextTick();
+			updateIndicator();
+		});
+		watch(() => props.items, async () => {
+			await nextTick();
+			updateIndicator();
+		}, { deep: true });
+		onMounted(() => {
+			updateIndicator();
+			ro = new ResizeObserver(() => updateIndicator());
+			if (rootRef.value) ro.observe(rootRef.value);
+			if (isScrollable.value && rootRef.value) rootRef.value.addEventListener("scroll", onScroll, { passive: true });
+		});
+		onBeforeUnmount(() => {
+			ro?.disconnect();
+			if (rootRef.value) rootRef.value.removeEventListener("scroll", onScroll);
+			itemRefs.clear();
+		});
+		return (_ctx, _cache) => {
+			return openBlock(), createElementBlock("div", {
+				ref_key: "rootRef",
+				ref: rootRef,
+				class: normalizeClass(["cn-tabs", [`cn-tabs--${__props.level}`, { "cn-tabs--scrollable": isScrollable.value }]])
+			}, [_cache[0] || (_cache[0] = createBaseVNode("span", {
+				class: "cn-tabs__indicator",
+				"aria-hidden": "true"
+			}, null, -1)), (openBlock(true), createElementBlock(Fragment, null, renderList(__props.items, (item) => {
+				return openBlock(), createElementBlock("button", {
+					key: item.key,
+					type: "button",
+					class: normalizeClass(["cn-tabs__item", { "cn-tabs__item--active": item.key === __props.modelValue }]),
+					ref_for: true,
+					ref: (el) => setItemRef(el, item.key),
+					onClick: ($event) => emit("update:modelValue", item.key)
+				}, [
+					item.icon ? (openBlock(), createElementBlock("i", {
 						key: 0,
-						class: normalizeClass(["mf-step__line", { "mf-step__line--done": s.done }])
-					}, null, 2)) : createCommentVNode("", true)], 64);
-				}), 128))]),
-				createBaseVNode("div", _hoisted_44$3, [createBaseVNode("div", {
-					class: "mf-progress__bar",
-					style: normalizeStyle({ width: progressPercent.value + "%" })
-				}, null, 4)]),
-				createBaseVNode("div", _hoisted_45$3, [
-					totalBuckets.value > 0 ? (openBlock(), createElementBlock("span", _hoisted_46$3, "批次 " + toDisplayString(currentBucket.value) + "/" + toDisplayString(totalBuckets.value), 1)) : createCommentVNode("", true),
-					attempt.value > 0 ? (openBlock(), createElementBlock("span", _hoisted_47$3, "第 " + toDisplayString(attempt.value) + "/" + toDisplayString(maxRetries.value) + " 次尝试", 1)) : createCommentVNode("", true),
-					errorMsg.value ? (openBlock(), createElementBlock("span", _hoisted_48$3, toDisplayString(errorMsg.value), 1)) : createCommentVNode("", true)
-				])
-			], 64)) : lastResult.value ? (openBlock(), createElementBlock("div", {
-				key: 1,
-				class: normalizeClass(["mf-result", lastResult.value.ok ? "mf-result--ok" : "mf-result--err"])
-			}, [createBaseVNode("i", { class: normalizeClass(lastResult.value.ok ? "fa-solid fa-circle-check" : "fa-solid fa-circle-exclamation") }, null, 2), createBaseVNode("span", null, toDisplayString(lastResult.value.text), 1)], 2)) : createCommentVNode("", true)])])) : createCommentVNode("", true)])]);
+						class: normalizeClass(["fa-solid", item.icon])
+					}, null, 2)) : createCommentVNode("", true),
+					createBaseVNode("span", _hoisted_2$5, [createBaseVNode("span", _hoisted_3$5, toDisplayString(item.label), 1), item.sublabel ? (openBlock(), createElementBlock("span", _hoisted_4$5, toDisplayString(item.sublabel), 1)) : createCommentVNode("", true)]),
+					item.badge !== void 0 && item.badge !== "" && item.badge !== 0 ? (openBlock(), createElementBlock("span", _hoisted_5$5, toDisplayString(item.badge), 1)) : createCommentVNode("", true)
+				], 10, _hoisted_1$5);
+			}), 128))], 2);
 		};
 	}
 });
@@ -18079,45 +18068,61 @@ var _hoisted_2$4 = {
 	key: 0,
 	class: "cn-empty"
 };
-var _hoisted_3$4 = { class: "page-tabs" };
-var _hoisted_4$4 = { class: "tables-toolbar" };
-var _hoisted_5$4 = { class: "cn-btn cn-btn--sm" };
-var _hoisted_6$4 = { class: "cn-card table-wrap-card" };
-var _hoisted_7$4 = { class: "table-tabs" };
-var _hoisted_8$4 = ["onClick"];
-var _hoisted_9$4 = { class: "table-tab__zh" };
-var _hoisted_10$4 = { class: "table-tab__en" };
-var _hoisted_11$4 = { class: "table-body" };
-var _hoisted_12$4 = {
+var _hoisted_3$4 = { class: "tables-toolbar" };
+var _hoisted_4$4 = { class: "cn-btn cn-btn--sm" };
+var _hoisted_5$4 = { class: "cn-card table-wrap-card" };
+var _hoisted_6$4 = { class: "table-body" };
+var _hoisted_7$4 = {
 	key: 0,
 	class: "cn-empty"
 };
-var _hoisted_13$4 = {
+var _hoisted_8$4 = {
 	key: 1,
 	class: "table-row-grid"
 };
-var _hoisted_14$4 = { class: "table-row-card__body" };
-var _hoisted_15$4 = { class: "table-row-card__label" };
-var _hoisted_16$4 = { class: "table-row-card__label-en" };
-var _hoisted_17$4 = {
+var _hoisted_9$4 = { class: "table-row-card__body" };
+var _hoisted_10$4 = { class: "table-row-card__label" };
+var _hoisted_11$4 = { class: "table-row-card__label-en" };
+var _hoisted_12$4 = {
 	key: 1,
 	class: "cell-edit table-row-card__value"
 };
-var _hoisted_18$4 = { class: "table-row-card__foot" };
-var _hoisted_19$4 = ["onClick"];
-var _hoisted_20$4 = ["onClick"];
-var _hoisted_21$3 = { class: "table-body__foot" };
-var _hoisted_22$3 = { class: "table-body__meta" };
+var _hoisted_13$4 = { class: "table-row-card__foot" };
+var _hoisted_14$4 = ["onClick"];
+var _hoisted_15$4 = ["onClick"];
+var _hoisted_16$4 = { class: "table-body__foot" };
+var _hoisted_17$4 = { class: "table-body__meta" };
 //#endregion
 //#region src/ui/pages/Tables.vue
 var Tables_default = /* @__PURE__ */ defineComponent({
 	__name: "Tables",
 	setup(__props) {
 		const session = getSession();
+		const route = useRoute();
 		const tables = /* @__PURE__ */ ref([]);
 		const chatActive = /* @__PURE__ */ ref(false);
 		const activeName = /* @__PURE__ */ ref("");
 		const pageTab = /* @__PURE__ */ ref("tables");
+		const pageTabs = [{
+			key: "tables",
+			label: "表格",
+			icon: "fa-table"
+		}, {
+			key: "fill",
+			label: "手动填表",
+			icon: "fa-pen-to-square"
+		}];
+		const pageTabValue = computed({
+			get: () => pageTab.value,
+			set: (v) => {
+				pageTab.value = v;
+			}
+		});
+		const tableTabs = computed(() => tables.value.map((t) => ({
+			key: t.name,
+			label: t.displayName,
+			sublabel: t.name
+		})));
 		const editingRowid = /* @__PURE__ */ ref(null);
 		const editSnapshot = /* @__PURE__ */ ref({});
 		const cellEditEls = /* @__PURE__ */ new Map();
@@ -18279,48 +18284,50 @@ var Tables_default = /* @__PURE__ */ defineComponent({
 		}
 		onMounted(refresh);
 		onActivated(refresh);
+		watch(() => route.query.tab, (tab) => {
+			if (tab === "fill") pageTab.value = "fill";
+		}, { immediate: true });
 		return (_ctx, _cache) => {
-			return openBlock(), createElementBlock("div", _hoisted_1$4, [!chatActive.value ? (openBlock(), createElementBlock("div", _hoisted_2$4, "未检测到聊天，请先在酒馆中打开一个对话")) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [createBaseVNode("div", _hoisted_3$4, [createBaseVNode("button", {
-				class: normalizeClass(["page-tab", { "page-tab--active": pageTab.value === "tables" }]),
-				onClick: _cache[0] || (_cache[0] = ($event) => pageTab.value = "tables")
-			}, [..._cache[2] || (_cache[2] = [createBaseVNode("i", { class: "fa-solid fa-table" }, null, -1), createTextVNode(" 表格", -1)])], 2), createBaseVNode("button", {
-				class: normalizeClass(["page-tab", { "page-tab--active": pageTab.value === "fill" }]),
-				onClick: _cache[1] || (_cache[1] = ($event) => pageTab.value = "fill")
-			}, [..._cache[3] || (_cache[3] = [createBaseVNode("i", { class: "fa-solid fa-pen-to-square" }, null, -1), createTextVNode(" 手动填表", -1)])], 2)]), pageTab.value === "fill" ? (openBlock(), createBlock(ManualFill_default, { key: 0 })) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [createBaseVNode("div", _hoisted_4$4, [createBaseVNode("button", {
+			return openBlock(), createElementBlock("div", _hoisted_1$4, [!chatActive.value ? (openBlock(), createElementBlock("div", _hoisted_2$4, "未检测到聊天，请先在酒馆中打开一个对话")) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [createVNode(CNTabs_default, {
+				level: "l1",
+				items: pageTabs,
+				modelValue: pageTabValue.value,
+				"onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => pageTabValue.value = $event)
+			}, null, 8, ["modelValue"]), pageTab.value === "fill" ? (openBlock(), createBlock(ManualFill_default, { key: 0 })) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [createBaseVNode("div", _hoisted_3$4, [createBaseVNode("button", {
 				class: "cn-btn cn-btn--sm",
 				onClick: onExportSnapshot
-			}, [..._cache[4] || (_cache[4] = [createBaseVNode("i", { class: "fa-solid fa-download" }, null, -1), createTextVNode(" 导出快照 ", -1)])]), createBaseVNode("label", _hoisted_5$4, [
-				_cache[5] || (_cache[5] = createBaseVNode("i", { class: "fa-solid fa-upload" }, null, -1)),
-				_cache[6] || (_cache[6] = createTextVNode(" 导入快照 ", -1)),
+			}, [..._cache[1] || (_cache[1] = [createBaseVNode("i", { class: "fa-solid fa-download" }, null, -1), createTextVNode(" 导出快照 ", -1)])]), createBaseVNode("label", _hoisted_4$4, [
+				_cache[2] || (_cache[2] = createBaseVNode("i", { class: "fa-solid fa-upload" }, null, -1)),
+				_cache[3] || (_cache[3] = createTextVNode(" 导入快照 ", -1)),
 				createBaseVNode("input", {
 					type: "file",
 					accept: "application/json,.json",
 					hidden: "",
 					onChange: onImportSnapshot
 				}, null, 32)
-			])]), createBaseVNode("div", _hoisted_6$4, [createBaseVNode("div", _hoisted_7$4, [(openBlock(true), createElementBlock(Fragment, null, renderList(tables.value, (t) => {
-				return openBlock(), createElementBlock("button", {
-					key: t.name,
-					class: normalizeClass(["table-tab", { "table-tab--active": t.name === activeName.value }]),
-					onClick: ($event) => switchTab(t.name)
-				}, [createBaseVNode("span", _hoisted_9$4, toDisplayString(t.displayName), 1), createBaseVNode("span", _hoisted_10$4, toDisplayString(t.name), 1)], 10, _hoisted_8$4);
-			}), 128))]), createBaseVNode("div", _hoisted_11$4, [(activeTable.value?.rows.length ?? 0) === 0 ? (openBlock(), createElementBlock("div", _hoisted_12$4, "暂无数据")) : (openBlock(), createElementBlock("div", _hoisted_13$4, [createVNode(TransitionGroup, { name: "cn-list" }, {
+			])]), createBaseVNode("div", _hoisted_5$4, [createVNode(CNTabs_default, {
+				level: "l1",
+				scrollable: "",
+				items: tableTabs.value,
+				"model-value": activeName.value,
+				"onUpdate:modelValue": switchTab
+			}, null, 8, ["items", "model-value"]), createBaseVNode("div", _hoisted_6$4, [(activeTable.value?.rows.length ?? 0) === 0 ? (openBlock(), createElementBlock("div", _hoisted_7$4, "暂无数据")) : (openBlock(), createElementBlock("div", _hoisted_8$4, [createVNode(TransitionGroup, { name: "cn-list" }, {
 				default: withCtx(() => [(openBlock(true), createElementBlock(Fragment, null, renderList(activeTable.value?.rows ?? [], (row) => {
 					return openBlock(), createElementBlock("div", {
 						key: row.__rowid__,
 						class: normalizeClass(["cn-card table-row-card", { "table-row-card--editing": row.__rowid__ === editingRowid.value }])
-					}, [createBaseVNode("div", _hoisted_14$4, [(openBlock(true), createElementBlock(Fragment, null, renderList(activeTable.value?.columns ?? [], (c) => {
+					}, [createBaseVNode("div", _hoisted_9$4, [(openBlock(true), createElementBlock(Fragment, null, renderList(activeTable.value?.columns ?? [], (c) => {
 						return openBlock(), createElementBlock("div", {
 							key: c,
 							class: "table-row-card__field"
-						}, [createBaseVNode("label", _hoisted_15$4, [createTextVNode(toDisplayString(activeTable.value?.colNames[c] ?? c) + " ", 1), createBaseVNode("span", _hoisted_16$4, toDisplayString(c), 1)]), row.__rowid__ === editingRowid.value ? (openBlock(), createElementBlock("div", {
+						}, [createBaseVNode("label", _hoisted_10$4, [createTextVNode(toDisplayString(activeTable.value?.colNames[c] ?? c) + " ", 1), createBaseVNode("span", _hoisted_11$4, toDisplayString(c), 1)]), row.__rowid__ === editingRowid.value ? (openBlock(), createElementBlock("div", {
 							key: 0,
 							class: "cell-edit table-row-card__value",
 							contenteditable: "true",
 							ref_for: true,
 							ref: (el) => registerCellEl(c, el)
-						}, null, 512)) : (openBlock(), createElementBlock("div", _hoisted_17$4, toDisplayString(fieldValue(row, c)), 1))]);
-					}), 128))]), createBaseVNode("div", _hoisted_18$4, [row.__rowid__ === editingRowid.value ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [createBaseVNode("button", {
+						}, null, 512)) : (openBlock(), createElementBlock("div", _hoisted_12$4, toDisplayString(fieldValue(row, c)), 1))]);
+					}), 128))]), createBaseVNode("div", _hoisted_13$4, [row.__rowid__ === editingRowid.value ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [createBaseVNode("button", {
 						class: "cn-btn cn-btn--sm cn-btn--primary",
 						onClick: saveEdit
 					}, " 保存 "), createBaseVNode("button", {
@@ -18329,17 +18336,17 @@ var Tables_default = /* @__PURE__ */ defineComponent({
 					}, "取消")], 64)) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [createBaseVNode("button", {
 						class: "cn-btn cn-btn--sm",
 						onClick: ($event) => startEdit(row)
-					}, [..._cache[7] || (_cache[7] = [createBaseVNode("i", { class: "fa-solid fa-pen" }, null, -1), createTextVNode(" 修改 ", -1)])], 8, _hoisted_19$4), createBaseVNode("button", {
+					}, [..._cache[4] || (_cache[4] = [createBaseVNode("i", { class: "fa-solid fa-pen" }, null, -1), createTextVNode(" 修改 ", -1)])], 8, _hoisted_14$4), createBaseVNode("button", {
 						class: "cn-btn cn-btn--sm cn-btn--text",
 						title: "删除",
 						onClick: ($event) => deleteRow(row)
-					}, [..._cache[8] || (_cache[8] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_20$4)], 64))])], 2);
+					}, [..._cache[5] || (_cache[5] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_15$4)], 64))])], 2);
 				}), 128))]),
 				_: 1
-			})])), createBaseVNode("div", _hoisted_21$3, [createBaseVNode("span", _hoisted_22$3, toDisplayString(activeTable.value?.columns.length ?? 0) + " 列 · " + toDisplayString(activeTable.value?.rows.length ?? 0) + " 条 ", 1), createBaseVNode("button", {
+			})])), createBaseVNode("div", _hoisted_16$4, [createBaseVNode("span", _hoisted_17$4, toDisplayString(activeTable.value?.columns.length ?? 0) + " 列 · " + toDisplayString(activeTable.value?.rows.length ?? 0) + " 条 ", 1), createBaseVNode("button", {
 				class: "cn-btn cn-btn--sm",
 				onClick: addRow
-			}, [..._cache[9] || (_cache[9] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode(" 添加条目 ", -1)])])])])])], 64))], 64))]);
+			}, [..._cache[6] || (_cache[6] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode(" 添加条目 ", -1)])])])])])], 64))], 64))]);
 		};
 	}
 });
@@ -45298,98 +45305,92 @@ var PromptSegmentEditor_default = /* @__PURE__ */ defineComponent({
 var _hoisted_1$2 = { class: "prompt-page" };
 var _hoisted_2$2 = { class: "prompt-wrap cn-card" };
 var _hoisted_3$2 = { class: "prompt-head" };
-var _hoisted_4$2 = { class: "scene-tabs" };
-var _hoisted_5$2 = {
-	key: 0,
-	class: "scene-tabs"
-};
-var _hoisted_6$2 = ["onClick"];
-var _hoisted_7$2 = {
+var _hoisted_4$2 = {
 	key: 0,
 	class: "prompt-split"
 };
-var _hoisted_8$2 = { class: "prompt-side" };
-var _hoisted_9$2 = { class: "cn-card__body" };
-var _hoisted_10$2 = ["onClick"];
-var _hoisted_11$2 = { class: "preset-list__name" };
-var _hoisted_12$2 = {
+var _hoisted_5$2 = { class: "prompt-side" };
+var _hoisted_6$2 = { class: "cn-card__body" };
+var _hoisted_7$2 = ["onClick"];
+var _hoisted_8$2 = { class: "preset-list__name" };
+var _hoisted_9$2 = {
 	key: 0,
 	class: "fa-solid fa-id-card preset-list__card",
 	title: "角色卡自带模板"
 };
-var _hoisted_13$2 = {
+var _hoisted_10$2 = {
 	key: 1,
 	class: "fa-solid fa-star preset-list__default",
 	title: "默认预设"
 };
-var _hoisted_14$2 = { class: "preset-list__count" };
-var _hoisted_15$2 = ["onClick"];
-var _hoisted_16$2 = ["onClick"];
-var _hoisted_17$2 = ["onClick"];
-var _hoisted_18$2 = { class: "prompt-side__chronicle" };
-var _hoisted_19$2 = {
+var _hoisted_11$2 = { class: "preset-list__count" };
+var _hoisted_12$2 = ["onClick"];
+var _hoisted_13$2 = ["onClick"];
+var _hoisted_14$2 = ["onClick"];
+var _hoisted_15$2 = { class: "prompt-side__chronicle" };
+var _hoisted_16$2 = {
 	key: 0,
 	class: "prompt-editor"
 };
-var _hoisted_20$2 = { class: "cn-card__body template-editor-body" };
-var _hoisted_21$2 = { class: "tpl-table-card tpl-table-card--active" };
-var _hoisted_22$2 = { class: "tpl-table-card__head" };
-var _hoisted_23$2 = { class: "tpl-table-card__name" };
-var _hoisted_24$2 = { class: "tpl-table-card__meta" };
-var _hoisted_25$2 = { class: "tpl-table-card__body" };
-var _hoisted_26$2 = { class: "tpl-row" };
-var _hoisted_27$2 = { class: "tpl-field" };
-var _hoisted_28$2 = ["value"];
-var _hoisted_29$2 = { class: "tpl-field" };
-var _hoisted_30$2 = { class: "tpl-section" };
-var _hoisted_31$2 = { class: "tpl-section" };
-var _hoisted_32$2 = { class: "tpl-cols" };
-var _hoisted_33$2 = ["onUpdate:modelValue"];
-var _hoisted_34$2 = ["onUpdate:modelValue"];
-var _hoisted_35$2 = ["onUpdate:modelValue"];
-var _hoisted_36$2 = ["value"];
-var _hoisted_37$2 = { class: "tpl-col-cell flags" };
-var _hoisted_38$2 = ["onClick"];
-var _hoisted_39$2 = ["onClick"];
-var _hoisted_40$2 = ["onClick"];
-var _hoisted_41$2 = ["onUpdate:modelValue"];
-var _hoisted_42$2 = ["value"];
-var _hoisted_43$2 = ["onUpdate:modelValue"];
-var _hoisted_44$2 = ["onClick"];
-var _hoisted_45$2 = { class: "tpl-section" };
-var _hoisted_46$2 = { class: "tpl-section" };
-var _hoisted_47$2 = { class: "tpl-section" };
-var _hoisted_48$2 = {
+var _hoisted_17$2 = { class: "cn-card__body template-editor-body" };
+var _hoisted_18$2 = { class: "tpl-table-card tpl-table-card--active" };
+var _hoisted_19$2 = { class: "tpl-table-card__head" };
+var _hoisted_20$2 = { class: "tpl-table-card__name" };
+var _hoisted_21$2 = { class: "tpl-table-card__meta" };
+var _hoisted_22$2 = { class: "tpl-table-card__body" };
+var _hoisted_23$2 = { class: "tpl-row" };
+var _hoisted_24$2 = { class: "tpl-field" };
+var _hoisted_25$2 = ["value"];
+var _hoisted_26$2 = { class: "tpl-field" };
+var _hoisted_27$2 = { class: "tpl-section" };
+var _hoisted_28$2 = { class: "tpl-section" };
+var _hoisted_29$2 = { class: "tpl-cols" };
+var _hoisted_30$2 = ["onUpdate:modelValue"];
+var _hoisted_31$2 = ["onUpdate:modelValue"];
+var _hoisted_32$2 = ["onUpdate:modelValue"];
+var _hoisted_33$2 = ["value"];
+var _hoisted_34$2 = { class: "tpl-col-cell flags" };
+var _hoisted_35$2 = ["onClick"];
+var _hoisted_36$2 = ["onClick"];
+var _hoisted_37$2 = ["onClick"];
+var _hoisted_38$2 = ["onUpdate:modelValue"];
+var _hoisted_39$2 = ["value"];
+var _hoisted_40$2 = ["onUpdate:modelValue"];
+var _hoisted_41$2 = ["onClick"];
+var _hoisted_42$2 = { class: "tpl-section" };
+var _hoisted_43$2 = { class: "tpl-section" };
+var _hoisted_44$2 = { class: "tpl-section" };
+var _hoisted_45$2 = {
 	key: 1,
 	class: "prompt-editor"
 };
-var _hoisted_49$1 = { class: "cn-card__head" };
-var _hoisted_50$1 = { class: "cn-card__body template-editor-body" };
-var _hoisted_51$1 = {
+var _hoisted_46$2 = { class: "cn-card__head" };
+var _hoisted_47$1 = { class: "cn-card__body template-editor-body" };
+var _hoisted_48$1 = {
 	key: 0,
 	class: "template-editor-empty"
 };
-var _hoisted_52$1 = ["onClick"];
-var _hoisted_53$1 = { class: "tpl-table-card__name" };
-var _hoisted_54 = { class: "tpl-table-card__meta" };
-var _hoisted_55 = ["onClick"];
-var _hoisted_56 = {
+var _hoisted_49$1 = ["onClick"];
+var _hoisted_50$1 = { class: "tpl-table-card__name" };
+var _hoisted_51 = { class: "tpl-table-card__meta" };
+var _hoisted_52 = ["onClick"];
+var _hoisted_53 = {
 	key: 0,
 	class: "tpl-table-card__body"
 };
-var _hoisted_57 = { class: "tpl-row" };
-var _hoisted_58 = { class: "tpl-field" };
-var _hoisted_59 = ["onUpdate:modelValue"];
-var _hoisted_60 = { class: "tpl-field" };
-var _hoisted_61 = ["onUpdate:modelValue"];
-var _hoisted_62 = { class: "tpl-section" };
-var _hoisted_63 = ["onUpdate:modelValue"];
-var _hoisted_64 = { class: "tpl-section" };
-var _hoisted_65 = {
+var _hoisted_54 = { class: "tpl-row" };
+var _hoisted_55 = { class: "tpl-field" };
+var _hoisted_56 = ["onUpdate:modelValue"];
+var _hoisted_57 = { class: "tpl-field" };
+var _hoisted_58 = ["onUpdate:modelValue"];
+var _hoisted_59 = { class: "tpl-section" };
+var _hoisted_60 = ["onUpdate:modelValue"];
+var _hoisted_61 = { class: "tpl-section" };
+var _hoisted_62 = {
 	class: "tpl-row",
 	style: { "align-items": "center" }
 };
-var _hoisted_66 = {
+var _hoisted_63 = {
 	class: "tpl-field",
 	style: {
 		"flex-direction": "row",
@@ -45397,13 +45398,13 @@ var _hoisted_66 = {
 		"gap": "8px"
 	}
 };
-var _hoisted_67 = { class: "cn-switch" };
-var _hoisted_68 = ["checked", "onChange"];
-var _hoisted_69 = { class: "tpl-field" };
-var _hoisted_70 = ["onChange"];
-var _hoisted_71 = ["selected"];
-var _hoisted_72 = ["selected"];
-var _hoisted_73 = {
+var _hoisted_64 = { class: "cn-switch" };
+var _hoisted_65 = ["checked", "onChange"];
+var _hoisted_66 = { class: "tpl-field" };
+var _hoisted_67 = ["onChange"];
+var _hoisted_68 = ["selected"];
+var _hoisted_69 = ["selected"];
+var _hoisted_70 = {
 	key: 0,
 	class: "tpl-row",
 	style: {
@@ -45412,84 +45413,84 @@ var _hoisted_73 = {
 		"align-items": "stretch"
 	}
 };
-var _hoisted_74 = { class: "tpl-field" };
-var _hoisted_75 = ["onChange"];
-var _hoisted_76 = ["selected"];
-var _hoisted_77 = ["selected"];
-var _hoisted_78 = {
+var _hoisted_71 = { class: "tpl-field" };
+var _hoisted_72 = ["onChange"];
+var _hoisted_73 = ["selected"];
+var _hoisted_74 = ["selected"];
+var _hoisted_75 = {
 	key: 0,
 	class: "tpl-field"
 };
-var _hoisted_79 = ["value", "onInput"];
-var _hoisted_80 = {
+var _hoisted_76 = ["value", "onInput"];
+var _hoisted_77 = {
 	key: 1,
 	class: "tpl-field"
 };
-var _hoisted_81 = ["value", "onInput"];
-var _hoisted_82 = { class: "tpl-section" };
-var _hoisted_83 = { class: "tpl-cols" };
-var _hoisted_84 = ["onUpdate:modelValue"];
-var _hoisted_85 = ["onUpdate:modelValue"];
-var _hoisted_86 = ["onUpdate:modelValue"];
-var _hoisted_87 = ["value"];
-var _hoisted_88 = { class: "tpl-col-cell flags" };
-var _hoisted_89 = ["onClick"];
+var _hoisted_78 = ["value", "onInput"];
+var _hoisted_79 = { class: "tpl-section" };
+var _hoisted_80 = { class: "tpl-cols" };
+var _hoisted_81 = ["onUpdate:modelValue"];
+var _hoisted_82 = ["onUpdate:modelValue"];
+var _hoisted_83 = ["onUpdate:modelValue"];
+var _hoisted_84 = ["value"];
+var _hoisted_85 = { class: "tpl-col-cell flags" };
+var _hoisted_86 = ["onClick"];
+var _hoisted_87 = ["onClick"];
+var _hoisted_88 = ["onClick"];
+var _hoisted_89 = ["onUpdate:modelValue"];
 var _hoisted_90 = ["onClick"];
-var _hoisted_91 = ["onClick"];
+var _hoisted_91 = { class: "tpl-section" };
 var _hoisted_92 = ["onUpdate:modelValue"];
-var _hoisted_93 = ["onClick"];
-var _hoisted_94 = { class: "tpl-section" };
-var _hoisted_95 = ["onUpdate:modelValue"];
-var _hoisted_96 = { class: "tpl-section" };
-var _hoisted_97 = ["onUpdate:modelValue"];
-var _hoisted_98 = { class: "tpl-section" };
-var _hoisted_99 = ["onUpdate:modelValue"];
-var _hoisted_100 = {
+var _hoisted_93 = { class: "tpl-section" };
+var _hoisted_94 = ["onUpdate:modelValue"];
+var _hoisted_95 = { class: "tpl-section" };
+var _hoisted_96 = ["onUpdate:modelValue"];
+var _hoisted_97 = {
 	key: 2,
 	class: "prompt-editor"
 };
-var _hoisted_101 = {
+var _hoisted_98 = {
 	key: 1,
 	class: "prompt-split"
 };
-var _hoisted_102 = { class: "prompt-side" };
-var _hoisted_103 = { class: "cn-card__body" };
-var _hoisted_104 = ["onClick"];
-var _hoisted_105 = { class: "preset-list__name" };
-var _hoisted_106 = {
+var _hoisted_99 = { class: "prompt-side" };
+var _hoisted_100 = { class: "cn-card__body" };
+var _hoisted_101 = ["onClick"];
+var _hoisted_102 = { class: "preset-list__name" };
+var _hoisted_103 = {
 	key: 0,
 	class: "fa-solid fa-star preset-list__default",
 	title: "默认预设"
 };
-var _hoisted_107 = { class: "preset-list__count" };
-var _hoisted_108 = ["onClick"];
-var _hoisted_109 = ["onClick"];
-var _hoisted_110 = ["onClick"];
-var _hoisted_111 = { class: "prompt-editor" };
-var _hoisted_112 = { class: "cn-card__head" };
-var _hoisted_113 = { class: "prompt-editor__desc" };
-var _hoisted_114 = { class: "cn-card__body" };
-var _hoisted_115 = { class: "seg-item" };
-var _hoisted_116 = { class: "seg-item__bar" };
-var _hoisted_117 = ["title", "onClick"];
-var _hoisted_118 = ["onUpdate:modelValue"];
-var _hoisted_119 = { class: "seg-item__seq" };
-var _hoisted_120 = ["onClick"];
-var _hoisted_121 = { class: "seg-add-row" };
-var _hoisted_122 = ["onClick"];
-var _hoisted_123 = {
+var _hoisted_104 = { class: "preset-list__count" };
+var _hoisted_105 = ["onClick"];
+var _hoisted_106 = ["onClick"];
+var _hoisted_107 = ["onClick"];
+var _hoisted_108 = { class: "prompt-editor" };
+var _hoisted_109 = { class: "cn-card__head" };
+var _hoisted_110 = { class: "prompt-editor__desc" };
+var _hoisted_111 = { class: "cn-card__body" };
+var _hoisted_112 = { class: "seg-item" };
+var _hoisted_113 = { class: "seg-item__bar" };
+var _hoisted_114 = ["title", "onClick"];
+var _hoisted_115 = ["onUpdate:modelValue"];
+var _hoisted_116 = { class: "seg-item__seq" };
+var _hoisted_117 = ["onClick"];
+var _hoisted_118 = { class: "seg-add-row" };
+var _hoisted_119 = ["onClick"];
+var _hoisted_120 = {
 	key: 0,
 	class: "prompt-foot"
 };
-var _hoisted_124 = { class: "cn-space" };
-var _hoisted_125 = { class: "cn-btn" };
-var _hoisted_126 = { class: "cn-modal" };
-var _hoisted_127 = { class: "cn-modal__code" };
-var _hoisted_128 = { class: "prompt-foot" };
-var _hoisted_129 = { class: "cn-space" };
-var _hoisted_130 = { class: "cn-btn" };
-var _hoisted_131 = { class: "cn-modal" };
-var _hoisted_132 = { class: "cn-modal__code" };
+var _hoisted_121 = { class: "cn-space" };
+var _hoisted_122 = { class: "cn-btn" };
+var _hoisted_123 = { class: "cn-modal" };
+var _hoisted_124 = { class: "cn-modal__code" };
+var _hoisted_125 = { class: "prompt-foot" };
+var _hoisted_126 = { class: "cn-space" };
+var _hoisted_127 = { class: "cn-btn" };
+var _hoisted_128 = { class: "cn-modal" };
+var _hoisted_129 = { class: "cn-modal__code" };
 var varExample = "{{变量名}}";
 //#endregion
 //#region src/ui/pages/PromptConfig.vue
@@ -45745,6 +45746,27 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 			input.value = "";
 		}
 		const showTemplate = /* @__PURE__ */ ref(false);
+		const promptTabs = [{
+			key: "template",
+			label: "表格模板",
+			icon: "fa-table"
+		}, {
+			key: "prompt",
+			label: "提示词配置",
+			icon: "fa-pen-to-square"
+		}];
+		const promptTabValue = computed({
+			get: () => showTemplate.value ? "template" : "prompt",
+			set: (v) => {
+				showTemplate.value = v === "template";
+			}
+		});
+		const sceneTabValue = computed({
+			get: () => activeScene.value,
+			set: (v) => {
+				activeScene.value = v;
+			}
+		});
 		const COL_TYPES = [
 			"TEXT",
 			"INTEGER",
@@ -46101,29 +46123,24 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 		return (_ctx, _cache) => {
 			return openBlock(), createElementBlock("div", _hoisted_1$2, [
 				createBaseVNode("div", _hoisted_2$2, [
-					createBaseVNode("div", _hoisted_3$2, [createBaseVNode("div", _hoisted_4$2, [createBaseVNode("button", {
-						type: "button",
-						class: normalizeClass(["scene-tab", { "scene-tab--active": showTemplate.value }]),
-						onClick: _cache[0] || (_cache[0] = ($event) => showTemplate.value = true)
-					}, [..._cache[8] || (_cache[8] = [createBaseVNode("i", { class: "fa-solid fa-table" }, null, -1), createTextVNode(" 表格模板 ", -1)])], 2), createBaseVNode("button", {
-						type: "button",
-						class: normalizeClass(["scene-tab", { "scene-tab--active": !showTemplate.value }]),
-						onClick: _cache[1] || (_cache[1] = ($event) => showTemplate.value = false)
-					}, [..._cache[9] || (_cache[9] = [createBaseVNode("i", { class: "fa-solid fa-pen-to-square" }, null, -1), createTextVNode(" 提示词配置 ", -1)])], 2)]), !showTemplate.value ? (openBlock(), createElementBlock("div", _hoisted_5$2, [(openBlock(), createElementBlock(Fragment, null, renderList(scenes, (s) => {
-						return createBaseVNode("button", {
-							key: s.key,
-							type: "button",
-							class: normalizeClass(["scene-tab", { "scene-tab--active": activeScene.value === s.key }]),
-							onClick: ($event) => activeScene.value = s.key
-						}, toDisplayString(s.label), 11, _hoisted_6$2);
-					}), 64))])) : createCommentVNode("", true)]),
-					showTemplate.value ? (openBlock(), createElementBlock("div", _hoisted_7$2, [createBaseVNode("div", _hoisted_8$2, [
-						createBaseVNode("div", { class: "cn-card__head" }, [_cache[11] || (_cache[11] = createBaseVNode("span", null, "模板预设", -1)), createBaseVNode("button", {
+					createBaseVNode("div", _hoisted_3$2, [createVNode(CNTabs_default, {
+						level: "l1",
+						items: promptTabs,
+						modelValue: promptTabValue.value,
+						"onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => promptTabValue.value = $event)
+					}, null, 8, ["modelValue"]), !showTemplate.value ? (openBlock(), createBlock(CNTabs_default, {
+						key: 0,
+						level: "l1",
+						items: scenes,
+						modelValue: sceneTabValue.value,
+						"onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => sceneTabValue.value = $event)
+					}, null, 8, ["modelValue"])) : createCommentVNode("", true)]),
+					showTemplate.value ? (openBlock(), createElementBlock("div", _hoisted_4$2, [createBaseVNode("div", _hoisted_5$2, [
+						createBaseVNode("div", { class: "cn-card__head" }, [_cache[9] || (_cache[9] = createBaseVNode("span", null, "模板预设", -1)), createBaseVNode("button", {
 							class: "cn-btn cn-btn--sm",
 							onClick: newPresetT
-						}, [..._cache[10] || (_cache[10] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode(" 新建 ", -1)])])]),
-						createBaseVNode("div", _hoisted_9$2, [createVNode(TransitionGroup, {
-							name: "cn-list",
+						}, [..._cache[8] || (_cache[8] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode(" 新建 ", -1)])])]),
+						createBaseVNode("div", _hoisted_6$2, [createVNode(TransitionGroup, {
 							tag: "ul",
 							class: "preset-list"
 						}, {
@@ -46133,38 +46150,38 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 									class: normalizeClass(["preset-list__item", { "preset-list__item--active": p.id === ttConfig.value.activeId && selectedView.value === "preset" }]),
 									onClick: ($event) => selectPresetT(p.id)
 								}, [
-									createBaseVNode("span", _hoisted_11$2, [
-										p.source === "card" ? (openBlock(), createElementBlock("i", _hoisted_12$2)) : createCommentVNode("", true),
+									createBaseVNode("span", _hoisted_8$2, [
+										p.source === "card" ? (openBlock(), createElementBlock("i", _hoisted_9$2)) : createCommentVNode("", true),
 										createTextVNode(" " + toDisplayString(p.name) + " ", 1),
-										p.id === ttConfig.value.defaultId ? (openBlock(), createElementBlock("i", _hoisted_13$2)) : createCommentVNode("", true)
+										p.id === ttConfig.value.defaultId ? (openBlock(), createElementBlock("i", _hoisted_10$2)) : createCommentVNode("", true)
 									]),
-									createBaseVNode("span", _hoisted_14$2, toDisplayString(p.template.tables.length) + "表", 1),
+									createBaseVNode("span", _hoisted_11$2, toDisplayString(p.template.tables.length) + "表", 1),
 									p.id !== ttConfig.value.activeId ? (openBlock(), createElementBlock("button", {
 										key: 0,
 										class: "cn-btn cn-btn--sm cn-btn--text",
 										title: "设为当前",
 										onClick: withModifiers(($event) => selectPresetT(p.id), ["stop"])
-									}, [..._cache[12] || (_cache[12] = [createBaseVNode("i", { class: "fa-solid fa-check" }, null, -1)])], 8, _hoisted_15$2)) : createCommentVNode("", true),
+									}, [..._cache[10] || (_cache[10] = [createBaseVNode("i", { class: "fa-solid fa-check" }, null, -1)])], 8, _hoisted_12$2)) : createCommentVNode("", true),
 									p.id !== ttConfig.value.defaultId ? (openBlock(), createElementBlock("button", {
 										key: 1,
 										class: "cn-btn cn-btn--sm cn-btn--text",
 										title: "设为默认",
 										onClick: withModifiers(($event) => setDefaultPresetT(p.id), ["stop"])
-									}, [..._cache[13] || (_cache[13] = [createBaseVNode("i", { class: "fa-solid fa-star" }, null, -1)])], 8, _hoisted_16$2)) : createCommentVNode("", true),
+									}, [..._cache[11] || (_cache[11] = [createBaseVNode("i", { class: "fa-solid fa-star" }, null, -1)])], 8, _hoisted_13$2)) : createCommentVNode("", true),
 									p.source !== "card" ? (openBlock(), createElementBlock("button", {
 										key: 2,
 										class: "cn-btn cn-btn--sm cn-btn--text",
 										title: "删除",
 										onClick: withModifiers(($event) => deletePresetT(p.id), ["stop"])
-									}, [..._cache[14] || (_cache[14] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_17$2)) : createCommentVNode("", true)
-								], 10, _hoisted_10$2);
+									}, [..._cache[12] || (_cache[12] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_14$2)) : createCommentVNode("", true)
+								], 10, _hoisted_7$2);
 							}), 128))]),
 							_: 1
 						})]),
-						createBaseVNode("div", _hoisted_18$2, [createBaseVNode("div", {
+						createBaseVNode("div", _hoisted_15$2, [createBaseVNode("div", {
 							class: normalizeClass(["preset-list__item preset-list__item--chronicle", { "preset-list__item--active": selectedView.value === "chronicle" }]),
 							onClick: selectChronicle
-						}, [..._cache[15] || (_cache[15] = [createBaseVNode("span", { class: "preset-list__name" }, [
+						}, [..._cache[13] || (_cache[13] = [createBaseVNode("span", { class: "preset-list__name" }, [
 							createBaseVNode("i", { class: "fa-solid fa-clock-rotate-left preset-list__card" }),
 							createTextVNode(" 纪要表 "),
 							createBaseVNode("i", {
@@ -46176,33 +46193,33 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 								title: "系统内置，结构可编辑"
 							})
 						], -1), createBaseVNode("span", { class: "preset-list__count" }, "内置", -1)])], 2)])
-					]), selectedView.value === "chronicle" ? (openBlock(), createElementBlock("div", _hoisted_19$2, [createBaseVNode("div", { class: "cn-card__head" }, [
-						_cache[17] || (_cache[17] = createBaseVNode("span", null, "纪要表（系统内置）", -1)),
-						_cache[18] || (_cache[18] = createBaseVNode("span", { class: "prompt-editor__desc" }, "结构可编辑；保存后按新结构重建表（同名列数据迁移）。表名固定不可改。", -1)),
+					]), selectedView.value === "chronicle" ? (openBlock(), createElementBlock("div", _hoisted_16$2, [createBaseVNode("div", { class: "cn-card__head" }, [
+						_cache[15] || (_cache[15] = createBaseVNode("span", null, "纪要表（系统内置）", -1)),
+						_cache[16] || (_cache[16] = createBaseVNode("span", { class: "prompt-editor__desc" }, "结构可编辑；保存后按新结构重建表（同名列数据迁移）。表名固定不可改。", -1)),
 						createBaseVNode("button", {
 							class: "cn-btn cn-btn--sm cn-btn--primary",
 							onClick: saveChronicleTableDef
-						}, [..._cache[16] || (_cache[16] = [createBaseVNode("i", { class: "fa-solid fa-save" }, null, -1), createTextVNode(" 保存并重建 ", -1)])])
-					]), createBaseVNode("div", _hoisted_20$2, [createBaseVNode("div", _hoisted_21$2, [createBaseVNode("div", _hoisted_22$2, [createBaseVNode("span", _hoisted_23$2, toDisplayString(chronicleDef.value.displayName) + " (" + toDisplayString(chronicleDef.value.name) + ")", 1), createBaseVNode("span", _hoisted_24$2, toDisplayString(chronicleDef.value.columns.length) + "列·内置", 1)]), createBaseVNode("div", _hoisted_25$2, [
-						createBaseVNode("div", _hoisted_26$2, [createBaseVNode("div", _hoisted_27$2, [_cache[19] || (_cache[19] = createBaseVNode("label", { class: "tpl-label" }, "英文表名（锁定）", -1)), createBaseVNode("input", {
+						}, [..._cache[14] || (_cache[14] = [createBaseVNode("i", { class: "fa-solid fa-save" }, null, -1), createTextVNode(" 保存并重建 ", -1)])])
+					]), createBaseVNode("div", _hoisted_17$2, [createBaseVNode("div", _hoisted_18$2, [createBaseVNode("div", _hoisted_19$2, [createBaseVNode("span", _hoisted_20$2, toDisplayString(chronicleDef.value.displayName) + " (" + toDisplayString(chronicleDef.value.name) + ")", 1), createBaseVNode("span", _hoisted_21$2, toDisplayString(chronicleDef.value.columns.length) + "列·内置", 1)]), createBaseVNode("div", _hoisted_22$2, [
+						createBaseVNode("div", _hoisted_23$2, [createBaseVNode("div", _hoisted_24$2, [_cache[17] || (_cache[17] = createBaseVNode("label", { class: "tpl-label" }, "英文表名（锁定）", -1)), createBaseVNode("input", {
 							class: "cn-input",
 							value: chronicleDef.value.name,
 							disabled: ""
-						}, null, 8, _hoisted_28$2)]), createBaseVNode("div", _hoisted_29$2, [_cache[20] || (_cache[20] = createBaseVNode("label", { class: "tpl-label" }, "中文表名", -1)), withDirectives(createBaseVNode("input", {
+						}, null, 8, _hoisted_25$2)]), createBaseVNode("div", _hoisted_26$2, [_cache[18] || (_cache[18] = createBaseVNode("label", { class: "tpl-label" }, "中文表名", -1)), withDirectives(createBaseVNode("input", {
 							class: "cn-input",
 							"onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => chronicleDef.value.displayName = $event),
 							placeholder: "给 AI 看的表名"
 						}, null, 512), [[vModelText, chronicleDef.value.displayName]])])]),
-						createBaseVNode("div", _hoisted_30$2, [_cache[21] || (_cache[21] = createBaseVNode("label", { class: "tpl-label" }, "表说明 (note)", -1)), withDirectives(createBaseVNode("textarea", {
+						createBaseVNode("div", _hoisted_27$2, [_cache[19] || (_cache[19] = createBaseVNode("label", { class: "tpl-label" }, "表说明 (note)", -1)), withDirectives(createBaseVNode("textarea", {
 							class: "cn-textarea tpl-textarea",
 							"onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => chronicleDef.value.note = $event),
 							rows: "3",
 							placeholder: "表的用途与每列填写约束（经 tables 占位符注入 AI prompt）"
 						}, null, 512), [[vModelText, chronicleDef.value.note]])]),
-						createBaseVNode("div", _hoisted_31$2, [createBaseVNode("div", { class: "tpl-section__head" }, [_cache[23] || (_cache[23] = createBaseVNode("label", { class: "tpl-label" }, "列定义", -1)), createBaseVNode("button", {
+						createBaseVNode("div", _hoisted_28$2, [createBaseVNode("div", { class: "tpl-section__head" }, [_cache[21] || (_cache[21] = createBaseVNode("label", { class: "tpl-label" }, "列定义", -1)), createBaseVNode("button", {
 							class: "cn-btn cn-btn--sm",
 							onClick: addChronicleColumn
-						}, [..._cache[22] || (_cache[22] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode("添加列 ", -1)])])]), createBaseVNode("div", _hoisted_32$2, [_cache[26] || (_cache[26] = createStaticVNode("<div class=\"tpl-col-head\"><span class=\"tpl-col-cell name\">英文名</span><span class=\"tpl-col-cell name\">中文名</span><span class=\"tpl-col-cell type\">类型</span><span class=\"tpl-col-cell flags\">约束</span><span class=\"tpl-col-cell role\">语义角色</span><span class=\"tpl-col-cell note\">AI 提示</span><span class=\"tpl-col-cell del\"></span></div>", 1)), (openBlock(true), createElementBlock(Fragment, null, renderList(chronicleDef.value.columns, (col, ci) => {
+						}, [..._cache[20] || (_cache[20] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode("添加列 ", -1)])])]), createBaseVNode("div", _hoisted_29$2, [_cache[24] || (_cache[24] = createStaticVNode("<div class=\"tpl-col-head\"><span class=\"tpl-col-cell name\">英文名</span><span class=\"tpl-col-cell name\">中文名</span><span class=\"tpl-col-cell type\">类型</span><span class=\"tpl-col-cell flags\">约束</span><span class=\"tpl-col-cell role\">语义角色</span><span class=\"tpl-col-cell note\">AI 提示</span><span class=\"tpl-col-cell del\"></span></div>", 1)), (openBlock(true), createElementBlock(Fragment, null, renderList(chronicleDef.value.columns, (col, ci) => {
 							return openBlock(), createElementBlock("div", {
 								key: ci,
 								class: "tpl-col-row"
@@ -46211,12 +46228,12 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 									class: "cn-input tpl-col-cell name",
 									"onUpdate:modelValue": ($event) => col.name = $event,
 									placeholder: "col_name"
-								}, null, 8, _hoisted_33$2), [[vModelText, col.name]]),
+								}, null, 8, _hoisted_30$2), [[vModelText, col.name]]),
 								withDirectives(createBaseVNode("input", {
 									class: "cn-input tpl-col-cell name",
 									"onUpdate:modelValue": ($event) => col.displayName = $event,
 									placeholder: "中文名"
-								}, null, 8, _hoisted_34$2), [[vModelText, col.displayName]]),
+								}, null, 8, _hoisted_31$2), [[vModelText, col.displayName]]),
 								withDirectives(createBaseVNode("select", {
 									class: "cn-select tpl-col-cell type",
 									"onUpdate:modelValue": ($event) => col.type = $event
@@ -46224,65 +46241,65 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 									return createBaseVNode("option", {
 										key: t,
 										value: t
-									}, toDisplayString(t), 9, _hoisted_36$2);
-								}), 64))], 8, _hoisted_35$2), [[vModelSelect, col.type]]),
-								createBaseVNode("span", _hoisted_37$2, [
+									}, toDisplayString(t), 9, _hoisted_33$2);
+								}), 64))], 8, _hoisted_32$2), [[vModelSelect, col.type]]),
+								createBaseVNode("span", _hoisted_34$2, [
 									createBaseVNode("button", {
 										class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": col.constraints?.primaryKey }]),
 										title: "主键",
 										onClick: ($event) => toggleConstraint(col, "primaryKey")
-									}, " PK ", 10, _hoisted_38$2),
+									}, " PK ", 10, _hoisted_35$2),
 									createBaseVNode("button", {
 										class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": col.constraints?.unique }]),
 										title: "唯一",
 										onClick: ($event) => toggleConstraint(col, "unique")
-									}, " UQ ", 10, _hoisted_39$2),
+									}, " UQ ", 10, _hoisted_36$2),
 									createBaseVNode("button", {
 										class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": !col.constraints?.nullable }]),
 										title: "非空",
 										onClick: ($event) => toggleConstraint(col, "nullable")
-									}, " NN ", 10, _hoisted_40$2)
+									}, " NN ", 10, _hoisted_37$2)
 								]),
 								withDirectives(createBaseVNode("select", {
 									class: "cn-select tpl-col-cell role",
 									"onUpdate:modelValue": ($event) => col.role = $event
-								}, [_cache[24] || (_cache[24] = createBaseVNode("option", { value: void 0 }, "无", -1)), (openBlock(), createElementBlock(Fragment, null, renderList(CHRONICLE_ROLES, (r) => {
+								}, [_cache[22] || (_cache[22] = createBaseVNode("option", { value: void 0 }, "无", -1)), (openBlock(), createElementBlock(Fragment, null, renderList(CHRONICLE_ROLES, (r) => {
 									return createBaseVNode("option", {
 										key: r,
 										value: r
-									}, toDisplayString(CHRONICLE_ROLE_LABELS[r]), 9, _hoisted_42$2);
-								}), 64))], 8, _hoisted_41$2), [[vModelSelect, col.role]]),
+									}, toDisplayString(CHRONICLE_ROLE_LABELS[r]), 9, _hoisted_39$2);
+								}), 64))], 8, _hoisted_38$2), [[vModelSelect, col.role]]),
 								withDirectives(createBaseVNode("input", {
 									class: "cn-input tpl-col-cell note",
 									"onUpdate:modelValue": ($event) => col.note = $event,
 									placeholder: "列说明（注入 AI prompt）"
-								}, null, 8, _hoisted_43$2), [[vModelText, col.note]]),
+								}, null, 8, _hoisted_40$2), [[vModelText, col.note]]),
 								createBaseVNode("button", {
 									class: "cn-btn cn-btn--sm cn-btn--text tpl-col-cell del",
 									title: "删除列",
 									onClick: ($event) => removeChronicleColumn(ci)
-								}, [..._cache[25] || (_cache[25] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_44$2)
+								}, [..._cache[23] || (_cache[23] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_41$2)
 							]);
 						}), 128))])]),
-						createBaseVNode("div", _hoisted_45$2, [_cache[27] || (_cache[27] = createBaseVNode("label", { class: "tpl-label" }, "新增行提示 (insertHint)", -1)), withDirectives(createBaseVNode("textarea", {
+						createBaseVNode("div", _hoisted_42$2, [_cache[25] || (_cache[25] = createBaseVNode("label", { class: "tpl-label" }, "新增行提示 (insertHint)", -1)), withDirectives(createBaseVNode("textarea", {
 							class: "cn-textarea tpl-textarea",
 							"onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => chronicleDef.value.insertHint = $event),
 							rows: "4",
 							placeholder: "INSERT 时机/格式/SQL示例（注入 AI prompt）"
 						}, null, 512), [[vModelText, chronicleDef.value.insertHint]])]),
-						createBaseVNode("div", _hoisted_46$2, [_cache[28] || (_cache[28] = createBaseVNode("label", { class: "tpl-label" }, "更新行提示 (updateHint)", -1)), withDirectives(createBaseVNode("textarea", {
+						createBaseVNode("div", _hoisted_43$2, [_cache[26] || (_cache[26] = createBaseVNode("label", { class: "tpl-label" }, "更新行提示 (updateHint)", -1)), withDirectives(createBaseVNode("textarea", {
 							class: "cn-textarea tpl-textarea",
 							"onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => chronicleDef.value.updateHint = $event),
 							rows: "2",
 							placeholder: "UPDATE 时机/约束（注入 AI prompt）"
 						}, null, 512), [[vModelText, chronicleDef.value.updateHint]])]),
-						createBaseVNode("div", _hoisted_47$2, [_cache[29] || (_cache[29] = createBaseVNode("label", { class: "tpl-label" }, "删除行提示 (deleteHint)", -1)), withDirectives(createBaseVNode("textarea", {
+						createBaseVNode("div", _hoisted_44$2, [_cache[27] || (_cache[27] = createBaseVNode("label", { class: "tpl-label" }, "删除行提示 (deleteHint)", -1)), withDirectives(createBaseVNode("textarea", {
 							class: "cn-textarea tpl-textarea",
 							"onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => chronicleDef.value.deleteHint = $event),
 							rows: "2",
 							placeholder: "DELETE 时机/约束（注入 AI prompt）"
 						}, null, 512), [[vModelText, chronicleDef.value.deleteHint]])])
-					])])])])) : activeTemplatePreset.value ? (openBlock(), createElementBlock("div", _hoisted_48$2, [createBaseVNode("div", _hoisted_49$1, [
+					])])])])) : activeTemplatePreset.value ? (openBlock(), createElementBlock("div", _hoisted_45$2, [createBaseVNode("div", _hoisted_46$2, [
 						withDirectives(createBaseVNode("input", {
 							class: "cn-input",
 							style: {
@@ -46295,13 +46312,13 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 						createBaseVNode("button", {
 							class: "cn-btn cn-btn--sm",
 							onClick: addTableT
-						}, [..._cache[30] || (_cache[30] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode("添加表 ", -1)])]),
+						}, [..._cache[28] || (_cache[28] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode("添加表 ", -1)])]),
 						selectedTable.value ? (openBlock(), createElementBlock("button", {
 							key: 0,
 							class: "cn-btn cn-btn--sm",
 							onClick: openTemplatePreview
-						}, [..._cache[31] || (_cache[31] = [createBaseVNode("i", { class: "fa-solid fa-eye" }, null, -1), createTextVNode("预览此表 ", -1)])])) : createCommentVNode("", true)
-					]), createBaseVNode("div", _hoisted_50$1, [editingTables.value.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_51$1, [..._cache[32] || (_cache[32] = [createBaseVNode("span", null, "此模板尚无数据表，点击\"添加表\"开始", -1)])])) : createCommentVNode("", true), (openBlock(true), createElementBlock(Fragment, null, renderList(editingTables.value, (table, ti) => {
+						}, [..._cache[29] || (_cache[29] = [createBaseVNode("i", { class: "fa-solid fa-eye" }, null, -1), createTextVNode("预览此表 ", -1)])])) : createCommentVNode("", true)
+					]), createBaseVNode("div", _hoisted_47$1, [editingTables.value.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_48$1, [..._cache[30] || (_cache[30] = [createBaseVNode("span", null, "此模板尚无数据表，点击\"添加表\"开始", -1)])])) : createCommentVNode("", true), (openBlock(true), createElementBlock(Fragment, null, renderList(editingTables.value, (table, ti) => {
 						return openBlock(), createElementBlock("div", {
 							key: ti,
 							class: normalizeClass(["tpl-table-card", { "tpl-table-card--active": ti === selectedTableIdx.value }])
@@ -46309,40 +46326,40 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 							class: "tpl-table-card__head",
 							onClick: ($event) => selectedTableIdx.value = selectedTableIdx.value === ti ? -1 : ti
 						}, [
-							createBaseVNode("span", _hoisted_53$1, toDisplayString(table.displayName || table.name || "(未命名)"), 1),
-							createBaseVNode("span", _hoisted_54, toDisplayString(table.columns.length) + "列", 1),
+							createBaseVNode("span", _hoisted_50$1, toDisplayString(table.displayName || table.name || "(未命名)"), 1),
+							createBaseVNode("span", _hoisted_51, toDisplayString(table.columns.length) + "列", 1),
 							createBaseVNode("button", {
 								class: "cn-btn cn-btn--sm cn-btn--text",
 								title: "删除表",
 								onClick: withModifiers(($event) => removeTableT(ti), ["stop"])
-							}, [..._cache[33] || (_cache[33] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_55)
-						], 8, _hoisted_52$1), createVNode(Transition, { name: "cn-fold" }, {
-							default: withCtx(() => [ti === selectedTableIdx.value ? (openBlock(), createElementBlock("div", _hoisted_56, [
-								createBaseVNode("div", _hoisted_57, [createBaseVNode("div", _hoisted_58, [_cache[34] || (_cache[34] = createBaseVNode("label", { class: "tpl-label" }, "英文表名", -1)), withDirectives(createBaseVNode("input", {
+							}, [..._cache[31] || (_cache[31] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_52)
+						], 8, _hoisted_49$1), createVNode(Transition, { name: "cn-fold" }, {
+							default: withCtx(() => [ti === selectedTableIdx.value ? (openBlock(), createElementBlock("div", _hoisted_53, [
+								createBaseVNode("div", _hoisted_54, [createBaseVNode("div", _hoisted_55, [_cache[32] || (_cache[32] = createBaseVNode("label", { class: "tpl-label" }, "英文表名", -1)), withDirectives(createBaseVNode("input", {
 									class: "cn-input",
 									"onUpdate:modelValue": ($event) => table.name = $event,
 									placeholder: "snake_case"
-								}, null, 8, _hoisted_59), [[vModelText, table.name]])]), createBaseVNode("div", _hoisted_60, [_cache[35] || (_cache[35] = createBaseVNode("label", { class: "tpl-label" }, "中文表名", -1)), withDirectives(createBaseVNode("input", {
+								}, null, 8, _hoisted_56), [[vModelText, table.name]])]), createBaseVNode("div", _hoisted_57, [_cache[33] || (_cache[33] = createBaseVNode("label", { class: "tpl-label" }, "中文表名", -1)), withDirectives(createBaseVNode("input", {
 									class: "cn-input",
 									"onUpdate:modelValue": ($event) => table.displayName = $event,
 									placeholder: "给 AI 看的表名"
-								}, null, 8, _hoisted_61), [[vModelText, table.displayName]])])]),
-								createBaseVNode("div", _hoisted_62, [_cache[36] || (_cache[36] = createBaseVNode("label", { class: "tpl-label" }, "表说明 (note)", -1)), withDirectives(createBaseVNode("textarea", {
+								}, null, 8, _hoisted_58), [[vModelText, table.displayName]])])]),
+								createBaseVNode("div", _hoisted_59, [_cache[34] || (_cache[34] = createBaseVNode("label", { class: "tpl-label" }, "表说明 (note)", -1)), withDirectives(createBaseVNode("textarea", {
 									class: "cn-textarea tpl-textarea",
 									"onUpdate:modelValue": ($event) => table.note = $event,
 									rows: "2",
 									placeholder: "表的用途与每列填写约束（经 tables 占位符注入 AI prompt）"
-								}, null, 8, _hoisted_63), [[vModelText, table.note]])]),
-								createBaseVNode("div", _hoisted_64, [
-									_cache[43] || (_cache[43] = createBaseVNode("label", { class: "tpl-label" }, "世界书注入", -1)),
-									createBaseVNode("div", _hoisted_65, [createBaseVNode("div", _hoisted_66, [_cache[38] || (_cache[38] = createBaseVNode("label", {
+								}, null, 8, _hoisted_60), [[vModelText, table.note]])]),
+								createBaseVNode("div", _hoisted_61, [
+									_cache[41] || (_cache[41] = createBaseVNode("label", { class: "tpl-label" }, "世界书注入", -1)),
+									createBaseVNode("div", _hoisted_62, [createBaseVNode("div", _hoisted_63, [_cache[36] || (_cache[36] = createBaseVNode("label", {
 										class: "tpl-label",
 										style: { "font-size": "12px" }
-									}, "启用注入", -1)), createBaseVNode("label", _hoisted_67, [createBaseVNode("input", {
+									}, "启用注入", -1)), createBaseVNode("label", _hoisted_64, [createBaseVNode("input", {
 										type: "checkbox",
 										checked: table.exportConfig?.enabled !== false,
 										onChange: ($event) => setExportEnabled(table, $event.target.checked)
-									}, null, 40, _hoisted_68), _cache[37] || (_cache[37] = createBaseVNode("span", { class: "cn-switch__track" }, null, -1))])]), createBaseVNode("div", _hoisted_69, [_cache[39] || (_cache[39] = createBaseVNode("label", {
+									}, null, 40, _hoisted_65), _cache[35] || (_cache[35] = createBaseVNode("span", { class: "cn-switch__track" }, null, -1))])]), createBaseVNode("div", _hoisted_66, [_cache[37] || (_cache[37] = createBaseVNode("label", {
 										class: "tpl-label",
 										style: { "font-size": "12px" }
 									}, "注入类型", -1)), createBaseVNode("select", {
@@ -46352,11 +46369,11 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 									}, [createBaseVNode("option", {
 										value: "constant",
 										selected: (table.exportConfig?.entryType ?? "constant") === "constant"
-									}, " 常量（始终注入） ", 8, _hoisted_71), createBaseVNode("option", {
+									}, " 常量（始终注入） ", 8, _hoisted_68), createBaseVNode("option", {
 										value: "keyword",
 										selected: table.exportConfig?.entryType === "keyword"
-									}, " 关键词（召回触发） ", 8, _hoisted_72)], 40, _hoisted_70)])]),
-									table.exportConfig?.entryType === "keyword" ? (openBlock(), createElementBlock("div", _hoisted_73, [createBaseVNode("div", _hoisted_74, [_cache[40] || (_cache[40] = createBaseVNode("label", {
+									}, " 关键词（召回触发） ", 8, _hoisted_69)], 40, _hoisted_67)])]),
+									table.exportConfig?.entryType === "keyword" ? (openBlock(), createElementBlock("div", _hoisted_70, [createBaseVNode("div", _hoisted_71, [_cache[38] || (_cache[38] = createBaseVNode("label", {
 										class: "tpl-label",
 										style: { "font-size": "12px" }
 									}, "关键词来源", -1)), createBaseVNode("select", {
@@ -46366,10 +46383,10 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 									}, [createBaseVNode("option", {
 										value: "custom",
 										selected: (table.exportConfig?.keywordMode ?? "custom") === "custom"
-									}, " 自定义关键词 ", 8, _hoisted_76), createBaseVNode("option", {
+									}, " 自定义关键词 ", 8, _hoisted_73), createBaseVNode("option", {
 										value: "ai_prompt",
 										selected: table.exportConfig?.keywordMode === "ai_prompt"
-									}, " AI Prompt 生成 ", 8, _hoisted_77)], 40, _hoisted_75)]), (table.exportConfig?.keywordMode ?? "custom") === "custom" ? (openBlock(), createElementBlock("div", _hoisted_78, [_cache[41] || (_cache[41] = createBaseVNode("label", {
+									}, " AI Prompt 生成 ", 8, _hoisted_74)], 40, _hoisted_72)]), (table.exportConfig?.keywordMode ?? "custom") === "custom" ? (openBlock(), createElementBlock("div", _hoisted_75, [_cache[39] || (_cache[39] = createBaseVNode("label", {
 										class: "tpl-label",
 										style: { "font-size": "12px" }
 									}, "触发关键词", -1)), createBaseVNode("input", {
@@ -46377,7 +46394,7 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 										value: table.exportConfig?.keywords ?? "",
 										onInput: ($event) => setExportKeywords(table, $event.target.value),
 										placeholder: "逗号分隔，如：背包, 物品, 装备"
-									}, null, 40, _hoisted_79)])) : (openBlock(), createElementBlock("div", _hoisted_80, [_cache[42] || (_cache[42] = createBaseVNode("label", {
+									}, null, 40, _hoisted_76)])) : (openBlock(), createElementBlock("div", _hoisted_77, [_cache[40] || (_cache[40] = createBaseVNode("label", {
 										class: "tpl-label",
 										style: { "font-size": "12px" }
 									}, "AI 提示词（更新表格时发送）", -1)), createBaseVNode("textarea", {
@@ -46386,12 +46403,12 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 										onInput: ($event) => setExportKeywordAiPrompt(table, $event.target.value),
 										rows: "2",
 										placeholder: "更新表格时发送给 AI，由 AI 决定本表世界书条目的触发关键词，如：请根据背包表内容生成可能触发该表注入的关键词"
-									}, null, 40, _hoisted_81)]))])) : createCommentVNode("", true)
+									}, null, 40, _hoisted_78)]))])) : createCommentVNode("", true)
 								]),
-								createBaseVNode("div", _hoisted_82, [createBaseVNode("div", { class: "tpl-section__head" }, [_cache[45] || (_cache[45] = createBaseVNode("label", { class: "tpl-label" }, "列定义", -1)), createBaseVNode("button", {
+								createBaseVNode("div", _hoisted_79, [createBaseVNode("div", { class: "tpl-section__head" }, [_cache[43] || (_cache[43] = createBaseVNode("label", { class: "tpl-label" }, "列定义", -1)), createBaseVNode("button", {
 									class: "cn-btn cn-btn--sm",
 									onClick: addColumnT
-								}, [..._cache[44] || (_cache[44] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode("添加列 ", -1)])])]), createBaseVNode("div", _hoisted_83, [_cache[47] || (_cache[47] = createBaseVNode("div", { class: "tpl-col-head" }, [
+								}, [..._cache[42] || (_cache[42] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode("添加列 ", -1)])])]), createBaseVNode("div", _hoisted_80, [_cache[45] || (_cache[45] = createBaseVNode("div", { class: "tpl-col-head" }, [
 									createBaseVNode("span", { class: "tpl-col-cell name" }, "英文名"),
 									createBaseVNode("span", { class: "tpl-col-cell name" }, "中文名"),
 									createBaseVNode("span", { class: "tpl-col-cell type" }, "类型"),
@@ -46407,12 +46424,12 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 											class: "cn-input tpl-col-cell name",
 											"onUpdate:modelValue": ($event) => col.name = $event,
 											placeholder: "col_name"
-										}, null, 8, _hoisted_84), [[vModelText, col.name]]),
+										}, null, 8, _hoisted_81), [[vModelText, col.name]]),
 										withDirectives(createBaseVNode("input", {
 											class: "cn-input tpl-col-cell name",
 											"onUpdate:modelValue": ($event) => col.displayName = $event,
 											placeholder: "中文名"
-										}, null, 8, _hoisted_85), [[vModelText, col.displayName]]),
+										}, null, 8, _hoisted_82), [[vModelText, col.displayName]]),
 										withDirectives(createBaseVNode("select", {
 											class: "cn-select tpl-col-cell type",
 											"onUpdate:modelValue": ($event) => col.type = $event
@@ -46420,64 +46437,63 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 											return createBaseVNode("option", {
 												key: t,
 												value: t
-											}, toDisplayString(t), 9, _hoisted_87);
-										}), 64))], 8, _hoisted_86), [[vModelSelect, col.type]]),
-										createBaseVNode("span", _hoisted_88, [
+											}, toDisplayString(t), 9, _hoisted_84);
+										}), 64))], 8, _hoisted_83), [[vModelSelect, col.type]]),
+										createBaseVNode("span", _hoisted_85, [
 											createBaseVNode("button", {
 												class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": col.constraints?.primaryKey }]),
 												title: "主键",
 												onClick: ($event) => toggleConstraint(col, "primaryKey")
-											}, " PK ", 10, _hoisted_89),
+											}, " PK ", 10, _hoisted_86),
 											createBaseVNode("button", {
 												class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": col.constraints?.unique }]),
 												title: "唯一",
 												onClick: ($event) => toggleConstraint(col, "unique")
-											}, " UQ ", 10, _hoisted_90),
+											}, " UQ ", 10, _hoisted_87),
 											createBaseVNode("button", {
 												class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": !col.constraints?.nullable }]),
 												title: "非空",
 												onClick: ($event) => toggleConstraint(col, "nullable")
-											}, " NN ", 10, _hoisted_91)
+											}, " NN ", 10, _hoisted_88)
 										]),
 										withDirectives(createBaseVNode("input", {
 											class: "cn-input tpl-col-cell note",
 											"onUpdate:modelValue": ($event) => col.note = $event,
 											placeholder: "列说明（注入 AI prompt）"
-										}, null, 8, _hoisted_92), [[vModelText, col.note]]),
+										}, null, 8, _hoisted_89), [[vModelText, col.note]]),
 										createBaseVNode("button", {
 											class: "cn-btn cn-btn--sm cn-btn--text tpl-col-cell del",
 											title: "删除列",
 											onClick: ($event) => removeColumnT(ci)
-										}, [..._cache[46] || (_cache[46] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_93)
+										}, [..._cache[44] || (_cache[44] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_90)
 									]);
 								}), 128))])]),
-								createBaseVNode("div", _hoisted_94, [_cache[48] || (_cache[48] = createBaseVNode("label", { class: "tpl-label" }, "新增行提示 (insertHint)", -1)), withDirectives(createBaseVNode("textarea", {
+								createBaseVNode("div", _hoisted_91, [_cache[46] || (_cache[46] = createBaseVNode("label", { class: "tpl-label" }, "新增行提示 (insertHint)", -1)), withDirectives(createBaseVNode("textarea", {
 									class: "cn-textarea tpl-textarea",
 									"onUpdate:modelValue": ($event) => table.insertHint = $event,
 									rows: "2",
 									placeholder: "INSERT 时机/格式/SQL示例（注入 AI prompt）"
-								}, null, 8, _hoisted_95), [[vModelText, table.insertHint]])]),
-								createBaseVNode("div", _hoisted_96, [_cache[49] || (_cache[49] = createBaseVNode("label", { class: "tpl-label" }, "更新行提示 (updateHint)", -1)), withDirectives(createBaseVNode("textarea", {
+								}, null, 8, _hoisted_92), [[vModelText, table.insertHint]])]),
+								createBaseVNode("div", _hoisted_93, [_cache[47] || (_cache[47] = createBaseVNode("label", { class: "tpl-label" }, "更新行提示 (updateHint)", -1)), withDirectives(createBaseVNode("textarea", {
 									class: "cn-textarea tpl-textarea",
 									"onUpdate:modelValue": ($event) => table.updateHint = $event,
 									rows: "2",
 									placeholder: "UPDATE 时机/约束（注入 AI prompt）"
-								}, null, 8, _hoisted_97), [[vModelText, table.updateHint]])]),
-								createBaseVNode("div", _hoisted_98, [_cache[50] || (_cache[50] = createBaseVNode("label", { class: "tpl-label" }, "删除行提示 (deleteHint)", -1)), withDirectives(createBaseVNode("textarea", {
+								}, null, 8, _hoisted_94), [[vModelText, table.updateHint]])]),
+								createBaseVNode("div", _hoisted_95, [_cache[48] || (_cache[48] = createBaseVNode("label", { class: "tpl-label" }, "删除行提示 (deleteHint)", -1)), withDirectives(createBaseVNode("textarea", {
 									class: "cn-textarea tpl-textarea",
 									"onUpdate:modelValue": ($event) => table.deleteHint = $event,
 									rows: "2",
 									placeholder: "DELETE 时机/约束（注入 AI prompt）"
-								}, null, 8, _hoisted_99), [[vModelText, table.deleteHint]])])
+								}, null, 8, _hoisted_96), [[vModelText, table.deleteHint]])])
 							])) : createCommentVNode("", true)]),
 							_: 2
 						}, 1024)], 2);
-					}), 128))])])) : (openBlock(), createElementBlock("div", _hoisted_100, [..._cache[51] || (_cache[51] = [createBaseVNode("div", { class: "cn-card__body template-editor-empty" }, [createBaseVNode("span", null, "从左侧选择一个模板预设开始编辑")], -1)])]))])) : createCommentVNode("", true),
-					!showTemplate.value ? (openBlock(), createElementBlock("div", _hoisted_101, [createBaseVNode("div", _hoisted_102, [createBaseVNode("div", { class: "cn-card__head" }, [_cache[53] || (_cache[53] = createBaseVNode("span", null, "预设", -1)), createBaseVNode("button", {
+					}), 128))])])) : (openBlock(), createElementBlock("div", _hoisted_97, [..._cache[49] || (_cache[49] = [createBaseVNode("div", { class: "cn-card__body template-editor-empty" }, [createBaseVNode("span", null, "从左侧选择一个模板预设开始编辑")], -1)])]))])) : createCommentVNode("", true),
+					!showTemplate.value ? (openBlock(), createElementBlock("div", _hoisted_98, [createBaseVNode("div", _hoisted_99, [createBaseVNode("div", { class: "cn-card__head" }, [_cache[51] || (_cache[51] = createBaseVNode("span", null, "预设", -1)), createBaseVNode("button", {
 						class: "cn-btn cn-btn--sm",
 						onClick: newPreset
-					}, [..._cache[52] || (_cache[52] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode(" 新建 ", -1)])])]), createBaseVNode("div", _hoisted_103, [createVNode(TransitionGroup, {
-						name: "cn-list",
+					}, [..._cache[50] || (_cache[50] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode(" 新建 ", -1)])])]), createBaseVNode("div", _hoisted_100, [createVNode(TransitionGroup, {
 						tag: "ul",
 						class: "preset-list"
 					}, {
@@ -46487,29 +46503,29 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 								class: normalizeClass(["preset-list__item", { "preset-list__item--active": p.id === sceneConfig.value.activeId }]),
 								onClick: ($event) => selectPreset(p.id)
 							}, [
-								createBaseVNode("span", _hoisted_105, [createTextVNode(toDisplayString(p.name) + " ", 1), p.id === sceneConfig.value.defaultId ? (openBlock(), createElementBlock("i", _hoisted_106)) : createCommentVNode("", true)]),
-								createBaseVNode("span", _hoisted_107, toDisplayString(p.segments.length) + "段", 1),
+								createBaseVNode("span", _hoisted_102, [createTextVNode(toDisplayString(p.name) + " ", 1), p.id === sceneConfig.value.defaultId ? (openBlock(), createElementBlock("i", _hoisted_103)) : createCommentVNode("", true)]),
+								createBaseVNode("span", _hoisted_104, toDisplayString(p.segments.length) + "段", 1),
 								p.id !== sceneConfig.value.activeId ? (openBlock(), createElementBlock("button", {
 									key: 0,
 									class: "cn-btn cn-btn--sm cn-btn--text",
 									title: "设为当前",
 									onClick: withModifiers(($event) => selectPreset(p.id), ["stop"])
-								}, [..._cache[54] || (_cache[54] = [createBaseVNode("i", { class: "fa-solid fa-check" }, null, -1)])], 8, _hoisted_108)) : createCommentVNode("", true),
+								}, [..._cache[52] || (_cache[52] = [createBaseVNode("i", { class: "fa-solid fa-check" }, null, -1)])], 8, _hoisted_105)) : createCommentVNode("", true),
 								p.id !== sceneConfig.value.defaultId ? (openBlock(), createElementBlock("button", {
 									key: 1,
 									class: "cn-btn cn-btn--sm cn-btn--text",
 									title: "设为默认",
 									onClick: withModifiers(($event) => setDefaultPreset(p.id), ["stop"])
-								}, [..._cache[55] || (_cache[55] = [createBaseVNode("i", { class: "fa-solid fa-star" }, null, -1)])], 8, _hoisted_109)) : createCommentVNode("", true),
+								}, [..._cache[53] || (_cache[53] = [createBaseVNode("i", { class: "fa-solid fa-star" }, null, -1)])], 8, _hoisted_106)) : createCommentVNode("", true),
 								createBaseVNode("button", {
 									class: "cn-btn cn-btn--sm cn-btn--text",
 									title: "删除",
 									onClick: withModifiers(($event) => deletePreset(p.id), ["stop"])
-								}, [..._cache[56] || (_cache[56] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_110)
-							], 10, _hoisted_104);
+								}, [..._cache[54] || (_cache[54] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_107)
+							], 10, _hoisted_101);
 						}), 128))]),
 						_: 1
-					})])]), createBaseVNode("div", _hoisted_111, [createBaseVNode("div", _hoisted_112, [createBaseVNode("span", null, toDisplayString(activePreset.value?.name), 1), createBaseVNode("span", _hoisted_113, toDisplayString(scenes.find((s) => s.key === activeScene.value)?.desc), 1)]), createBaseVNode("div", _hoisted_114, [createVNode(unref(import_vuedraggable_umd.default), {
+					})])]), createBaseVNode("div", _hoisted_108, [createBaseVNode("div", _hoisted_109, [createBaseVNode("span", null, toDisplayString(activePreset.value?.name), 1), createBaseVNode("span", _hoisted_110, toDisplayString(scenes.find((s) => s.key === activeScene.value)?.desc), 1)]), createBaseVNode("div", _hoisted_111, [createVNode(unref(import_vuedraggable_umd.default), {
 						list: activePreset.value?.segments ?? [],
 						"item-key": "id",
 						animation: 150,
@@ -46517,41 +46533,41 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 						"ghost-class": "seg-item--ghost",
 						class: "block-list"
 					}, {
-						item: withCtx(({ element: seg, index: si }) => [createBaseVNode("div", _hoisted_115, [createBaseVNode("div", _hoisted_116, [
-							_cache[58] || (_cache[58] = createBaseVNode("i", { class: "fa-solid fa-grip-vertical seg-item__grip" }, null, -1)),
+						item: withCtx(({ element: seg, index: si }) => [createBaseVNode("div", _hoisted_112, [createBaseVNode("div", _hoisted_113, [
+							_cache[56] || (_cache[56] = createBaseVNode("i", { class: "fa-solid fa-grip-vertical seg-item__grip" }, null, -1)),
 							createBaseVNode("button", {
 								class: "seg-item__role",
 								title: `点击切换角色（当前 ${roleLabels[seg.role]}）`,
 								onClick: ($event) => cycleRole(seg)
-							}, toDisplayString(roleLabels[seg.role]), 9, _hoisted_117),
+							}, toDisplayString(roleLabels[seg.role]), 9, _hoisted_114),
 							withDirectives(createBaseVNode("input", {
 								class: "cn-input seg-item__name",
 								"onUpdate:modelValue": ($event) => seg.name = $event,
 								placeholder: "段名称"
-							}, null, 8, _hoisted_118), [[vModelText, seg.name]]),
-							createBaseVNode("span", _hoisted_119, "#" + toDisplayString(globalIndex(si)), 1),
+							}, null, 8, _hoisted_115), [[vModelText, seg.name]]),
+							createBaseVNode("span", _hoisted_116, "#" + toDisplayString(globalIndex(si)), 1),
 							createBaseVNode("button", {
 								class: "cn-btn cn-btn--sm cn-btn--text",
 								title: "删除",
 								onClick: ($event) => removeSegment(seg.id)
-							}, [..._cache[57] || (_cache[57] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_120)
+							}, [..._cache[55] || (_cache[55] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_117)
 						]), createVNode(PromptSegmentEditor_default, {
 							modelValue: seg.content,
 							"onUpdate:modelValue": ($event) => seg.content = $event
 						}, null, 8, ["modelValue", "onUpdate:modelValue"])])]),
 						_: 1
-					}, 8, ["list"]), createBaseVNode("div", _hoisted_121, [(openBlock(), createElementBlock(Fragment, null, renderList(roles, (r) => {
+					}, 8, ["list"]), createBaseVNode("div", _hoisted_118, [(openBlock(), createElementBlock(Fragment, null, renderList(roles, (r) => {
 						return createBaseVNode("button", {
 							key: r,
 							class: "cn-btn cn-btn--sm",
 							onClick: ($event) => addSegment(r)
-						}, [_cache[59] || (_cache[59] = createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1)), createTextVNode(" " + toDisplayString(roleLabels[r]), 1)], 8, _hoisted_122);
+						}, [_cache[57] || (_cache[57] = createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1)), createTextVNode(" " + toDisplayString(roleLabels[r]), 1)], 8, _hoisted_119);
 					}), 64))])])])])) : createCommentVNode("", true)
 				]),
-				showTemplate.value ? (openBlock(), createElementBlock("div", _hoisted_123, [_cache[63] || (_cache[63] = createBaseVNode("span", { class: "prompt-foot__hint" }, " 每个模板预设含多张数据表及其 AI 行为提示词。导入支持 CN 和 shujuku 两种格式。 ", -1)), createBaseVNode("div", _hoisted_124, [
-					createBaseVNode("label", _hoisted_125, [
-						_cache[60] || (_cache[60] = createBaseVNode("i", { class: "fa-solid fa-upload" }, null, -1)),
-						_cache[61] || (_cache[61] = createTextVNode(" 导入 ", -1)),
+				showTemplate.value ? (openBlock(), createElementBlock("div", _hoisted_120, [_cache[61] || (_cache[61] = createBaseVNode("span", { class: "prompt-foot__hint" }, " 每个模板预设含多张数据表及其 AI 行为提示词。导入支持 CN 和 shujuku 两种格式。 ", -1)), createBaseVNode("div", _hoisted_121, [
+					createBaseVNode("label", _hoisted_122, [
+						_cache[58] || (_cache[58] = createBaseVNode("i", { class: "fa-solid fa-upload" }, null, -1)),
+						_cache[59] || (_cache[59] = createTextVNode(" 导入 ", -1)),
 						createBaseVNode("input", {
 							type: "file",
 							accept: "application/json,.json",
@@ -46562,7 +46578,7 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 					createBaseVNode("button", {
 						class: "cn-btn",
 						onClick: exportTemplate
-					}, [..._cache[62] || (_cache[62] = [createBaseVNode("i", { class: "fa-solid fa-download" }, null, -1), createTextVNode(" 导出 ", -1)])]),
+					}, [..._cache[60] || (_cache[60] = [createBaseVNode("i", { class: "fa-solid fa-download" }, null, -1), createTextVNode(" 导出 ", -1)])]),
 					createBaseVNode("button", {
 						class: "cn-btn cn-btn--primary",
 						onClick: saveTemplate
@@ -46573,20 +46589,20 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 						key: 0,
 						class: "cn-modal-mask",
 						onClick: withModifiers(closeTemplatePreview, ["self"])
-					}, [createBaseVNode("div", _hoisted_126, [createBaseVNode("div", { class: "cn-modal__head" }, [_cache[65] || (_cache[65] = createBaseVNode("span", null, "选中表注入 AI prompt 的内容", -1)), createBaseVNode("button", {
+					}, [createBaseVNode("div", _hoisted_123, [createBaseVNode("div", { class: "cn-modal__head" }, [_cache[63] || (_cache[63] = createBaseVNode("span", null, "选中表注入 AI prompt 的内容", -1)), createBaseVNode("button", {
 						class: "cn-btn cn-btn--sm cn-btn--text",
 						onClick: closeTemplatePreview
-					}, [..._cache[64] || (_cache[64] = [createBaseVNode("i", { class: "fa-solid fa-xmark" }, null, -1)])])]), createBaseVNode("pre", _hoisted_127, toDisplayString(previewTemplateJson.value), 1)])])) : createCommentVNode("", true)]),
+					}, [..._cache[62] || (_cache[62] = [createBaseVNode("i", { class: "fa-solid fa-xmark" }, null, -1)])])]), createBaseVNode("pre", _hoisted_124, toDisplayString(previewTemplateJson.value), 1)])])) : createCommentVNode("", true)]),
 					_: 1
 				}),
-				!showTemplate.value ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [createBaseVNode("div", _hoisted_128, [createBaseVNode("span", { class: "prompt-foot__hint" }, [
-					_cache[66] || (_cache[66] = createTextVNode(" 段内用 ", -1)),
+				!showTemplate.value ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [createBaseVNode("div", _hoisted_125, [createBaseVNode("span", { class: "prompt-foot__hint" }, [
+					_cache[64] || (_cache[64] = createTextVNode(" 段内用 ", -1)),
 					createBaseVNode("code", null, toDisplayString(varExample)),
-					_cache[67] || (_cache[67] = createTextVNode(" 插入变量。点击角色标签切换 System/User/Assistant，拖拽手柄调整顺序。多个段按顺序拼接，模拟多轮对话。 ", -1))
-				]), createBaseVNode("div", _hoisted_129, [
-					createBaseVNode("label", _hoisted_130, [
-						_cache[68] || (_cache[68] = createBaseVNode("i", { class: "fa-solid fa-upload" }, null, -1)),
-						_cache[69] || (_cache[69] = createTextVNode(" 导入 ", -1)),
+					_cache[65] || (_cache[65] = createTextVNode(" 插入变量。点击角色标签切换 System/User/Assistant，拖拽手柄调整顺序。多个段按顺序拼接，模拟多轮对话。 ", -1))
+				]), createBaseVNode("div", _hoisted_126, [
+					createBaseVNode("label", _hoisted_127, [
+						_cache[66] || (_cache[66] = createBaseVNode("i", { class: "fa-solid fa-upload" }, null, -1)),
+						_cache[67] || (_cache[67] = createTextVNode(" 导入 ", -1)),
 						createBaseVNode("input", {
 							type: "file",
 							accept: "application/json,.json",
@@ -46597,11 +46613,11 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 					createBaseVNode("button", {
 						class: "cn-btn",
 						onClick: exportPreset
-					}, [..._cache[70] || (_cache[70] = [createBaseVNode("i", { class: "fa-solid fa-download" }, null, -1), createTextVNode(" 导出 ", -1)])]),
+					}, [..._cache[68] || (_cache[68] = [createBaseVNode("i", { class: "fa-solid fa-download" }, null, -1), createTextVNode(" 导出 ", -1)])]),
 					createBaseVNode("button", {
 						class: "cn-btn",
 						onClick: openPreview
-					}, [..._cache[71] || (_cache[71] = [createBaseVNode("i", { class: "fa-solid fa-eye" }, null, -1), createTextVNode(" 预览 ", -1)])]),
+					}, [..._cache[69] || (_cache[69] = [createBaseVNode("i", { class: "fa-solid fa-eye" }, null, -1), createTextVNode(" 预览 ", -1)])]),
 					createBaseVNode("button", {
 						class: "cn-btn cn-btn--primary",
 						onClick: saveAll
@@ -46611,10 +46627,10 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 						key: 0,
 						class: "cn-modal-mask",
 						onClick: withModifiers(closePreview, ["self"])
-					}, [createBaseVNode("div", _hoisted_131, [createBaseVNode("div", { class: "cn-modal__head" }, [_cache[73] || (_cache[73] = createBaseVNode("span", null, "发给 AI 的 messages", -1)), createBaseVNode("button", {
+					}, [createBaseVNode("div", _hoisted_128, [createBaseVNode("div", { class: "cn-modal__head" }, [_cache[71] || (_cache[71] = createBaseVNode("span", null, "发给 AI 的 messages", -1)), createBaseVNode("button", {
 						class: "cn-btn cn-btn--sm cn-btn--text",
 						onClick: closePreview
-					}, [..._cache[72] || (_cache[72] = [createBaseVNode("i", { class: "fa-solid fa-xmark" }, null, -1)])])]), createBaseVNode("pre", _hoisted_132, toDisplayString(previewJson.value), 1)])])) : createCommentVNode("", true)]),
+					}, [..._cache[70] || (_cache[70] = [createBaseVNode("i", { class: "fa-solid fa-xmark" }, null, -1)])])]), createBaseVNode("pre", _hoisted_129, toDisplayString(previewJson.value), 1)])])) : createCommentVNode("", true)]),
 					_: 1
 				})], 64)) : createCommentVNode("", true)
 			]);
@@ -46792,69 +46808,63 @@ var useDebugStore = defineStore("cn-debug", () => {
 //#endregion
 //#region src/ui/pages/Debug.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1$1 = { class: "debug-page" };
-var _hoisted_2$1 = { class: "debug-tabs" };
-var _hoisted_3$1 = {
-	key: 0,
-	class: "debug-tab__badge"
-};
-var _hoisted_4$1 = {
+var _hoisted_2$1 = {
 	key: 0,
 	class: "debug-panel"
 };
-var _hoisted_5$1 = { class: "debug-toolbar" };
-var _hoisted_6$1 = ["value"];
-var _hoisted_7$1 = { class: "debug-toolbar__hint" };
-var _hoisted_8$1 = { key: 0 };
-var _hoisted_9$1 = {
+var _hoisted_3$1 = { class: "debug-toolbar" };
+var _hoisted_4$1 = ["value"];
+var _hoisted_5$1 = { class: "debug-toolbar__hint" };
+var _hoisted_6$1 = { key: 0 };
+var _hoisted_7$1 = {
 	class: "debug-log-list",
 	ref: "logList"
 };
-var _hoisted_10$1 = {
+var _hoisted_8$1 = {
 	key: 0,
-	class: "cn-empty",
-	style: { "padding": "40px 0" }
+	class: "cn-empty"
 };
-var _hoisted_11$1 = { class: "debug-log-row__time" };
-var _hoisted_12$1 = { class: "debug-log-row__tag" };
-var _hoisted_13$1 = { class: "debug-log-row__msg" };
-var _hoisted_14$1 = {
+var _hoisted_9$1 = { class: "debug-log-row__time" };
+var _hoisted_10$1 = { class: "debug-log-row__tag" };
+var _hoisted_11$1 = { class: "debug-log-row__msg" };
+var _hoisted_12$1 = {
 	key: 1,
 	class: "debug-panel"
 };
-var _hoisted_15$1 = { class: "debug-status-grid" };
-var _hoisted_16$1 = { class: "cn-card" };
-var _hoisted_17$1 = { class: "cn-card__body" };
+var _hoisted_13$1 = { class: "debug-status-grid" };
+var _hoisted_14$1 = { class: "cn-card" };
+var _hoisted_15$1 = { class: "cn-card__body" };
+var _hoisted_16$1 = { class: "debug-status-item" };
+var _hoisted_17$1 = { class: "debug-status-item__value" };
 var _hoisted_18$1 = { class: "debug-status-item" };
-var _hoisted_19$1 = { class: "debug-status-item__value" };
+var _hoisted_19$1 = { class: "debug-status-item" };
 var _hoisted_20$1 = { class: "debug-status-item" };
-var _hoisted_21$1 = { class: "debug-status-item" };
-var _hoisted_22$1 = { class: "debug-status-item" };
-var _hoisted_23$1 = { class: "debug-status-item__value" };
-var _hoisted_24$1 = { class: "debug-status-actions" };
-var _hoisted_25$1 = { class: "cn-card" };
-var _hoisted_26$1 = { class: "cn-card__body" };
+var _hoisted_21$1 = { class: "debug-status-item__value" };
+var _hoisted_22$1 = { class: "debug-status-actions" };
+var _hoisted_23$1 = { class: "cn-card" };
+var _hoisted_24$1 = { class: "cn-card__body" };
+var _hoisted_25$1 = { class: "debug-status-item" };
+var _hoisted_26$1 = { class: "debug-status-item__value" };
 var _hoisted_27$1 = { class: "debug-status-item" };
 var _hoisted_28$1 = { class: "debug-status-item__value" };
-var _hoisted_29$1 = { class: "debug-status-item" };
-var _hoisted_30$1 = { class: "debug-status-item__value" };
-var _hoisted_31$1 = { class: "cn-card" };
-var _hoisted_32$1 = { class: "cn-card__body" };
+var _hoisted_29$1 = { class: "cn-card" };
+var _hoisted_30$1 = { class: "cn-card__body" };
+var _hoisted_31$1 = { class: "debug-status-item" };
+var _hoisted_32$1 = { class: "debug-status-item__value" };
 var _hoisted_33$1 = { class: "debug-status-item" };
 var _hoisted_34$1 = { class: "debug-status-item__value" };
 var _hoisted_35$1 = { class: "debug-status-item" };
 var _hoisted_36$1 = { class: "debug-status-item__value" };
-var _hoisted_37$1 = { class: "debug-status-item" };
-var _hoisted_38$1 = { class: "debug-status-item__value" };
-var _hoisted_39$1 = { class: "debug-status-actions" };
-var _hoisted_40$1 = ["value"];
-var _hoisted_41$1 = ["value"];
-var _hoisted_42$1 = { class: "cn-card" };
-var _hoisted_43$1 = { class: "cn-card__body" };
+var _hoisted_37$1 = { class: "debug-status-actions" };
+var _hoisted_38$1 = ["value"];
+var _hoisted_39$1 = ["value"];
+var _hoisted_40$1 = { class: "cn-card" };
+var _hoisted_41$1 = { class: "cn-card__body" };
+var _hoisted_42$1 = { class: "debug-status-item" };
+var _hoisted_43$1 = { class: "debug-status-item" };
 var _hoisted_44$1 = { class: "debug-status-item" };
 var _hoisted_45$1 = { class: "debug-status-item" };
 var _hoisted_46$1 = { class: "debug-status-item" };
-var _hoisted_47$1 = { class: "debug-status-item" };
-var _hoisted_48$1 = { class: "debug-status-item" };
 //#endregion
 //#region src/ui/pages/Debug.vue
 var Debug_default = /* @__PURE__ */ defineComponent({
@@ -46862,6 +46872,22 @@ var Debug_default = /* @__PURE__ */ defineComponent({
 	setup(__props) {
 		const store = useDebugStore();
 		const activePanel = /* @__PURE__ */ ref("logs");
+		const debugTabs = computed(() => [{
+			key: "logs",
+			label: "运行日志",
+			icon: "fa-list",
+			badge: store.filteredCount || void 0
+		}, {
+			key: "status",
+			label: "运行状态",
+			icon: "fa-circle-info"
+		}]);
+		const activePanelValue = computed({
+			get: () => activePanel.value,
+			set: (v) => {
+				activePanel.value = v;
+			}
+		});
 		function formatTime(ts) {
 			const d = new Date(ts);
 			return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}:${String(d.getSeconds()).padStart(2, "0")}.${String(d.getMilliseconds()).padStart(3, "0")}`;
@@ -46875,25 +46901,18 @@ var Debug_default = /* @__PURE__ */ defineComponent({
 		}
 		return (_ctx, _cache) => {
 			return openBlock(), createElementBlock("div", _hoisted_1$1, [
-				createBaseVNode("div", _hoisted_2$1, [createBaseVNode("button", {
-					type: "button",
-					class: normalizeClass(["debug-tab", { "debug-tab--active": activePanel.value === "logs" }]),
-					onClick: _cache[0] || (_cache[0] = ($event) => activePanel.value = "logs")
-				}, [
-					_cache[11] || (_cache[11] = createBaseVNode("i", { class: "fa-solid fa-list" }, null, -1)),
-					_cache[12] || (_cache[12] = createTextVNode(" 运行日志 ", -1)),
-					unref(store).filteredCount ? (openBlock(), createElementBlock("span", _hoisted_3$1, toDisplayString(unref(store).filteredCount), 1)) : createCommentVNode("", true)
-				], 2), createBaseVNode("button", {
-					type: "button",
-					class: normalizeClass(["debug-tab", { "debug-tab--active": activePanel.value === "status" }]),
-					onClick: _cache[1] || (_cache[1] = ($event) => activePanel.value = "status")
-				}, [..._cache[13] || (_cache[13] = [createBaseVNode("i", { class: "fa-solid fa-circle-info" }, null, -1), createTextVNode(" 运行状态 ", -1)])], 2)]),
-				activePanel.value === "logs" ? (openBlock(), createElementBlock("div", _hoisted_4$1, [
-					createBaseVNode("div", _hoisted_5$1, [
+				createVNode(CNTabs_default, {
+					level: "l2",
+					items: debugTabs.value,
+					modelValue: activePanelValue.value,
+					"onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => activePanelValue.value = $event)
+				}, null, 8, ["items", "modelValue"]),
+				activePanel.value === "logs" ? (openBlock(), createElementBlock("div", _hoisted_2$1, [
+					createBaseVNode("div", _hoisted_3$1, [
 						withDirectives(createBaseVNode("select", {
 							class: "cn-select debug-toolbar__select",
-							"onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => unref(store).levelFilter = $event)
-						}, [..._cache[14] || (_cache[14] = [
+							"onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => unref(store).levelFilter = $event)
+						}, [..._cache[10] || (_cache[10] = [
 							createBaseVNode("option", { value: "all" }, "全部级别", -1),
 							createBaseVNode("option", { value: "info" }, "信息", -1),
 							createBaseVNode("option", { value: "warn" }, "警告", -1),
@@ -46901,72 +46920,72 @@ var Debug_default = /* @__PURE__ */ defineComponent({
 						])], 512), [[vModelSelect, unref(store).levelFilter]]),
 						withDirectives(createBaseVNode("select", {
 							class: "cn-select debug-toolbar__select",
-							"onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => unref(store).tagFilter = $event)
+							"onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => unref(store).tagFilter = $event)
 						}, [(openBlock(true), createElementBlock(Fragment, null, renderList(unref(store).tagOptions, (t) => {
 							return openBlock(), createElementBlock("option", {
 								key: t,
 								value: t
-							}, toDisplayString(t === "all" ? "全部模块" : t), 9, _hoisted_6$1);
+							}, toDisplayString(t === "all" ? "全部模块" : t), 9, _hoisted_4$1);
 						}), 128))], 512), [[vModelSelect, unref(store).tagFilter]]),
 						withDirectives(createBaseVNode("input", {
 							class: "cn-input debug-toolbar__search",
-							"onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => unref(store).keyword = $event),
+							"onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => unref(store).keyword = $event),
 							placeholder: "搜索关键词…"
 						}, null, 512), [[vModelText, unref(store).keyword]]),
 						createBaseVNode("button", {
 							class: "cn-btn cn-btn--sm",
-							onClick: _cache[5] || (_cache[5] = ($event) => unref(store).setPaused(!unref(store).paused))
+							onClick: _cache[4] || (_cache[4] = ($event) => unref(store).setPaused(!unref(store).paused))
 						}, [createBaseVNode("i", { class: normalizeClass(["fa-solid", unref(store).paused ? "fa-play" : "fa-pause"]) }, null, 2), createTextVNode(" " + toDisplayString(unref(store).paused ? "恢复" : "暂停"), 1)]),
 						createBaseVNode("button", {
 							class: "cn-btn cn-btn--sm",
-							onClick: _cache[6] || (_cache[6] = ($event) => unref(store).autoScroll = !unref(store).autoScroll)
+							onClick: _cache[5] || (_cache[5] = ($event) => unref(store).autoScroll = !unref(store).autoScroll)
 						}, [createBaseVNode("i", { class: normalizeClass(["fa-solid", unref(store).autoScroll ? "fa-arrow-down" : "fa-ban"]) }, null, 2)]),
 						createBaseVNode("button", {
 							class: "cn-btn cn-btn--sm",
-							onClick: _cache[7] || (_cache[7] = (...args) => unref(store).exportLogs && unref(store).exportLogs(...args))
-						}, [..._cache[15] || (_cache[15] = [createBaseVNode("i", { class: "fa-solid fa-download" }, null, -1), createTextVNode(" 导出 ", -1)])]),
+							onClick: _cache[6] || (_cache[6] = (...args) => unref(store).exportLogs && unref(store).exportLogs(...args))
+						}, [..._cache[11] || (_cache[11] = [createBaseVNode("i", { class: "fa-solid fa-download" }, null, -1), createTextVNode(" 导出 ", -1)])]),
 						createBaseVNode("button", {
 							class: "cn-btn cn-btn--sm cn-btn--text",
-							onClick: _cache[8] || (_cache[8] = (...args) => unref(store).clearAll && unref(store).clearAll(...args))
-						}, [..._cache[16] || (_cache[16] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1), createTextVNode(" 清空 ", -1)])])
+							onClick: _cache[7] || (_cache[7] = (...args) => unref(store).clearAll && unref(store).clearAll(...args))
+						}, [..._cache[12] || (_cache[12] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1), createTextVNode(" 清空 ", -1)])])
 					]),
-					createBaseVNode("div", _hoisted_7$1, [
+					createBaseVNode("div", _hoisted_5$1, [
 						createBaseVNode("span", null, toDisplayString(unref(store).statusLabel), 1),
 						createBaseVNode("span", null, "最近 " + toDisplayString(unref(store).totalCount) + " 条，显示 " + toDisplayString(unref(store).filteredCount) + " 条", 1),
-						unref(store).pendingCount ? (openBlock(), createElementBlock("span", _hoisted_8$1, "暂停期间新增 " + toDisplayString(unref(store).pendingCount) + " 条", 1)) : createCommentVNode("", true)
+						unref(store).pendingCount ? (openBlock(), createElementBlock("span", _hoisted_6$1, "暂停期间新增 " + toDisplayString(unref(store).pendingCount) + " 条", 1)) : createCommentVNode("", true)
 					]),
-					createBaseVNode("div", _hoisted_9$1, [unref(store).visibleLogs.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_10$1, "暂无日志")) : createCommentVNode("", true), (openBlock(true), createElementBlock(Fragment, null, renderList(unref(store).visibleLogs, (log) => {
+					createBaseVNode("div", _hoisted_7$1, [unref(store).visibleLogs.length === 0 ? (openBlock(), createElementBlock("div", _hoisted_8$1, "暂无日志")) : createCommentVNode("", true), (openBlock(true), createElementBlock(Fragment, null, renderList(unref(store).visibleLogs, (log) => {
 						return openBlock(), createElementBlock("div", {
 							key: log.id,
 							class: normalizeClass(["debug-log-row", `debug-log-row--${log.level}`])
 						}, [
-							createBaseVNode("span", _hoisted_11$1, toDisplayString(formatTime(log.timestamp)), 1),
+							createBaseVNode("span", _hoisted_9$1, toDisplayString(formatTime(log.timestamp)), 1),
 							createBaseVNode("span", { class: normalizeClass(["debug-log-row__level", `debug-log-row__level--${log.level}`]) }, toDisplayString(log.level === "error" ? "ERROR" : log.level === "warn" ? "WARN" : "INFO"), 3),
-							createBaseVNode("span", _hoisted_12$1, toDisplayString(log.tag), 1),
-							createBaseVNode("span", _hoisted_13$1, toDisplayString(log.message), 1)
+							createBaseVNode("span", _hoisted_10$1, toDisplayString(log.tag), 1),
+							createBaseVNode("span", _hoisted_11$1, toDisplayString(log.message), 1)
 						], 2);
 					}), 128))], 512)
 				])) : createCommentVNode("", true),
-				activePanel.value === "status" ? (openBlock(), createElementBlock("div", _hoisted_14$1, [createBaseVNode("div", _hoisted_15$1, [
-					createBaseVNode("div", _hoisted_16$1, [_cache[23] || (_cache[23] = createBaseVNode("div", { class: "cn-card__head" }, "世界书", -1)), createBaseVNode("div", _hoisted_17$1, [
-						createBaseVNode("div", _hoisted_18$1, [_cache[17] || (_cache[17] = createBaseVNode("span", { class: "debug-status-item__label" }, "当前世界书", -1)), createBaseVNode("span", _hoisted_19$1, toDisplayString(unref(store).worldbookStatus.cnName), 1)]),
-						createBaseVNode("div", _hoisted_20$1, [_cache[18] || (_cache[18] = createBaseVNode("span", { class: "debug-status-item__label" }, "是否存在", -1)), createBaseVNode("span", { class: normalizeClass(["debug-status-item__value", unref(store).worldbookStatus.cnExists ? "debug-ok" : "debug-err"]) }, toDisplayString(unref(store).worldbookStatus.cnExists ? "是" : "否"), 3)]),
-						createBaseVNode("div", _hoisted_21$1, [_cache[19] || (_cache[19] = createBaseVNode("span", { class: "debug-status-item__label" }, "残留旧书", -1)), createBaseVNode("span", { class: normalizeClass(["debug-status-item__value", unref(store).worldbookStatus.staleCount > 0 ? "debug-err" : "debug-ok"]) }, toDisplayString(unref(store).worldbookStatus.staleCount) + " 本 ", 3)]),
-						createBaseVNode("div", _hoisted_22$1, [_cache[20] || (_cache[20] = createBaseVNode("span", { class: "debug-status-item__label" }, "世界书总数", -1)), createBaseVNode("span", _hoisted_23$1, toDisplayString(unref(store).worldbookStatus.totalBooks), 1)]),
-						createBaseVNode("div", _hoisted_24$1, [createBaseVNode("button", {
+				activePanel.value === "status" ? (openBlock(), createElementBlock("div", _hoisted_12$1, [createBaseVNode("div", _hoisted_13$1, [
+					createBaseVNode("div", _hoisted_14$1, [_cache[19] || (_cache[19] = createBaseVNode("div", { class: "cn-card__head" }, "世界书", -1)), createBaseVNode("div", _hoisted_15$1, [
+						createBaseVNode("div", _hoisted_16$1, [_cache[13] || (_cache[13] = createBaseVNode("span", { class: "debug-status-item__label" }, "当前世界书", -1)), createBaseVNode("span", _hoisted_17$1, toDisplayString(unref(store).worldbookStatus.cnName), 1)]),
+						createBaseVNode("div", _hoisted_18$1, [_cache[14] || (_cache[14] = createBaseVNode("span", { class: "debug-status-item__label" }, "是否存在", -1)), createBaseVNode("span", { class: normalizeClass(["debug-status-item__value", unref(store).worldbookStatus.cnExists ? "debug-ok" : "debug-err"]) }, toDisplayString(unref(store).worldbookStatus.cnExists ? "是" : "否"), 3)]),
+						createBaseVNode("div", _hoisted_19$1, [_cache[15] || (_cache[15] = createBaseVNode("span", { class: "debug-status-item__label" }, "残留旧书", -1)), createBaseVNode("span", { class: normalizeClass(["debug-status-item__value", unref(store).worldbookStatus.staleCount > 0 ? "debug-err" : "debug-ok"]) }, toDisplayString(unref(store).worldbookStatus.staleCount) + " 本 ", 3)]),
+						createBaseVNode("div", _hoisted_20$1, [_cache[16] || (_cache[16] = createBaseVNode("span", { class: "debug-status-item__label" }, "世界书总数", -1)), createBaseVNode("span", _hoisted_21$1, toDisplayString(unref(store).worldbookStatus.totalBooks), 1)]),
+						createBaseVNode("div", _hoisted_22$1, [createBaseVNode("button", {
 							class: "cn-btn cn-btn--sm",
-							onClick: _cache[9] || (_cache[9] = (...args) => unref(store).forceCleanupBooks && unref(store).forceCleanupBooks(...args))
-						}, [..._cache[21] || (_cache[21] = [createBaseVNode("i", { class: "fa-solid fa-broom" }, null, -1), createTextVNode(" 强制清理 ", -1)])]), createBaseVNode("button", {
+							onClick: _cache[8] || (_cache[8] = (...args) => unref(store).forceCleanupBooks && unref(store).forceCleanupBooks(...args))
+						}, [..._cache[17] || (_cache[17] = [createBaseVNode("i", { class: "fa-solid fa-broom" }, null, -1), createTextVNode(" 强制清理 ", -1)])]), createBaseVNode("button", {
 							class: "cn-btn cn-btn--sm",
-							onClick: _cache[10] || (_cache[10] = (...args) => unref(store).forceSyncBooks && unref(store).forceSyncBooks(...args))
-						}, [..._cache[22] || (_cache[22] = [createBaseVNode("i", { class: "fa-solid fa-rotate" }, null, -1), createTextVNode(" 强制同步 ", -1)])])])
+							onClick: _cache[9] || (_cache[9] = (...args) => unref(store).forceSyncBooks && unref(store).forceSyncBooks(...args))
+						}, [..._cache[18] || (_cache[18] = [createBaseVNode("i", { class: "fa-solid fa-rotate" }, null, -1), createTextVNode(" 强制同步 ", -1)])])])
 					])]),
-					createBaseVNode("div", _hoisted_25$1, [_cache[26] || (_cache[26] = createBaseVNode("div", { class: "cn-card__head" }, "数据库", -1)), createBaseVNode("div", _hoisted_26$1, [createBaseVNode("div", _hoisted_27$1, [_cache[24] || (_cache[24] = createBaseVNode("span", { class: "debug-status-item__label" }, "数据表数", -1)), createBaseVNode("span", _hoisted_28$1, toDisplayString(unref(store).tableStatus.tableCount), 1)]), createBaseVNode("div", _hoisted_29$1, [_cache[25] || (_cache[25] = createBaseVNode("span", { class: "debug-status-item__label" }, "纪要条数", -1)), createBaseVNode("span", _hoisted_30$1, toDisplayString(unref(store).tableStatus.chronicleCount), 1)])])]),
-					createBaseVNode("div", _hoisted_31$1, [_cache[31] || (_cache[31] = createBaseVNode("div", { class: "cn-card__head" }, "快照", -1)), createBaseVNode("div", _hoisted_32$1, [
-						createBaseVNode("div", _hoisted_33$1, [_cache[27] || (_cache[27] = createBaseVNode("span", { class: "debug-status-item__label" }, "可用快照数", -1)), createBaseVNode("span", _hoisted_34$1, toDisplayString(unref(store).snapshotStatus.snapshotCount), 1)]),
-						createBaseVNode("div", _hoisted_35$1, [_cache[28] || (_cache[28] = createBaseVNode("span", { class: "debug-status-item__label" }, "当前快照位置", -1)), createBaseVNode("span", _hoisted_36$1, toDisplayString(unref(store).snapshotStatus.snapshotIndex != null ? `第 ${unref(store).snapshotStatus.snapshotIndex + 1} 楼` : "无"), 1)]),
-						createBaseVNode("div", _hoisted_37$1, [_cache[29] || (_cache[29] = createBaseVNode("span", { class: "debug-status-item__label" }, "最近 AI 楼", -1)), createBaseVNode("span", _hoisted_38$1, toDisplayString(unref(store).snapshotStatus.lastAiIndex != null ? `第 ${unref(store).snapshotStatus.lastAiIndex + 1} 楼` : "无"), 1)]),
-						createBaseVNode("div", _hoisted_39$1, [createBaseVNode("select", {
+					createBaseVNode("div", _hoisted_23$1, [_cache[22] || (_cache[22] = createBaseVNode("div", { class: "cn-card__head" }, "数据库", -1)), createBaseVNode("div", _hoisted_24$1, [createBaseVNode("div", _hoisted_25$1, [_cache[20] || (_cache[20] = createBaseVNode("span", { class: "debug-status-item__label" }, "数据表数", -1)), createBaseVNode("span", _hoisted_26$1, toDisplayString(unref(store).tableStatus.tableCount), 1)]), createBaseVNode("div", _hoisted_27$1, [_cache[21] || (_cache[21] = createBaseVNode("span", { class: "debug-status-item__label" }, "纪要条数", -1)), createBaseVNode("span", _hoisted_28$1, toDisplayString(unref(store).tableStatus.chronicleCount), 1)])])]),
+					createBaseVNode("div", _hoisted_29$1, [_cache[27] || (_cache[27] = createBaseVNode("div", { class: "cn-card__head" }, "快照", -1)), createBaseVNode("div", _hoisted_30$1, [
+						createBaseVNode("div", _hoisted_31$1, [_cache[23] || (_cache[23] = createBaseVNode("span", { class: "debug-status-item__label" }, "可用快照数", -1)), createBaseVNode("span", _hoisted_32$1, toDisplayString(unref(store).snapshotStatus.snapshotCount), 1)]),
+						createBaseVNode("div", _hoisted_33$1, [_cache[24] || (_cache[24] = createBaseVNode("span", { class: "debug-status-item__label" }, "当前快照位置", -1)), createBaseVNode("span", _hoisted_34$1, toDisplayString(unref(store).snapshotStatus.snapshotIndex != null ? `第 ${unref(store).snapshotStatus.snapshotIndex + 1} 楼` : "无"), 1)]),
+						createBaseVNode("div", _hoisted_35$1, [_cache[25] || (_cache[25] = createBaseVNode("span", { class: "debug-status-item__label" }, "最近 AI 楼", -1)), createBaseVNode("span", _hoisted_36$1, toDisplayString(unref(store).snapshotStatus.lastAiIndex != null ? `第 ${unref(store).snapshotStatus.lastAiIndex + 1} 楼` : "无"), 1)]),
+						createBaseVNode("div", _hoisted_37$1, [createBaseVNode("select", {
 							class: "cn-select",
 							id: "cn_snapshot_pick",
 							value: unref(store).snapshotStatus.snapshotIndex ?? ""
@@ -46974,18 +46993,18 @@ var Debug_default = /* @__PURE__ */ defineComponent({
 							return openBlock(), createElementBlock("option", {
 								key: idx,
 								value: idx
-							}, "第 " + toDisplayString(idx + 1) + " 楼", 9, _hoisted_41$1);
-						}), 128))], 8, _hoisted_40$1), createBaseVNode("button", {
+							}, "第 " + toDisplayString(idx + 1) + " 楼", 9, _hoisted_39$1);
+						}), 128))], 8, _hoisted_38$1), createBaseVNode("button", {
 							class: "cn-btn cn-btn--sm",
 							onClick: recoverSnapshot
-						}, [..._cache[30] || (_cache[30] = [createBaseVNode("i", { class: "fa-solid fa-clock-rotate-left" }, null, -1), createTextVNode(" 恢复到此快照 ", -1)])])])
+						}, [..._cache[26] || (_cache[26] = [createBaseVNode("i", { class: "fa-solid fa-clock-rotate-left" }, null, -1), createTextVNode(" 恢复到此快照 ", -1)])])])
 					])]),
-					createBaseVNode("div", _hoisted_42$1, [_cache[37] || (_cache[37] = createBaseVNode("div", { class: "cn-card__head" }, "功能状态", -1)), createBaseVNode("div", _hoisted_43$1, [
-						createBaseVNode("div", _hoisted_44$1, [_cache[32] || (_cache[32] = createBaseVNode("span", { class: "debug-status-item__label" }, "AI 已配置", -1)), createBaseVNode("span", { class: normalizeClass(["debug-status-item__value", unref(store).configStatus.hasAI ? "debug-ok" : "debug-err"]) }, toDisplayString(unref(store).configStatus.hasAI ? "是" : "否"), 3)]),
-						createBaseVNode("div", _hoisted_45$1, [_cache[33] || (_cache[33] = createBaseVNode("span", { class: "debug-status-item__label" }, "自动填表", -1)), createBaseVNode("span", { class: normalizeClass(["debug-status-item__value", unref(store).configStatus.autoFill ? "debug-ok" : ""]) }, toDisplayString(unref(store).configStatus.autoFill ? "开" : "关"), 3)]),
-						createBaseVNode("div", _hoisted_46$1, [_cache[34] || (_cache[34] = createBaseVNode("span", { class: "debug-status-item__label" }, "纪要召回", -1)), createBaseVNode("span", { class: normalizeClass(["debug-status-item__value", unref(store).configStatus.recallEnabled ? "debug-ok" : ""]) }, toDisplayString(unref(store).configStatus.recallEnabled ? "开" : "关"), 3)]),
-						createBaseVNode("div", _hoisted_47$1, [_cache[35] || (_cache[35] = createBaseVNode("span", { class: "debug-status-item__label" }, "纪要生成", -1)), createBaseVNode("span", { class: normalizeClass(["debug-status-item__value", unref(store).configStatus.chronicleGenEnabled ? "debug-ok" : ""]) }, toDisplayString(unref(store).configStatus.chronicleGenEnabled ? "开" : "关"), 3)]),
-						createBaseVNode("div", _hoisted_48$1, [_cache[36] || (_cache[36] = createBaseVNode("span", { class: "debug-status-item__label" }, "向量检索", -1)), createBaseVNode("span", { class: normalizeClass(["debug-status-item__value", unref(store).configStatus.vectorEnabled ? "debug-ok" : ""]) }, toDisplayString(unref(store).configStatus.vectorEnabled ? "开" : "关"), 3)])
+					createBaseVNode("div", _hoisted_40$1, [_cache[33] || (_cache[33] = createBaseVNode("div", { class: "cn-card__head" }, "功能状态", -1)), createBaseVNode("div", _hoisted_41$1, [
+						createBaseVNode("div", _hoisted_42$1, [_cache[28] || (_cache[28] = createBaseVNode("span", { class: "debug-status-item__label" }, "AI 已配置", -1)), createBaseVNode("span", { class: normalizeClass(["debug-status-item__value", unref(store).configStatus.hasAI ? "debug-ok" : "debug-err"]) }, toDisplayString(unref(store).configStatus.hasAI ? "是" : "否"), 3)]),
+						createBaseVNode("div", _hoisted_43$1, [_cache[29] || (_cache[29] = createBaseVNode("span", { class: "debug-status-item__label" }, "自动填表", -1)), createBaseVNode("span", { class: normalizeClass(["debug-status-item__value", unref(store).configStatus.autoFill ? "debug-ok" : ""]) }, toDisplayString(unref(store).configStatus.autoFill ? "开" : "关"), 3)]),
+						createBaseVNode("div", _hoisted_44$1, [_cache[30] || (_cache[30] = createBaseVNode("span", { class: "debug-status-item__label" }, "纪要召回", -1)), createBaseVNode("span", { class: normalizeClass(["debug-status-item__value", unref(store).configStatus.recallEnabled ? "debug-ok" : ""]) }, toDisplayString(unref(store).configStatus.recallEnabled ? "开" : "关"), 3)]),
+						createBaseVNode("div", _hoisted_45$1, [_cache[31] || (_cache[31] = createBaseVNode("span", { class: "debug-status-item__label" }, "纪要生成", -1)), createBaseVNode("span", { class: normalizeClass(["debug-status-item__value", unref(store).configStatus.chronicleGenEnabled ? "debug-ok" : ""]) }, toDisplayString(unref(store).configStatus.chronicleGenEnabled ? "开" : "关"), 3)]),
+						createBaseVNode("div", _hoisted_46$1, [_cache[32] || (_cache[32] = createBaseVNode("span", { class: "debug-status-item__label" }, "向量检索", -1)), createBaseVNode("span", { class: normalizeClass(["debug-status-item__value", unref(store).configStatus.vectorEnabled ? "debug-ok" : ""]) }, toDisplayString(unref(store).configStatus.vectorEnabled ? "开" : "关"), 3)])
 					])])
 				])])) : createCommentVNode("", true)
 			]);
@@ -46996,66 +47015,63 @@ var Debug_default = /* @__PURE__ */ defineComponent({
 //#region src/ui/pages/Strategy.vue?vue&type=script&setup=true&lang.ts
 var _hoisted_1 = { class: "strategy-page" };
 var _hoisted_2 = { class: "cn-card strategy-head" };
-var _hoisted_3 = { class: "scene-tabs" };
-var _hoisted_4 = ["onClick"];
-var _hoisted_5 = { class: "strategy-body" };
-var _hoisted_6 = { class: "cn-card strategy-section" };
-var _hoisted_7 = { class: "strategy-rows" };
+var _hoisted_3 = { class: "strategy-body" };
+var _hoisted_4 = { class: "cn-card strategy-section" };
+var _hoisted_5 = { class: "strategy-rows" };
+var _hoisted_6 = { class: "strategy-row" };
+var _hoisted_7 = { class: "cn-switch" };
 var _hoisted_8 = { class: "strategy-row" };
 var _hoisted_9 = { class: "cn-switch" };
 var _hoisted_10 = { class: "strategy-row" };
-var _hoisted_11 = { class: "cn-switch" };
-var _hoisted_12 = { class: "strategy-row" };
-var _hoisted_13 = { class: "cn-card strategy-section" };
-var _hoisted_14 = { class: "strategy-rows" };
+var _hoisted_11 = { class: "cn-card strategy-section" };
+var _hoisted_12 = { class: "strategy-rows" };
+var _hoisted_13 = { class: "strategy-row" };
+var _hoisted_14 = { class: "strategy-row" };
 var _hoisted_15 = { class: "strategy-row" };
 var _hoisted_16 = { class: "strategy-row" };
 var _hoisted_17 = { class: "strategy-row" };
-var _hoisted_18 = { class: "strategy-row" };
-var _hoisted_19 = { class: "strategy-row" };
-var _hoisted_20 = { class: "cn-card strategy-section" };
-var _hoisted_21 = { class: "strategy-rows" };
-var _hoisted_22 = { class: "strategy-row" };
-var _hoisted_23 = { class: "strategy-row__text" };
-var _hoisted_24 = { class: "strategy-row__desc" };
-var _hoisted_25 = ["value"];
-var _hoisted_26 = { class: "cn-card strategy-section" };
-var _hoisted_27 = { class: "strategy-rows" };
+var _hoisted_18 = { class: "cn-card strategy-section" };
+var _hoisted_19 = { class: "strategy-rows" };
+var _hoisted_20 = { class: "strategy-row" };
+var _hoisted_21 = { class: "strategy-row__text" };
+var _hoisted_22 = { class: "strategy-row__desc" };
+var _hoisted_23 = ["value"];
+var _hoisted_24 = { class: "cn-card strategy-section" };
+var _hoisted_25 = { class: "strategy-rows" };
+var _hoisted_26 = { class: "strategy-row" };
+var _hoisted_27 = { class: "cn-switch" };
 var _hoisted_28 = { class: "strategy-row" };
 var _hoisted_29 = { class: "cn-switch" };
-var _hoisted_30 = { class: "strategy-row" };
-var _hoisted_31 = { class: "cn-switch" };
-var _hoisted_32 = { class: "cn-card strategy-section" };
-var _hoisted_33 = { class: "strategy-rows" };
-var _hoisted_34 = { class: "strategy-row" };
-var _hoisted_35 = { class: "strategy-row" };
-var _hoisted_36 = { class: "cn-card strategy-section" };
-var _hoisted_37 = { class: "strategy-rows" };
-var _hoisted_38 = { class: "strategy-row" };
-var _hoisted_39 = { class: "strategy-row__text" };
-var _hoisted_40 = { class: "strategy-row__desc" };
-var _hoisted_41 = ["value"];
-var _hoisted_42 = {
+var _hoisted_30 = { class: "cn-card strategy-section" };
+var _hoisted_31 = { class: "strategy-rows" };
+var _hoisted_32 = { class: "strategy-row" };
+var _hoisted_33 = { class: "strategy-row" };
+var _hoisted_34 = { class: "cn-card strategy-section" };
+var _hoisted_35 = { class: "strategy-rows" };
+var _hoisted_36 = { class: "strategy-row" };
+var _hoisted_37 = { class: "strategy-row__text" };
+var _hoisted_38 = { class: "strategy-row__desc" };
+var _hoisted_39 = ["value"];
+var _hoisted_40 = {
 	key: 2,
 	class: "cn-card strategy-section"
 };
-var _hoisted_43 = { class: "strategy-rows" };
-var _hoisted_44 = { class: "strategy-row" };
-var _hoisted_45 = { class: "cn-seg" };
-var _hoisted_46 = {
+var _hoisted_41 = { class: "strategy-rows" };
+var _hoisted_42 = { class: "strategy-row" };
+var _hoisted_43 = {
 	key: 0,
 	class: "strategy-warn"
 };
-var _hoisted_47 = { class: "strategy-row" };
-var _hoisted_48 = {
+var _hoisted_44 = { class: "strategy-row" };
+var _hoisted_45 = {
 	key: 3,
 	class: "cn-card strategy-section"
 };
-var _hoisted_49 = { class: "strategy-rows" };
+var _hoisted_46 = { class: "strategy-rows" };
+var _hoisted_47 = { class: "strategy-row" };
+var _hoisted_48 = { class: "strategy-row" };
+var _hoisted_49 = { class: "strategy-row" };
 var _hoisted_50 = { class: "strategy-row" };
-var _hoisted_51 = { class: "strategy-row" };
-var _hoisted_52 = { class: "strategy-row" };
-var _hoisted_53 = { class: "strategy-row" };
 //#endregion
 //#region src/ui/pages/Strategy.vue
 var Strategy_default = /* @__PURE__ */ defineComponent({
@@ -47064,6 +47080,26 @@ var Strategy_default = /* @__PURE__ */ defineComponent({
 		const session = getSession();
 		const cfg = /* @__PURE__ */ ref(session.getConfig());
 		const activeTab = /* @__PURE__ */ ref("fill");
+		const activeTabValue = computed({
+			get: () => activeTab.value,
+			set: (v) => {
+				activeTab.value = v;
+			}
+		});
+		const snapshotTabs = [{
+			key: "every-message",
+			label: "每条消息（推荐）"
+		}, {
+			key: "latest-only",
+			label: "仅最新"
+		}];
+		const snapshotValue = computed({
+			get: () => cfg.value.snapshotStrategy,
+			set: (v) => {
+				cfg.value.snapshotStrategy = v;
+				saveCfg();
+			}
+		});
 		const tabs = [
 			{
 				key: "fill",
@@ -47142,34 +47178,32 @@ var Strategy_default = /* @__PURE__ */ defineComponent({
 			cfg.value = session.getConfig();
 		});
 		return (_ctx, _cache) => {
-			return openBlock(), createElementBlock("div", _hoisted_1, [createBaseVNode("div", _hoisted_2, [createBaseVNode("div", _hoisted_3, [(openBlock(), createElementBlock(Fragment, null, renderList(tabs, (t) => {
-				return createBaseVNode("button", {
-					key: t.key,
-					type: "button",
-					class: normalizeClass(["scene-tab", { "scene-tab--active": activeTab.value === t.key }]),
-					onClick: ($event) => activeTab.value = t.key
-				}, [createBaseVNode("i", { class: normalizeClass(["fa-solid", t.icon]) }, null, 2), createTextVNode(" " + toDisplayString(t.label), 1)], 10, _hoisted_4);
-			}), 64))])]), createBaseVNode("div", _hoisted_5, [activeTab.value === "fill" ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
-				createBaseVNode("section", _hoisted_6, [_cache[48] || (_cache[48] = createBaseVNode("div", { class: "strategy-section__head" }, [createBaseVNode("span", { class: "strategy-section__title" }, "自动化")], -1)), createBaseVNode("div", _hoisted_7, [
-					createBaseVNode("div", _hoisted_8, [_cache[44] || (_cache[44] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "自动填表"), createBaseVNode("span", { class: "strategy-row__desc" }, "AI 生成回复后自动提取/更新结构化表格。关闭则更新频率归零，设正数自动开启。")], -1)), createBaseVNode("label", _hoisted_9, [withDirectives(createBaseVNode("input", {
+			return openBlock(), createElementBlock("div", _hoisted_1, [createBaseVNode("div", _hoisted_2, [createVNode(CNTabs_default, {
+				level: "l1",
+				items: tabs,
+				modelValue: activeTabValue.value,
+				"onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => activeTabValue.value = $event)
+			}, null, 8, ["modelValue"])]), createBaseVNode("div", _hoisted_3, [activeTab.value === "fill" ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
+				createBaseVNode("section", _hoisted_4, [_cache[48] || (_cache[48] = createBaseVNode("div", { class: "strategy-section__head" }, [createBaseVNode("span", { class: "strategy-section__title" }, "自动化")], -1)), createBaseVNode("div", _hoisted_5, [
+					createBaseVNode("div", _hoisted_6, [_cache[44] || (_cache[44] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "自动填表"), createBaseVNode("span", { class: "strategy-row__desc" }, "AI 生成回复后自动提取/更新结构化表格。关闭则更新频率归零，设正数自动开启。")], -1)), createBaseVNode("label", _hoisted_7, [withDirectives(createBaseVNode("input", {
 						type: "checkbox",
-						"onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => cfg.value.tableFill.autoFill = $event),
-						onChange: _cache[1] || (_cache[1] = ($event) => onAutoFillChange(cfg.value.tableFill.autoFill))
+						"onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => cfg.value.tableFill.autoFill = $event),
+						onChange: _cache[2] || (_cache[2] = ($event) => onAutoFillChange(cfg.value.tableFill.autoFill))
 					}, null, 544), [[vModelCheckbox, cfg.value.tableFill.autoFill]]), _cache[43] || (_cache[43] = createBaseVNode("span", { class: "cn-switch__track" }, null, -1))])]),
-					createBaseVNode("div", _hoisted_10, [_cache[46] || (_cache[46] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "手动中止时仍触发"), createBaseVNode("span", { class: "strategy-row__desc" }, "用户手动中断 AI 生成时是否仍进行纪要总结与表格更新。关闭则手动中止时本轮一并跳过（默认）。")], -1)), createBaseVNode("label", _hoisted_11, [withDirectives(createBaseVNode("input", {
+					createBaseVNode("div", _hoisted_8, [_cache[46] || (_cache[46] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "手动中止时仍触发"), createBaseVNode("span", { class: "strategy-row__desc" }, "用户手动中断 AI 生成时是否仍进行纪要总结与表格更新。关闭则手动中止时本轮一并跳过（默认）。")], -1)), createBaseVNode("label", _hoisted_9, [withDirectives(createBaseVNode("input", {
 						type: "checkbox",
-						"onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => cfg.value.pending.summarizeOnManualAbort = $event),
-						onChange: _cache[3] || (_cache[3] = ($event) => saveBoolean("summarizeOnManualAbort"))
+						"onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => cfg.value.pending.summarizeOnManualAbort = $event),
+						onChange: _cache[4] || (_cache[4] = ($event) => saveBoolean("summarizeOnManualAbort"))
 					}, null, 544), [[vModelCheckbox, cfg.value.pending.summarizeOnManualAbort]]), _cache[45] || (_cache[45] = createBaseVNode("span", { class: "cn-switch__track" }, null, -1))])]),
-					createBaseVNode("div", _hoisted_12, [_cache[47] || (_cache[47] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "最小回复字数"), createBaseVNode("span", { class: "strategy-row__desc" }, "AI 回复少于该字数时跳过本轮纪要总结与表格更新。0=不限制。默认 100。")], -1)), withDirectives(createBaseVNode("input", {
+					createBaseVNode("div", _hoisted_10, [_cache[47] || (_cache[47] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "最小回复字数"), createBaseVNode("span", { class: "strategy-row__desc" }, "AI 回复少于该字数时跳过本轮纪要总结与表格更新。0=不限制。默认 100。")], -1)), withDirectives(createBaseVNode("input", {
 						class: "cn-input cn-input--nospin strategy-num",
 						type: "number",
 						min: "0",
 						max: "10000",
 						step: "10",
-						"onUpdate:modelValue": _cache[4] || (_cache[4] = ($event) => cfg.value.pending.minSummaryLength = $event),
-						onBlur: _cache[5] || (_cache[5] = ($event) => saveField("minSummaryLength", 0, 1e4, 100)),
-						onChange: _cache[6] || (_cache[6] = ($event) => saveField("minSummaryLength", 0, 1e4, 100))
+						"onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => cfg.value.pending.minSummaryLength = $event),
+						onBlur: _cache[6] || (_cache[6] = ($event) => saveField("minSummaryLength", 0, 1e4, 100)),
+						onChange: _cache[7] || (_cache[7] = ($event) => saveField("minSummaryLength", 0, 1e4, 100))
 					}, null, 544), [[
 						vModelText,
 						cfg.value.pending.minSummaryLength,
@@ -47177,71 +47211,71 @@ var Strategy_default = /* @__PURE__ */ defineComponent({
 						{ number: true }
 					]])])
 				])]),
-				createBaseVNode("section", _hoisted_13, [_cache[54] || (_cache[54] = createBaseVNode("div", { class: "strategy-section__head" }, [createBaseVNode("span", { class: "strategy-section__title" }, "触发与批量")], -1)), createBaseVNode("div", _hoisted_14, [
-					createBaseVNode("div", _hoisted_15, [_cache[49] || (_cache[49] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "更新频率"), createBaseVNode("span", { class: "strategy-row__desc" }, "积累 N 条新 AI 回复后触发一次填表。1=每条都触发。0=关闭自动填表。")], -1)), withDirectives(createBaseVNode("input", {
+				createBaseVNode("section", _hoisted_11, [_cache[54] || (_cache[54] = createBaseVNode("div", { class: "strategy-section__head" }, [createBaseVNode("span", { class: "strategy-section__title" }, "触发与批量")], -1)), createBaseVNode("div", _hoisted_12, [
+					createBaseVNode("div", _hoisted_13, [_cache[49] || (_cache[49] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "更新频率"), createBaseVNode("span", { class: "strategy-row__desc" }, "积累 N 条新 AI 回复后触发一次填表。1=每条都触发。0=关闭自动填表。")], -1)), withDirectives(createBaseVNode("input", {
 						class: "cn-input cn-input--nospin strategy-num",
 						type: "number",
 						min: "0",
 						max: "20",
 						step: "1",
-						"onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => cfg.value.tableFill.updateFrequency = $event),
-						onBlur: _cache[8] || (_cache[8] = ($event) => onUpdateFreqChange(cfg.value.tableFill.updateFrequency))
+						"onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => cfg.value.tableFill.updateFrequency = $event),
+						onBlur: _cache[9] || (_cache[9] = ($event) => onUpdateFreqChange(cfg.value.tableFill.updateFrequency))
 					}, null, 544), [[
 						vModelText,
 						cfg.value.tableFill.updateFrequency,
 						void 0,
 						{ number: true }
 					]])]),
-					createBaseVNode("div", _hoisted_16, [_cache[50] || (_cache[50] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "上下文深度"), createBaseVNode("span", { class: "strategy-row__desc" }, "AI 填表往回看最近 N 条 AI 回复。0=不传上下文。越大越全但 token 消耗越多。")], -1)), withDirectives(createBaseVNode("input", {
+					createBaseVNode("div", _hoisted_14, [_cache[50] || (_cache[50] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "上下文深度"), createBaseVNode("span", { class: "strategy-row__desc" }, "AI 填表往回看最近 N 条 AI 回复。0=不传上下文。越大越全但 token 消耗越多。")], -1)), withDirectives(createBaseVNode("input", {
 						class: "cn-input cn-input--nospin strategy-num",
 						type: "number",
 						min: "0",
 						max: "50",
 						step: "1",
-						"onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => cfg.value.tableFill.contextDepth = $event),
-						onBlur: _cache[10] || (_cache[10] = ($event) => saveTableField("contextDepth", 0, 50, 3))
+						"onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => cfg.value.tableFill.contextDepth = $event),
+						onBlur: _cache[11] || (_cache[11] = ($event) => saveTableField("contextDepth", 0, 50, 3))
 					}, null, 544), [[
 						vModelText,
 						cfg.value.tableFill.contextDepth,
 						void 0,
 						{ number: true }
 					]])]),
-					createBaseVNode("div", _hoisted_17, [_cache[51] || (_cache[51] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "批处理大小"), createBaseVNode("span", { class: "strategy-row__desc" }, "待处理消息过多时分多少条一组喂给 AI。")], -1)), withDirectives(createBaseVNode("input", {
+					createBaseVNode("div", _hoisted_15, [_cache[51] || (_cache[51] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "批处理大小"), createBaseVNode("span", { class: "strategy-row__desc" }, "待处理消息过多时分多少条一组喂给 AI。")], -1)), withDirectives(createBaseVNode("input", {
 						class: "cn-input cn-input--nospin strategy-num",
 						type: "number",
 						min: "1",
 						max: "30",
 						step: "1",
-						"onUpdate:modelValue": _cache[11] || (_cache[11] = ($event) => cfg.value.tableFill.batchSize = $event),
-						onBlur: _cache[12] || (_cache[12] = ($event) => saveTableField("batchSize", 1, 30, 3))
+						"onUpdate:modelValue": _cache[12] || (_cache[12] = ($event) => cfg.value.tableFill.batchSize = $event),
+						onBlur: _cache[13] || (_cache[13] = ($event) => saveTableField("batchSize", 1, 30, 3))
 					}, null, 544), [[
 						vModelText,
 						cfg.value.tableFill.batchSize,
 						void 0,
 						{ number: true }
 					]])]),
-					createBaseVNode("div", _hoisted_18, [_cache[52] || (_cache[52] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "跳过楼层"), createBaseVNode("span", { class: "strategy-row__desc" }, "忽略最近 N 条 AI 回复不参与填表。")], -1)), withDirectives(createBaseVNode("input", {
+					createBaseVNode("div", _hoisted_16, [_cache[52] || (_cache[52] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "跳过楼层"), createBaseVNode("span", { class: "strategy-row__desc" }, "忽略最近 N 条 AI 回复不参与填表。")], -1)), withDirectives(createBaseVNode("input", {
 						class: "cn-input cn-input--nospin strategy-num",
 						type: "number",
 						min: "0",
 						max: "20",
 						step: "1",
-						"onUpdate:modelValue": _cache[13] || (_cache[13] = ($event) => cfg.value.tableFill.skipFloors = $event),
-						onBlur: _cache[14] || (_cache[14] = ($event) => saveTableField("skipFloors", 0, 20, 0))
+						"onUpdate:modelValue": _cache[14] || (_cache[14] = ($event) => cfg.value.tableFill.skipFloors = $event),
+						onBlur: _cache[15] || (_cache[15] = ($event) => saveTableField("skipFloors", 0, 20, 0))
 					}, null, 544), [[
 						vModelText,
 						cfg.value.tableFill.skipFloors,
 						void 0,
 						{ number: true }
 					]])]),
-					createBaseVNode("div", _hoisted_19, [_cache[53] || (_cache[53] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "最大重试"), createBaseVNode("span", { class: "strategy-row__desc" }, "填表 SQL 执行失败后最多重试几次。0=不重试。")], -1)), withDirectives(createBaseVNode("input", {
+					createBaseVNode("div", _hoisted_17, [_cache[53] || (_cache[53] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "最大重试"), createBaseVNode("span", { class: "strategy-row__desc" }, "填表 SQL 执行失败后最多重试几次。0=不重试。")], -1)), withDirectives(createBaseVNode("input", {
 						class: "cn-input cn-input--nospin strategy-num",
 						type: "number",
 						min: "0",
 						max: "10",
 						step: "1",
-						"onUpdate:modelValue": _cache[15] || (_cache[15] = ($event) => cfg.value.tableFill.maxRetries = $event),
-						onBlur: _cache[16] || (_cache[16] = ($event) => saveTableField("maxRetries", 0, 10, 3))
+						"onUpdate:modelValue": _cache[16] || (_cache[16] = ($event) => cfg.value.tableFill.maxRetries = $event),
+						onBlur: _cache[17] || (_cache[17] = ($event) => saveTableField("maxRetries", 0, 10, 3))
 					}, null, 544), [[
 						vModelText,
 						cfg.value.tableFill.maxRetries,
@@ -47249,81 +47283,72 @@ var Strategy_default = /* @__PURE__ */ defineComponent({
 						{ number: true }
 					]])])
 				])]),
-				createBaseVNode("section", _hoisted_20, [_cache[57] || (_cache[57] = createBaseVNode("div", { class: "strategy-section__head" }, [createBaseVNode("span", { class: "strategy-section__title" }, "模型")], -1)), createBaseVNode("div", _hoisted_21, [createBaseVNode("div", _hoisted_22, [createBaseVNode("div", _hoisted_23, [_cache[55] || (_cache[55] = createBaseVNode("span", { class: "strategy-row__label" }, "表格更新预设", -1)), createBaseVNode("span", _hoisted_24, "表格填表用哪组 AI 预设。" + toDisplayString(presetHint(cfg.value.tableFillPresetId)), 1)]), withDirectives(createBaseVNode("select", {
+				createBaseVNode("section", _hoisted_18, [_cache[57] || (_cache[57] = createBaseVNode("div", { class: "strategy-section__head" }, [createBaseVNode("span", { class: "strategy-section__title" }, "模型")], -1)), createBaseVNode("div", _hoisted_19, [createBaseVNode("div", _hoisted_20, [createBaseVNode("div", _hoisted_21, [_cache[55] || (_cache[55] = createBaseVNode("span", { class: "strategy-row__label" }, "表格更新预设", -1)), createBaseVNode("span", _hoisted_22, "表格填表用哪组 AI 预设。" + toDisplayString(presetHint(cfg.value.tableFillPresetId)), 1)]), withDirectives(createBaseVNode("select", {
 					class: "cn-select strategy-select",
-					"onUpdate:modelValue": _cache[17] || (_cache[17] = ($event) => cfg.value.tableFillPresetId = $event),
+					"onUpdate:modelValue": _cache[18] || (_cache[18] = ($event) => cfg.value.tableFillPresetId = $event),
 					onChange: saveCfg
 				}, [_cache[56] || (_cache[56] = createBaseVNode("option", { value: "" }, "跟随全局", -1)), (openBlock(true), createElementBlock(Fragment, null, renderList(presetList.value, (p) => {
 					return openBlock(), createElementBlock("option", {
 						key: p.id,
 						value: p.id
-					}, toDisplayString(p.name), 9, _hoisted_25);
+					}, toDisplayString(p.name), 9, _hoisted_23);
 				}), 128))], 544), [[vModelSelect, cfg.value.tableFillPresetId]])])])])
 			], 64)) : activeTab.value === "recall" ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
-				createBaseVNode("section", _hoisted_26, [_cache[62] || (_cache[62] = createBaseVNode("div", { class: "strategy-section__head" }, [createBaseVNode("span", { class: "strategy-section__title" }, "自动化")], -1)), createBaseVNode("div", _hoisted_27, [createBaseVNode("div", _hoisted_28, [_cache[59] || (_cache[59] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "纪要生成"), createBaseVNode("span", { class: "strategy-row__desc" }, "AI 生成回复后自动提取事件摘要存入纪要表。关闭时联动关闭召回。")], -1)), createBaseVNode("label", _hoisted_29, [withDirectives(createBaseVNode("input", {
+				createBaseVNode("section", _hoisted_24, [_cache[62] || (_cache[62] = createBaseVNode("div", { class: "strategy-section__head" }, [createBaseVNode("span", { class: "strategy-section__title" }, "自动化")], -1)), createBaseVNode("div", _hoisted_25, [createBaseVNode("div", _hoisted_26, [_cache[59] || (_cache[59] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "纪要生成"), createBaseVNode("span", { class: "strategy-row__desc" }, "AI 生成回复后自动提取事件摘要存入纪要表。关闭时联动关闭召回。")], -1)), createBaseVNode("label", _hoisted_27, [withDirectives(createBaseVNode("input", {
 					type: "checkbox",
-					"onUpdate:modelValue": _cache[18] || (_cache[18] = ($event) => cfg.value.chronicleGenEnabled = $event),
-					onChange: _cache[19] || (_cache[19] = ($event) => onChronicleGenChange(cfg.value.chronicleGenEnabled))
-				}, null, 544), [[vModelCheckbox, cfg.value.chronicleGenEnabled]]), _cache[58] || (_cache[58] = createBaseVNode("span", { class: "cn-switch__track" }, null, -1))])]), createBaseVNode("div", _hoisted_30, [_cache[61] || (_cache[61] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "纪要召回"), createBaseVNode("span", { class: "strategy-row__desc" }, "发消息时 AI 筛选相关历史纪要，关键词注入激活世界书条目。")], -1)), createBaseVNode("label", _hoisted_31, [withDirectives(createBaseVNode("input", {
+					"onUpdate:modelValue": _cache[19] || (_cache[19] = ($event) => cfg.value.chronicleGenEnabled = $event),
+					onChange: _cache[20] || (_cache[20] = ($event) => onChronicleGenChange(cfg.value.chronicleGenEnabled))
+				}, null, 544), [[vModelCheckbox, cfg.value.chronicleGenEnabled]]), _cache[58] || (_cache[58] = createBaseVNode("span", { class: "cn-switch__track" }, null, -1))])]), createBaseVNode("div", _hoisted_28, [_cache[61] || (_cache[61] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "纪要召回"), createBaseVNode("span", { class: "strategy-row__desc" }, "发消息时 AI 筛选相关历史纪要，关键词注入激活世界书条目。")], -1)), createBaseVNode("label", _hoisted_29, [withDirectives(createBaseVNode("input", {
 					type: "checkbox",
-					"onUpdate:modelValue": _cache[20] || (_cache[20] = ($event) => cfg.value.recallEnabled = $event),
-					onChange: _cache[21] || (_cache[21] = ($event) => onRecallChange(cfg.value.recallEnabled))
+					"onUpdate:modelValue": _cache[21] || (_cache[21] = ($event) => cfg.value.recallEnabled = $event),
+					onChange: _cache[22] || (_cache[22] = ($event) => onRecallChange(cfg.value.recallEnabled))
 				}, null, 544), [[vModelCheckbox, cfg.value.recallEnabled]]), _cache[60] || (_cache[60] = createBaseVNode("span", { class: "cn-switch__track" }, null, -1))])])])]),
-				createBaseVNode("section", _hoisted_32, [_cache[65] || (_cache[65] = createBaseVNode("div", { class: "strategy-section__head" }, [createBaseVNode("span", { class: "strategy-section__title" }, "召回范围")], -1)), createBaseVNode("div", _hoisted_33, [createBaseVNode("div", _hoisted_34, [_cache[63] || (_cache[63] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "最大召回条目"), createBaseVNode("span", { class: "strategy-row__desc" }, "每次召回最多注入几条历史纪要。范围 1-50。")], -1)), withDirectives(createBaseVNode("input", {
+				createBaseVNode("section", _hoisted_30, [_cache[65] || (_cache[65] = createBaseVNode("div", { class: "strategy-section__head" }, [createBaseVNode("span", { class: "strategy-section__title" }, "召回范围")], -1)), createBaseVNode("div", _hoisted_31, [createBaseVNode("div", _hoisted_32, [_cache[63] || (_cache[63] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "最大召回条目"), createBaseVNode("span", { class: "strategy-row__desc" }, "每次召回最多注入几条历史纪要。范围 1-50。")], -1)), withDirectives(createBaseVNode("input", {
 					class: "cn-input cn-input--nospin strategy-num",
 					type: "number",
 					min: "1",
 					max: "50",
 					step: "1",
-					"onUpdate:modelValue": _cache[22] || (_cache[22] = ($event) => cfg.value.maxRecallItems = $event),
-					onBlur: _cache[23] || (_cache[23] = ($event) => saveRecallField("maxRecallItems", 1, 50, 25))
+					"onUpdate:modelValue": _cache[23] || (_cache[23] = ($event) => cfg.value.maxRecallItems = $event),
+					onBlur: _cache[24] || (_cache[24] = ($event) => saveRecallField("maxRecallItems", 1, 50, 25))
 				}, null, 544), [[
 					vModelText,
 					cfg.value.maxRecallItems,
 					void 0,
 					{ number: true }
-				]])]), createBaseVNode("div", _hoisted_35, [_cache[64] || (_cache[64] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "召回上下文深度"), createBaseVNode("span", { class: "strategy-row__desc" }, "召回 AI 筛选纪要时参考的最近对话轮数。范围 1-20。")], -1)), withDirectives(createBaseVNode("input", {
+				]])]), createBaseVNode("div", _hoisted_33, [_cache[64] || (_cache[64] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "召回上下文深度"), createBaseVNode("span", { class: "strategy-row__desc" }, "召回 AI 筛选纪要时参考的最近对话轮数。范围 1-20。")], -1)), withDirectives(createBaseVNode("input", {
 					class: "cn-input cn-input--nospin strategy-num",
 					type: "number",
 					min: "1",
 					max: "20",
 					step: "1",
-					"onUpdate:modelValue": _cache[24] || (_cache[24] = ($event) => cfg.value.recallContextDepth = $event),
-					onBlur: _cache[25] || (_cache[25] = ($event) => saveRecallField("recallContextDepth", 1, 20, 5))
+					"onUpdate:modelValue": _cache[25] || (_cache[25] = ($event) => cfg.value.recallContextDepth = $event),
+					onBlur: _cache[26] || (_cache[26] = ($event) => saveRecallField("recallContextDepth", 1, 20, 5))
 				}, null, 544), [[
 					vModelText,
 					cfg.value.recallContextDepth,
 					void 0,
 					{ number: true }
 				]])])])]),
-				createBaseVNode("section", _hoisted_36, [_cache[68] || (_cache[68] = createBaseVNode("div", { class: "strategy-section__head" }, [createBaseVNode("span", { class: "strategy-section__title" }, "模型")], -1)), createBaseVNode("div", _hoisted_37, [createBaseVNode("div", _hoisted_38, [createBaseVNode("div", _hoisted_39, [_cache[66] || (_cache[66] = createBaseVNode("span", { class: "strategy-row__label" }, "纪要召回预设", -1)), createBaseVNode("span", _hoisted_40, "纪要召回用哪组 AI 预设。" + toDisplayString(presetHint(cfg.value.recallPresetId)), 1)]), withDirectives(createBaseVNode("select", {
+				createBaseVNode("section", _hoisted_34, [_cache[68] || (_cache[68] = createBaseVNode("div", { class: "strategy-section__head" }, [createBaseVNode("span", { class: "strategy-section__title" }, "模型")], -1)), createBaseVNode("div", _hoisted_35, [createBaseVNode("div", _hoisted_36, [createBaseVNode("div", _hoisted_37, [_cache[66] || (_cache[66] = createBaseVNode("span", { class: "strategy-row__label" }, "纪要召回预设", -1)), createBaseVNode("span", _hoisted_38, "纪要召回用哪组 AI 预设。" + toDisplayString(presetHint(cfg.value.recallPresetId)), 1)]), withDirectives(createBaseVNode("select", {
 					class: "cn-select strategy-select",
-					"onUpdate:modelValue": _cache[26] || (_cache[26] = ($event) => cfg.value.recallPresetId = $event),
+					"onUpdate:modelValue": _cache[27] || (_cache[27] = ($event) => cfg.value.recallPresetId = $event),
 					onChange: saveCfg
 				}, [_cache[67] || (_cache[67] = createBaseVNode("option", { value: "" }, "跟随全局", -1)), (openBlock(true), createElementBlock(Fragment, null, renderList(presetList.value, (p) => {
 					return openBlock(), createElementBlock("option", {
 						key: p.id,
 						value: p.id
-					}, toDisplayString(p.name), 9, _hoisted_41);
+					}, toDisplayString(p.name), 9, _hoisted_39);
 				}), 128))], 544), [[vModelSelect, cfg.value.recallPresetId]])])])])
-			], 64)) : activeTab.value === "snapshot" ? (openBlock(), createElementBlock("section", _hoisted_42, [_cache[72] || (_cache[72] = createBaseVNode("div", { class: "strategy-section__head" }, [createBaseVNode("span", { class: "strategy-section__title" }, "快照")], -1)), createBaseVNode("div", _hoisted_43, [
-				createBaseVNode("div", _hoisted_44, [_cache[69] || (_cache[69] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "快照策略"), createBaseVNode("span", { class: "strategy-row__desc" }, "每条消息都存可完整回溯，仅最新更省空间但丢历史。")], -1)), createBaseVNode("div", _hoisted_45, [createBaseVNode("button", {
-					type: "button",
-					class: normalizeClass(["cn-seg__item", { "cn-seg__item--active": cfg.value.snapshotStrategy === "every-message" }]),
-					onClick: _cache[27] || (_cache[27] = ($event) => {
-						cfg.value.snapshotStrategy = "every-message";
-						saveCfg();
-					})
-				}, "每条消息（推荐）", 2), createBaseVNode("button", {
-					type: "button",
-					class: normalizeClass(["cn-seg__item", { "cn-seg__item--active": cfg.value.snapshotStrategy === "latest-only" }]),
-					onClick: _cache[28] || (_cache[28] = ($event) => {
-						cfg.value.snapshotStrategy = "latest-only";
-						saveCfg();
-					})
-				}, "仅最新", 2)])]),
-				cfg.value.snapshotStrategy === "latest-only" ? (openBlock(), createElementBlock("div", _hoisted_46, [..._cache[70] || (_cache[70] = [createBaseVNode("i", { class: "fa-solid fa-triangle-exclamation" }, null, -1), createBaseVNode("span", null, "仅最新模式下，删除最后一条 AI 消息会导致全部表数据丢失！", -1)])])) : createCommentVNode("", true),
-				createBaseVNode("div", _hoisted_47, [_cache[71] || (_cache[71] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "保留楼层"), createBaseVNode("span", { class: "strategy-row__desc" }, "只保留最近 N 个 AI 楼层的数据库快照。0=全部保留不清理。")], -1)), withDirectives(createBaseVNode("input", {
+			], 64)) : activeTab.value === "snapshot" ? (openBlock(), createElementBlock("section", _hoisted_40, [_cache[72] || (_cache[72] = createBaseVNode("div", { class: "strategy-section__head" }, [createBaseVNode("span", { class: "strategy-section__title" }, "快照")], -1)), createBaseVNode("div", _hoisted_41, [
+				createBaseVNode("div", _hoisted_42, [_cache[69] || (_cache[69] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "快照策略"), createBaseVNode("span", { class: "strategy-row__desc" }, "每条消息都存可完整回溯，仅最新更省空间但丢历史。")], -1)), createVNode(CNTabs_default, {
+					level: "l2",
+					items: snapshotTabs,
+					modelValue: snapshotValue.value,
+					"onUpdate:modelValue": _cache[28] || (_cache[28] = ($event) => snapshotValue.value = $event)
+				}, null, 8, ["modelValue"])]),
+				cfg.value.snapshotStrategy === "latest-only" ? (openBlock(), createElementBlock("div", _hoisted_43, [..._cache[70] || (_cache[70] = [createBaseVNode("i", { class: "fa-solid fa-triangle-exclamation" }, null, -1), createBaseVNode("span", null, "仅最新模式下，删除最后一条 AI 消息会导致全部表数据丢失！", -1)])])) : createCommentVNode("", true),
+				createBaseVNode("div", _hoisted_44, [_cache[71] || (_cache[71] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "保留楼层"), createBaseVNode("span", { class: "strategy-row__desc" }, "只保留最近 N 个 AI 楼层的数据库快照。0=全部保留不清理。")], -1)), withDirectives(createBaseVNode("input", {
 					class: "cn-input cn-input--nospin strategy-num",
 					type: "number",
 					min: "0",
@@ -47337,8 +47362,8 @@ var Strategy_default = /* @__PURE__ */ defineComponent({
 					void 0,
 					{ number: true }
 				]])])
-			])])) : (openBlock(), createElementBlock("section", _hoisted_48, [_cache[77] || (_cache[77] = createBaseVNode("div", { class: "strategy-section__head" }, [createBaseVNode("span", { class: "strategy-section__title" }, "超时与重试")], -1)), createBaseVNode("div", _hoisted_49, [
-				createBaseVNode("div", _hoisted_50, [_cache[73] || (_cache[73] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "AI 调用超时（毫秒）"), createBaseVNode("span", { class: "strategy-row__desc" }, "单次 AI 请求最长等待时间。默认 60000（60 秒）。")], -1)), withDirectives(createBaseVNode("input", {
+			])])) : (openBlock(), createElementBlock("section", _hoisted_45, [_cache[77] || (_cache[77] = createBaseVNode("div", { class: "strategy-section__head" }, [createBaseVNode("span", { class: "strategy-section__title" }, "超时与重试")], -1)), createBaseVNode("div", _hoisted_46, [
+				createBaseVNode("div", _hoisted_47, [_cache[73] || (_cache[73] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "AI 调用超时（毫秒）"), createBaseVNode("span", { class: "strategy-row__desc" }, "单次 AI 请求最长等待时间。默认 60000（60 秒）。")], -1)), withDirectives(createBaseVNode("input", {
 					class: "cn-input cn-input--nospin strategy-num",
 					type: "number",
 					min: "1000",
@@ -47353,7 +47378,7 @@ var Strategy_default = /* @__PURE__ */ defineComponent({
 					void 0,
 					{ number: true }
 				]])]),
-				createBaseVNode("div", _hoisted_51, [_cache[74] || (_cache[74] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "超时后重试次数"), createBaseVNode("span", { class: "strategy-row__desc" }, "AI 调用超时后自动重试的次数。0=超时即失败不重试。默认 1。")], -1)), withDirectives(createBaseVNode("input", {
+				createBaseVNode("div", _hoisted_48, [_cache[74] || (_cache[74] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "超时后重试次数"), createBaseVNode("span", { class: "strategy-row__desc" }, "AI 调用超时后自动重试的次数。0=超时即失败不重试。默认 1。")], -1)), withDirectives(createBaseVNode("input", {
 					class: "cn-input cn-input--nospin strategy-num",
 					type: "number",
 					min: "0",
@@ -47368,7 +47393,7 @@ var Strategy_default = /* @__PURE__ */ defineComponent({
 					void 0,
 					{ number: true }
 				]])]),
-				createBaseVNode("div", _hoisted_52, [_cache[75] || (_cache[75] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "拉模型列表超时（毫秒）"), createBaseVNode("span", { class: "strategy-row__desc" }, "配置 API 时拉取模型列表的最长等待时间。默认 10000（10 秒）。")], -1)), withDirectives(createBaseVNode("input", {
+				createBaseVNode("div", _hoisted_49, [_cache[75] || (_cache[75] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "拉模型列表超时（毫秒）"), createBaseVNode("span", { class: "strategy-row__desc" }, "配置 API 时拉取模型列表的最长等待时间。默认 10000（10 秒）。")], -1)), withDirectives(createBaseVNode("input", {
 					class: "cn-input cn-input--nospin strategy-num",
 					type: "number",
 					min: "1000",
@@ -47383,7 +47408,7 @@ var Strategy_default = /* @__PURE__ */ defineComponent({
 					void 0,
 					{ number: true }
 				]])]),
-				createBaseVNode("div", _hoisted_53, [_cache[76] || (_cache[76] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "写队列排空超时（毫秒）"), createBaseVNode("span", { class: "strategy-row__desc" }, "切换聊天时等待写入队列排空的最长时间。默认 8000（8 秒）。")], -1)), withDirectives(createBaseVNode("input", {
+				createBaseVNode("div", _hoisted_50, [_cache[76] || (_cache[76] = createBaseVNode("div", { class: "strategy-row__text" }, [createBaseVNode("span", { class: "strategy-row__label" }, "写队列排空超时（毫秒）"), createBaseVNode("span", { class: "strategy-row__desc" }, "切换聊天时等待写入队列排空的最长时间。默认 8000（8 秒）。")], -1)), withDirectives(createBaseVNode("input", {
 					class: "cn-input cn-input--nospin strategy-num",
 					type: "number",
 					min: "1000",

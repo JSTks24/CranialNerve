@@ -17,6 +17,7 @@ import { interpolate } from '@shared/prompts/interpolate'
 import toast from '@ui/toast'
 import confirm from '@ui/dialog'
 import PromptSegmentEditor from '@ui/components/PromptSegmentEditor.vue'
+import CNTabs from '@ui/components/CNTabs.vue'
 import { DEFAULT_CHRONICLE_TABLE } from '@shared/constants/chronicle'
 
 const session = getSession()
@@ -327,6 +328,22 @@ function importPreset(e: Event) {
 }
 
 const showTemplate = ref(false)
+const promptTabs = [
+  { key: 'template', label: '表格模板', icon: 'fa-table' },
+  { key: 'prompt', label: '提示词配置', icon: 'fa-pen-to-square' }
+]
+const promptTabValue = computed({
+  get: () => (showTemplate.value ? 'template' : 'prompt'),
+  set: (v: string) => {
+    showTemplate.value = v === 'template'
+  }
+})
+const sceneTabValue = computed({
+  get: () => activeScene.value,
+  set: (v: string) => {
+    activeScene.value = v as PromptSceneKey
+  }
+})
 const COL_TYPES = ['TEXT', 'INTEGER', 'REAL', 'BLOB']
 
 function freshTable(): TableDef {
@@ -793,38 +810,8 @@ onActivated(() => {
     <div class="prompt-wrap cn-card">
       <!-- ═══ 顶层 Tab：表格模板 / 提示词配置 ═══ -->
       <div class="prompt-head">
-        <div class="scene-tabs">
-          <button
-            type="button"
-            class="scene-tab"
-            :class="{ 'scene-tab--active': showTemplate }"
-            @click="showTemplate = true"
-          >
-            <i class="fa-solid fa-table"></i>
-            表格模板
-          </button>
-          <button
-            type="button"
-            class="scene-tab"
-            :class="{ 'scene-tab--active': !showTemplate }"
-            @click="showTemplate = false"
-          >
-            <i class="fa-solid fa-pen-to-square"></i>
-            提示词配置
-          </button>
-        </div>
-        <div v-if="!showTemplate" class="scene-tabs">
-          <button
-            v-for="s in scenes"
-            :key="s.key"
-            type="button"
-            class="scene-tab"
-            :class="{ 'scene-tab--active': activeScene === s.key }"
-            @click="activeScene = s.key"
-          >
-            {{ s.label }}
-          </button>
-        </div>
+        <CNTabs level="l1" :items="promptTabs" v-model="promptTabValue" />
+        <CNTabs v-if="!showTemplate" level="l1" :items="scenes" v-model="sceneTabValue" />
       </div>
 
       <!-- ═══ 表格模板编辑器 ═══ -->
@@ -839,7 +826,7 @@ onActivated(() => {
             </button>
           </div>
           <div class="cn-card__body">
-            <TransitionGroup name="cn-list" tag="ul" class="preset-list">
+            <TransitionGroup tag="ul" class="preset-list">
               <li
                 v-for="p in ttConfig.presets"
                 :key="p.id"
@@ -1341,7 +1328,7 @@ onActivated(() => {
               </button>
             </div>
             <div class="cn-card__body">
-              <TransitionGroup name="cn-list" tag="ul" class="preset-list">
+              <TransitionGroup tag="ul" class="preset-list">
                 <li
                   v-for="p in sceneConfig.presets"
                   :key="p.id"

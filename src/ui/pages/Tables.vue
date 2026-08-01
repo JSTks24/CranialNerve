@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onActivated } from 'vue'
+import { ref, computed, watch, onMounted, onActivated } from 'vue'
 import { getSession } from '@core/session'
 import { CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
 import { syncToWorldbook } from '@core/worldbook-sync'
 import toast from '@ui/toast'
 import confirm from '@ui/dialog'
 import ManualFill from './ManualFill.vue'
+import { useRoute } from 'vue-router'
+import CNTabs from '@ui/components/CNTabs.vue'
 
 interface RowData {
   __rowid__: number
@@ -21,10 +23,24 @@ interface TableInfo {
 }
 
 const session = getSession()
+const route = useRoute()
 const tables = ref<TableInfo[]>([])
 const chatActive = ref(false)
 const activeName = ref<string>('')
 const pageTab = ref<'tables' | 'fill'>('tables')
+const pageTabs = [
+  { key: 'tables', label: '表格', icon: 'fa-table' },
+  { key: 'fill', label: '手动填表', icon: 'fa-pen-to-square' }
+]
+const pageTabValue = computed({
+  get: () => pageTab.value,
+  set: (v: string) => {
+    pageTab.value = v as 'tables' | 'fill'
+  }
+})
+const tableTabs = computed(() =>
+  tables.value.map((t) => ({ key: t.name, label: t.displayName, sublabel: t.name }))
+)
 const editingRowid = ref<number | null>(null)
 const editSnapshot = ref<Record<string, string>>({})
 const cellEditEls = new Map<string, HTMLElement>()
@@ -223,16 +239,21 @@ function onImportSnapshot(e: Event) {
 
 onMounted(refresh)
 onActivated(refresh)
+
+watch(
+  () => route.query.tab,
+  (tab) => {
+    if (tab === 'fill') pageTab.value = 'fill'
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
   <div class="tables-page">
     <div v-if="!chatActive" class="cn-empty">未检测到聊天，请先在酒馆中打开一个对话</div>
     <template v-else>
-      <div class="page-tabs">
-        <button class="page-tab" :class="{ 'page-tab--active': pageTab === 'tables' }" @click="pageTab = 'tables'"><i class="fa-solid fa-table"></i> 表格</button>
-        <button class="page-tab" :class="{ 'page-tab--active': pageTab === 'fill' }" @click="pageTab = 'fill'"><i class="fa-solid fa-pen-to-square"></i> 手动填表</button>
-      </div>
+      <CNTabs level="l1" :items="pageTabs" v-model="pageTabValue" />
       <ManualFill v-if="pageTab === 'fill'" />
       <template v-else>
         <div class="tables-toolbar">
@@ -247,18 +268,7 @@ onActivated(refresh)
         </label>
       </div>
       <div class="cn-card table-wrap-card">
-        <div class="table-tabs">
-          <button
-            v-for="t in tables"
-            :key="t.name"
-            class="table-tab"
-            :class="{ 'table-tab--active': t.name === activeName }"
-            @click="switchTab(t.name)"
-          >
-            <span class="table-tab__zh">{{ t.displayName }}</span>
-            <span class="table-tab__en">{{ t.name }}</span>
-          </button>
-        </div>
+        <CNTabs level="l1" scrollable :items="tableTabs" :model-value="activeName" @update:model-value="switchTab" />
         <div class="table-body">
           <div v-if="(activeTable?.rows.length ?? 0) === 0" class="cn-empty">暂无数据</div>
 

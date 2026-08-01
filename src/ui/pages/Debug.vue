@@ -1,10 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useDebugStore } from '@ui/stores/debug'
+import CNTabs from '@ui/components/CNTabs.vue'
 
 const store = useDebugStore()
 
 const activePanel = ref<'logs' | 'status'>('logs')
+const debugTabs = computed(() => [
+	{ key: 'logs', label: '运行日志', icon: 'fa-list', badge: store.filteredCount || undefined },
+	{ key: 'status', label: '运行状态', icon: 'fa-circle-info' }
+])
+const activePanelValue = computed({
+	get: () => activePanel.value,
+	set: (v: string) => {
+		activePanel.value = v as 'logs' | 'status'
+	}
+})
 
 function formatTime(ts: number): string {
 	const d = new Date(ts)
@@ -26,27 +37,7 @@ function recoverSnapshot() {
 
 <template>
 	<div class="debug-page">
-		<div class="debug-tabs">
-			<button
-				type="button"
-				class="debug-tab"
-				:class="{ 'debug-tab--active': activePanel === 'logs' }"
-				@click="activePanel = 'logs'"
-			>
-				<i class="fa-solid fa-list"></i>
-				运行日志
-				<span v-if="store.filteredCount" class="debug-tab__badge">{{ store.filteredCount }}</span>
-			</button>
-			<button
-				type="button"
-				class="debug-tab"
-				:class="{ 'debug-tab--active': activePanel === 'status' }"
-				@click="activePanel = 'status'"
-			>
-				<i class="fa-solid fa-circle-info"></i>
-				运行状态
-			</button>
-		</div>
+		<CNTabs level="l2" :items="debugTabs" v-model="activePanelValue" />
 
 		<div v-if="activePanel === 'logs'" class="debug-panel">
 			<div class="debug-toolbar">
@@ -84,7 +75,7 @@ function recoverSnapshot() {
 			</div>
 
 			<div class="debug-log-list" ref="logList">
-				<div v-if="store.visibleLogs.length === 0" class="cn-empty" style="padding:40px 0">暂无日志</div>
+				<div v-if="store.visibleLogs.length === 0" class="cn-empty">暂无日志</div>
 				<div
 					v-for="log in store.visibleLogs"
 					:key="log.id"

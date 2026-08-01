@@ -281,7 +281,7 @@ function rangeFraction(val: number, min: number, max: number): string {
           <span class="api-head-desc">配置 AI 连接参数，支持 OpenAI 兼容格式</span>
         </div>
         <div class="cn-card__body">
-          <div v-if="presets.length === 0 && !drafting" class="cn-empty" style="padding: 24px 0">
+          <div v-if="presets.length === 0 && !drafting" class="cn-empty cn-empty--compact">
             暂无 API 预设，请点击左侧「新建预设」
           </div>
 
@@ -559,9 +559,8 @@ function rangeFraction(val: number, min: number, max: number): string {
           />
         </div>
         <button
-          class="cn-btn cn-btn--primary"
+          class="cn-btn cn-btn--primary cn-btn--block"
           @click="saveVector"
-          style="margin-top: 8px; width: 100%"
         >
           保存向量配置
         </button>
