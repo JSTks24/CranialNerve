@@ -190,17 +190,21 @@ async function executeFill(session: CranialNerveSession, extraHint?: string): Pr
 
 export async function onGenerationEnded(session: CranialNerveSession): Promise<void> {
 	const config = session.getConfig()
+	pushLog('info', 'fill', `onGenerationEnded 开始 autoFill=${config.tableFill.autoFill}`)
 
 	if (!config.tableFill.autoFill) {
+		pushLog('info', 'fill', 'autoFill 关闭，跳过纪要总结')
 		return
 	}
 
 	const frequency = Math.max(0, config.tableFill.updateFrequency ?? 1)
 	if (frequency <= 0) {
+		pushLog('info', 'fill', 'frequency<=0，跳过纪要总结')
 		return
 	}
 	generationCountSinceLastFill++
 	if (generationCountSinceLastFill < frequency) {
+		pushLog('info', 'fill', `计数 ${generationCountSinceLastFill}/${frequency} 未达，跳过纪要总结`)
 		return
 	}
 
@@ -229,6 +233,7 @@ export async function onGenerationEnded(session: CranialNerveSession): Promise<v
 		}
 	}
 
+	pushLog('info', 'fill', '准备执行纪要总结 executeFill')
 	await executeFill(session)
 }
 
@@ -240,7 +245,7 @@ export async function runManualFill(session: CranialNerveSession, extraHint?: st
 	return result
 }
 
-async function buildWorldbookContext(session: CranialNerveSession, scanText: string): Promise<string> {
+export async function buildWorldbookContext(session: CranialNerveSession, scanText: string): Promise<string> {
 	const scanEntriesList: ScanEntry[] = []
 	const charBookName = session.worldbook.getCurrentCharLorebookName()
 	if (charBookName) {

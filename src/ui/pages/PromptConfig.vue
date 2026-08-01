@@ -183,8 +183,24 @@ const previewJson = ref('')
 
 async function openPreview() {
   save()
+  if (!session.isChatActive()) {
+    toast.warning('请先进入对话再预览（预览需读取对话与世界书数据）')
+    return
+  }
+  const conversationText = session.getConversationText(10)
+  const worldbookContent = await session.getWorldbookPreview(conversationText)
+  const personaDescription = session.getPersonaDescription()
+  const charDescription = session.getCharDescription()
+  const lastUserMsg = session.getLastUserMessage()
   const values = buildVarValues()
-  const realValues: Record<string, string> = { ...values }
+  const realValues: Record<string, string> = {
+    ...values,
+    worldbook: worldbookContent,
+    conversation: conversationText,
+    persona: personaDescription,
+    charDescription: charDescription,
+    userInput: lastUserMsg || values.userInput
+  }
   if (activeScene.value === 'chronicleRecall') {
     try {
       const result = session.getTableRowsWithRowid('cn_chronicle')
@@ -327,7 +343,9 @@ function freshTable(): TableDef {
       entryType: 'constant',
       splitByRow: false,
       keywordColumn: '',
-      keywords: ''
+      keywords: '',
+      keywordMode: 'custom',
+      keywordAiPrompt: ''
     }
   }
 }
@@ -347,6 +365,41 @@ function setExportKeywords(table: TableDef, value: string) {
   table.exportConfig!.keywords = value
 }
 
+function setExportKeywordMode(table: TableDef, value: string) {
+  ensureExportConfig(table)
+  table.exportConfig!.keywordMode = value as 'custom' | 'ai_prompt'
+}
+
+function setExportKeywordAiPrompt(table: TableDef, value: string) {
+  ensureExportConfig(table)
+  table.exportConfig!.keywordAiPrompt = value
+}
+
+async function generateKeywords(table: TableDef) {
+  if (!table.name) {
+    toast.warning('请先填写表名')
+    return
+  }
+  const prompt = table.exportConfig?.keywordAiPrompt?.trim()
+  if (!prompt) {
+    toast.warning('请先填写 AI Prompt')
+    return
+  }
+  try {
+    const keys = await session.generateKeywordsForTable(table.name, prompt)
+    if (keys.length === 0) {
+      toast.info('AI 未生成关键词')
+      return
+    }
+    ensureExportConfig(table)
+    table.exportConfig!.keywords = keys.join(', ')
+    store.save()
+    toast.success(`已生成 ${keys.length} 个关键词`)
+  } catch (e) {
+    toast.error(e instanceof Error ? e.message : String(e))
+  }
+}
+
 function ensureExportConfig(table: TableDef) {
   if (!table.exportConfig) {
     table.exportConfig = {
@@ -354,7 +407,9 @@ function ensureExportConfig(table: TableDef) {
       entryType: 'constant',
       splitByRow: false,
       keywordColumn: '',
-      keywords: ''
+      keywords: '',
+      keywordMode: 'custom',
+      keywordAiPrompt: ''
     }
   }
 }
@@ -1142,9 +1197,33 @@ onActivated(() => {
                     <div
                       v-if="table.exportConfig?.entryType === 'keyword'"
                       class="tpl-row"
-                      style="margin-top: 8px"
+                      style="margin-top: 8px; flex-direction: column; align-items: stretch"
                     >
                       <div class="tpl-field">
+                        <label class="tpl-label" style="font-size: 12px">关键词来源</label>
+                        <select
+                          class="cn-select"
+                          style="width: auto"
+                          @change="setExportKeywordMode(table, ($event.target as HTMLSelectElement).value)"
+                        >
+                          <option
+                            value="custom"
+                            :selected="(table.exportConfig?.keywordMode ?? 'custom') === 'custom'"
+                          >
+                            自定义关键词
+                          </option>
+                          <option
+                            value="ai_prompt"
+                            :selected="table.exportConfig?.keywordMode === 'ai_prompt'"
+                          >
+                            AI Prompt 生成
+                          </option>
+                        </select>
+                      </div>
+                      <div
+                        v-if="(table.exportConfig?.keywordMode ?? 'custom') === 'custom'"
+                        class="tpl-field"
+                      >
                         <label class="tpl-label" style="font-size: 12px">触发关键词</label>
                         <input
                           class="cn-input"
@@ -1152,6 +1231,30 @@ onActivated(() => {
                           @input="setExportKeywords(table, ($event.target as HTMLInputElement).value)"
                           placeholder="逗号分隔，如：背包, 物品, 装备"
                         />
+                      </div>
+                      <div v-else class="tpl-field">
+                        <label class="tpl-label" style="font-size: 12px">AI Prompt（生成关键词用）</label>
+                        <textarea
+                          class="cn-textarea tpl-textarea"
+                          :value="table.exportConfig?.keywordAiPrompt ?? ''"
+                          @input="setExportKeywordAiPrompt(table, ($event.target as HTMLTextAreaElement).value)"
+                          rows="2"
+                          placeholder="指示 AI 根据表格内容生成触发关键词，如：请根据背包表的物品种类生成可能触发该表注入的关键词"
+                        ></textarea>
+                        <button
+                          class="cn-btn cn-btn--sm"
+                          style="margin-top: 6px"
+                          type="button"
+                          @click="generateKeywords(table)"
+                        >
+                          <i class="fa-solid fa-wand-magic-sparkles"></i> 生成关键词
+                        </button>
+                        <div
+                          v-if="table.exportConfig?.keywords"
+                          style="margin-top: 6px; font-size: 12px; color: var(--cn-text-2)"
+                        >
+                          当前关键词：{{ table.exportConfig.keywords }}
+                        </div>
                       </div>
                     </div>
                   </div>

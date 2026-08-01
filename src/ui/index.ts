@@ -4,6 +4,7 @@ import themeCss from './theme.css?inline'
 import { getSession } from '@core/session'
 import { isFillInProgress } from '@core/table/fill-orchestrator'
 import toast from './toast'
+import { installRecallRenderer } from './recall-card'
 import App from './App.vue'
 import router from './router'
 
@@ -25,11 +26,14 @@ async function boot(): Promise<void> {
   const session = getSession()
   session.setProgressNotifier(toast.progress)
   session.setToastNotifier(toast)
+  const recallRenderer = installRecallRenderer(session)
+  session.setRecallCardRenderer((msgId) => recallRenderer.renderFloor(msgId))
   await session.init()
   injectTheme()
   mountDrawer()
   mountWandButton()
   hookSendBlock()
+  recallRenderer.rescanAll()
 }
 
 function injectTheme(): void {

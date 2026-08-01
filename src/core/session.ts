@@ -12,6 +12,7 @@ import {
 } from '@db/gateways'
 import type {
   AiGateway,
+  AiChatMessage,
   ChatGateway,
   CharacterGateway,
   EventGateway,
@@ -43,11 +44,12 @@ import type { ChronicleEntry } from '@shared/types/worldbook'
 import createChronicleRecaller, { type ChronicleRecaller } from './chronicle'
 import createWriteQueue, { type WriteQueue } from './write-queue'
 import { buildBookName, cleanupStaleBooks, syncToWorldbook } from './worldbook-sync'
-import { resetFillScheduler, onGenerationEnded, isFillInProgress, markGenerationStopped, resetGenerationStopped } from './table/fill-orchestrator'
+import { resetFillScheduler, onGenerationEnded, isFillInProgress, markGenerationStopped, resetGenerationStopped, buildWorldbookContext } from './table/fill-orchestrator'
 import { onPromptReady } from './chronicle/recall-orchestrator'
+import { getPersonaDescription, getCharDescription, getUserName } from '@db/gateways/host-state'
 import { exportCheckpoint, validateCheckpointFile } from './checkpoint-transfer'
 import { pushLog } from '@shared/log-buffer'
-import { EVENT_GENERATION_ENDED, EVENT_GENERATION_AFTER_COMMANDS, EVENT_CHAT_RENAMED, EVENT_GENERATION_STARTED, EVENT_GENERATION_STOPPED } from '@shared/constants/events'
+import { EVENT_GENERATION_ENDED, EVENT_GENERATION_AFTER_COMMANDS, EVENT_CHAT_RENAMED, EVENT_GENERATION_STARTED, EVENT_GENERATION_STOPPED, EVENT_MESSAGE_DELETED, EVENT_MESSAGE_SENT } from '@shared/constants/events'
 
 export class CranialNerveSession {
   readonly core: SqliteCore
@@ -68,12 +70,13 @@ export class CranialNerveSession {
   private writeQueue: WriteQueue
   private progressNotifier?: ProgressStarter
   private toastNotifier?: ToastNotifier
+  private recallCardRenderer?: (msgId: number) => void
   private currentChatToken: string | null = null
   private autoSwitchHandler: ((...args: unknown[]) => unknown) | null = null
   private reloadSeq = 0
   private lastSnapshotIndex: number | null = null
   private initFailed = false
-  private lastRecalledUserIdx = -1
+  private lastRecalledUserSendDate: string | null = null
   private realGenerationPending = false
 
   constructor() {
@@ -113,6 +116,7 @@ export class CranialNerveSession {
     if (this.eventsBound) return
     this.eventsBound = true
     this.event.makeLast(EVENT_GENERATION_ENDED, () => {
+      pushLog('info', 'session', `GENERATION_ENDED 触发，realGenerationPending=${this.realGenerationPending}`)
       if (!this.realGenerationPending) {
         return
       }
@@ -122,28 +126,47 @@ export class CranialNerveSession {
       })
     })
     this.event.makeLast(EVENT_GENERATION_AFTER_COMMANDS, (...args: unknown[]) => {
+      const type = args[0] as string | undefined
       const dryRun = args[2] as boolean | undefined
       if (dryRun) {
+        return
+      }
+      this.realGenerationPending = true
+      const isRegenerate = type === 'regenerate' || type === 'swipe'
+      if (isRegenerate) {
+        pushLog('info', 'session', 'regenerate/swipe：回退数据、不召回，生成后填表')
+        return this.reloadForChatChange().then(() => {
+          this.realGenerationPending = true
+        }).catch((e) => {
+          pushLog('error', 'session', `regenerate 回退失败: ${e instanceof Error ? e.message : String(e)}`)
+        })
+      }
+      return undefined
+    })
+    this.event.makeLast(EVENT_MESSAGE_SENT, (...args: unknown[]) => {
+      const msgId = args[0]
+      if (typeof msgId !== 'number') {
         return
       }
       if (isFillInProgress()) {
         pushLog('warn', 'session', '纪要生成中，跳过本轮召回')
         return
       }
-      const lastUserIdx = this.getLastUserIdx()
-      if (lastUserIdx < 0) {
+      const chat = this.chat.getChat()
+      const msg = chat[msgId]
+      if (!msg || !msg.is_user) {
         return
       }
-      if (lastUserIdx === this.lastRecalledUserIdx) {
-        this.realGenerationPending = false
-        pushLog('info', 'session', '玩家消息未变，跳过召回（可能是提示词查看器/regenerate）')
+      const sendDate = msg.send_date
+      pushLog('info', 'session', `MESSAGE_SENT msgId=${msgId} sendDate=${sendDate} lastRecalled=${this.lastRecalledUserSendDate}`)
+      if (sendDate && sendDate === this.lastRecalledUserSendDate) {
+        pushLog('info', 'session', '玩家消息未变，跳过召回')
         return
       }
-      this.lastRecalledUserIdx = lastUserIdx
-      this.realGenerationPending = true
-      return onPromptReady(this).then((recalled) => {
+      this.lastRecalledUserSendDate = sendDate ?? null
+      return onPromptReady(this, msgId).then((recalled) => {
         if (!recalled) {
-          this.lastRecalledUserIdx = -1
+          this.lastRecalledUserSendDate = null
           this.realGenerationPending = false
         }
       }).catch((e) => {
@@ -160,45 +183,116 @@ export class CranialNerveSession {
         })
       }
     })
+    this.event.on(EVENT_MESSAGE_DELETED, () => {
+      pushLog('info', 'session', '消息删除，重建内存库以回退数据')
+      this.reloadForChatChange().catch((e) => {
+        pushLog('error', 'session', `删除消息后重建失败: ${e instanceof Error ? e.message : String(e)}`)
+      })
+    })
   }
 
   private setupChronicle(): void {
     const name = buildBookName(this.getChatToken())
     this.chronicleStore = new ChronicleEntryStore(this.worldbook, name)
-    const tableReader = async (): Promise<ChronicleEntry[]> => {
-      const def = this.getChronicleTableDef()
-      const colName = (role: ChronicleColumnRole) =>
-        def.columns.find((c) => c.role === role)?.name
-      const kKey = colName('key')
-      const kTimeStart = colName('timeStart')
-      const kTimeEnd = colName('timeEnd')
-      const kLocation = colName('location')
-      const kSummary = colName('summary')
-      const kKeyDialogue = colName('keyDialogue')
-      let result: QueryResult[]
-      try {
-        result = this.core.exec(`SELECT * FROM "${CHRONICLE_TABLE_NAME}"`)
-      } catch (e) {
-        pushLog('warn', 'session', `纪要表读取失败，召回按空表处理: ${e instanceof Error ? e.message : String(e)}`)
-        return []
-      }
-      const first = result[0]
-      if (!first) return []
-      const pick = (r: Record<string, unknown>, name?: string): string =>
-        name ? String(r[name] ?? '') : ''
-      return first.rows.map((r) => ({
-        key: pick(r, kKey),
-        timeStart: pick(r, kTimeStart),
-        timeEnd: pick(r, kTimeEnd),
-        content: {
-          summary: pick(r, kSummary),
-          storyTime: pick(r, kTimeStart),
-          keyDialogue: pick(r, kKeyDialogue),
-          location: pick(r, kLocation)
-        }
-      }))
-    }
+    const tableReader = async (): Promise<ChronicleEntry[]> => this.getChronicleEntries()
     this.chronicleRecaller = createChronicleRecaller(this.ai, tableReader, this.vector)
+  }
+
+  getChronicleEntries(): ChronicleEntry[] {
+    const def = this.getChronicleTableDef()
+    const colName = (role: ChronicleColumnRole) =>
+      def.columns.find((c) => c.role === role)?.name
+    const kKey = colName('key')
+    const kTimeStart = colName('timeStart')
+    const kTimeEnd = colName('timeEnd')
+    const kLocation = colName('location')
+    const kSummary = colName('summary')
+    const kKeyDialogue = colName('keyDialogue')
+    let result: QueryResult[]
+    try {
+      result = this.core.exec(`SELECT * FROM "${CHRONICLE_TABLE_NAME}"`)
+    } catch (e) {
+      pushLog('warn', 'session', `纪要表读取失败: ${e instanceof Error ? e.message : String(e)}`)
+      return []
+    }
+    const first = result[0]
+    if (!first) return []
+    const pick = (r: Record<string, unknown>, name?: string): string =>
+      name ? String(r[name] ?? '') : ''
+    return first.rows.map((r) => ({
+      key: pick(r, kKey),
+      timeStart: pick(r, kTimeStart),
+      timeEnd: pick(r, kTimeEnd),
+      content: {
+        summary: pick(r, kSummary),
+        storyTime: pick(r, kTimeStart),
+        keyDialogue: pick(r, kKeyDialogue),
+        location: pick(r, kLocation)
+      }
+    }))
+  }
+
+  renderRecallCard(msgId: number): void {
+    pushLog('info', 'session', `renderRecallCard msgId=${msgId} renderer=${!!this.recallCardRenderer}`)
+    if (!this.recallCardRenderer) return
+    try {
+      this.recallCardRenderer(msgId)
+    } catch (e) {
+      pushLog('warn', 'session', `召回卡片渲染失败: ${e instanceof Error ? e.message : String(e)}`)
+    }
+  }
+
+  async getWorldbookPreview(scanText: string): Promise<string> {
+    try {
+      return await buildWorldbookContext(this, scanText)
+    } catch (e) {
+      pushLog('warn', 'session', `世界书预览失败: ${e instanceof Error ? e.message : String(e)}`)
+      return ''
+    }
+  }
+
+  getConversationText(depth = 10): string {
+    const chat = this.chat.getChat()
+    const userName = getUserName()
+    const recent = chat.slice(-depth)
+    return recent.map((m) => `${m.is_user ? userName : 'Assistant'}: ${m.mes}`).join('\n')
+  }
+
+  getPersonaDescription(): string {
+    return getPersonaDescription()
+  }
+
+  getCharDescription(): string {
+    return getCharDescription()
+  }
+
+  getLastUserMessage(): string {
+    const chat = this.chat.getChat()
+    const idx = this.getLastUserIdx()
+    if (idx < 0) return ''
+    return chat[idx]?.mes ?? ''
+  }
+
+  async generateKeywordsForTable(tableName: string, aiPrompt: string): Promise<string[]> {
+    const cfg = this.getConfig()
+    const preset = this.getAiPresetForScene(cfg.tableFillPresetId)
+    if (!preset) {
+      throw new Error('未配置 AI 预设，请先在 API 配置中设置')
+    }
+    const tableData = this.getTableData(tableName)
+    const rows = tableData[0]?.rows ?? []
+    const messages: AiChatMessage[] = [
+      { role: 'system', content: aiPrompt },
+      { role: 'user', content: `表 ${tableName} 当前数据（${rows.length} 行）：\n${JSON.stringify(rows)}\n\n请根据以上表格内容生成用于触发世界书注入的关键词。只输出关键词，用逗号分隔。` }
+    ]
+    const raw = await this.ai.chatCompletion(
+      messages,
+      { baseURL: preset.baseURL, apiKey: preset.apiKey, customIncludeBody: preset.customIncludeBody, customExcludeBody: preset.customExcludeBody, customIncludeHeaders: preset.customIncludeHeaders },
+      { model: preset.model, max_tokens: preset.maxTokens, temperature: preset.temperature, top_p: preset.topP, frequency_penalty: preset.frequencyPenalty, presence_penalty: preset.presencePenalty, seed: preset.seed >= 0 ? preset.seed : undefined, stream: preset.stream },
+      undefined,
+      { timeoutMs: cfg.pending.aiCallTimeoutMs, timeoutRetries: cfg.pending.aiTimeoutRetries }
+    )
+    return raw.split(/[,，\n]/).map((k) => k.trim()).filter(Boolean)
   }
 
   startAutoSwitch(): void {
@@ -226,7 +320,7 @@ export class CranialNerveSession {
   async reloadForChatChange(): Promise<void> {
     const mySeq = ++this.reloadSeq
     const prevToken = this.currentChatToken
-    this.lastRecalledUserIdx = -1
+    this.lastRecalledUserSendDate = null
     this.realGenerationPending = false
     try {
       await this.writeQueue.waitForDrain(this.getConfig().pending.writeQueueDrainTimeoutMs)
@@ -399,7 +493,6 @@ export class CranialNerveSession {
       if (preset) {
         try {
           this.initGameSession(preset.template, preset.id)
-          this.toastNotifier?.success(`已加载聊天模板：${preset.name}`)
           return
         } catch (e) {
           pushLog('warn', 'session', `聊天模板加载失败，降级: ${e instanceof Error ? e.message : String(e)}`)
@@ -752,6 +845,10 @@ export class CranialNerveSession {
 
   getToastNotifier(): ToastNotifier | undefined {
     return this.toastNotifier
+  }
+
+  setRecallCardRenderer(fn: (msgId: number) => void): void {
+    this.recallCardRenderer = fn
   }
 }
 

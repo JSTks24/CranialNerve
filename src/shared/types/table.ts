@@ -56,4 +56,6 @@ export interface TableExportConfig {
     splitByRow: boolean
     keywordColumn: string
     keywords: string
+    keywordMode?: 'custom' | 'ai_prompt'
+    keywordAiPrompt?: string
 }

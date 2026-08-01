@@ -8197,7 +8197,7 @@ function defineStore(id, setup, setupOptions) {
 }
 //#endregion
 //#region src/ui/theme.css?inline
-var theme_default = ":root {\n  --cn-z-app: 10000;\n  --cn-z-toast: 10010;\n  --cn-z-modal: 10020;\n  --cn-z-dialog: 10020;\n}\n\n#cn_app {\n  --cn-bg: #edf4ef;\n  --cn-surface: #ffffff;\n  --cn-surface-2: #f3f8f5;\n  --cn-primary: #4caf50;\n  --cn-primary-hover: #388e3c;\n  --cn-primary-active: #2e7d32;\n  --cn-primary-soft: #e0f2e4;\n  --cn-text: #2d2d2d;\n  --cn-text-2: #6b6b6b;\n  --cn-text-3: #9e9e9e;\n  --cn-border: #dce5e0;\n  --cn-border-green: #e0f2e4;\n  --cn-radius: 8px;\n  --cn-radius-sm: 6px;\n  --cn-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.06);\n  --cn-ease: cubic-bezier(0.4, 0, 0.2, 1);\n  --cn-dur-fast: 0.15s;\n  --cn-dur: 0.22s;\n  --cn-dur-slow: 0.3s;\n  --cn-font:\n    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei',\n    sans-serif;\n  color: var(--cn-text);\n  font-family: var(--cn-font);\n  font-size: 15px;\n  line-height: 1.5;\n}\n\n#cn_app,\n#cn_app * {\n  box-sizing: border-box;\n}\n\n#cn_app button {\n  appearance: none;\n  -webkit-appearance: none;\n  margin: 0;\n  font: inherit;\n  color: var(--cn-text) !important;\n  background: var(--cn-surface);\n  cursor: pointer;\n  -webkit-tap-highlight-color: transparent;\n}\n\n#cn_app i {\n  font-size: inherit;\n  line-height: 1;\n  font-style: normal;\n  vertical-align: baseline;\n}\n\n#cn_app .cn-content i {\n  font-size: 0.85em;\n}\n\n#cn_app input,\n#cn_app select,\n#cn_app textarea {\n  appearance: none;\n  -webkit-appearance: none;\n  margin: 0;\n  font: inherit;\n  color: var(--cn-text);\n  background: var(--cn-surface);\n  border: none;\n  outline: none;\n  -webkit-tap-highlight-color: transparent;\n}\n\n#cn_app select option {\n  color: var(--cn-text) !important;\n  background: var(--cn-surface) !important;\n}\n\n#cn_app button:focus:not(:focus-visible),\n#cn_app input:focus:not(:focus-visible),\n#cn_app select:focus:not(:focus-visible),\n#cn_app textarea:focus:not(:focus-visible) {\n  outline: none;\n}\n\n#cn_app ul {\n  margin: 0;\n  padding: 0;\n}\n\n#cn_app a {\n  color: inherit;\n  text-decoration: none;\n}\n\n#cn_app h1,\n#cn_app h2,\n#cn_app h3,\n#cn_app h4,\n#cn_app h5,\n#cn_app h6 {\n  margin: 0;\n  font-size: inherit;\n  font-weight: inherit;\n}\n\n#cn_app label {\n  display: inline-block;\n  margin: 0;\n  font-weight: inherit;\n  cursor: inherit;\n}\n\n#cn_app .cn-btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  height: 32px;\n  padding: 0 15px;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface) !important;\n  color: var(--cn-text) !important;\n  font-size: 14px;\n  line-height: 1;\n  white-space: nowrap;\n  transition: all 0.15s ease;\n  user-select: none;\n}\n#cn_app .cn-btn:hover:not(:disabled) {\n  border-color: var(--cn-primary) !important;\n  color: var(--cn-primary) !important;\n}\n#cn_app .cn-btn:disabled {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n#cn_app .cn-btn--primary {\n  background: var(--cn-primary) !important;\n  border-color: var(--cn-primary) !important;\n  color: #fff !important;\n}\n#cn_app .cn-btn--primary:hover:not(:disabled) {\n  background: var(--cn-primary-hover);\n  border-color: var(--cn-primary-hover);\n  color: #fff;\n}\n#cn_app .cn-btn--sm {\n  height: 26px;\n  padding: 0 11px;\n  font-size: 13px;\n}\n#cn_app .cn-btn--text {\n  border-color: transparent;\n  background: transparent;\n  color: var(--cn-text-2);\n}\n#cn_app .cn-btn--text:hover:not(:disabled) {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n  border-color: transparent;\n}\n\n#cn_app .cn-input,\n#cn_app .cn-select,\n#cn_app .cn-textarea {\n  display: block;\n  width: 100%;\n  height: 32px;\n  padding: 4px 11px;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface) !important;\n  color: var(--cn-text) !important;\n  font-size: 14px;\n  transition:\n    border-color 0.15s ease,\n    box-shadow 0.15s ease;\n}\n#cn_app .cn-textarea {\n  height: auto;\n  min-height: 80px;\n  line-height: 1.5;\n  resize: vertical;\n}\n#cn_app .cn-input:hover,\n#cn_app .cn-select:hover,\n#cn_app .cn-textarea:hover {\n  border-color: var(--cn-primary-hover) !important;\n}\n#cn_app .cn-input:focus,\n#cn_app .cn-select:focus,\n#cn_app .cn-textarea:focus {\n  border-color: var(--cn-primary) !important;\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15) !important;\n  outline: none !important;\n}\n#cn_app .cn-input::placeholder,\n#cn_app .cn-textarea::placeholder {\n  color: var(--cn-text-3);\n}\n#cn_app .cn-select {\n  padding-right: 28px;\n  background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%238c8c8c' d='M8 11L3 6h10z'/%3E%3C/svg%3E\");\n  background-repeat: no-repeat;\n  background-position: right 10px center;\n  background-size: 12px;\n  cursor: pointer;\n}\n\n#cn_app .cn-card {\n  background: var(--cn-surface) !important;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  box-shadow: var(--cn-shadow);\n  overflow: hidden;\n}\n#cn_app .cn-card__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n  padding: 14px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 16px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .cn-card__body {\n  padding: 16px;\n}\n\n#cn_app .cn-field {\n  margin-bottom: 16px;\n}\n#cn_app .cn-field__label {\n  display: block;\n  margin-bottom: 6px;\n  color: var(--cn-text-2);\n  font-size: 14px;\n}\n\n#cn_app .cn-table {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: 13px;\n}\n#cn_app .cn-table th,\n#cn_app .cn-table td {\n  padding: 8px 12px;\n  border: 1px solid var(--cn-border) !important;\n  text-align: left;\n  white-space: nowrap;\n}\n#cn_app .cn-table th {\n  background: var(--cn-primary-soft);\n  color: var(--cn-text);\n  font-weight: 600;\n}\n#cn_app .cn-table tbody tr:nth-child(even) {\n  background: #fafafa;\n}\n#cn_app .cn-table tbody tr:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cn-table__op {\n  width: 50px;\n  text-align: center;\n  white-space: nowrap;\n}\n\n#cn_app .cn-table__rownum {\n  width: 40px;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 12px;\n  white-space: nowrap;\n}\n\n#cn_app .tables-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .tables-toolbar {\n  display: flex;\n  gap: 8px;\n}\n\n#cn_app .table-wrap-card {\n  overflow: visible;\n}\n\n#cn_app .table-tabs {\n  display: flex;\n  gap: 4px;\n  padding: 4px;\n  margin: 12px 12px 8px;\n  background: var(--cn-surface-2);\n  border-radius: var(--cn-radius);\n  overflow-x: auto;\n}\n\n#cn_app .table-tab {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  gap: 1px;\n  padding: 6px 14px;\n  border: 0;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2);\n  cursor: pointer;\n  white-space: nowrap;\n  flex-shrink: 0;\n  transition:\n    background var(--cn-dur-fast) var(--cn-ease),\n    color var(--cn-dur-fast) var(--cn-ease),\n    box-shadow var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .table-tab:hover {\n  color: var(--cn-text);\n}\n\n#cn_app .table-tab--active {\n  background: var(--cn-surface);\n  color: var(--cn-primary);\n  font-weight: 600;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);\n}\n\n#cn_app .table-tab__zh {\n  font-size: 14px;\n  line-height: 1.2;\n}\n\n#cn_app .table-tab__en {\n  font-size: 11px;\n  opacity: 0.65;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n}\n\n#cn_app .table-tab--active .table-tab__en {\n  opacity: 0.8;\n  color: var(--cn-primary);\n}\n\n#cn_app .table-body {\n  background: var(--cn-surface);\n  overflow: hidden;\n}\n\n#cn_app .table-body__meta {\n  flex: 1;\n  color: var(--cn-text-3);\n  font-size: 12px;\n}\n\n#cn_app .table-body__foot {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 10px 16px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .table-row-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 12px;\n  padding: 16px;\n}\n\n#cn_app .table-row-card {\n  flex: 0 0 auto;\n  width: 340px;\n  max-width: 100%;\n}\n\n#cn_app .table-row-card__body {\n  padding: 14px 16px;\n}\n\n#cn_app .table-row-card__field {\n  margin-bottom: 10px;\n}\n\n#cn_app .table-row-card__field:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .table-row-card__label {\n  display: block;\n  margin-bottom: 4px;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n}\n\n#cn_app .table-row-card__label-en {\n  font-weight: 400;\n  color: var(--cn-primary-active);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 11px;\n  margin-left: 6px;\n  opacity: 0.6;\n}\n\n#cn_app .table-row-card__value {\n  min-height: 28px;\n  padding: 6px 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: #fafafa;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n#cn_app .table-row-card__value:focus {\n  background: var(--cn-surface);\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);\n}\n\n#cn_app .table-row-card--editing {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);\n}\n\n#cn_app .table-row-card__foot {\n  display: flex;\n  justify-content: flex-end;\n  gap: 6px;\n  padding: 6px 12px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .chronicle-item--editing {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);\n}\n\n#cn_app .cell-edit {\n  min-width: 60px;\n  min-height: 20px;\n  padding: 2px 4px;\n  border-radius: var(--cn-radius-sm);\n  outline: none;\n  white-space: normal;\n  word-break: break-word;\n  cursor: text;\n  transition: background 0.15s ease;\n}\n\n#cn_app .cell-edit:empty::before {\n  content: '\\00a0';\n  display: inline;\n}\n\n#cn_app .cell-edit:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cell-edit:focus {\n  background: var(--cn-surface);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);\n}\n\n#cn_app .chronicle-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .chronicle-gen-off-tip {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 14px;\n  background: #fffbe6;\n  border: 1px solid #ffe58f;\n  border-radius: var(--cn-radius-sm);\n  color: #8c6e2a;\n  font-size: 13px;\n}\n#cn_app .chronicle-gen-off-tip i {\n  color: #faad14;\n}\n\n#cn_app .chronicle-toolbar {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n\n#cn_app .chronicle-toolbar__search {\n  flex: 1;\n  max-width: 360px;\n  height: 32px;\n}\n\n#cn_app .chronicle-toolbar__count {\n  flex: 1;\n  text-align: right;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .chronicle-list {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .chronicle-item__key {\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-weight: 700;\n  color: var(--cn-primary-active);\n}\n\n#cn_app .chronicle-fields {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  gap: 12px;\n  margin-bottom: 12px;\n}\n\n#cn_app .chronicle-field {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  min-width: 0;\n}\n\n#cn_app .chronicle-field--full {\n  margin-bottom: 12px;\n}\n\n#cn_app .chronicle-field:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .chronicle-field__label {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n}\n\n#cn_app .chronicle-field__value {\n  min-height: 32px;\n  padding: 6px 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: #fafafa;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n#cn_app .chronicle-field__value:focus {\n  background: var(--cn-surface);\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);\n}\n\n#cn_app .cn-empty {\n  padding: 40px 0;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .cn-tag {\n  display: inline-flex;\n  align-items: center;\n  padding: 0 8px;\n  height: 22px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-size: 12px;\n  font-weight: 500;\n}\n\n#cn_app .cn-space {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n}\n#cn_app .cn-space--block {\n  display: flex;\n}\n\n#cn_app .cn-shell {\n  display: flex;\n  height: 100vh;\n  width: 100%;\n  overflow: hidden;\n}\n#cn_app .cn-sider {\n  flex: 0 0 220px;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-right: 1px solid var(--cn-border);\n}\n#cn_app .cn-brand {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  height: 56px;\n  padding: 0 20px;\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-brand__icon {\n  font-size: 20px;\n  color: var(--cn-primary);\n}\n#cn_app .cn-brand__name {\n  font-size: 16px;\n  font-weight: 700;\n  color: var(--cn-text);\n}\n#cn_app .cn-menu {\n  flex: 1;\n  padding: 12px 10px;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  overflow-y: auto;\n}\n#cn_app .cn-menu__item {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  width: 100%;\n  padding: 9px 12px;\n  border: 0;\n  background: transparent;\n  border-radius: var(--cn-radius);\n  color: var(--cn-text-2);\n  font-size: 14px;\n  text-align: left;\n  transition: all var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .cn-menu__item:hover {\n  background: var(--cn-primary-soft);\n  color: var(--cn-text);\n}\n#cn_app .cn-menu__item--active {\n  background: var(--cn-primary);\n  color: #fff;\n  font-weight: 500;\n}\n#cn_app .cn-menu__item--active:hover {\n  background: var(--cn-primary);\n  color: #fff;\n}\n#cn_app .cn-menu__item i {\n  width: 16px;\n  text-align: center;\n  font-size: 14px;\n}\n#cn_app .cn-main {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n#cn_app .cn-header {\n  flex: 0 0 56px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 0 24px;\n  background: var(--cn-surface);\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-header__title {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .cn-content {\n  flex: 1;\n  padding: 20px;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n  background: var(--cn-bg);\n}\n\n#cn_app .toolbar {\n  margin-bottom: 16px;\n}\n#cn_app .model-row {\n  margin-top: 8px;\n}\n\n#cn_app .table-wrap {\n  overflow-x: auto;\n}\n#cn_app .pager {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  justify-content: flex-end;\n  margin-top: 12px;\n}\n#cn_app .pager__info {\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .cn-list {\n  list-style: none;\n}\n#cn_app .cn-list__item {\n  display: flex;\n  gap: 12px;\n  padding: 10px 0;\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-list__item:last-child {\n  border-bottom: 0;\n}\n#cn_app .cn-list__key {\n  flex: 0 0 80px;\n  color: var(--cn-primary-active);\n  font-weight: 600;\n  font-size: 13px;\n}\n#cn_app .cn-list__summary {\n  color: var(--cn-text-2);\n  line-height: 1.6;\n  flex: 1;\n  min-width: 0;\n}\n\n#cn_app .search-input {\n  width: 220px;\n  height: 28px;\n  font-size: 13px;\n}\n\n#cn_app .cn-range {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 100%;\n  height: 6px;\n  border-radius: 3px;\n  background: linear-gradient(\n    to right,\n    var(--cn-primary) 0%,\n    var(--cn-primary) var(--cn-range-pct, 50%),\n    #e8e8e8 var(--cn-range-pct, 50%),\n    #e8e8e8 100%\n  ) !important;\n  outline: none;\n  cursor: pointer;\n  margin: 0;\n  border: none;\n}\n\n#cn_app .cn-range::-webkit-slider-thumb {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: var(--cn-primary);\n  border: 2px solid #fff;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\n  cursor: pointer;\n}\n\n#cn_app .cn-range::-moz-range-thumb {\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: var(--cn-primary);\n  border: 2px solid #fff;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\n  cursor: pointer;\n}\n\n#cn_app .cn-range::-moz-range-track {\n  background: transparent;\n  border: 0;\n}\n\n#cn_app .range-row {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n\n#cn_app .range-val {\n  font-weight: 600;\n  color: var(--cn-primary);\n  min-width: 36px;\n  text-align: right;\n  font-size: 14px;\n}\n\n#cn_app .range-num {\n  width: 72px;\n  flex-shrink: 0;\n  text-align: center;\n  font-weight: 600;\n  color: var(--cn-primary);\n}\n\n#cn_app .range-num::-webkit-inner-spin-button {\n  opacity: 1;\n}\n\n#cn_app .prompt-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  height: 100%;\n  overflow: hidden;\n}\n\n#cn_app .prompt-head {\n  margin-bottom: -1px;\n  position: relative;\n  z-index: 2;\n}\n\n#cn_app .scene-tabs {\n  display: inline-flex;\n  gap: 4px;\n  padding: 4px;\n  background: var(--cn-surface-2);\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n}\n\n#cn_app .scene-tab {\n  padding: 6px 18px;\n  border: 0;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2);\n  font-size: 14px;\n  cursor: pointer;\n  transition:\n    background var(--cn-dur-fast) var(--cn-ease),\n    color var(--cn-dur-fast) var(--cn-ease),\n    box-shadow var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .scene-tab:hover {\n  color: var(--cn-text);\n}\n\n#cn_app .scene-tab--active {\n  background: var(--cn-surface);\n  color: var(--cn-primary);\n  font-weight: 600;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);\n}\n\n#cn_app .prompt-split {\n  display: grid;\n  grid-template-columns: 220px 1fr;\n  gap: 16px;\n  align-items: start;\n}\n\n#cn_app .preset-list {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n\n#cn_app .preset-list__item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 6px;\n  padding: 9px 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  color: var(--cn-text-2);\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .preset-list__item:hover {\n  border-color: var(--cn-primary-hover);\n  color: var(--cn-text);\n}\n\n#cn_app .preset-list__item--active {\n  border-color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-weight: 500;\n}\n\n#cn_app .preset-list__name {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .preset-list__card {\n  color: var(--cn-primary);\n  font-size: 12px;\n  margin-right: 2px;\n}\n\n#cn_app .preset-list__default {\n  flex: 0 0 auto;\n  color: #faad14;\n  font-size: 12px;\n}\n\n#cn_app .preset-list__count {\n  flex: 0 0 auto;\n  font-size: 11px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .prompt-editor__desc {\n  color: var(--cn-text-3);\n  font-size: 12px;\n  font-weight: 400;\n}\n\n#cn_app .block-list {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .block {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface-2);\n  overflow: hidden;\n}\n\n#cn_app .block--ghost {\n  opacity: 0.4;\n  border-style: dashed;\n  border-color: var(--cn-primary);\n}\n\n#cn_app .block-head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 8px 10px;\n  border-bottom: 1px solid var(--cn-border);\n  background: var(--cn-surface);\n}\n\n#cn_app .block-head__grip {\n  color: var(--cn-text-3);\n  font-size: 14px;\n  cursor: grab;\n}\n\n#cn_app .block-head__grip:active {\n  cursor: grabbing;\n}\n\n#cn_app .block-head__name {\n  flex: 1;\n  height: 28px;\n  font-size: 13px;\n  font-weight: 600;\n}\n\n#cn_app .block-segs {\n  min-height: 48px;\n  padding: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n\n#cn_app .block-add {\n  display: flex;\n  gap: 4px;\n  padding: 6px 8px 8px;\n  border-top: 1px solid var(--cn-border);\n  background: var(--cn-surface);\n}\n\n#cn_app .block-add-btn {\n  margin-top: 14px;\n}\n\n#cn_app .seg-add-row {\n  display: flex;\n  gap: 8px;\n  margin-top: 14px;\n}\n\n#cn_app .seg-item {\n  margin-bottom: 10px;\n  padding: 10px 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface-2);\n  transition:\n    box-shadow var(--cn-dur-fast) var(--cn-ease),\n    border-color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .seg-item:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .seg-item:hover {\n  border-color: var(--cn-primary-hover);\n  box-shadow: 0 1px 4px rgba(76, 175, 80, 0.12);\n}\n\n#cn_app .seg-item--ghost {\n  opacity: 0.4;\n  border-style: dashed;\n  border-color: var(--cn-primary);\n}\n\n#cn_app .seg-item__bar {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  margin-bottom: 8px;\n}\n\n#cn_app .seg-item__grip {\n  color: var(--cn-text-3);\n  font-size: 14px;\n  cursor: grab;\n}\n\n#cn_app .seg-item__grip:active {\n  cursor: grabbing;\n}\n\n#cn_app .seg-item__role {\n  height: 22px;\n  padding: 0 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: 11px;\n  background: var(--cn-surface);\n  color: var(--cn-text-2);\n  font-size: 11px;\n  font-weight: 700;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .seg-item__role:hover {\n  border-color: var(--cn-primary);\n  color: var(--cn-primary);\n}\n\n#cn_app .seg-item__name {\n  flex: 1;\n  min-width: 0;\n  height: 28px;\n  font-size: 13px;\n  font-weight: 600;\n}\n\n#cn_app .seg-item__seq {\n  flex: 0 0 auto;\n  font-size: 12px;\n  color: var(--cn-primary);\n  font-weight: 600;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n}\n\n#cn_app .seg-item__edit {\n  display: block;\n  width: 100%;\n  min-height: 120px;\n  padding: 8px 11px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  color: var(--cn-text);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.6;\n  white-space: pre-wrap;\n  word-wrap: break-word;\n  outline: none;\n  transition:\n    border-color 0.15s ease,\n    box-shadow 0.15s ease;\n  box-sizing: border-box;\n  overflow: hidden;\n  max-height: 320px;\n}\n\n#cn_app .seg-item__edit:focus-within {\n  border-color: var(--cn-primary);\n  background: var(--cn-surface);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);\n}\n\n#cn_app .seg-var {\n  color: var(--cn-primary-active);\n  background: var(--cn-primary-soft);\n  border: 1px solid var(--cn-primary);\n  border-radius: 3px;\n  padding: 0 4px;\n  font-weight: 600;\n  cursor: help;\n}\n\n#cn_app .seg-var:hover {\n  background: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .seg-item__edit .cm-editor {\n  background: transparent;\n  color: inherit;\n  height: 100%;\n}\n\n#cn_app .seg-item__edit .cm-scroller {\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.6;\n}\n\n#cn_app .seg-item__edit .cm-content {\n  padding: 0;\n  caret-color: var(--cn-primary);\n  min-height: 104px;\n}\n\n#cn_app .seg-item__edit .cm-focused {\n  outline: none;\n}\n\n#cn_app .prompt-foot {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 16px;\n}\n\n#cn_app .prompt-foot__hint {\n  color: var(--cn-text-3);\n  font-size: 12px;\n  line-height: 1.6;\n}\n\n#cn_app .prompt-foot__hint code {\n  padding: 1px 5px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 11px;\n}\n\n#cn_app .prompt-wrap {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n  min-height: 0;\n}\n\n#cn_app .prompt-wrap .prompt-head {\n  margin: 0;\n  padding: 14px 16px 12px;\n  border-bottom: 1px solid var(--cn-border);\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  align-items: flex-start;\n}\n\n#cn_app .prompt-wrap .prompt-split {\n  flex: 1;\n  min-height: 0;\n  padding: 16px;\n  gap: 16px;\n  overflow: hidden;\n  align-items: stretch;\n  grid-template-rows: minmax(0, 1fr);\n}\n\n#cn_app .prompt-side {\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n  overflow: hidden;\n}\n\n#cn_app .prompt-editor {\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n  overflow: hidden;\n}\n\n#cn_app .prompt-editor .cn-card__head {\n  padding: 0 0 12px;\n  border-bottom: 1px solid var(--cn-border);\n  margin-bottom: 16px;\n}\n\n#cn_app .prompt-side .cn-card__head {\n  padding: 0 0 12px;\n  border-bottom: 1px solid var(--cn-border);\n  margin-bottom: 12px;\n}\n\n#cn_app .prompt-side .cn-card__body {\n  padding: 0;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .prompt-editor .cn-card__body {\n  padding: 0;\n  flex: 1;\n  min-height: 0;\n  overflow: hidden;\n  display: flex;\n  flex-direction: column;\n}\n\n/* 模板/纪要表编辑区：body 内部纵向滚动（head 与左侧不滚）。\n   提示词配置的 .block-list 自身已 overflow-y:auto，无需此规则。\n   特异性需高于 .prompt-editor .cn-card__body 的 overflow:hidden 才能生效。 */\n#cn_app .prompt-editor .cn-card__body.template-editor-body {\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n\n#cn_app .cn-modal-mask {\n  position: fixed;\n  inset: 0;\n  z-index: var(--cn-z-modal);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(0, 0, 0, 0.45);\n}\n\n#cn_app .cn-modal {\n  width: 90vw;\n  max-width: 1100px;\n  height: 90vh;\n  max-height: 800px;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n}\n\n#cn_app .cn-modal__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 15px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n\n#cn_app .cn-modal__code {\n  margin: 0;\n  padding: 20px;\n  overflow: auto;\n  background: #1e1e1e;\n  color: #d4d4d4;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.7;\n  white-space: pre-wrap;\n  word-break: break-word;\n  flex: 1;\n  min-height: 0;\n}\n\n#cn_app .model-picker-modal {\n  width: 90vw;\n  max-width: 520px;\n  height: auto;\n  max-height: 70vh;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n}\n\n#cn_app .model-picker__search {\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .model-picker__list {\n  overflow-y: auto;\n  padding: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n}\n\n#cn_app .model-picker__item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  width: 100%;\n  padding: 10px 14px;\n  border: none;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text);\n  font-size: 14px;\n  text-align: left;\n  cursor: pointer;\n  transition: background 0.1s;\n}\n\n#cn_app .model-picker__item:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .model-picker__item--picked {\n  background: var(--cn-primary-soft);\n  font-weight: 500;\n}\n\n#cn_app .model-picker__name {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .model-picker__check {\n  color: var(--cn-primary);\n  font-size: 14px;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-btn--danger {\n  background: #ff4d4f;\n  border-color: #ff4d4f;\n  color: #fff;\n}\n\n#cn_app .cn-btn--danger:hover:not(:disabled) {\n  background: #ff7875;\n  border-color: #ff7875;\n  color: #fff;\n}\n\n#cn_app .cn-dialog-mask {\n  position: fixed;\n  inset: 0;\n  z-index: var(--cn-z-dialog);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(0, 0, 0, 0.45);\n  opacity: 0;\n  transition: opacity var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .cn-dialog-mask--show {\n  opacity: 1;\n}\n\n#cn_app .cn-dialog {\n  position: relative;\n  width: min(420px, 85vw);\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n  transform: scale(0.96);\n  opacity: 0;\n  transition: opacity var(--cn-dur) var(--cn-ease), transform var(--cn-dur) var(--cn-ease);\n}\n\n#cn_app .cn-dialog-mask--show .cn-dialog {\n  transform: scale(1);\n  opacity: 1;\n}\n\n#cn_app .cn-dialog__bar {\n  position: absolute;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  width: 4px;\n  background: var(--cn-primary);\n}\n\n#cn_app .cn-dialog--danger .cn-dialog__bar {\n  background: #ff4d4f;\n}\n\n#cn_app .cn-dialog__hd {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 14px 16px 14px 20px;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .cn-dialog__brand-ico {\n  color: var(--cn-primary);\n  font-size: 16px;\n}\n\n#cn_app .cn-dialog--danger .cn-dialog__brand-ico {\n  color: #ff4d4f;\n}\n\n#cn_app .cn-dialog__brand {\n  font-size: 13px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n  letter-spacing: 0.5px;\n}\n\n#cn_app .cn-dialog__title {\n  font-size: 16px;\n  font-weight: 600;\n  color: var(--cn-text);\n  margin-left: auto;\n}\n\n#cn_app .cn-dialog__close {\n  margin-left: 4px;\n  color: var(--cn-text-3);\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-size: 14px;\n  padding: 2px 4px;\n  line-height: 1;\n  transition: color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .cn-dialog__close:hover {\n  color: var(--cn-text);\n}\n\n#cn_app .cn-dialog__body {\n  padding: 16px 20px;\n  color: var(--cn-text-2);\n  font-size: 14px;\n  line-height: 1.6;\n  white-space: pre-wrap;\n}\n\n#cn_app .cn-dialog__foot {\n  display: flex;\n  justify-content: flex-end;\n  gap: 8px;\n  padding: 12px 20px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .cn-dialog__foot .cn-btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  height: 32px;\n  padding: 0 15px;\n  border: 1px solid var(--cn-primary);\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-primary-hover);\n  font-size: 14px;\n  cursor: pointer;\n  transition: background var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .cn-dialog__foot .cn-btn:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cn-dialog__foot .cn-btn--primary {\n  background: var(--cn-primary);\n  border-color: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .cn-dialog__foot .cn-btn--primary:hover {\n  background: var(--cn-primary-hover);\n  border-color: var(--cn-primary-hover);\n}\n\n#cn_app .cn-dialog__foot .cn-btn--danger {\n  background: #ff4d4f;\n  border-color: #ff4d4f;\n  color: #fff;\n}\n\n#cn_app .cn-dialog__foot .cn-btn--danger:hover {\n  background: #ff7875;\n  border-color: #ff7875;\n}\n\n.custom-cn-recall-card {\n  display: block;\n  margin: 0 0 8px 0;\n  border: 1px solid #e0f2e4 !important;\n  border-radius: 6px;\n  overflow: hidden;\n  background: #fff !important;\n  font-size: 13px;\n  line-height: 1.6;\n  color: #1f1f1f !important;\n}\n\n.custom-cn-recall-card__head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 14px;\n  background: #eef5f0 !important;\n  border-bottom: 1px solid #e0f2e4 !important;\n}\n\n.custom-cn-recall-card__icon {\n  color: #4caf50 !important;\n  font-size: 15px;\n}\n\n.custom-cn-recall-card__brand {\n  font-weight: 600;\n  color: #2e7d32 !important;\n  font-size: 14px;\n}\n\n.custom-cn-recall-card__count {\n  margin-left: auto;\n  font-size: 12px;\n  color: #8c8c8c !important;\n}\n\n.custom-cn-recall-tabs {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: flex-start;\n}\n\n.custom-cn-recall-tabs__radio {\n  display: none;\n}\n\n.custom-cn-recall-tab {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  gap: 2px;\n  padding: 8px 12px;\n  cursor: pointer;\n  border-bottom: 2px solid transparent !important;\n  background: #fafafa !important;\n  min-width: 100px;\n  transition:\n    background 0.15s,\n    border-color 0.15s;\n  user-select: none;\n}\n\n.custom-cn-recall-tab:hover {\n  background: #eef5f0 !important;\n}\n\n.custom-cn-recall-tabs__radio:checked + .custom-cn-recall-tab {\n  background: #fff !important;\n  border-bottom-color: #4caf50 !important;\n}\n\n.custom-cn-recall-tab__key {\n  font-weight: 600;\n  font-size: 13px;\n  color: #1f1f1f !important;\n}\n\n.custom-cn-recall-tab__time {\n  font-size: 12px;\n  color: #4caf50 !important;\n}\n\n.custom-cn-recall-tab__loc {\n  font-size: 11px;\n  color: #8c8c8c !important;\n  max-width: 120px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n.custom-cn-recall-panel {\n  display: none;\n  width: 100%;\n  padding: 12px 14px;\n  border-top: 1px solid #f0f0f0 !important;\n  order: 1;\n}\n\n.custom-cn-recall-tabs__radio:checked + .custom-cn-recall-tab + .custom-cn-recall-panel {\n  display: block;\n}\n\n.custom-cn-recall-panel__row {\n  display: flex;\n  gap: 8px;\n  margin-bottom: 8px;\n  align-items: flex-start;\n}\n\n.custom-cn-recall-panel__row--full {\n  flex-direction: column;\n  gap: 2px;\n}\n\n.custom-cn-recall-panel__label {\n  flex-shrink: 0;\n  font-size: 12px;\n  color: #8c8c8c !important;\n  min-width: 60px;\n}\n\n.custom-cn-recall-panel__value {\n  font-size: 13px;\n  color: #1f1f1f !important;\n  word-break: break-word;\n  white-space: pre-wrap;\n}\n\n.custom-cn-recall-card__message {\n  padding: 12px 14px;\n  border-top: 1px solid #e0f2e4 !important;\n  font-size: 14px;\n  color: #1f1f1f !important;\n  white-space: pre-wrap;\n  word-break: break-word;\n  line-height: 1.8;\n}\n\n.custom-cn-recall-faded {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 10px;\n  padding: 28px 14px;\n  color: #8c8c8c !important;\n  font-size: 13px;\n  border-bottom: 1px solid #f0f0f0 !important;\n  user-select: none;\n}\n\n.custom-cn-recall-faded__icon {\n  color: #a5d6a7;\n  font-size: 15px;\n  opacity: 0.7;\n}\n\n.custom-cn-recall-faded__text {\n  font-style: italic;\n  letter-spacing: 1px;\n}\n\n#cn_app .api-page {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) 340px;\n  gap: 24px;\n  align-items: start;\n}\n\n#cn_app .api-group {\n  display: grid;\n  grid-template-columns: 180px minmax(0, 1fr);\n  gap: 12px;\n  min-width: 0;\n}\n\n#cn_app .api-preset-list {\n  min-width: 0;\n}\n\n#cn_app .api-preset-list__body {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  padding: 8px;\n}\n\n#cn_app .api-preset-item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 6px;\n  padding: 8px 10px;\n  border: 1px solid transparent;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2);\n  font-size: 13px;\n  cursor: pointer;\n  text-align: left;\n  transition: background var(--cn-dur-fast) var(--cn-ease), color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-preset-item:hover:not(:disabled) {\n  background: var(--cn-surface-2);\n}\n\n#cn_app .api-preset-item--active {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n  font-weight: 600;\n  border-color: var(--cn-border-green);\n}\n\n#cn_app .api-preset-item:disabled {\n  cursor: default;\n  opacity: 1;\n}\n\n#cn_app .api-preset-item__name {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .api-preset-item__star {\n  color: var(--cn-primary);\n  font-size: 11px;\n  flex-shrink: 0;\n}\n\n#cn_app .api-preset-list__new {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  padding: 8px 10px;\n  border: 1px dashed var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2);\n  font-size: 13px;\n  cursor: pointer;\n  margin-top: 4px;\n  transition: border-color var(--cn-dur-fast) var(--cn-ease), color var(--cn-dur-fast) var(--cn-ease), background var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-preset-list__new:hover {\n  border-color: var(--cn-primary);\n  color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .api-preset-list__del {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  padding: 6px 10px;\n  border: none;\n  background: transparent;\n  color: var(--cn-text-3);\n  font-size: 12px;\n  cursor: pointer;\n  text-align: left;\n  margin-top: 2px;\n  transition: color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-preset-list__del:hover {\n  color: #ff4d4f;\n}\n\n#cn_app .api-editor {\n  min-width: 0;\n}\n\n#cn_app .cn-input--nospin::-webkit-outer-spin-button,\n#cn_app .cn-input--nospin::-webkit-inner-spin-button {\n  -webkit-appearance: none;\n  margin: 0;\n}\n\n#cn_app .cn-input--nospin {\n  -moz-appearance: textfield;\n  appearance: textfield;\n}\n\n#cn_app .api-head-desc {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 400;\n}\n\n#cn_app .api-vector .cn-card__head > span:first-child {\n  white-space: nowrap;\n  flex-shrink: 0;\n}\n\n#cn_app .api-vector .api-head-desc {\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  min-width: 0;\n}\n\n#cn_app .api-section-divider {\n  border-top: 1px solid var(--cn-border);\n  margin: 14px 0;\n}\n\n#cn_app .api-form-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0 16px;\n}\n\n#cn_app .api-sampling-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0 16px;\n}\n\n#cn_app .api-advanced-toggle {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  color: var(--cn-text-2);\n  font-size: 13px;\n  padding: 4px 0;\n  transition: color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-advanced-toggle:hover {\n  color: var(--cn-primary);\n}\n\n#cn_app .api-advanced-toggle__icon {\n  font-size: 10px;\n  transition: transform var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-advanced-toggle__icon--open {\n  transform: rotate(90deg);\n}\n\n#cn_app .api-advanced {\n  padding-top: 8px;\n}\n\n#cn_app .api-actions {\n  display: flex;\n  justify-content: flex-end;\n  gap: 8px;\n  border-top: 1px solid var(--cn-border);\n  margin-top: 14px;\n  padding-top: 14px;\n}\n\n#cn_app .model-row {\n  display: flex;\n  gap: 8px;\n  align-items: center;\n}\n\n#cn_app .model-select {\n  margin-top: 6px;\n  width: 100%;\n}\n\n@media (max-width: 900px) {\n  #cn_app .api-page {\n    grid-template-columns: 1fr;\n  }\n  #cn_app .api-group {\n    grid-template-columns: 1fr;\n  }\n}\n\n#cn_app .welcome-root {\n  min-width: 0;\n}\n\n#cn_app .welcome-hero {\n  display: flex;\n  align-items: flex-start;\n  justify-content: space-between;\n  gap: 16px;\n  margin-bottom: 16px;\n}\n\n#cn_app .welcome-hero__left {\n  min-width: 0;\n}\n\n#cn_app .welcome-hero__title {\n  margin: 0 0 6px 0;\n  font-size: 24px;\n  font-weight: 800;\n  letter-spacing: -0.3px;\n  background: linear-gradient(135deg, #4caf50 0%, #388e3c 55%, #2e7d32 100%);\n  -webkit-background-clip: text;\n  background-clip: text;\n  -webkit-text-fill-color: transparent;\n}\n\n#cn_app .welcome-hero__sub {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-hero__reset {\n  flex-shrink: 0;\n  height: 30px;\n  padding: 0 14px;\n  border: 1px solid var(--cn-primary-soft);\n  border-radius: var(--cn-radius);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-size: 13px;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.15s ease;\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  white-space: nowrap;\n}\n\n#cn_app .welcome-hero__reset:hover {\n  background: var(--cn-primary);\n  border-color: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .welcome-grid {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 14px;\n}\n\n#cn_app .welcome-panel {\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n}\n\n#cn_app .welcome-panel__head {\n  padding: 14px 16px 10px 16px;\n  border-bottom: 1px solid var(--cn-border-green);\n}\n\n#cn_app .welcome-panel__title {\n  margin: 0;\n  padding-bottom: 8px;\n  border-bottom: 3px solid var(--cn-primary);\n  display: inline-block;\n  font-size: 17px;\n  font-weight: 700;\n  color: var(--cn-text);\n  line-height: 1.3;\n}\n\n#cn_app .welcome-panel__hint {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  margin-left: 8px;\n}\n\n#cn_app .welcome-panel__body {\n  display: flex;\n  flex-direction: column;\n  gap: 0;\n  flex: 1;\n  min-height: 0;\n}\n\n#cn_app .welcome-health-item {\n  display: grid;\n  grid-template-columns: 30px minmax(0, 1fr);\n  gap: 12px;\n  align-items: center;\n  padding: 8px 0;\n}\n\n#cn_app .welcome-health-item + .welcome-health-item {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-health-item__icon {\n  width: 32px;\n  height: 32px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: var(--cn-radius-sm);\n  background: #f5f5f5;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .welcome-health-item--ok .welcome-health-item__icon {\n  color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .welcome-health-item--warn .welcome-health-item__icon {\n  color: #fa8c16;\n  background: #fff7e6;\n}\n\n#cn_app .welcome-health-item__body {\n  display: flex;\n  flex-direction: column;\n  gap: 3px;\n  min-width: 0;\n}\n\n#cn_app .welcome-health-item__body strong {\n  font-size: 15px;\n  font-weight: 650;\n  color: var(--cn-text);\n}\n\n#cn_app .welcome-health-item__body p {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-toggle {\n  display: flex;\n  flex-direction: column;\n  gap: 5px;\n  padding: 13px 0;\n}\n\n#cn_app .welcome-toggle + .welcome-toggle {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-toggle__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 16px;\n}\n\n#cn_app .welcome-toggle__label {\n  font-size: 15px;\n  font-weight: 500;\n  color: var(--cn-text);\n}\n\n#cn_app .welcome-toggle__desc {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-preset-row {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 0;\n}\n\n#cn_app .welcome-preset-row + .welcome-preset-row {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-preset-row__label {\n  font-size: 15px;\n  color: var(--cn-text-2);\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-preset-row__hint {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .welcome-preset-row__select {\n  width: 140px;\n  height: 32px;\n  font-size: 14px;\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-kv {\n  padding: 8px 0;\n}\n\n#cn_app .welcome-kv + .welcome-kv {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-kv__row {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n}\n\n#cn_app .welcome-kv__label {\n  font-size: 15px;\n  color: var(--cn-text-2);\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-kv__input {\n  width: 150px;\n  height: 32px;\n  font-size: 14px;\n  text-align: center;\n  font-weight: 500;\n}\n#cn_app .welcome-kv__select {\n  width: 180px;\n  height: 32px;\n  font-size: 14px;\n  flex-shrink: 0;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n}\n\n#cn_app .welcome-kv__desc {\n  margin: 6px 0 0 0;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-stack {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  min-height: 0;\n}\n\n#cn_app .welcome-stack > .welcome-panel:first-child {\n  flex: 1 1 auto;\n  min-height: 0;\n}\n\n#cn_app .welcome-stack > .welcome-panel:last-child {\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-fill-body {\n  display: flex;\n  flex-direction: column;\n  flex: 1 1 auto;\n  min-height: 0;\n  overflow-y: auto;\n  justify-content: space-between;\n}\n\n#cn_app .welcome-fill-empty {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  flex: 1;\n  gap: 8px;\n  font-size: 13px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .welcome-fill-desc {\n  margin: 0 0 10px 0;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-fill-tables {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px 16px;\n  padding: 0 0 10px 0;\n  align-items: center;\n}\n\n#cn_app .welcome-fill-table {\n  display: inline-flex;\n  align-items: center;\n  gap: 5px;\n  font-size: 14px;\n  color: var(--cn-text);\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .welcome-fill-table input[type='checkbox'] {\n  appearance: auto;\n  -webkit-appearance: auto;\n  background: transparent !important;\n  accent-color: var(--cn-primary);\n  width: 16px;\n  height: 16px;\n  cursor: pointer;\n  margin: 0;\n}\n\n#cn_app .welcome-fill-en {\n  font-size: 11px;\n  color: var(--cn-text-3);\n  font-family: ui-monospace, Consolas, monospace;\n  margin-left: 2px;\n}\n\n#cn_app .welcome-fill-hint {\n  flex: 1;\n  min-height: 70px;\n  font-size: 13px;\n  margin-bottom: 12px;\n  resize: vertical;\n}\n\n#cn_app .welcome-fill-actions {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding-top: 12px;\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-fill-note {\n  font-size: 12px;\n  color: var(--cn-text-3);\n}\n\n@media (max-width: 860px) {\n  #cn_app .welcome-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n#cn_app .cn-check {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 13px;\n  color: var(--cn-text);\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .cn-check input[type='checkbox'] {\n  appearance: auto;\n  -webkit-appearance: auto;\n  background: transparent !important;\n  accent-color: var(--cn-primary);\n  width: 16px;\n  height: 16px;\n  cursor: pointer;\n  margin: 0;\n}\n\n#cn_app .cn-switch {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .cn-switch input[type='checkbox'] {\n  display: none;\n}\n\n#cn_app .cn-switch__track {\n  width: 36px;\n  height: 20px;\n  border-radius: 10px;\n  background: #d9d9d9;\n  position: relative;\n  transition: background 0.2s;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-switch__track::after {\n  content: '';\n  position: absolute;\n  top: 2px;\n  left: 2px;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: #fff;\n  transition: left 0.2s;\n}\n\n#cn_app .cn-switch input:checked + .cn-switch__track {\n  background: var(--cn-primary);\n}\n\n#cn_app .cn-switch input:checked + .cn-switch__track::after {\n  left: 18px;\n}\n\n#cn_app .cn-switch__label {\n  font-size: 13px;\n  color: var(--cn-text-2);\n}\n\n/* ── 表格模板编辑器 ── */\n\n#cn_app .tpl-table-card {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  margin-bottom: 10px;\n  overflow: hidden;\n  flex-shrink: 0;\n}\n\n#cn_app .tpl-table-card--active {\n  border-color: var(--cn-primary);\n}\n\n#cn_app .tpl-table-card__head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  min-height: 42px;\n  padding: 10px 12px;\n  background: #fafafa;\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .tpl-table-card--active .tpl-table-card__head {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .tpl-table-card__name {\n  font-weight: 600;\n  font-size: 14px;\n  color: var(--cn-text);\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .tpl-table-card__meta {\n  font-size: 12px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .tpl-table-card__body {\n  padding: 12px 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .template-editor-body {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .template-editor-empty {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 12px;\n  padding: 40px 20px;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .tpl-row {\n  display: flex;\n  gap: 12px;\n}\n\n#cn_app .tpl-field {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n\n#cn_app .tpl-label {\n  font-size: 13px;\n  font-weight: 600;\n  color: var(--cn-text-2);\n}\n\n#cn_app .tpl-section {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  padding: 4px 0;\n}\n\n#cn_app .tpl-section__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n#cn_app .tpl-textarea {\n  width: 100%;\n  min-height: 48px;\n  resize: vertical;\n}\n\n#cn_app .tpl-cols {\n  display: flex;\n  flex-direction: column;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  overflow: hidden;\n}\n\n#cn_app .tpl-col-head,\n#cn_app .tpl-col-row {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  padding: 6px 8px;\n}\n\n#cn_app .tpl-col-head {\n  background: #fafafa;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 12px;\n  font-weight: 600;\n  color: var(--cn-text-2);\n}\n\n#cn_app .tpl-col-row {\n  border-bottom: 1px solid #f5f5f5;\n}\n\n#cn_app .tpl-col-row:last-child {\n  border-bottom: none;\n}\n\n#cn_app .tpl-col-cell {\n  font-size: 13px;\n}\n\n#cn_app .tpl-col-cell.name {\n  width: 100px;\n  flex-shrink: 0;\n}\n#cn_app .tpl-col-cell.type {\n  width: 76px;\n  flex-shrink: 0;\n}\n#cn_app .tpl-col-cell.flags {\n  width: 96px;\n  flex-shrink: 0;\n  display: flex;\n  gap: 5px;\n  align-items: center;\n}\n#cn_app .tpl-col-cell.note {\n  flex: 1;\n  min-width: 90px;\n}\n#cn_app .tpl-col-cell.del {\n  width: 28px;\n  flex-shrink: 0;\n}\n#cn_app .tpl-col-cell.role {\n  width: 92px;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-btn--xs {\n  padding: 0 4px;\n  height: 22px;\n  font-size: 11px;\n  border-radius: 3px;\n  line-height: 20px;\n}\n\n#cn_app .prompt-empty {\n  padding: 20px;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .prompt-side-foot {\n  display: flex;\n  gap: 6px;\n  padding: 10px 12px;\n  border-top: 1px solid var(--cn-border);\n  flex-shrink: 0;\n  margin-top: auto;\n}\n\n@media (max-width: 720px) {\n  #cn_app .prompt-split {\n    grid-template-columns: 1fr;\n  }\n}\n\n#cn_app .cn-menu__spacer {\n  flex: 1;\n}\n\n#cn_app .cn-menu__item--debug {\n  margin-top: auto;\n}\n\n#cn_app .debug-page {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  height: 100%;\n}\n\n#cn_app .debug-tabs {\n  display: flex;\n  gap: 0;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .debug-tab {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 16px;\n  border: none;\n  background: none;\n  cursor: pointer;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  border-bottom: 2px solid transparent;\n  transition:\n    color 0.2s,\n    border-color 0.2s;\n}\n\n#cn_app .debug-tab--active {\n  color: var(--cn-primary);\n  border-bottom-color: var(--cn-primary);\n}\n\n#cn_app .debug-tab__badge {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-width: 18px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: 9px;\n  font-size: 11px;\n  color: #fff;\n  background: var(--cn-primary);\n}\n\n#cn_app .debug-panel {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  overflow: hidden;\n}\n\n#cn_app .debug-toolbar {\n  display: flex;\n  gap: 6px;\n  flex-wrap: wrap;\n  align-items: center;\n}\n\n#cn_app .debug-toolbar__select {\n  width: auto;\n  min-width: 80px;\n}\n\n#cn_app .debug-toolbar__search {\n  flex: 1;\n  min-width: 120px;\n}\n\n#cn_app .debug-toolbar__hint {\n  display: flex;\n  gap: 16px;\n  font-size: 11px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .debug-log-list {\n  flex: 1;\n  overflow-y: auto;\n  font-family: 'Consolas', 'Courier New', monospace;\n  font-size: 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: 6px;\n  background: var(--cn-bg);\n}\n\n#cn_app .debug-log-row {\n  display: grid;\n  grid-template-columns: 90px 44px 80px 1fr;\n  padding: 3px 8px;\n  border-bottom: 1px solid var(--cn-border);\n  align-items: baseline;\n  gap: 4px;\n}\n\n#cn_app .debug-log-row:last-child {\n  border-bottom: none;\n}\n\n#cn_app .debug-log-row--error {\n  background: rgba(255, 77, 79, 0.07);\n}\n\n#cn_app .debug-log-row--warn {\n  background: rgba(250, 140, 22, 0.05);\n}\n\n#cn_app .debug-log-row__time {\n  color: var(--cn-text-3);\n  white-space: nowrap;\n}\n\n#cn_app .debug-log-row__level {\n  font-weight: 600;\n  font-size: 10px;\n  padding: 1px 4px;\n  border-radius: 3px;\n  text-align: center;\n}\n\n#cn_app .debug-log-row__level--error {\n  color: #ff4d4f;\n  background: rgba(255, 77, 79, 0.12);\n}\n\n#cn_app .debug-log-row__level--warn {\n  color: #fa8c16;\n  background: rgba(250, 140, 22, 0.12);\n}\n\n#cn_app .debug-log-row__tag {\n  color: var(--cn-primary);\n}\n\n#cn_app .debug-log-row__msg {\n  color: var(--cn-text-1);\n  word-break: break-all;\n}\n\n#cn_app .debug-status-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));\n  gap: 12px;\n}\n\n#cn_app .debug-status-item {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 6px 0;\n}\n\n#cn_app .debug-status-item + .debug-status-item {\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .debug-status-item__label {\n  color: var(--cn-text-2);\n  font-size: 13px;\n}\n\n#cn_app .debug-status-item__value {\n  color: var(--cn-text-1);\n  font-size: 13px;\n  font-weight: 500;\n}\n\n#cn_app .debug-ok {\n  color: var(--cn-primary) !important;\n}\n\n#cn_app .debug-err {\n  color: #ff4d4f !important;\n}\n\n#cn_app .debug-status-actions {\n  display: flex;\n  gap: 6px;\n  padding-top: 8px;\n}\n\n#cn_app .preset-list,\n#cn_app .template-editor-body,\n#cn_app .table-row-grid,\n#cn_app .chronicle-list,\n#cn_app .block-list {\n  position: relative;\n}\n\n#cn_app .cn-route-enter-active,\n#cn_app .cn-route-leave-active {\n  transition: opacity var(--cn-dur) var(--cn-ease);\n}\n#cn_app .cn-route-enter-from,\n#cn_app .cn-route-leave-to {\n  opacity: 0;\n}\n\n#cn_app .cn-list-enter-active,\n#cn_app .cn-list-leave-active {\n  transition:\n    opacity var(--cn-dur-fast) var(--cn-ease),\n    transform var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .cn-list-enter-from {\n  opacity: 0;\n  transform: translateY(-6px);\n}\n#cn_app .cn-list-leave-to {\n  opacity: 0;\n  transform: translateY(4px);\n}\n#cn_app .cn-list-move {\n  transition: transform var(--cn-dur) var(--cn-ease);\n}\n\n#cn_app .cn-modal-enter-active,\n#cn_app .cn-modal-leave-active {\n  transition: opacity var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .cn-modal-enter-from,\n#cn_app .cn-modal-leave-to {\n  opacity: 0;\n}\n#cn_app .cn-modal-enter-active .cn-modal,\n#cn_app .cn-modal-leave-active .cn-modal {\n  transition:\n    opacity var(--cn-dur) var(--cn-ease),\n    transform var(--cn-dur) var(--cn-ease);\n}\n#cn_app .cn-modal-enter-from .cn-modal,\n#cn_app .cn-modal-leave-to .cn-modal {\n  opacity: 0;\n  transform: scale(0.96);\n}\n\n#cn_app .cn-input--error,\n#cn_app .cn-select--error,\n#cn_app .cn-textarea--error {\n  border-color: #ef4444 !important;\n  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15) !important;\n}\n\n#cn_app .cn-fold-enter-active,\n#cn_app .cn-fold-leave-active {\n  transition:\n    opacity var(--cn-dur) var(--cn-ease),\n    transform var(--cn-dur) var(--cn-ease);\n}\n#cn_app .cn-fold-enter-from {\n  opacity: 0;\n  transform: translateY(-6px);\n}\n#cn_app .cn-fold-leave-to {\n  opacity: 0;\n  transform: translateY(-4px);\n}\n\n#cn_app .pending-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  max-width: 720px;\n}\n#cn_app .pending-card__title {\n  margin: 0;\n  font-size: 16px;\n  font-weight: 600;\n}\n#cn_app .pending-card__badge {\n  margin-left: auto;\n  padding: 2px 10px;\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n  border-radius: var(--cn-radius-sm);\n  font-size: 12px;\n}\n#cn_app .pending-hint {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  gap: 4px;\n  color: var(--cn-text-2);\n  font-size: 13px;\n  background: var(--cn-surface-2);\n  padding: 10px 14px;\n  border-radius: var(--cn-radius-sm);\n  margin-bottom: 8px;\n}\n#cn_app .pending-kv {\n  margin-bottom: 16px;\n}\n#cn_app .pending-kv__row {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  margin-bottom: 6px;\n}\n#cn_app .pending-kv__label {\n  flex-shrink: 0;\n  width: 140px;\n  color: var(--cn-text-2);\n  font-size: 13px;\n}\n#cn_app .pending-kv__input {\n  flex: 1;\n  max-width: 240px;\n}\n#cn_app .pending-kv__desc {\n  margin: 0;\n  color: var(--cn-text-3);\n  font-size: 12px;\n  line-height: 1.5;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  #cn_app *,\n  #cn_app *::before,\n  #cn_app *::after {\n    animation-duration: 0.01ms !important;\n    animation-iteration-count: 1 !important;\n    transition-duration: 0.01ms !important;\n  }\n}\n";
+var theme_default = ":root {\n  --cn-z-app: 10000;\n  --cn-z-toast: 10010;\n  --cn-z-modal: 10020;\n  --cn-z-dialog: 10020;\n}\n\n#cn_app {\n  --cn-bg: #edf4ef;\n  --cn-surface: #ffffff;\n  --cn-surface-2: #f3f8f5;\n  --cn-primary: #4caf50;\n  --cn-primary-hover: #388e3c;\n  --cn-primary-active: #2e7d32;\n  --cn-primary-soft: #e0f2e4;\n  --cn-text: #2d2d2d;\n  --cn-text-2: #6b6b6b;\n  --cn-text-3: #9e9e9e;\n  --cn-border: #dce5e0;\n  --cn-border-green: #e0f2e4;\n  --cn-radius: 8px;\n  --cn-radius-sm: 6px;\n  --cn-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.06);\n  --cn-ease: cubic-bezier(0.4, 0, 0.2, 1);\n  --cn-dur-fast: 0.15s;\n  --cn-dur: 0.22s;\n  --cn-dur-slow: 0.3s;\n  --cn-font:\n    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei',\n    sans-serif;\n  color: var(--cn-text);\n  font-family: var(--cn-font);\n  font-size: 15px;\n  line-height: 1.5;\n}\n\n#cn_app,\n#cn_app * {\n  box-sizing: border-box;\n}\n\n#cn_app button {\n  appearance: none;\n  -webkit-appearance: none;\n  margin: 0;\n  font: inherit;\n  color: var(--cn-text) !important;\n  background: var(--cn-surface);\n  cursor: pointer;\n  -webkit-tap-highlight-color: transparent;\n}\n\n#cn_app i {\n  font-size: inherit;\n  line-height: 1;\n  font-style: normal;\n  vertical-align: baseline;\n}\n\n#cn_app .cn-content i {\n  font-size: 0.85em;\n}\n\n#cn_app input,\n#cn_app select,\n#cn_app textarea {\n  appearance: none;\n  -webkit-appearance: none;\n  margin: 0;\n  font: inherit;\n  color: var(--cn-text);\n  background: var(--cn-surface);\n  border: none;\n  outline: none;\n  -webkit-tap-highlight-color: transparent;\n}\n\n#cn_app select option {\n  color: var(--cn-text) !important;\n  background: var(--cn-surface) !important;\n}\n\n#cn_app button:focus:not(:focus-visible),\n#cn_app input:focus:not(:focus-visible),\n#cn_app select:focus:not(:focus-visible),\n#cn_app textarea:focus:not(:focus-visible) {\n  outline: none;\n}\n\n#cn_app ul {\n  margin: 0;\n  padding: 0;\n}\n\n#cn_app a {\n  color: inherit;\n  text-decoration: none;\n}\n\n#cn_app h1,\n#cn_app h2,\n#cn_app h3,\n#cn_app h4,\n#cn_app h5,\n#cn_app h6 {\n  margin: 0;\n  font-size: inherit;\n  font-weight: inherit;\n}\n\n#cn_app label {\n  display: inline-block;\n  margin: 0;\n  font-weight: inherit;\n  cursor: inherit;\n}\n\n#cn_app .cn-btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  height: 32px;\n  padding: 0 15px;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface) !important;\n  color: var(--cn-text) !important;\n  font-size: 14px;\n  line-height: 1;\n  white-space: nowrap;\n  transition: all 0.15s ease;\n  user-select: none;\n}\n#cn_app .cn-btn:hover:not(:disabled) {\n  border-color: var(--cn-primary) !important;\n  color: var(--cn-primary) !important;\n}\n#cn_app .cn-btn:disabled {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n#cn_app .cn-btn--primary {\n  background: var(--cn-primary) !important;\n  border-color: var(--cn-primary) !important;\n  color: #fff !important;\n}\n#cn_app .cn-btn--primary:hover:not(:disabled) {\n  background: var(--cn-primary-hover);\n  border-color: var(--cn-primary-hover);\n  color: #fff;\n}\n#cn_app .cn-btn--sm {\n  height: 26px;\n  padding: 0 11px;\n  font-size: 13px;\n}\n#cn_app .cn-btn--text {\n  border-color: transparent;\n  background: transparent;\n  color: var(--cn-text-2);\n}\n#cn_app .cn-btn--text:hover:not(:disabled) {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n  border-color: transparent;\n}\n\n#cn_app .cn-input,\n#cn_app .cn-select,\n#cn_app .cn-textarea {\n  display: block;\n  width: 100%;\n  height: 32px;\n  padding: 4px 11px;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface) !important;\n  color: var(--cn-text) !important;\n  font-size: 14px;\n  transition:\n    border-color 0.15s ease,\n    box-shadow 0.15s ease;\n}\n#cn_app .cn-textarea {\n  height: auto;\n  min-height: 80px;\n  line-height: 1.5;\n  resize: vertical;\n}\n#cn_app .cn-input:hover,\n#cn_app .cn-select:hover,\n#cn_app .cn-textarea:hover {\n  border-color: var(--cn-primary-hover) !important;\n}\n#cn_app .cn-input:focus,\n#cn_app .cn-select:focus,\n#cn_app .cn-textarea:focus {\n  border-color: var(--cn-primary) !important;\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15) !important;\n  outline: none !important;\n}\n#cn_app .cn-input::placeholder,\n#cn_app .cn-textarea::placeholder {\n  color: var(--cn-text-3);\n}\n#cn_app .cn-select {\n  padding-right: 28px;\n  background-image: url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%238c8c8c' d='M8 11L3 6h10z'/%3E%3C/svg%3E\");\n  background-repeat: no-repeat;\n  background-position: right 10px center;\n  background-size: 12px;\n  cursor: pointer;\n}\n\n#cn_app .cn-card {\n  background: var(--cn-surface) !important;\n  border: 1px solid var(--cn-border) !important;\n  border-radius: var(--cn-radius);\n  box-shadow: var(--cn-shadow);\n  overflow: hidden;\n}\n#cn_app .cn-card__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n  padding: 14px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 16px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .cn-card__body {\n  padding: 16px;\n}\n\n#cn_app .cn-field {\n  margin-bottom: 16px;\n}\n#cn_app .cn-field__label {\n  display: block;\n  margin-bottom: 6px;\n  color: var(--cn-text-2);\n  font-size: 14px;\n}\n\n#cn_app .cn-table {\n  width: 100%;\n  border-collapse: collapse;\n  font-size: 13px;\n}\n#cn_app .cn-table th,\n#cn_app .cn-table td {\n  padding: 8px 12px;\n  border: 1px solid var(--cn-border) !important;\n  text-align: left;\n  white-space: nowrap;\n}\n#cn_app .cn-table th {\n  background: var(--cn-primary-soft);\n  color: var(--cn-text);\n  font-weight: 600;\n}\n#cn_app .cn-table tbody tr:nth-child(even) {\n  background: #fafafa;\n}\n#cn_app .cn-table tbody tr:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cn-table__op {\n  width: 50px;\n  text-align: center;\n  white-space: nowrap;\n}\n\n#cn_app .cn-table__rownum {\n  width: 40px;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 12px;\n  white-space: nowrap;\n}\n\n#cn_app .tables-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .tables-toolbar {\n  display: flex;\n  gap: 8px;\n}\n\n#cn_app .table-wrap-card {\n  overflow: visible;\n}\n\n#cn_app .table-tabs {\n  display: flex;\n  gap: 4px;\n  padding: 4px;\n  margin: 12px 12px 8px;\n  background: var(--cn-surface-2);\n  border-radius: var(--cn-radius);\n  overflow-x: auto;\n}\n\n#cn_app .table-tab {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  gap: 1px;\n  padding: 6px 14px;\n  border: 0;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2);\n  cursor: pointer;\n  white-space: nowrap;\n  flex-shrink: 0;\n  transition:\n    background var(--cn-dur-fast) var(--cn-ease),\n    color var(--cn-dur-fast) var(--cn-ease),\n    box-shadow var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .table-tab:hover {\n  color: var(--cn-text);\n}\n\n#cn_app .table-tab--active {\n  background: var(--cn-surface);\n  color: var(--cn-primary);\n  font-weight: 600;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);\n}\n\n#cn_app .table-tab__zh {\n  font-size: 14px;\n  line-height: 1.2;\n}\n\n#cn_app .table-tab__en {\n  font-size: 11px;\n  opacity: 0.65;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n}\n\n#cn_app .table-tab--active .table-tab__en {\n  opacity: 0.8;\n  color: var(--cn-primary);\n}\n\n#cn_app .table-body {\n  background: var(--cn-surface);\n  overflow: hidden;\n}\n\n#cn_app .table-body__meta {\n  flex: 1;\n  color: var(--cn-text-3);\n  font-size: 12px;\n}\n\n#cn_app .table-body__foot {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 10px 16px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .table-row-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 12px;\n  padding: 16px;\n}\n\n#cn_app .table-row-card {\n  flex: 0 0 auto;\n  width: 340px;\n  max-width: 100%;\n}\n\n#cn_app .table-row-card__body {\n  padding: 14px 16px;\n}\n\n#cn_app .table-row-card__field {\n  margin-bottom: 10px;\n}\n\n#cn_app .table-row-card__field:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .table-row-card__label {\n  display: block;\n  margin-bottom: 4px;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n}\n\n#cn_app .table-row-card__label-en {\n  font-weight: 400;\n  color: var(--cn-primary-active);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 11px;\n  margin-left: 6px;\n  opacity: 0.6;\n}\n\n#cn_app .table-row-card__value {\n  min-height: 28px;\n  padding: 6px 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: #fafafa;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n#cn_app .table-row-card__value:focus {\n  background: var(--cn-surface);\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);\n}\n\n#cn_app .table-row-card--editing {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);\n}\n\n#cn_app .table-row-card__foot {\n  display: flex;\n  justify-content: flex-end;\n  gap: 6px;\n  padding: 6px 12px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .chronicle-item--editing {\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);\n}\n\n#cn_app .cell-edit {\n  min-width: 60px;\n  min-height: 20px;\n  padding: 2px 4px;\n  border-radius: var(--cn-radius-sm);\n  outline: none;\n  white-space: normal;\n  word-break: break-word;\n  cursor: text;\n  transition: background 0.15s ease;\n}\n\n#cn_app .cell-edit:empty::before {\n  content: '\\00a0';\n  display: inline;\n}\n\n#cn_app .cell-edit:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cell-edit:focus {\n  background: var(--cn-surface);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);\n}\n\n#cn_app .chronicle-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n\n#cn_app .chronicle-gen-off-tip {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 14px;\n  background: #fffbe6;\n  border: 1px solid #ffe58f;\n  border-radius: var(--cn-radius-sm);\n  color: #8c6e2a;\n  font-size: 13px;\n}\n#cn_app .chronicle-gen-off-tip i {\n  color: #faad14;\n}\n\n#cn_app .chronicle-toolbar {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n\n#cn_app .chronicle-toolbar__search {\n  flex: 1;\n  max-width: 360px;\n  height: 32px;\n}\n\n#cn_app .chronicle-toolbar__count {\n  flex: 1;\n  text-align: right;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .chronicle-list {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .chronicle-item__key {\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-weight: 700;\n  color: var(--cn-primary-active);\n}\n\n#cn_app .chronicle-fields {\n  display: grid;\n  grid-template-columns: repeat(2, 1fr);\n  gap: 12px;\n  margin-bottom: 12px;\n}\n\n#cn_app .chronicle-field {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  min-width: 0;\n}\n\n#cn_app .chronicle-field--full {\n  margin-bottom: 12px;\n}\n\n#cn_app .chronicle-field:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .chronicle-field__label {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n}\n\n#cn_app .chronicle-field__value {\n  min-height: 32px;\n  padding: 6px 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: #fafafa;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n#cn_app .chronicle-field__value:focus {\n  background: var(--cn-surface);\n  border-color: var(--cn-primary);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);\n}\n\n#cn_app .cn-empty {\n  padding: 40px 0;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .cn-tag {\n  display: inline-flex;\n  align-items: center;\n  padding: 0 8px;\n  height: 22px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-size: 12px;\n  font-weight: 500;\n}\n\n#cn_app .cn-space {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n}\n#cn_app .cn-space--block {\n  display: flex;\n}\n\n#cn_app .cn-shell {\n  display: flex;\n  height: 100vh;\n  width: 100%;\n  overflow: hidden;\n}\n#cn_app .cn-sider {\n  flex: 0 0 220px;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-right: 1px solid var(--cn-border);\n}\n#cn_app .cn-brand {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  height: 56px;\n  padding: 0 20px;\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-brand__icon {\n  font-size: 20px;\n  color: var(--cn-primary);\n}\n#cn_app .cn-brand__name {\n  font-size: 16px;\n  font-weight: 700;\n  color: var(--cn-text);\n}\n#cn_app .cn-menu {\n  flex: 1;\n  padding: 12px 10px;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n  overflow-y: auto;\n}\n#cn_app .cn-menu__item {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  width: 100%;\n  padding: 9px 12px;\n  border: 0;\n  background: transparent;\n  border-radius: var(--cn-radius);\n  color: var(--cn-text-2);\n  font-size: 14px;\n  text-align: left;\n  transition: all var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .cn-menu__item:hover {\n  background: var(--cn-primary-soft);\n  color: var(--cn-text);\n}\n#cn_app .cn-menu__item--active {\n  background: var(--cn-primary);\n  color: #fff;\n  font-weight: 500;\n}\n#cn_app .cn-menu__item--active:hover {\n  background: var(--cn-primary);\n  color: #fff;\n}\n#cn_app .cn-menu__item i {\n  width: 16px;\n  text-align: center;\n  font-size: 14px;\n}\n#cn_app .cn-main {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  min-width: 0;\n}\n#cn_app .cn-header {\n  flex: 0 0 56px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 0 24px;\n  background: var(--cn-surface);\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-header__title {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n#cn_app .cn-content {\n  flex: 1;\n  padding: 20px;\n  min-height: 0;\n  overflow-y: auto;\n  overflow-x: hidden;\n  background: var(--cn-bg);\n}\n\n#cn_app .toolbar {\n  margin-bottom: 16px;\n}\n#cn_app .model-row {\n  margin-top: 8px;\n}\n\n#cn_app .table-wrap {\n  overflow-x: auto;\n}\n#cn_app .pager {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  justify-content: flex-end;\n  margin-top: 12px;\n}\n#cn_app .pager__info {\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .cn-list {\n  list-style: none;\n}\n#cn_app .cn-list__item {\n  display: flex;\n  gap: 12px;\n  padding: 10px 0;\n  border-bottom: 1px solid var(--cn-border);\n}\n#cn_app .cn-list__item:last-child {\n  border-bottom: 0;\n}\n#cn_app .cn-list__key {\n  flex: 0 0 80px;\n  color: var(--cn-primary-active);\n  font-weight: 600;\n  font-size: 13px;\n}\n#cn_app .cn-list__summary {\n  color: var(--cn-text-2);\n  line-height: 1.6;\n  flex: 1;\n  min-width: 0;\n}\n\n#cn_app .search-input {\n  width: 220px;\n  height: 28px;\n  font-size: 13px;\n}\n\n#cn_app .cn-range {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 100%;\n  height: 6px;\n  border-radius: 3px;\n  background: linear-gradient(\n    to right,\n    var(--cn-primary) 0%,\n    var(--cn-primary) var(--cn-range-pct, 50%),\n    #e8e8e8 var(--cn-range-pct, 50%),\n    #e8e8e8 100%\n  ) !important;\n  outline: none;\n  cursor: pointer;\n  margin: 0;\n  border: none;\n}\n\n#cn_app .cn-range::-webkit-slider-thumb {\n  -webkit-appearance: none;\n  appearance: none;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: var(--cn-primary);\n  border: 2px solid #fff;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\n  cursor: pointer;\n}\n\n#cn_app .cn-range::-moz-range-thumb {\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: var(--cn-primary);\n  border: 2px solid #fff;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);\n  cursor: pointer;\n}\n\n#cn_app .cn-range::-moz-range-track {\n  background: transparent;\n  border: 0;\n}\n\n#cn_app .range-row {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n\n#cn_app .range-val {\n  font-weight: 600;\n  color: var(--cn-primary);\n  min-width: 36px;\n  text-align: right;\n  font-size: 14px;\n}\n\n#cn_app .range-num {\n  width: 72px;\n  flex-shrink: 0;\n  text-align: center;\n  font-weight: 600;\n  color: var(--cn-primary);\n}\n\n#cn_app .range-num::-webkit-inner-spin-button {\n  opacity: 1;\n}\n\n#cn_app .prompt-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  height: 100%;\n  overflow: hidden;\n}\n\n#cn_app .prompt-head {\n  margin-bottom: -1px;\n  position: relative;\n  z-index: 2;\n}\n\n#cn_app .scene-tabs {\n  display: inline-flex;\n  gap: 4px;\n  padding: 4px;\n  background: var(--cn-surface-2);\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n}\n\n#cn_app .scene-tab {\n  padding: 6px 18px;\n  border: 0;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2);\n  font-size: 14px;\n  cursor: pointer;\n  transition:\n    background var(--cn-dur-fast) var(--cn-ease),\n    color var(--cn-dur-fast) var(--cn-ease),\n    box-shadow var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .scene-tab:hover {\n  color: var(--cn-text);\n}\n\n#cn_app .scene-tab--active {\n  background: var(--cn-surface);\n  color: var(--cn-primary);\n  font-weight: 600;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);\n}\n\n#cn_app .prompt-split {\n  display: grid;\n  grid-template-columns: 220px 1fr;\n  gap: 16px;\n  align-items: start;\n}\n\n#cn_app .preset-list {\n  list-style: none;\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n\n#cn_app .preset-list__item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 6px;\n  padding: 9px 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  color: var(--cn-text-2);\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .preset-list__item:hover {\n  border-color: var(--cn-primary-hover);\n  color: var(--cn-text);\n}\n\n#cn_app .preset-list__item--active {\n  border-color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-weight: 500;\n}\n\n#cn_app .preset-list__name {\n  flex: 1;\n  min-width: 0;\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .preset-list__card {\n  color: var(--cn-primary);\n  font-size: 12px;\n  margin-right: 2px;\n}\n\n#cn_app .preset-list__default {\n  flex: 0 0 auto;\n  color: #faad14;\n  font-size: 12px;\n}\n\n#cn_app .preset-list__count {\n  flex: 0 0 auto;\n  font-size: 11px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .prompt-editor__desc {\n  color: var(--cn-text-3);\n  font-size: 12px;\n  font-weight: 400;\n}\n\n#cn_app .block-list {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .block {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface-2);\n  overflow: hidden;\n}\n\n#cn_app .block--ghost {\n  opacity: 0.4;\n  border-style: dashed;\n  border-color: var(--cn-primary);\n}\n\n#cn_app .block-head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 8px 10px;\n  border-bottom: 1px solid var(--cn-border);\n  background: var(--cn-surface);\n}\n\n#cn_app .block-head__grip {\n  color: var(--cn-text-3);\n  font-size: 14px;\n  cursor: grab;\n}\n\n#cn_app .block-head__grip:active {\n  cursor: grabbing;\n}\n\n#cn_app .block-head__name {\n  flex: 1;\n  height: 28px;\n  font-size: 13px;\n  font-weight: 600;\n}\n\n#cn_app .block-segs {\n  min-height: 48px;\n  padding: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n\n#cn_app .block-add {\n  display: flex;\n  gap: 4px;\n  padding: 6px 8px 8px;\n  border-top: 1px solid var(--cn-border);\n  background: var(--cn-surface);\n}\n\n#cn_app .block-add-btn {\n  margin-top: 14px;\n}\n\n#cn_app .seg-add-row {\n  display: flex;\n  gap: 8px;\n  margin-top: 14px;\n}\n\n#cn_app .seg-item {\n  margin-bottom: 10px;\n  padding: 10px 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface-2);\n  transition:\n    box-shadow var(--cn-dur-fast) var(--cn-ease),\n    border-color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .seg-item:last-child {\n  margin-bottom: 0;\n}\n\n#cn_app .seg-item:hover {\n  border-color: var(--cn-primary-hover);\n  box-shadow: 0 1px 4px rgba(76, 175, 80, 0.12);\n}\n\n#cn_app .seg-item--ghost {\n  opacity: 0.4;\n  border-style: dashed;\n  border-color: var(--cn-primary);\n}\n\n#cn_app .seg-item__bar {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  margin-bottom: 8px;\n}\n\n#cn_app .seg-item__grip {\n  color: var(--cn-text-3);\n  font-size: 14px;\n  cursor: grab;\n}\n\n#cn_app .seg-item__grip:active {\n  cursor: grabbing;\n}\n\n#cn_app .seg-item__role {\n  height: 22px;\n  padding: 0 10px;\n  border: 1px solid var(--cn-border);\n  border-radius: 11px;\n  background: var(--cn-surface);\n  color: var(--cn-text-2);\n  font-size: 11px;\n  font-weight: 700;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n#cn_app .seg-item__role:hover {\n  border-color: var(--cn-primary);\n  color: var(--cn-primary);\n}\n\n#cn_app .seg-item__name {\n  flex: 1;\n  min-width: 0;\n  height: 28px;\n  font-size: 13px;\n  font-weight: 600;\n}\n\n#cn_app .seg-item__seq {\n  flex: 0 0 auto;\n  font-size: 12px;\n  color: var(--cn-primary);\n  font-weight: 600;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n}\n\n#cn_app .seg-item__edit {\n  display: block;\n  width: 100%;\n  min-height: 120px;\n  padding: 8px 11px;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n  color: var(--cn-text);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.6;\n  white-space: pre-wrap;\n  word-wrap: break-word;\n  outline: none;\n  transition:\n    border-color 0.15s ease,\n    box-shadow 0.15s ease;\n  box-sizing: border-box;\n  overflow: hidden;\n  max-height: 320px;\n}\n\n#cn_app .seg-item__edit:focus-within {\n  border-color: var(--cn-primary);\n  background: var(--cn-surface);\n  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);\n}\n\n#cn_app .seg-var {\n  color: var(--cn-primary-active);\n  background: var(--cn-primary-soft);\n  border: 1px solid var(--cn-primary);\n  border-radius: 3px;\n  padding: 0 4px;\n  font-weight: 600;\n  cursor: help;\n}\n\n#cn_app .seg-var:hover {\n  background: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .seg-item__edit .cm-editor {\n  background: transparent;\n  color: inherit;\n  height: 100%;\n}\n\n#cn_app .seg-item__edit .cm-scroller {\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.6;\n}\n\n#cn_app .seg-item__edit .cm-content {\n  padding: 0;\n  caret-color: var(--cn-primary);\n  min-height: 104px;\n}\n\n#cn_app .seg-item__edit .cm-focused {\n  outline: none;\n}\n\n#cn_app .prompt-foot {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 16px;\n}\n\n#cn_app .prompt-foot__hint {\n  color: var(--cn-text-3);\n  font-size: 12px;\n  line-height: 1.6;\n}\n\n#cn_app .prompt-foot__hint code {\n  padding: 1px 5px;\n  border-radius: var(--cn-radius-sm);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 11px;\n}\n\n#cn_app .prompt-wrap {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n  min-height: 0;\n}\n\n#cn_app .prompt-wrap .prompt-head {\n  margin: 0;\n  padding: 14px 16px 12px;\n  border-bottom: 1px solid var(--cn-border);\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  align-items: flex-start;\n}\n\n#cn_app .prompt-wrap .prompt-split {\n  flex: 1;\n  min-height: 0;\n  padding: 16px;\n  gap: 16px;\n  overflow: hidden;\n  align-items: stretch;\n  grid-template-rows: minmax(0, 1fr);\n}\n\n#cn_app .prompt-side {\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n  overflow: hidden;\n}\n\n#cn_app .prompt-editor {\n  min-width: 0;\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n  overflow: hidden;\n}\n\n#cn_app .prompt-editor .cn-card__head {\n  padding: 0 0 12px;\n  border-bottom: 1px solid var(--cn-border);\n  margin-bottom: 16px;\n}\n\n#cn_app .prompt-side .cn-card__head {\n  padding: 0 0 12px;\n  border-bottom: 1px solid var(--cn-border);\n  margin-bottom: 12px;\n}\n\n#cn_app .prompt-side .cn-card__body {\n  padding: 0;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .prompt-editor .cn-card__body {\n  padding: 0;\n  flex: 1;\n  min-height: 0;\n  overflow: hidden;\n  display: flex;\n  flex-direction: column;\n}\n\n/* 模板/纪要表编辑区：body 内部纵向滚动（head 与左侧不滚）。\n   提示词配置的 .block-list 自身已 overflow-y:auto，无需此规则。\n   特异性需高于 .prompt-editor .cn-card__body 的 overflow:hidden 才能生效。 */\n#cn_app .prompt-editor .cn-card__body.template-editor-body {\n  overflow-y: auto;\n  overflow-x: hidden;\n}\n\n#cn_app .cn-modal-mask {\n  position: fixed;\n  inset: 0;\n  z-index: var(--cn-z-modal);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(0, 0, 0, 0.45);\n}\n\n#cn_app .cn-modal {\n  width: 90vw;\n  max-width: 1100px;\n  height: 90vh;\n  max-height: 800px;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n}\n\n#cn_app .cn-modal__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 15px;\n  font-weight: 600;\n  color: var(--cn-text);\n}\n\n#cn_app .cn-modal__code {\n  margin: 0;\n  padding: 20px;\n  overflow: auto;\n  background: #1e1e1e;\n  color: #d4d4d4;\n  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;\n  font-size: 13px;\n  line-height: 1.7;\n  white-space: pre-wrap;\n  word-break: break-word;\n  flex: 1;\n  min-height: 0;\n}\n\n#cn_app .model-picker-modal {\n  width: 90vw;\n  max-width: 520px;\n  height: auto;\n  max-height: 70vh;\n  display: flex;\n  flex-direction: column;\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n}\n\n#cn_app .model-picker__search {\n  padding: 12px 16px;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .model-picker__list {\n  overflow-y: auto;\n  padding: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n}\n\n#cn_app .model-picker__item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  width: 100%;\n  padding: 10px 14px;\n  border: none;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text);\n  font-size: 14px;\n  text-align: left;\n  cursor: pointer;\n  transition: background 0.1s;\n}\n\n#cn_app .model-picker__item:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .model-picker__item--picked {\n  background: var(--cn-primary-soft);\n  font-weight: 500;\n}\n\n#cn_app .model-picker__name {\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .model-picker__check {\n  color: var(--cn-primary);\n  font-size: 14px;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-btn--danger {\n  background: #ff4d4f;\n  border-color: #ff4d4f;\n  color: #fff;\n}\n\n#cn_app .cn-btn--danger:hover:not(:disabled) {\n  background: #ff7875;\n  border-color: #ff7875;\n  color: #fff;\n}\n\n#cn_app .cn-dialog-mask {\n  position: fixed;\n  inset: 0;\n  z-index: var(--cn-z-dialog);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: rgba(0, 0, 0, 0.45);\n  opacity: 0;\n  transition: opacity var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .cn-dialog-mask--show {\n  opacity: 1;\n}\n\n#cn_app .cn-dialog {\n  position: relative;\n  width: min(420px, 85vw);\n  background: var(--cn-surface);\n  border-radius: var(--cn-radius);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);\n  overflow: hidden;\n  transform: scale(0.96);\n  opacity: 0;\n  transition: opacity var(--cn-dur) var(--cn-ease), transform var(--cn-dur) var(--cn-ease);\n}\n\n#cn_app .cn-dialog-mask--show .cn-dialog {\n  transform: scale(1);\n  opacity: 1;\n}\n\n#cn_app .cn-dialog__bar {\n  position: absolute;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  width: 4px;\n  background: var(--cn-primary);\n}\n\n#cn_app .cn-dialog--danger .cn-dialog__bar {\n  background: #ff4d4f;\n}\n\n#cn_app .cn-dialog__hd {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 14px 16px 14px 20px;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .cn-dialog__brand-ico {\n  color: var(--cn-primary);\n  font-size: 16px;\n}\n\n#cn_app .cn-dialog--danger .cn-dialog__brand-ico {\n  color: #ff4d4f;\n}\n\n#cn_app .cn-dialog__brand {\n  font-size: 13px;\n  color: var(--cn-text-3);\n  font-weight: 600;\n  letter-spacing: 0.5px;\n}\n\n#cn_app .cn-dialog__title {\n  font-size: 16px;\n  font-weight: 600;\n  color: var(--cn-text);\n  margin-left: auto;\n}\n\n#cn_app .cn-dialog__close {\n  margin-left: 4px;\n  color: var(--cn-text-3);\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  font-size: 14px;\n  padding: 2px 4px;\n  line-height: 1;\n  transition: color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .cn-dialog__close:hover {\n  color: var(--cn-text);\n}\n\n#cn_app .cn-dialog__body {\n  padding: 16px 20px;\n  color: var(--cn-text-2);\n  font-size: 14px;\n  line-height: 1.6;\n  white-space: pre-wrap;\n}\n\n#cn_app .cn-dialog__foot {\n  display: flex;\n  justify-content: flex-end;\n  gap: 8px;\n  padding: 12px 20px;\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .cn-dialog__foot .cn-btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  height: 32px;\n  padding: 0 15px;\n  border: 1px solid var(--cn-primary);\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-primary-hover);\n  font-size: 14px;\n  cursor: pointer;\n  transition: background var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .cn-dialog__foot .cn-btn:hover {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .cn-dialog__foot .cn-btn--primary {\n  background: var(--cn-primary);\n  border-color: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .cn-dialog__foot .cn-btn--primary:hover {\n  background: var(--cn-primary-hover);\n  border-color: var(--cn-primary-hover);\n}\n\n#cn_app .cn-dialog__foot .cn-btn--danger {\n  background: #ff4d4f;\n  border-color: #ff4d4f;\n  color: #fff;\n}\n\n#cn_app .cn-dialog__foot .cn-btn--danger:hover {\n  background: #ff7875;\n  border-color: #ff7875;\n}\n\n.cn-has-recall .mes_text > :not(.cn-recall-host):not(#curEditTextarea) {\n  display: none;\n}\n\n.cn-recall-host {\n  display: block;\n}\n\n#cn_app .api-page {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) 340px;\n  gap: 24px;\n  align-items: start;\n}\n\n#cn_app .api-group {\n  display: grid;\n  grid-template-columns: 180px minmax(0, 1fr);\n  gap: 12px;\n  min-width: 0;\n}\n\n#cn_app .api-preset-list {\n  min-width: 0;\n}\n\n#cn_app .api-preset-list__body {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  padding: 8px;\n}\n\n#cn_app .api-preset-item {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 6px;\n  padding: 8px 10px;\n  border: 1px solid transparent;\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2);\n  font-size: 13px;\n  cursor: pointer;\n  text-align: left;\n  transition: background var(--cn-dur-fast) var(--cn-ease), color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-preset-item:hover:not(:disabled) {\n  background: var(--cn-surface-2);\n}\n\n#cn_app .api-preset-item--active {\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n  font-weight: 600;\n  border-color: var(--cn-border-green);\n}\n\n#cn_app .api-preset-item:disabled {\n  cursor: default;\n  opacity: 1;\n}\n\n#cn_app .api-preset-item__name {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .api-preset-item__star {\n  color: var(--cn-primary);\n  font-size: 11px;\n  flex-shrink: 0;\n}\n\n#cn_app .api-preset-list__new {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  padding: 8px 10px;\n  border: 1px dashed var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  background: transparent;\n  color: var(--cn-text-2);\n  font-size: 13px;\n  cursor: pointer;\n  margin-top: 4px;\n  transition: border-color var(--cn-dur-fast) var(--cn-ease), color var(--cn-dur-fast) var(--cn-ease), background var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-preset-list__new:hover {\n  border-color: var(--cn-primary);\n  color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .api-preset-list__del {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  padding: 6px 10px;\n  border: none;\n  background: transparent;\n  color: var(--cn-text-3);\n  font-size: 12px;\n  cursor: pointer;\n  text-align: left;\n  margin-top: 2px;\n  transition: color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-preset-list__del:hover {\n  color: #ff4d4f;\n}\n\n#cn_app .api-editor {\n  min-width: 0;\n}\n\n#cn_app .cn-input--nospin::-webkit-outer-spin-button,\n#cn_app .cn-input--nospin::-webkit-inner-spin-button {\n  -webkit-appearance: none;\n  margin: 0;\n}\n\n#cn_app .cn-input--nospin {\n  -moz-appearance: textfield;\n  appearance: textfield;\n}\n\n#cn_app .api-head-desc {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  font-weight: 400;\n}\n\n#cn_app .api-vector .cn-card__head > span:first-child {\n  white-space: nowrap;\n  flex-shrink: 0;\n}\n\n#cn_app .api-vector .api-head-desc {\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  min-width: 0;\n}\n\n#cn_app .api-section-divider {\n  border-top: 1px solid var(--cn-border);\n  margin: 14px 0;\n}\n\n#cn_app .api-form-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0 16px;\n}\n\n#cn_app .api-sampling-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 0 16px;\n}\n\n#cn_app .api-advanced-toggle {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  color: var(--cn-text-2);\n  font-size: 13px;\n  padding: 4px 0;\n  transition: color var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-advanced-toggle:hover {\n  color: var(--cn-primary);\n}\n\n#cn_app .api-advanced-toggle__icon {\n  font-size: 10px;\n  transition: transform var(--cn-dur-fast) var(--cn-ease);\n}\n\n#cn_app .api-advanced-toggle__icon--open {\n  transform: rotate(90deg);\n}\n\n#cn_app .api-advanced {\n  padding-top: 8px;\n}\n\n#cn_app .api-actions {\n  display: flex;\n  justify-content: flex-end;\n  gap: 8px;\n  border-top: 1px solid var(--cn-border);\n  margin-top: 14px;\n  padding-top: 14px;\n}\n\n#cn_app .model-row {\n  display: flex;\n  gap: 8px;\n  align-items: center;\n}\n\n#cn_app .model-select {\n  margin-top: 6px;\n  width: 100%;\n}\n\n@media (max-width: 900px) {\n  #cn_app .api-page {\n    grid-template-columns: 1fr;\n  }\n  #cn_app .api-group {\n    grid-template-columns: 1fr;\n  }\n}\n\n#cn_app .welcome-root {\n  min-width: 0;\n}\n\n#cn_app .welcome-hero {\n  display: flex;\n  align-items: flex-start;\n  justify-content: space-between;\n  gap: 16px;\n  margin-bottom: 16px;\n}\n\n#cn_app .welcome-hero__left {\n  min-width: 0;\n}\n\n#cn_app .welcome-hero__title {\n  margin: 0 0 6px 0;\n  font-size: 24px;\n  font-weight: 800;\n  letter-spacing: -0.3px;\n  background: linear-gradient(135deg, #4caf50 0%, #388e3c 55%, #2e7d32 100%);\n  -webkit-background-clip: text;\n  background-clip: text;\n  -webkit-text-fill-color: transparent;\n}\n\n#cn_app .welcome-hero__sub {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-hero__reset {\n  flex-shrink: 0;\n  height: 30px;\n  padding: 0 14px;\n  border: 1px solid var(--cn-primary-soft);\n  border-radius: var(--cn-radius);\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary-active);\n  font-size: 13px;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.15s ease;\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  white-space: nowrap;\n}\n\n#cn_app .welcome-hero__reset:hover {\n  background: var(--cn-primary);\n  border-color: var(--cn-primary);\n  color: #fff;\n}\n\n#cn_app .welcome-grid {\n  display: grid;\n  grid-template-columns: repeat(2, minmax(0, 1fr));\n  gap: 14px;\n}\n\n#cn_app .welcome-panel {\n  display: flex;\n  flex-direction: column;\n  min-height: 0;\n}\n\n#cn_app .welcome-panel__head {\n  padding: 14px 16px 10px 16px;\n  border-bottom: 1px solid var(--cn-border-green);\n}\n\n#cn_app .welcome-panel__title {\n  margin: 0;\n  padding-bottom: 8px;\n  border-bottom: 3px solid var(--cn-primary);\n  display: inline-block;\n  font-size: 17px;\n  font-weight: 700;\n  color: var(--cn-text);\n  line-height: 1.3;\n}\n\n#cn_app .welcome-panel__hint {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  margin-left: 8px;\n}\n\n#cn_app .welcome-panel__body {\n  display: flex;\n  flex-direction: column;\n  gap: 0;\n  flex: 1;\n  min-height: 0;\n}\n\n#cn_app .welcome-health-item {\n  display: grid;\n  grid-template-columns: 30px minmax(0, 1fr);\n  gap: 12px;\n  align-items: center;\n  padding: 8px 0;\n}\n\n#cn_app .welcome-health-item + .welcome-health-item {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-health-item__icon {\n  width: 32px;\n  height: 32px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: var(--cn-radius-sm);\n  background: #f5f5f5;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .welcome-health-item--ok .welcome-health-item__icon {\n  color: var(--cn-primary);\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .welcome-health-item--warn .welcome-health-item__icon {\n  color: #fa8c16;\n  background: #fff7e6;\n}\n\n#cn_app .welcome-health-item__body {\n  display: flex;\n  flex-direction: column;\n  gap: 3px;\n  min-width: 0;\n}\n\n#cn_app .welcome-health-item__body strong {\n  font-size: 15px;\n  font-weight: 650;\n  color: var(--cn-text);\n}\n\n#cn_app .welcome-health-item__body p {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-toggle {\n  display: flex;\n  flex-direction: column;\n  gap: 5px;\n  padding: 13px 0;\n}\n\n#cn_app .welcome-toggle + .welcome-toggle {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-toggle__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 16px;\n}\n\n#cn_app .welcome-toggle__label {\n  font-size: 15px;\n  font-weight: 500;\n  color: var(--cn-text);\n}\n\n#cn_app .welcome-toggle__desc {\n  margin: 0;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-preset-row {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 0;\n}\n\n#cn_app .welcome-preset-row + .welcome-preset-row {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-preset-row__label {\n  font-size: 15px;\n  color: var(--cn-text-2);\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-preset-row__hint {\n  font-size: 12px;\n  color: var(--cn-text-3);\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .welcome-preset-row__select {\n  width: 140px;\n  height: 32px;\n  font-size: 14px;\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-kv {\n  padding: 8px 0;\n}\n\n#cn_app .welcome-kv + .welcome-kv {\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-kv__row {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 12px;\n}\n\n#cn_app .welcome-kv__label {\n  font-size: 15px;\n  color: var(--cn-text-2);\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-kv__input {\n  width: 150px;\n  height: 32px;\n  font-size: 14px;\n  text-align: center;\n  font-weight: 500;\n}\n#cn_app .welcome-kv__select {\n  width: 180px;\n  height: 32px;\n  font-size: 14px;\n  flex-shrink: 0;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius);\n  background: var(--cn-surface);\n}\n\n#cn_app .welcome-kv__desc {\n  margin: 6px 0 0 0;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-stack {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  min-height: 0;\n}\n\n#cn_app .welcome-stack > .welcome-panel:first-child {\n  flex: 1 1 auto;\n  min-height: 0;\n}\n\n#cn_app .welcome-stack > .welcome-panel:last-child {\n  flex-shrink: 0;\n}\n\n#cn_app .welcome-fill-body {\n  display: flex;\n  flex-direction: column;\n  flex: 1 1 auto;\n  min-height: 0;\n  overflow-y: auto;\n  justify-content: space-between;\n}\n\n#cn_app .welcome-fill-empty {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  flex: 1;\n  gap: 8px;\n  font-size: 13px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .welcome-fill-desc {\n  margin: 0 0 10px 0;\n  font-size: 12px;\n  color: var(--cn-text-3);\n  line-height: 1.5;\n}\n\n#cn_app .welcome-fill-tables {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px 16px;\n  padding: 0 0 10px 0;\n  align-items: center;\n}\n\n#cn_app .welcome-fill-table {\n  display: inline-flex;\n  align-items: center;\n  gap: 5px;\n  font-size: 14px;\n  color: var(--cn-text);\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .welcome-fill-table input[type='checkbox'] {\n  appearance: auto;\n  -webkit-appearance: auto;\n  background: transparent !important;\n  accent-color: var(--cn-primary);\n  width: 16px;\n  height: 16px;\n  cursor: pointer;\n  margin: 0;\n}\n\n#cn_app .welcome-fill-en {\n  font-size: 11px;\n  color: var(--cn-text-3);\n  font-family: ui-monospace, Consolas, monospace;\n  margin-left: 2px;\n}\n\n#cn_app .welcome-fill-hint {\n  flex: 1;\n  min-height: 70px;\n  font-size: 13px;\n  margin-bottom: 12px;\n  resize: vertical;\n}\n\n#cn_app .welcome-fill-actions {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  padding-top: 12px;\n  border-top: 1px solid #f0f0f0;\n}\n\n#cn_app .welcome-fill-note {\n  font-size: 12px;\n  color: var(--cn-text-3);\n}\n\n@media (max-width: 860px) {\n  #cn_app .welcome-grid {\n    grid-template-columns: 1fr;\n  }\n}\n\n#cn_app .cn-check {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  font-size: 13px;\n  color: var(--cn-text);\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .cn-check input[type='checkbox'] {\n  appearance: auto;\n  -webkit-appearance: auto;\n  background: transparent !important;\n  accent-color: var(--cn-primary);\n  width: 16px;\n  height: 16px;\n  cursor: pointer;\n  margin: 0;\n}\n\n#cn_app .cn-switch {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .cn-switch input[type='checkbox'] {\n  display: none;\n}\n\n#cn_app .cn-switch__track {\n  width: 36px;\n  height: 20px;\n  border-radius: 10px;\n  background: #d9d9d9;\n  position: relative;\n  transition: background 0.2s;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-switch__track::after {\n  content: '';\n  position: absolute;\n  top: 2px;\n  left: 2px;\n  width: 16px;\n  height: 16px;\n  border-radius: 50%;\n  background: #fff;\n  transition: left 0.2s;\n}\n\n#cn_app .cn-switch input:checked + .cn-switch__track {\n  background: var(--cn-primary);\n}\n\n#cn_app .cn-switch input:checked + .cn-switch__track::after {\n  left: 18px;\n}\n\n#cn_app .cn-switch__label {\n  font-size: 13px;\n  color: var(--cn-text-2);\n}\n\n/* ── 表格模板编辑器 ── */\n\n#cn_app .tpl-table-card {\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  margin-bottom: 10px;\n  overflow: hidden;\n  flex-shrink: 0;\n}\n\n#cn_app .tpl-table-card--active {\n  border-color: var(--cn-primary);\n}\n\n#cn_app .tpl-table-card__head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  min-height: 42px;\n  padding: 10px 12px;\n  background: #fafafa;\n  cursor: pointer;\n  user-select: none;\n}\n\n#cn_app .tpl-table-card--active .tpl-table-card__head {\n  background: var(--cn-primary-soft);\n}\n\n#cn_app .tpl-table-card__name {\n  font-weight: 600;\n  font-size: 14px;\n  color: var(--cn-text);\n  flex: 1;\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n\n#cn_app .tpl-table-card__meta {\n  font-size: 12px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .tpl-table-card__body {\n  padding: 12px 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n}\n\n#cn_app .template-editor-body {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  flex: 1;\n  min-height: 0;\n  overflow-y: auto;\n}\n\n#cn_app .template-editor-empty {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 12px;\n  padding: 40px 20px;\n  color: var(--cn-text-3);\n  font-size: 14px;\n}\n\n#cn_app .tpl-row {\n  display: flex;\n  gap: 12px;\n}\n\n#cn_app .tpl-field {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n\n#cn_app .tpl-label {\n  font-size: 13px;\n  font-weight: 600;\n  color: var(--cn-text-2);\n}\n\n#cn_app .tpl-section {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  padding: 4px 0;\n}\n\n#cn_app .tpl-section__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\n#cn_app .tpl-textarea {\n  width: 100%;\n  min-height: 48px;\n  resize: vertical;\n}\n\n#cn_app .tpl-cols {\n  display: flex;\n  flex-direction: column;\n  border: 1px solid var(--cn-border);\n  border-radius: var(--cn-radius-sm);\n  overflow: hidden;\n}\n\n#cn_app .tpl-col-head,\n#cn_app .tpl-col-row {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  padding: 6px 8px;\n}\n\n#cn_app .tpl-col-head {\n  background: #fafafa;\n  border-bottom: 1px solid var(--cn-border);\n  font-size: 12px;\n  font-weight: 600;\n  color: var(--cn-text-2);\n}\n\n#cn_app .tpl-col-row {\n  border-bottom: 1px solid #f5f5f5;\n}\n\n#cn_app .tpl-col-row:last-child {\n  border-bottom: none;\n}\n\n#cn_app .tpl-col-cell {\n  font-size: 13px;\n}\n\n#cn_app .tpl-col-cell.name {\n  width: 100px;\n  flex-shrink: 0;\n}\n#cn_app .tpl-col-cell.type {\n  width: 76px;\n  flex-shrink: 0;\n}\n#cn_app .tpl-col-cell.flags {\n  width: 96px;\n  flex-shrink: 0;\n  display: flex;\n  gap: 5px;\n  align-items: center;\n}\n#cn_app .tpl-col-cell.note {\n  flex: 1;\n  min-width: 90px;\n}\n#cn_app .tpl-col-cell.del {\n  width: 28px;\n  flex-shrink: 0;\n}\n#cn_app .tpl-col-cell.role {\n  width: 92px;\n  flex-shrink: 0;\n}\n\n#cn_app .cn-btn--xs {\n  padding: 0 4px;\n  height: 22px;\n  font-size: 11px;\n  border-radius: 3px;\n  line-height: 20px;\n}\n\n#cn_app .prompt-empty {\n  padding: 20px;\n  text-align: center;\n  color: var(--cn-text-3);\n  font-size: 13px;\n}\n\n#cn_app .prompt-side-foot {\n  display: flex;\n  gap: 6px;\n  padding: 10px 12px;\n  border-top: 1px solid var(--cn-border);\n  flex-shrink: 0;\n  margin-top: auto;\n}\n\n@media (max-width: 720px) {\n  #cn_app .prompt-split {\n    grid-template-columns: 1fr;\n  }\n}\n\n#cn_app .cn-menu__spacer {\n  flex: 1;\n}\n\n#cn_app .cn-menu__item--debug {\n  margin-top: auto;\n}\n\n#cn_app .debug-page {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  height: 100%;\n}\n\n#cn_app .debug-tabs {\n  display: flex;\n  gap: 0;\n  border-bottom: 1px solid var(--cn-border);\n}\n\n#cn_app .debug-tab {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 16px;\n  border: none;\n  background: none;\n  cursor: pointer;\n  font-size: 13px;\n  color: var(--cn-text-3);\n  border-bottom: 2px solid transparent;\n  transition:\n    color 0.2s,\n    border-color 0.2s;\n}\n\n#cn_app .debug-tab--active {\n  color: var(--cn-primary);\n  border-bottom-color: var(--cn-primary);\n}\n\n#cn_app .debug-tab__badge {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  min-width: 18px;\n  height: 18px;\n  padding: 0 5px;\n  border-radius: 9px;\n  font-size: 11px;\n  color: #fff;\n  background: var(--cn-primary);\n}\n\n#cn_app .debug-panel {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  overflow: hidden;\n}\n\n#cn_app .debug-toolbar {\n  display: flex;\n  gap: 6px;\n  flex-wrap: wrap;\n  align-items: center;\n}\n\n#cn_app .debug-toolbar__select {\n  width: auto;\n  min-width: 80px;\n}\n\n#cn_app .debug-toolbar__search {\n  flex: 1;\n  min-width: 120px;\n}\n\n#cn_app .debug-toolbar__hint {\n  display: flex;\n  gap: 16px;\n  font-size: 11px;\n  color: var(--cn-text-3);\n}\n\n#cn_app .debug-log-list {\n  flex: 1;\n  overflow-y: auto;\n  font-family: 'Consolas', 'Courier New', monospace;\n  font-size: 12px;\n  border: 1px solid var(--cn-border);\n  border-radius: 6px;\n  background: var(--cn-bg);\n}\n\n#cn_app .debug-log-row {\n  display: grid;\n  grid-template-columns: 90px 44px 80px 1fr;\n  padding: 3px 8px;\n  border-bottom: 1px solid var(--cn-border);\n  align-items: baseline;\n  gap: 4px;\n}\n\n#cn_app .debug-log-row:last-child {\n  border-bottom: none;\n}\n\n#cn_app .debug-log-row--error {\n  background: rgba(255, 77, 79, 0.07);\n}\n\n#cn_app .debug-log-row--warn {\n  background: rgba(250, 140, 22, 0.05);\n}\n\n#cn_app .debug-log-row__time {\n  color: var(--cn-text-3);\n  white-space: nowrap;\n}\n\n#cn_app .debug-log-row__level {\n  font-weight: 600;\n  font-size: 10px;\n  padding: 1px 4px;\n  border-radius: 3px;\n  text-align: center;\n}\n\n#cn_app .debug-log-row__level--error {\n  color: #ff4d4f;\n  background: rgba(255, 77, 79, 0.12);\n}\n\n#cn_app .debug-log-row__level--warn {\n  color: #fa8c16;\n  background: rgba(250, 140, 22, 0.12);\n}\n\n#cn_app .debug-log-row__tag {\n  color: var(--cn-primary);\n}\n\n#cn_app .debug-log-row__msg {\n  color: var(--cn-text-1);\n  word-break: break-all;\n}\n\n#cn_app .debug-status-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));\n  gap: 12px;\n}\n\n#cn_app .debug-status-item {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 6px 0;\n}\n\n#cn_app .debug-status-item + .debug-status-item {\n  border-top: 1px solid var(--cn-border);\n}\n\n#cn_app .debug-status-item__label {\n  color: var(--cn-text-2);\n  font-size: 13px;\n}\n\n#cn_app .debug-status-item__value {\n  color: var(--cn-text-1);\n  font-size: 13px;\n  font-weight: 500;\n}\n\n#cn_app .debug-ok {\n  color: var(--cn-primary) !important;\n}\n\n#cn_app .debug-err {\n  color: #ff4d4f !important;\n}\n\n#cn_app .debug-status-actions {\n  display: flex;\n  gap: 6px;\n  padding-top: 8px;\n}\n\n#cn_app .preset-list,\n#cn_app .template-editor-body,\n#cn_app .table-row-grid,\n#cn_app .chronicle-list,\n#cn_app .block-list {\n  position: relative;\n}\n\n#cn_app .cn-route-enter-active,\n#cn_app .cn-route-leave-active {\n  transition: opacity var(--cn-dur) var(--cn-ease);\n}\n#cn_app .cn-route-enter-from,\n#cn_app .cn-route-leave-to {\n  opacity: 0;\n}\n\n#cn_app .cn-list-enter-active,\n#cn_app .cn-list-leave-active {\n  transition:\n    opacity var(--cn-dur-fast) var(--cn-ease),\n    transform var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .cn-list-enter-from {\n  opacity: 0;\n  transform: translateY(-6px);\n}\n#cn_app .cn-list-leave-to {\n  opacity: 0;\n  transform: translateY(4px);\n}\n#cn_app .cn-list-move {\n  transition: transform var(--cn-dur) var(--cn-ease);\n}\n\n#cn_app .cn-modal-enter-active,\n#cn_app .cn-modal-leave-active {\n  transition: opacity var(--cn-dur-fast) var(--cn-ease);\n}\n#cn_app .cn-modal-enter-from,\n#cn_app .cn-modal-leave-to {\n  opacity: 0;\n}\n#cn_app .cn-modal-enter-active .cn-modal,\n#cn_app .cn-modal-leave-active .cn-modal {\n  transition:\n    opacity var(--cn-dur) var(--cn-ease),\n    transform var(--cn-dur) var(--cn-ease);\n}\n#cn_app .cn-modal-enter-from .cn-modal,\n#cn_app .cn-modal-leave-to .cn-modal {\n  opacity: 0;\n  transform: scale(0.96);\n}\n\n#cn_app .cn-input--error,\n#cn_app .cn-select--error,\n#cn_app .cn-textarea--error {\n  border-color: #ef4444 !important;\n  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15) !important;\n}\n\n#cn_app .cn-fold-enter-active,\n#cn_app .cn-fold-leave-active {\n  transition:\n    opacity var(--cn-dur) var(--cn-ease),\n    transform var(--cn-dur) var(--cn-ease);\n}\n#cn_app .cn-fold-enter-from {\n  opacity: 0;\n  transform: translateY(-6px);\n}\n#cn_app .cn-fold-leave-to {\n  opacity: 0;\n  transform: translateY(-4px);\n}\n\n#cn_app .pending-page {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  max-width: 720px;\n}\n#cn_app .pending-card__title {\n  margin: 0;\n  font-size: 16px;\n  font-weight: 600;\n}\n#cn_app .pending-card__badge {\n  margin-left: auto;\n  padding: 2px 10px;\n  background: var(--cn-primary-soft);\n  color: var(--cn-primary);\n  border-radius: var(--cn-radius-sm);\n  font-size: 12px;\n}\n#cn_app .pending-hint {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-start;\n  gap: 4px;\n  color: var(--cn-text-2);\n  font-size: 13px;\n  background: var(--cn-surface-2);\n  padding: 10px 14px;\n  border-radius: var(--cn-radius-sm);\n  margin-bottom: 8px;\n}\n#cn_app .pending-kv {\n  margin-bottom: 16px;\n}\n#cn_app .pending-kv__row {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  margin-bottom: 6px;\n}\n#cn_app .pending-kv__label {\n  flex-shrink: 0;\n  width: 140px;\n  color: var(--cn-text-2);\n  font-size: 13px;\n}\n#cn_app .pending-kv__input {\n  flex: 1;\n  max-width: 240px;\n}\n#cn_app .pending-kv__desc {\n  margin: 0;\n  color: var(--cn-text-3);\n  font-size: 12px;\n  line-height: 1.5;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  #cn_app *,\n  #cn_app *::before,\n  #cn_app *::after {\n    animation-duration: 0.01ms !important;\n    animation-iteration-count: 1 !important;\n    transition-duration: 0.01ms !important;\n  }\n}\n";
 //#endregion
 //#region __vite-browser-external
 var require___vite_browser_external = /* @__PURE__ */ __commonJSMin(((exports, module) => {
@@ -11705,6 +11705,7 @@ function quoteIdent(name) {
 	return `"${name.replace(/"/g, "\"\"")}"`;
 }
 var FRAME_FIELD_PREFIX = `CN_FRAME_`;
+var RECALL_FIELD_PREFIX = `CN_RECALL`;
 //#endregion
 //#region src/db/sqlite/storage-frame-repo.ts
 function createFrameRepo(chat) {
@@ -12188,11 +12189,19 @@ function dayDifference(a, b) {
 //#endregion
 //#region src/shared/constants/events.ts
 var EVENT_CHAT_CHANGED = "chat_id_changed";
+var EVENT_CHAT_LOADED = "chatLoaded";
 var EVENT_CHAT_RENAMED = "chat_renamed";
 var EVENT_GENERATION_ENDED = "generation_ended";
 var EVENT_GENERATION_AFTER_COMMANDS = "GENERATION_AFTER_COMMANDS";
 var EVENT_GENERATION_STARTED = "generation_started";
 var EVENT_GENERATION_STOPPED = "generation_stopped";
+var EVENT_USER_MESSAGE_RENDERED = "user_message_rendered";
+var EVENT_MESSAGE_DELETED = "message_deleted";
+var EVENT_MESSAGE_SWIPED = "message_swiped";
+var EVENT_MESSAGE_SENT = "message_sent";
+var EVENT_MESSAGE_EDITED = "message_edited";
+var EVENT_MESSAGE_UPDATED = "message_updated";
+var EVENT_MORE_MESSAGES_LOADED = "more_messages_loaded";
 //#endregion
 //#region src/core/table/sql-executor.ts
 function executeTableEditSql(core, edit, persist) {
@@ -13132,11 +13141,21 @@ async function executeFill(session, extraHint) {
 }
 async function onGenerationEnded(session) {
 	const config = session.getConfig();
-	if (!config.tableFill.autoFill) return;
+	pushLog("info", "fill", `onGenerationEnded 开始 autoFill=${config.tableFill.autoFill}`);
+	if (!config.tableFill.autoFill) {
+		pushLog("info", "fill", "autoFill 关闭，跳过纪要总结");
+		return;
+	}
 	const frequency = Math.max(0, config.tableFill.updateFrequency ?? 1);
-	if (frequency <= 0) return;
+	if (frequency <= 0) {
+		pushLog("info", "fill", "frequency<=0，跳过纪要总结");
+		return;
+	}
 	generationCountSinceLastFill++;
-	if (generationCountSinceLastFill < frequency) return;
+	if (generationCountSinceLastFill < frequency) {
+		pushLog("info", "fill", `计数 ${generationCountSinceLastFill}/${frequency} 未达，跳过纪要总结`);
+		return;
+	}
 	await Promise.resolve();
 	if (lastGenerationWasStopped && !config.pending.summarizeOnManualAbort) {
 		pushLog("info", "fill", "手动中止且未开启中止总结，跳过本轮纪要总结");
@@ -13160,6 +13179,7 @@ async function onGenerationEnded(session) {
 			return;
 		}
 	}
+	pushLog("info", "fill", "准备执行纪要总结 executeFill");
 	await executeFill(session);
 }
 async function runManualFill(session, extraHint) {
@@ -13222,57 +13242,86 @@ function worldInfoToScanEntry(entry, bookName) {
 	};
 }
 //#endregion
-//#region src/core/chronicle/recall-orchestrator.ts
-function escapeHtml$2(text) {
-	return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+//#region src/shared/recall-payload.ts
+function serializeRecallPayload(items) {
+	const payload = {
+		v: 1,
+		items: items.map((it) => ({
+			key: it.key,
+			timeDeltaText: it.timeDeltaText,
+			timeStart: it.entry.timeStart ?? "",
+			timeEnd: it.entry.timeEnd ?? "",
+			location: it.entry.content.location ?? "",
+			summary: it.entry.content.summary ?? "",
+			keyDialogue: it.entry.content.keyDialogue ?? ""
+		}))
+	};
+	return JSON.stringify(payload);
 }
-function buildRecallCard(items, userMessage) {
-	const uid = Date.now().toString(36);
-	const countText = `${items.length} 条记忆`;
-	let tabsHtml = "";
-	let keywords = "";
-	for (let i = 0; i < items.length; i++) {
-		const item = items[i];
-		if (!item) continue;
-		const checked = i === 0 ? " checked" : "";
-		const rid = `r-${uid}-${i}`;
-		tabsHtml += `<input type="radio" name="r-${uid}" id="${rid}" class="cn-recall-tabs__radio"${checked}>`;
-		tabsHtml += `<label for="${rid}" class="cn-recall-tab">`;
-		tabsHtml += `<span class="cn-recall-tab__key">${escapeHtml$2(item.key)}</span>`;
-		tabsHtml += `<span class="cn-recall-tab__time">${escapeHtml$2(item.timeDeltaText)}</span>`;
-		tabsHtml += `<span class="cn-recall-tab__loc">${escapeHtml$2(item.entry.content.location ?? "")}</span>`;
-		tabsHtml += `</label>`;
-		const summary = item.entry.content.summary ?? "";
-		const dialogue = item.entry.content.keyDialogue ?? "";
-		const timeStart = item.entry.timeStart ?? "";
-		const timeEnd = item.entry.timeEnd ?? "";
-		const location = item.entry.content.location ?? "";
-		tabsHtml += `<div class="cn-recall-panel">`;
-		tabsHtml += `<div class="cn-recall-panel__row"><span class="cn-recall-panel__label">时间范围</span><span class="cn-recall-panel__value">${escapeHtml$2(timeStart)} ~ ${escapeHtml$2(timeEnd)}</span></div>`;
-		tabsHtml += `<div class="cn-recall-panel__row"><span class="cn-recall-panel__label">地点</span><span class="cn-recall-panel__value">${escapeHtml$2(location)}</span></div>`;
-		tabsHtml += `<div class="cn-recall-panel__row cn-recall-panel__row--full"><span class="cn-recall-panel__label">纪要正文</span><span class="cn-recall-panel__value">${escapeHtml$2(summary)}</span></div>`;
-		tabsHtml += `<div class="cn-recall-panel__row cn-recall-panel__row--full"><span class="cn-recall-panel__label">重要台词</span><span class="cn-recall-panel__value">${escapeHtml$2(dialogue)}</span></div>`;
-		tabsHtml += `</div>`;
-		keywords += `${item.key} `;
+function parseRecallPayload(raw) {
+	if (typeof raw !== "string" || raw.length === 0) return null;
+	try {
+		const obj = JSON.parse(raw);
+		if (typeof obj !== "object" || obj === null) return null;
+		const items = obj.items;
+		if (!Array.isArray(items) || items.length === 0) return null;
+		const normalized = [];
+		for (const it of items) {
+			if (typeof it !== "object" || it === null) return null;
+			const item = it;
+			if (typeof item.key !== "string" || item.key.length === 0) return null;
+			normalized.push({
+				key: item.key,
+				timeDeltaText: typeof item.timeDeltaText === "string" ? item.timeDeltaText : "",
+				timeStart: typeof item.timeStart === "string" ? item.timeStart : "",
+				timeEnd: typeof item.timeEnd === "string" ? item.timeEnd : "",
+				location: typeof item.location === "string" ? item.location : "",
+				summary: typeof item.summary === "string" ? item.summary : "",
+				keyDialogue: typeof item.keyDialogue === "string" ? item.keyDialogue : ""
+			});
+		}
+		return {
+			v: 1,
+			items: normalized
+		};
+	} catch {
+		return null;
 	}
-	return `[CN_recall_ui]\n${`<div class="cn-recall-card"><div class="cn-recall-card__head"><i class="fa-solid fa-brain cn-recall-card__icon"></i><span class="cn-recall-card__brand">CranialNerve</span><span class="cn-recall-card__count">${countText}</span></div><div class="cn-recall-tabs">${tabsHtml}</div><div class="cn-recall-card__message">${escapeHtml$2(userMessage)}</div></div>`}\n[/CN_recall_ui]\n${keywords.trim()}\n${userMessage}`;
 }
+var KEY_LINE_RE = /^(?:CN\d{4}[ \t]*)+(?:\r?\n|$)/;
+function stripKeyLineFromMes(mes) {
+	return mes.replace(KEY_LINE_RE, "");
+}
+//#endregion
+//#region src/core/chronicle/recall-orchestrator.ts
 function isAbortError(e, signal) {
 	if (signal?.aborted) return true;
 	if (e instanceof DOMException && e.name === "AbortError") return true;
 	return false;
 }
-async function onPromptReady(session, dryRun) {
-	if (dryRun) return true;
+async function onPromptReady(session, targetUserIdx) {
 	const config = session.getConfig();
-	if (!config.recallEnabled) return true;
+	if (!config.recallEnabled) {
+		pushLog("warn", "recall", "recallEnabled=false，跳过召回");
+		return true;
+	}
 	const preset = session.getAiPresetForScene(config.recallPresetId);
-	if (!preset) return true;
+	if (!preset) {
+		pushLog("warn", "recall", "无召回AI预设，跳过召回");
+		return true;
+	}
 	const recaller = session.getChronicleRecaller();
-	if (!recaller) return true;
+	if (!recaller) {
+		pushLog("warn", "recall", "无recaller，跳过召回");
+		return true;
+	}
 	const chat = session.chat.getChat();
-	const lastUserIdx = session.getLastUserIdx();
-	if (lastUserIdx < 0) return true;
+	const lastUserIdx = targetUserIdx;
+	if (lastUserIdx < 0 || !chat[lastUserIdx]?.is_user) {
+		pushLog("warn", "recall", `消息索引无效 msgId=${targetUserIdx}，跳过召回`);
+		return true;
+	}
+	pushLog("info", "recall", `开始召回 lastUserIdx=${lastUserIdx}`);
 	const userMessage = chat[lastUserIdx].mes;
 	const userName = getUserName();
 	const contextDepth = Math.max(1, config.recallContextDepth || 5);
@@ -13314,17 +13363,23 @@ async function onPromptReady(session, dryRun) {
 	};
 	try {
 		const items = await session.getWriteQueue().enqueue(() => recaller.recall(recallCtx));
+		pushLog("info", "recall", `召回返回 items=${items.length}`);
 		if (items.length === 0) {
-			progress?.done();
+			progress?.close();
 			return true;
 		}
 		const limited = items.slice(0, config.maxRecallItems);
-		chat[lastUserIdx].mes = buildRecallCard(limited, userMessage);
+		const keys = limited.map((it) => it.key).join(" ");
+		chat[lastUserIdx].mes = `${keys}\n${userMessage}`;
+		session.chat.writeMessageExtra(lastUserIdx, RECALL_FIELD_PREFIX, serializeRecallPayload(limited));
+		pushLog("info", "recall", `写入mes keys="${keys}" extra已写入`);
 		try {
 			getHostContext().updateMessageBlock?.(lastUserIdx, chat[lastUserIdx]);
 		} catch (e) {
-			pushLog("warn", "recall", `召回卡片重渲染失败: ${e instanceof Error ? e.message : String(e)}`);
+			pushLog("warn", "recall", `召回消息重渲染失败: ${e instanceof Error ? e.message : String(e)}`);
 		}
+		session.renderRecallCard(lastUserIdx);
+		session.chat.saveChat();
 		progress?.done();
 		return true;
 	} catch (e) {
@@ -13459,12 +13514,13 @@ var CranialNerveSession = class {
 	writeQueue;
 	progressNotifier;
 	toastNotifier;
+	recallCardRenderer;
 	currentChatToken = null;
 	autoSwitchHandler = null;
 	reloadSeq = 0;
 	lastSnapshotIndex = null;
 	initFailed = false;
-	lastRecalledUserIdx = -1;
+	lastRecalledUserSendDate = null;
 	realGenerationPending = false;
 	constructor() {
 		this.core = new SqliteCore();
@@ -13500,6 +13556,7 @@ var CranialNerveSession = class {
 		if (this.eventsBound) return;
 		this.eventsBound = true;
 		this.event.makeLast(EVENT_GENERATION_ENDED, () => {
+			pushLog("info", "session", `GENERATION_ENDED 触发，realGenerationPending=${this.realGenerationPending}`);
 			if (!this.realGenerationPending) return;
 			this.realGenerationPending = false;
 			onGenerationEnded(this).catch((e) => {
@@ -13507,23 +13564,37 @@ var CranialNerveSession = class {
 			});
 		});
 		this.event.makeLast(EVENT_GENERATION_AFTER_COMMANDS, (...args) => {
+			const type = args[0];
 			if (args[2]) return;
+			this.realGenerationPending = true;
+			if (type === "regenerate" || type === "swipe") {
+				pushLog("info", "session", "regenerate/swipe：回退数据、不召回，生成后填表");
+				return this.reloadForChatChange().then(() => {
+					this.realGenerationPending = true;
+				}).catch((e) => {
+					pushLog("error", "session", `regenerate 回退失败: ${e instanceof Error ? e.message : String(e)}`);
+				});
+			}
+		});
+		this.event.makeLast(EVENT_MESSAGE_SENT, (...args) => {
+			const msgId = args[0];
+			if (typeof msgId !== "number") return;
 			if (isFillInProgress()) {
 				pushLog("warn", "session", "纪要生成中，跳过本轮召回");
 				return;
 			}
-			const lastUserIdx = this.getLastUserIdx();
-			if (lastUserIdx < 0) return;
-			if (lastUserIdx === this.lastRecalledUserIdx) {
-				this.realGenerationPending = false;
-				pushLog("info", "session", "玩家消息未变，跳过召回（可能是提示词查看器/regenerate）");
+			const msg = this.chat.getChat()[msgId];
+			if (!msg || !msg.is_user) return;
+			const sendDate = msg.send_date;
+			pushLog("info", "session", `MESSAGE_SENT msgId=${msgId} sendDate=${sendDate} lastRecalled=${this.lastRecalledUserSendDate}`);
+			if (sendDate && sendDate === this.lastRecalledUserSendDate) {
+				pushLog("info", "session", "玩家消息未变，跳过召回");
 				return;
 			}
-			this.lastRecalledUserIdx = lastUserIdx;
-			this.realGenerationPending = true;
-			return onPromptReady(this).then((recalled) => {
+			this.lastRecalledUserSendDate = sendDate ?? null;
+			return onPromptReady(this, msgId).then((recalled) => {
 				if (!recalled) {
-					this.lastRecalledUserIdx = -1;
+					this.lastRecalledUserSendDate = null;
 					this.realGenerationPending = false;
 				}
 			}).catch((e) => {
@@ -13538,42 +13609,115 @@ var CranialNerveSession = class {
 				pushLog("error", "session", `世界书重命名失败: ${e instanceof Error ? e.message : String(e)}`);
 			});
 		});
+		this.event.on(EVENT_MESSAGE_DELETED, () => {
+			pushLog("info", "session", "消息删除，重建内存库以回退数据");
+			this.reloadForChatChange().catch((e) => {
+				pushLog("error", "session", `删除消息后重建失败: ${e instanceof Error ? e.message : String(e)}`);
+			});
+		});
 	}
 	setupChronicle() {
 		const name = buildBookName(this.getChatToken());
 		this.chronicleStore = new ChronicleEntryStore(this.worldbook, name);
-		const tableReader = async () => {
-			const def = this.getChronicleTableDef();
-			const colName = (role) => def.columns.find((c) => c.role === role)?.name;
-			const kKey = colName("key");
-			const kTimeStart = colName("timeStart");
-			const kTimeEnd = colName("timeEnd");
-			const kLocation = colName("location");
-			const kSummary = colName("summary");
-			const kKeyDialogue = colName("keyDialogue");
-			let result;
-			try {
-				result = this.core.exec(`SELECT * FROM "${CHRONICLE_TABLE_NAME}"`);
-			} catch (e) {
-				pushLog("warn", "session", `纪要表读取失败，召回按空表处理: ${e instanceof Error ? e.message : String(e)}`);
-				return [];
-			}
-			const first = result[0];
-			if (!first) return [];
-			const pick = (r, name) => name ? String(r[name] ?? "") : "";
-			return first.rows.map((r) => ({
-				key: pick(r, kKey),
-				timeStart: pick(r, kTimeStart),
-				timeEnd: pick(r, kTimeEnd),
-				content: {
-					summary: pick(r, kSummary),
-					storyTime: pick(r, kTimeStart),
-					keyDialogue: pick(r, kKeyDialogue),
-					location: pick(r, kLocation)
-				}
-			}));
-		};
+		const tableReader = async () => this.getChronicleEntries();
 		this.chronicleRecaller = createChronicleRecaller(this.ai, tableReader, this.vector);
+	}
+	getChronicleEntries() {
+		const def = this.getChronicleTableDef();
+		const colName = (role) => def.columns.find((c) => c.role === role)?.name;
+		const kKey = colName("key");
+		const kTimeStart = colName("timeStart");
+		const kTimeEnd = colName("timeEnd");
+		const kLocation = colName("location");
+		const kSummary = colName("summary");
+		const kKeyDialogue = colName("keyDialogue");
+		let result;
+		try {
+			result = this.core.exec(`SELECT * FROM "${CHRONICLE_TABLE_NAME}"`);
+		} catch (e) {
+			pushLog("warn", "session", `纪要表读取失败: ${e instanceof Error ? e.message : String(e)}`);
+			return [];
+		}
+		const first = result[0];
+		if (!first) return [];
+		const pick = (r, name) => name ? String(r[name] ?? "") : "";
+		return first.rows.map((r) => ({
+			key: pick(r, kKey),
+			timeStart: pick(r, kTimeStart),
+			timeEnd: pick(r, kTimeEnd),
+			content: {
+				summary: pick(r, kSummary),
+				storyTime: pick(r, kTimeStart),
+				keyDialogue: pick(r, kKeyDialogue),
+				location: pick(r, kLocation)
+			}
+		}));
+	}
+	renderRecallCard(msgId) {
+		pushLog("info", "session", `renderRecallCard msgId=${msgId} renderer=${!!this.recallCardRenderer}`);
+		if (!this.recallCardRenderer) return;
+		try {
+			this.recallCardRenderer(msgId);
+		} catch (e) {
+			pushLog("warn", "session", `召回卡片渲染失败: ${e instanceof Error ? e.message : String(e)}`);
+		}
+	}
+	async getWorldbookPreview(scanText) {
+		try {
+			return await buildWorldbookContext(this, scanText);
+		} catch (e) {
+			pushLog("warn", "session", `世界书预览失败: ${e instanceof Error ? e.message : String(e)}`);
+			return "";
+		}
+	}
+	getConversationText(depth = 10) {
+		const chat = this.chat.getChat();
+		const userName = getUserName();
+		return chat.slice(-depth).map((m) => `${m.is_user ? userName : "Assistant"}: ${m.mes}`).join("\n");
+	}
+	getPersonaDescription() {
+		return getPersonaDescription();
+	}
+	getCharDescription() {
+		return getCharDescription();
+	}
+	getLastUserMessage() {
+		const chat = this.chat.getChat();
+		const idx = this.getLastUserIdx();
+		if (idx < 0) return "";
+		return chat[idx]?.mes ?? "";
+	}
+	async generateKeywordsForTable(tableName, aiPrompt) {
+		const cfg = this.getConfig();
+		const preset = this.getAiPresetForScene(cfg.tableFillPresetId);
+		if (!preset) throw new Error("未配置 AI 预设，请先在 API 配置中设置");
+		const rows = this.getTableData(tableName)[0]?.rows ?? [];
+		const messages = [{
+			role: "system",
+			content: aiPrompt
+		}, {
+			role: "user",
+			content: `表 ${tableName} 当前数据（${rows.length} 行）：\n${JSON.stringify(rows)}\n\n请根据以上表格内容生成用于触发世界书注入的关键词。只输出关键词，用逗号分隔。`
+		}];
+		return (await this.ai.chatCompletion(messages, {
+			baseURL: preset.baseURL,
+			apiKey: preset.apiKey,
+			customIncludeBody: preset.customIncludeBody,
+			customExcludeBody: preset.customExcludeBody,
+			customIncludeHeaders: preset.customIncludeHeaders
+		}, {
+			model: preset.model,
+			max_tokens: preset.maxTokens,
+			temperature: preset.temperature,
+			top_p: preset.topP,
+			frequency_penalty: preset.frequencyPenalty,
+			presence_penalty: preset.presencePenalty,
+			seed: preset.seed >= 0 ? preset.seed : void 0,
+			stream: preset.stream
+		}, void 0, {
+			timeoutMs: cfg.pending.aiCallTimeoutMs,
+			timeoutRetries: cfg.pending.aiTimeoutRetries
+		})).split(/[,，\n]/).map((k) => k.trim()).filter(Boolean);
 	}
 	startAutoSwitch() {
 		if (this.autoSwitchHandler) return;
@@ -13596,7 +13740,7 @@ var CranialNerveSession = class {
 	async reloadForChatChange() {
 		const mySeq = ++this.reloadSeq;
 		const prevToken = this.currentChatToken;
-		this.lastRecalledUserIdx = -1;
+		this.lastRecalledUserSendDate = null;
 		this.realGenerationPending = false;
 		try {
 			await this.writeQueue.waitForDrain(this.getConfig().pending.writeQueueDrainTimeoutMs);
@@ -13736,7 +13880,6 @@ var CranialNerveSession = class {
 			const preset = this.getConfig().tableTemplate.presets.find((p) => p.id === templateId);
 			if (preset) try {
 				this.initGameSession(preset.template, preset.id);
-				this.toastNotifier?.success(`已加载聊天模板：${preset.name}`);
 				return;
 			} catch (e) {
 				pushLog("warn", "session", `聊天模板加载失败，降级: ${e instanceof Error ? e.message : String(e)}`);
@@ -14016,6 +14159,9 @@ var CranialNerveSession = class {
 	getToastNotifier() {
 		return this.toastNotifier;
 	}
+	setRecallCardRenderer(fn) {
+		this.recallCardRenderer = fn;
+	}
 };
 var sessionInstance = null;
 function getSession() {
@@ -14063,7 +14209,7 @@ function injectStyle() {
 	document.head.appendChild(s);
 	styleInjected = true;
 }
-function escapeHtml$1(s) {
+function escapeHtml$2(s) {
 	return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 function getViewport() {
@@ -14086,7 +14232,7 @@ function show(type, text) {
     </div>
     <div class="cn-toast__bd">
       <i class="${ICONS[type]}"></i>
-      <span>${escapeHtml$1(text)}</span>
+      <span>${escapeHtml$2(text)}</span>
     </div>
   `;
 	vp.appendChild(item);
@@ -14118,7 +14264,7 @@ function progress(text) {
     </div>
     <div class="cn-toast__bd">
       <i class="fa-solid fa-spinner fa-spin"></i>
-      <span>${escapeHtml$1(text)}</span>
+      <span>${escapeHtml$2(text)}</span>
     </div>
     <div class="cn-toast__ft">
       <button class="cn-toast__term">终止</button>
@@ -14147,11 +14293,15 @@ function progress(text) {
 				setTimeout(() => item.remove(), 300);
 			}, 2e3);
 		},
+		close() {
+			item.classList.remove("cn-toast--show");
+			setTimeout(() => item.remove(), 300);
+		},
 		fail(errText) {
 			item.classList.remove("cn-toast--progress");
 			item.classList.add("cn-toast--error");
 			const bd = item.querySelector(".cn-toast__bd");
-			bd.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i><span>${escapeHtml$1(errText)}</span>`;
+			bd.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i><span>${escapeHtml$2(errText)}</span>`;
 			item.querySelector(".cn-toast__ft")?.remove();
 			setTimeout(() => {
 				item.classList.remove("cn-toast--show");
@@ -14168,6 +14318,162 @@ var toast = {
 	info: (text) => show("info", text),
 	progress
 };
+//#endregion
+//#region src/ui/recall-card/recall-card.css?inline
+var recall_card_default = ":host {\n  display: block;\n  margin: 0 0 6px 0;\n  font-family: inherit;\n}\n\n.cn-recall-card {\n  display: block;\n  border: 1px solid #e4efe8;\n  border-radius: 8px;\n  overflow: hidden;\n  background: #ffffff;\n  box-shadow: 0 1px 2px rgba(33, 48, 41, 0.04), 0 4px 14px rgba(61, 153, 96, 0.07);\n  font-size: 13px;\n  line-height: 1.65;\n  color: #22302a;\n}\n\n.cn-recall-card__head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 7px 12px;\n  background: linear-gradient(to bottom, #f2f9f4, #edf6f0);\n  border-bottom: 1px solid #e4efe8;\n}\n\n.cn-recall-card__icon {\n  color: #3d9960;\n  width: 14px;\n  height: 14px;\n  flex-shrink: 0;\n}\n\n.cn-recall-card__brand {\n  font-weight: 600;\n  color: #2c7a45;\n  font-size: 12.5px;\n  letter-spacing: 0.4px;\n}\n\n.cn-recall-card__count {\n  margin-left: auto;\n  font-size: 10.5px;\n  letter-spacing: 0.5px;\n  color: #64756b;\n  background: #ffffff;\n  border: 1px solid #d8eadf;\n  padding: 1px 8px;\n  border-radius: 999px;\n}\n\n.cn-recall-tabs {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: flex-start;\n}\n\n.cn-recall-tabs__radio {\n  display: none;\n}\n\n.cn-recall-tab {\n  display: flex;\n  align-items: baseline;\n  gap: 6px;\n  padding: 6px 12px;\n  cursor: pointer;\n  border-bottom: 2px solid transparent;\n  background: #f7fbf8;\n  min-width: 0;\n  transition:\n    background 0.15s ease,\n    border-color 0.15s ease;\n  user-select: none;\n}\n\n.cn-recall-tab:hover {\n  background: #eef7f0;\n}\n\n.cn-recall-tabs__radio:checked + .cn-recall-tab {\n  background: #ffffff;\n  border-bottom-color: #3d9960;\n}\n\n.cn-recall-tab__key {\n  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;\n  font-weight: 600;\n  font-size: 12px;\n  color: #22302a;\n}\n\n.cn-recall-tabs__radio:checked + .cn-recall-tab .cn-recall-tab__key {\n  color: #2c7a45;\n}\n\n.cn-recall-tab__time {\n  font-size: 10.5px;\n  color: #64756b;\n  white-space: nowrap;\n}\n\n.cn-recall-panel {\n  display: none;\n  width: 100%;\n  padding: 9px 12px 11px;\n  border-top: 1px solid #eef3ef;\n  order: 1;\n}\n\n.cn-recall-tabs__radio:checked + .cn-recall-tab + .cn-recall-panel {\n  display: block;\n  animation: cn-recall-panel-in 0.16s ease-out;\n}\n\n@keyframes cn-recall-panel-in {\n  from {\n    opacity: 0;\n    transform: translateY(2px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n\n.cn-recall-meta {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px;\n  margin-bottom: 7px;\n}\n\n.cn-recall-meta__chip {\n  display: inline-flex;\n  align-items: baseline;\n  gap: 5px;\n  background: #f2f8f4;\n  border: 1px solid #e0efe5;\n  border-radius: 6px;\n  padding: 1px 8px;\n  font-size: 11px;\n  color: #3c5147;\n  word-break: break-word;\n}\n\n.cn-recall-meta__label {\n  font-size: 9.5px;\n  letter-spacing: 1px;\n  color: #7d8f84;\n}\n\n.cn-recall-summary {\n  margin: 0;\n  font-size: 13px;\n  line-height: 1.75;\n  color: #2a3a31;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n.cn-recall-summary + .cn-recall-quote {\n  margin-top: 7px;\n}\n\n.cn-recall-quote {\n  margin: 0;\n  padding: 5px 10px;\n  background: #fbfdfc;\n  border-left: 2px solid #7cc496;\n  border-radius: 0 6px 6px 0;\n  font-size: 12.5px;\n  line-height: 1.7;\n  color: #52655a;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n.cn-recall-quote::before {\n  content: '“';\n  color: #7cc496;\n}\n\n.cn-recall-quote::after {\n  content: '”';\n  color: #7cc496;\n}\n\n.cn-recall-card__message {\n  display: block;\n  padding: 8px 12px 10px;\n  border-top: 1px solid #e4efe8;\n  background: #fbfdfc;\n  font-size: 13px;\n  line-height: 1.75;\n  white-space: pre-wrap;\n  word-break: break-word;\n  color: #22302a;\n}\n\n.cn-recall-card__tag {\n  display: inline-block;\n  margin: 0 6px 0 0;\n  font-size: 9.5px;\n  letter-spacing: 2px;\n  color: #7d8f84;\n  vertical-align: 2px;\n}\n";
+//#endregion
+//#region src/ui/recall-card/template.ts
+function escapeHtml$1(text) {
+	return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function svgIcon(cls, paths) {
+	return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+}
+var BRAIN_PATHS = "<path d=\"M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z\"/><path d=\"M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z\"/><path d=\"M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4\"/><path d=\"M12 13v8\"/>";
+function buildRecallCardHtml(payload, userText) {
+	const items = payload.items;
+	const uid = Math.random().toString(36).slice(2, 10);
+	const countText = `${items.length} 条记忆`;
+	let tabsHtml = "";
+	for (let i = 0; i < items.length; i++) {
+		const item = items[i];
+		if (!item) continue;
+		const checked = i === 0 ? " checked" : "";
+		const rid = `r-${uid}-${i}`;
+		tabsHtml += `<input type="radio" name="r-${uid}" id="${rid}" class="cn-recall-tabs__radio"${checked}>`;
+		tabsHtml += `<label for="${rid}" class="cn-recall-tab">`;
+		tabsHtml += `<span class="cn-recall-tab__key">${escapeHtml$1(item.key)}</span>`;
+		tabsHtml += `<span class="cn-recall-tab__time">${escapeHtml$1(item.timeDeltaText)}</span>`;
+		tabsHtml += `</label>`;
+		const timeRange = [item.timeStart, item.timeEnd].filter((s) => s.length > 0);
+		let meta = "";
+		if (timeRange.length > 0) meta += `<span class="cn-recall-meta__chip"><span class="cn-recall-meta__label">时间</span>${escapeHtml$1(timeRange.join(" ~ "))}</span>`;
+		if (item.location.length > 0) meta += `<span class="cn-recall-meta__chip"><span class="cn-recall-meta__label">地点</span>${escapeHtml$1(item.location)}</span>`;
+		tabsHtml += `<div class="cn-recall-panel">`;
+		if (meta.length > 0) tabsHtml += `<div class="cn-recall-meta">${meta}</div>`;
+		if (item.summary.length > 0) tabsHtml += `<p class="cn-recall-summary">${escapeHtml$1(item.summary)}</p>`;
+		if (item.keyDialogue.length > 0) tabsHtml += `<blockquote class="cn-recall-quote">${escapeHtml$1(item.keyDialogue)}</blockquote>`;
+		tabsHtml += `</div>`;
+	}
+	return `<div class="cn-recall-card"><div class="cn-recall-card__head">${svgIcon("cn-recall-card__icon", BRAIN_PATHS)}<span class="cn-recall-card__brand">CranialNerve</span><span class="cn-recall-card__count">${countText}</span></div><div class="cn-recall-tabs">${tabsHtml}</div><div class="cn-recall-card__message"><span class="cn-recall-card__tag">本回合输入</span>${escapeHtml$1(userText)}</div></div>`;
+}
+//#endregion
+//#region src/ui/recall-card/renderer.ts
+var HOST_CLASS = "cn-recall-host";
+var FLOOR_CLASS = "cn-has-recall";
+var FADED_DEPTH = 2;
+function installRecallRenderer(session) {
+	let disposed = false;
+	const getFloorEl = (msgId) => document.querySelector(`#chat .mes[mesid="${msgId}"]`);
+	const readPayload = (msgId) => {
+		try {
+			return parseRecallPayload(session.chat.readMessageExtra(msgId, RECALL_FIELD_PREFIX));
+		} catch {
+			return null;
+		}
+	};
+	const removeHost = (mesText) => {
+		mesText.querySelector(`:scope > .${HOST_CLASS}`)?.remove();
+	};
+	const cleanupFloorEl = (mesEl) => {
+		mesEl.classList.remove(FLOOR_CLASS);
+		const mesText = mesEl.querySelector(".mes_text");
+		if (mesText) removeHost(mesText);
+	};
+	const clearDomResidue = () => {
+		for (const host of document.querySelectorAll(`#chat .mes_text > .${HOST_CLASS}`)) host.remove();
+		for (const el of document.querySelectorAll(`#chat .mes.${FLOOR_CLASS}`)) el.classList.remove(FLOOR_CLASS);
+	};
+	function renderFloor(msgId) {
+		if (disposed) return;
+		const mesEl = getFloorEl(msgId);
+		if (!mesEl) return;
+		const mesText = mesEl.querySelector(".mes_text");
+		if (!mesText) return;
+		const chat = session.chat.getChat();
+		const msg = chat[msgId];
+		if (!msg || !msg.is_user) {
+			cleanupFloorEl(mesEl);
+			return;
+		}
+		const payload = session.getConfig().recallEnabled ? readPayload(msgId) : null;
+		if (!payload) {
+			cleanupFloorEl(mesEl);
+			return;
+		}
+		if (mesText.querySelector("#curEditTextarea")) return;
+		if (chat.length - 1 - msgId >= FADED_DEPTH) {
+			cleanupFloorEl(mesEl);
+			return;
+		}
+		const innerHtml = buildRecallCardHtml(payload, stripKeyLineFromMes(String(msg.mes ?? "")));
+		removeHost(mesText);
+		mesEl.classList.add(FLOOR_CLASS);
+		const host = document.createElement("div");
+		host.className = HOST_CLASS;
+		const shadow = host.attachShadow({ mode: "open" });
+		const styleEl = document.createElement("style");
+		styleEl.textContent = recall_card_default;
+		shadow.appendChild(styleEl);
+		const body = document.createElement("div");
+		body.innerHTML = innerHtml;
+		shadow.appendChild(body);
+		mesText.prepend(host);
+	}
+	const refreshAllFloors = () => {
+		if (disposed) return;
+		const chat = session.chat.getChat();
+		for (let i = 0; i < chat.length; i++) {
+			const msg = chat[i];
+			if (!msg || !msg.is_user) continue;
+			renderFloor(i);
+		}
+	};
+	function rescanAll() {
+		if (disposed) return;
+		clearDomResidue();
+		refreshAllFloors();
+	}
+	const onReload = () => {
+		rescanAll();
+	};
+	const onSingleFloor = (...args) => {
+		const id = args[0];
+		if (typeof id === "number") renderFloor(id);
+	};
+	const onUserRendered = (...args) => {
+		const id = args[0];
+		if (typeof id !== "number") return;
+		renderFloor(id);
+		refreshAllFloors();
+	};
+	const bindings = [
+		[EVENT_CHAT_LOADED, onReload],
+		[EVENT_MORE_MESSAGES_LOADED, onReload],
+		[EVENT_MESSAGE_DELETED, onReload],
+		[EVENT_USER_MESSAGE_RENDERED, onUserRendered],
+		[EVENT_MESSAGE_UPDATED, onSingleFloor],
+		[EVENT_MESSAGE_EDITED, onSingleFloor],
+		[EVENT_MESSAGE_SWIPED, onSingleFloor]
+	];
+	for (const [ev, fn] of bindings) session.event.on(ev, fn);
+	const onBeforeUnload = () => {
+		dispose();
+	};
+	window.addEventListener("beforeunload", onBeforeUnload);
+	function dispose() {
+		if (disposed) return;
+		disposed = true;
+		for (const [ev, fn] of bindings) session.event.off(ev, fn);
+		window.removeEventListener("beforeunload", onBeforeUnload);
+		clearDomResidue();
+	}
+	return {
+		renderFloor,
+		rescanAll,
+		dispose
+	};
+}
 //#endregion
 //#region node_modules/vue-router/dist/devtools-EWN81iOl.mjs
 /*!
@@ -44660,74 +44966,99 @@ var _hoisted_72 = ["selected"];
 var _hoisted_73 = {
 	key: 0,
 	class: "tpl-row",
-	style: { "margin-top": "8px" }
+	style: {
+		"margin-top": "8px",
+		"flex-direction": "column",
+		"align-items": "stretch"
+	}
 };
 var _hoisted_74 = { class: "tpl-field" };
-var _hoisted_75 = ["value", "onInput"];
-var _hoisted_76 = { class: "tpl-section" };
-var _hoisted_77 = { class: "tpl-cols" };
-var _hoisted_78 = ["onUpdate:modelValue"];
-var _hoisted_79 = ["onUpdate:modelValue"];
-var _hoisted_80 = ["onUpdate:modelValue"];
-var _hoisted_81 = ["value"];
-var _hoisted_82 = { class: "tpl-col-cell flags" };
-var _hoisted_83 = ["onClick"];
-var _hoisted_84 = ["onClick"];
-var _hoisted_85 = ["onClick"];
+var _hoisted_75 = ["onChange"];
+var _hoisted_76 = ["selected"];
+var _hoisted_77 = ["selected"];
+var _hoisted_78 = {
+	key: 0,
+	class: "tpl-field"
+};
+var _hoisted_79 = ["value", "onInput"];
+var _hoisted_80 = {
+	key: 1,
+	class: "tpl-field"
+};
+var _hoisted_81 = ["value", "onInput"];
+var _hoisted_82 = ["onClick"];
+var _hoisted_83 = {
+	key: 0,
+	style: {
+		"margin-top": "6px",
+		"font-size": "12px",
+		"color": "var(--cn-text-2)"
+	}
+};
+var _hoisted_84 = { class: "tpl-section" };
+var _hoisted_85 = { class: "tpl-cols" };
 var _hoisted_86 = ["onUpdate:modelValue"];
-var _hoisted_87 = ["onClick"];
-var _hoisted_88 = { class: "tpl-section" };
-var _hoisted_89 = ["onUpdate:modelValue"];
-var _hoisted_90 = { class: "tpl-section" };
-var _hoisted_91 = ["onUpdate:modelValue"];
-var _hoisted_92 = { class: "tpl-section" };
-var _hoisted_93 = ["onUpdate:modelValue"];
-var _hoisted_94 = {
+var _hoisted_87 = ["onUpdate:modelValue"];
+var _hoisted_88 = ["onUpdate:modelValue"];
+var _hoisted_89 = ["value"];
+var _hoisted_90 = { class: "tpl-col-cell flags" };
+var _hoisted_91 = ["onClick"];
+var _hoisted_92 = ["onClick"];
+var _hoisted_93 = ["onClick"];
+var _hoisted_94 = ["onUpdate:modelValue"];
+var _hoisted_95 = ["onClick"];
+var _hoisted_96 = { class: "tpl-section" };
+var _hoisted_97 = ["onUpdate:modelValue"];
+var _hoisted_98 = { class: "tpl-section" };
+var _hoisted_99 = ["onUpdate:modelValue"];
+var _hoisted_100 = { class: "tpl-section" };
+var _hoisted_101 = ["onUpdate:modelValue"];
+var _hoisted_102 = {
 	key: 2,
 	class: "prompt-editor"
 };
-var _hoisted_95 = {
+var _hoisted_103 = {
 	key: 1,
 	class: "prompt-split"
 };
-var _hoisted_96 = { class: "prompt-side" };
-var _hoisted_97 = { class: "cn-card__body" };
-var _hoisted_98 = ["onClick"];
-var _hoisted_99 = { class: "preset-list__name" };
-var _hoisted_100 = {
+var _hoisted_104 = { class: "prompt-side" };
+var _hoisted_105 = { class: "cn-card__body" };
+var _hoisted_106 = ["onClick"];
+var _hoisted_107 = { class: "preset-list__name" };
+var _hoisted_108 = {
 	key: 0,
 	class: "fa-solid fa-star preset-list__default",
 	title: "默认预设"
 };
-var _hoisted_101 = { class: "preset-list__count" };
-var _hoisted_102 = ["onClick"];
-var _hoisted_103 = ["onClick"];
-var _hoisted_104 = ["onClick"];
-var _hoisted_105 = { class: "prompt-editor" };
-var _hoisted_106 = { class: "cn-card__head" };
-var _hoisted_107 = { class: "prompt-editor__desc" };
-var _hoisted_108 = { class: "cn-card__body" };
-var _hoisted_109 = { class: "seg-item" };
-var _hoisted_110 = { class: "seg-item__bar" };
-var _hoisted_111 = ["title", "onClick"];
-var _hoisted_112 = ["onUpdate:modelValue"];
-var _hoisted_113 = { class: "seg-item__seq" };
-var _hoisted_114 = ["onClick"];
-var _hoisted_115 = { class: "seg-add-row" };
-var _hoisted_116 = ["onClick"];
-var _hoisted_117 = {
+var _hoisted_109 = { class: "preset-list__count" };
+var _hoisted_110 = ["onClick"];
+var _hoisted_111 = ["onClick"];
+var _hoisted_112 = ["onClick"];
+var _hoisted_113 = { class: "prompt-editor" };
+var _hoisted_114 = { class: "cn-card__head" };
+var _hoisted_115 = { class: "prompt-editor__desc" };
+var _hoisted_116 = { class: "cn-card__body" };
+var _hoisted_117 = { class: "seg-item" };
+var _hoisted_118 = { class: "seg-item__bar" };
+var _hoisted_119 = ["title", "onClick"];
+var _hoisted_120 = ["onUpdate:modelValue"];
+var _hoisted_121 = { class: "seg-item__seq" };
+var _hoisted_122 = ["onClick"];
+var _hoisted_123 = { class: "seg-add-row" };
+var _hoisted_124 = ["onClick"];
+var _hoisted_125 = {
 	key: 0,
 	class: "prompt-foot"
 };
-var _hoisted_118 = { class: "cn-space" };
-var _hoisted_119 = { class: "cn-btn" };
-var _hoisted_120 = { class: "cn-modal" };
-var _hoisted_121 = { class: "cn-modal__code" };
-var _hoisted_122 = { class: "prompt-foot" };
-var _hoisted_123 = { class: "cn-space" };
-var _hoisted_124 = { class: "cn-btn" };
-var _hoisted_125 = { class: "cn-modal" };
-var _hoisted_126 = { class: "cn-modal__code" };
+var _hoisted_126 = { class: "cn-space" };
+var _hoisted_127 = { class: "cn-btn" };
+var _hoisted_128 = { class: "cn-modal" };
+var _hoisted_129 = { class: "cn-modal__code" };
+var _hoisted_130 = { class: "prompt-foot" };
+var _hoisted_131 = { class: "cn-space" };
+var _hoisted_132 = { class: "cn-btn" };
+var _hoisted_133 = { class: "cn-modal" };
+var _hoisted_134 = { class: "cn-modal__code" };
 var varExample = "{{变量名}}";
 //#endregion
 //#region src/ui/pages/PromptConfig.vue
@@ -44865,7 +45196,24 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 		const previewJson = /* @__PURE__ */ ref("");
 		async function openPreview() {
 			save();
-			const realValues = { ...buildVarValues() };
+			if (!session.isChatActive()) {
+				toast.warning("请先进入对话再预览（预览需读取对话与世界书数据）");
+				return;
+			}
+			const conversationText = session.getConversationText(10);
+			const worldbookContent = await session.getWorldbookPreview(conversationText);
+			const personaDescription = session.getPersonaDescription();
+			const charDescription = session.getCharDescription();
+			const lastUserMsg = session.getLastUserMessage();
+			const values = buildVarValues();
+			const realValues = {
+				...values,
+				worldbook: worldbookContent,
+				conversation: conversationText,
+				persona: personaDescription,
+				charDescription,
+				userInput: lastUserMsg || values.userInput
+			};
 			if (activeScene.value === "chronicleRecall") try {
 				const rows = session.getTableRowsWithRowid("cn_chronicle")[0]?.rows ?? [];
 				if (rows.length > 0) {
@@ -44986,7 +45334,9 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 					entryType: "constant",
 					splitByRow: false,
 					keywordColumn: "",
-					keywords: ""
+					keywords: "",
+					keywordMode: "custom",
+					keywordAiPrompt: ""
 				}
 			};
 		}
@@ -45002,13 +45352,47 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 			ensureExportConfig(table);
 			table.exportConfig.keywords = value;
 		}
+		function setExportKeywordMode(table, value) {
+			ensureExportConfig(table);
+			table.exportConfig.keywordMode = value;
+		}
+		function setExportKeywordAiPrompt(table, value) {
+			ensureExportConfig(table);
+			table.exportConfig.keywordAiPrompt = value;
+		}
+		async function generateKeywords(table) {
+			if (!table.name) {
+				toast.warning("请先填写表名");
+				return;
+			}
+			const prompt = table.exportConfig?.keywordAiPrompt?.trim();
+			if (!prompt) {
+				toast.warning("请先填写 AI Prompt");
+				return;
+			}
+			try {
+				const keys = await session.generateKeywordsForTable(table.name, prompt);
+				if (keys.length === 0) {
+					toast.info("AI 未生成关键词");
+					return;
+				}
+				ensureExportConfig(table);
+				table.exportConfig.keywords = keys.join(", ");
+				store.save();
+				toast.success(`已生成 ${keys.length} 个关键词`);
+			} catch (e) {
+				toast.error(e instanceof Error ? e.message : String(e));
+			}
+		}
 		function ensureExportConfig(table) {
 			if (!table.exportConfig) table.exportConfig = {
 				enabled: true,
 				entryType: "constant",
 				splitByRow: false,
 				keywordColumn: "",
-				keywords: ""
+				keywords: "",
+				keywordMode: "custom",
+				keywordAiPrompt: ""
 			};
 		}
 		function freshColumn() {
@@ -45543,7 +45927,7 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 									placeholder: "表的用途与每列填写约束（经 tables 占位符注入 AI prompt）"
 								}, null, 8, _hoisted_63), [[vModelText, table.note]])]),
 								createBaseVNode("div", _hoisted_64, [
-									_cache[41] || (_cache[41] = createBaseVNode("label", { class: "tpl-label" }, "世界书注入", -1)),
+									_cache[44] || (_cache[44] = createBaseVNode("label", { class: "tpl-label" }, "世界书注入", -1)),
 									createBaseVNode("div", _hoisted_65, [createBaseVNode("div", _hoisted_66, [_cache[38] || (_cache[38] = createBaseVNode("label", {
 										class: "tpl-label",
 										style: { "font-size": "12px" }
@@ -45568,17 +45952,49 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 									table.exportConfig?.entryType === "keyword" ? (openBlock(), createElementBlock("div", _hoisted_73, [createBaseVNode("div", _hoisted_74, [_cache[40] || (_cache[40] = createBaseVNode("label", {
 										class: "tpl-label",
 										style: { "font-size": "12px" }
+									}, "关键词来源", -1)), createBaseVNode("select", {
+										class: "cn-select",
+										style: { "width": "auto" },
+										onChange: ($event) => setExportKeywordMode(table, $event.target.value)
+									}, [createBaseVNode("option", {
+										value: "custom",
+										selected: (table.exportConfig?.keywordMode ?? "custom") === "custom"
+									}, " 自定义关键词 ", 8, _hoisted_76), createBaseVNode("option", {
+										value: "ai_prompt",
+										selected: table.exportConfig?.keywordMode === "ai_prompt"
+									}, " AI Prompt 生成 ", 8, _hoisted_77)], 40, _hoisted_75)]), (table.exportConfig?.keywordMode ?? "custom") === "custom" ? (openBlock(), createElementBlock("div", _hoisted_78, [_cache[41] || (_cache[41] = createBaseVNode("label", {
+										class: "tpl-label",
+										style: { "font-size": "12px" }
 									}, "触发关键词", -1)), createBaseVNode("input", {
 										class: "cn-input",
 										value: table.exportConfig?.keywords ?? "",
 										onInput: ($event) => setExportKeywords(table, $event.target.value),
 										placeholder: "逗号分隔，如：背包, 物品, 装备"
-									}, null, 40, _hoisted_75)])])) : createCommentVNode("", true)
+									}, null, 40, _hoisted_79)])) : (openBlock(), createElementBlock("div", _hoisted_80, [
+										_cache[43] || (_cache[43] = createBaseVNode("label", {
+											class: "tpl-label",
+											style: { "font-size": "12px" }
+										}, "AI Prompt（生成关键词用）", -1)),
+										createBaseVNode("textarea", {
+											class: "cn-textarea tpl-textarea",
+											value: table.exportConfig?.keywordAiPrompt ?? "",
+											onInput: ($event) => setExportKeywordAiPrompt(table, $event.target.value),
+											rows: "2",
+											placeholder: "指示 AI 根据表格内容生成触发关键词，如：请根据背包表的物品种类生成可能触发该表注入的关键词"
+										}, null, 40, _hoisted_81),
+										createBaseVNode("button", {
+											class: "cn-btn cn-btn--sm",
+											style: { "margin-top": "6px" },
+											type: "button",
+											onClick: ($event) => generateKeywords(table)
+										}, [..._cache[42] || (_cache[42] = [createBaseVNode("i", { class: "fa-solid fa-wand-magic-sparkles" }, null, -1), createTextVNode(" 生成关键词 ", -1)])], 8, _hoisted_82),
+										table.exportConfig?.keywords ? (openBlock(), createElementBlock("div", _hoisted_83, " 当前关键词：" + toDisplayString(table.exportConfig.keywords), 1)) : createCommentVNode("", true)
+									]))])) : createCommentVNode("", true)
 								]),
-								createBaseVNode("div", _hoisted_76, [createBaseVNode("div", { class: "tpl-section__head" }, [_cache[43] || (_cache[43] = createBaseVNode("label", { class: "tpl-label" }, "列定义", -1)), createBaseVNode("button", {
+								createBaseVNode("div", _hoisted_84, [createBaseVNode("div", { class: "tpl-section__head" }, [_cache[46] || (_cache[46] = createBaseVNode("label", { class: "tpl-label" }, "列定义", -1)), createBaseVNode("button", {
 									class: "cn-btn cn-btn--sm",
 									onClick: addColumnT
-								}, [..._cache[42] || (_cache[42] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode("添加列 ", -1)])])]), createBaseVNode("div", _hoisted_77, [_cache[45] || (_cache[45] = createBaseVNode("div", { class: "tpl-col-head" }, [
+								}, [..._cache[45] || (_cache[45] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode("添加列 ", -1)])])]), createBaseVNode("div", _hoisted_85, [_cache[48] || (_cache[48] = createBaseVNode("div", { class: "tpl-col-head" }, [
 									createBaseVNode("span", { class: "tpl-col-cell name" }, "英文名"),
 									createBaseVNode("span", { class: "tpl-col-cell name" }, "中文名"),
 									createBaseVNode("span", { class: "tpl-col-cell type" }, "类型"),
@@ -45594,12 +46010,12 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 											class: "cn-input tpl-col-cell name",
 											"onUpdate:modelValue": ($event) => col.name = $event,
 											placeholder: "col_name"
-										}, null, 8, _hoisted_78), [[vModelText, col.name]]),
+										}, null, 8, _hoisted_86), [[vModelText, col.name]]),
 										withDirectives(createBaseVNode("input", {
 											class: "cn-input tpl-col-cell name",
 											"onUpdate:modelValue": ($event) => col.displayName = $event,
 											placeholder: "中文名"
-										}, null, 8, _hoisted_79), [[vModelText, col.displayName]]),
+										}, null, 8, _hoisted_87), [[vModelText, col.displayName]]),
 										withDirectives(createBaseVNode("select", {
 											class: "cn-select tpl-col-cell type",
 											"onUpdate:modelValue": ($event) => col.type = $event
@@ -45607,63 +46023,63 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 											return createBaseVNode("option", {
 												key: t,
 												value: t
-											}, toDisplayString(t), 9, _hoisted_81);
-										}), 64))], 8, _hoisted_80), [[vModelSelect, col.type]]),
-										createBaseVNode("span", _hoisted_82, [
+											}, toDisplayString(t), 9, _hoisted_89);
+										}), 64))], 8, _hoisted_88), [[vModelSelect, col.type]]),
+										createBaseVNode("span", _hoisted_90, [
 											createBaseVNode("button", {
 												class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": col.constraints?.primaryKey }]),
 												title: "主键",
 												onClick: ($event) => toggleConstraint(col, "primaryKey")
-											}, " PK ", 10, _hoisted_83),
+											}, " PK ", 10, _hoisted_91),
 											createBaseVNode("button", {
 												class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": col.constraints?.unique }]),
 												title: "唯一",
 												onClick: ($event) => toggleConstraint(col, "unique")
-											}, " UQ ", 10, _hoisted_84),
+											}, " UQ ", 10, _hoisted_92),
 											createBaseVNode("button", {
 												class: normalizeClass(["cn-btn cn-btn--xs", { "cn-btn--primary": !col.constraints?.nullable }]),
 												title: "非空",
 												onClick: ($event) => toggleConstraint(col, "nullable")
-											}, " NN ", 10, _hoisted_85)
+											}, " NN ", 10, _hoisted_93)
 										]),
 										withDirectives(createBaseVNode("input", {
 											class: "cn-input tpl-col-cell note",
 											"onUpdate:modelValue": ($event) => col.note = $event,
 											placeholder: "列说明（注入 AI prompt）"
-										}, null, 8, _hoisted_86), [[vModelText, col.note]]),
+										}, null, 8, _hoisted_94), [[vModelText, col.note]]),
 										createBaseVNode("button", {
 											class: "cn-btn cn-btn--sm cn-btn--text tpl-col-cell del",
 											title: "删除列",
 											onClick: ($event) => removeColumnT(ci)
-										}, [..._cache[44] || (_cache[44] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_87)
+										}, [..._cache[47] || (_cache[47] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_95)
 									]);
 								}), 128))])]),
-								createBaseVNode("div", _hoisted_88, [_cache[46] || (_cache[46] = createBaseVNode("label", { class: "tpl-label" }, "新增行提示 (insertHint)", -1)), withDirectives(createBaseVNode("textarea", {
+								createBaseVNode("div", _hoisted_96, [_cache[49] || (_cache[49] = createBaseVNode("label", { class: "tpl-label" }, "新增行提示 (insertHint)", -1)), withDirectives(createBaseVNode("textarea", {
 									class: "cn-textarea tpl-textarea",
 									"onUpdate:modelValue": ($event) => table.insertHint = $event,
 									rows: "2",
 									placeholder: "INSERT 时机/格式/SQL示例（注入 AI prompt）"
-								}, null, 8, _hoisted_89), [[vModelText, table.insertHint]])]),
-								createBaseVNode("div", _hoisted_90, [_cache[47] || (_cache[47] = createBaseVNode("label", { class: "tpl-label" }, "更新行提示 (updateHint)", -1)), withDirectives(createBaseVNode("textarea", {
+								}, null, 8, _hoisted_97), [[vModelText, table.insertHint]])]),
+								createBaseVNode("div", _hoisted_98, [_cache[50] || (_cache[50] = createBaseVNode("label", { class: "tpl-label" }, "更新行提示 (updateHint)", -1)), withDirectives(createBaseVNode("textarea", {
 									class: "cn-textarea tpl-textarea",
 									"onUpdate:modelValue": ($event) => table.updateHint = $event,
 									rows: "2",
 									placeholder: "UPDATE 时机/约束（注入 AI prompt）"
-								}, null, 8, _hoisted_91), [[vModelText, table.updateHint]])]),
-								createBaseVNode("div", _hoisted_92, [_cache[48] || (_cache[48] = createBaseVNode("label", { class: "tpl-label" }, "删除行提示 (deleteHint)", -1)), withDirectives(createBaseVNode("textarea", {
+								}, null, 8, _hoisted_99), [[vModelText, table.updateHint]])]),
+								createBaseVNode("div", _hoisted_100, [_cache[51] || (_cache[51] = createBaseVNode("label", { class: "tpl-label" }, "删除行提示 (deleteHint)", -1)), withDirectives(createBaseVNode("textarea", {
 									class: "cn-textarea tpl-textarea",
 									"onUpdate:modelValue": ($event) => table.deleteHint = $event,
 									rows: "2",
 									placeholder: "DELETE 时机/约束（注入 AI prompt）"
-								}, null, 8, _hoisted_93), [[vModelText, table.deleteHint]])])
+								}, null, 8, _hoisted_101), [[vModelText, table.deleteHint]])])
 							])) : createCommentVNode("", true)]),
 							_: 2
 						}, 1024)], 2);
-					}), 128))])])) : (openBlock(), createElementBlock("div", _hoisted_94, [..._cache[49] || (_cache[49] = [createBaseVNode("div", { class: "cn-card__body template-editor-empty" }, [createBaseVNode("span", null, "从左侧选择一个模板预设开始编辑")], -1)])]))])) : createCommentVNode("", true),
-					!showTemplate.value ? (openBlock(), createElementBlock("div", _hoisted_95, [createBaseVNode("div", _hoisted_96, [createBaseVNode("div", { class: "cn-card__head" }, [_cache[51] || (_cache[51] = createBaseVNode("span", null, "预设", -1)), createBaseVNode("button", {
+					}), 128))])])) : (openBlock(), createElementBlock("div", _hoisted_102, [..._cache[52] || (_cache[52] = [createBaseVNode("div", { class: "cn-card__body template-editor-empty" }, [createBaseVNode("span", null, "从左侧选择一个模板预设开始编辑")], -1)])]))])) : createCommentVNode("", true),
+					!showTemplate.value ? (openBlock(), createElementBlock("div", _hoisted_103, [createBaseVNode("div", _hoisted_104, [createBaseVNode("div", { class: "cn-card__head" }, [_cache[54] || (_cache[54] = createBaseVNode("span", null, "预设", -1)), createBaseVNode("button", {
 						class: "cn-btn cn-btn--sm",
 						onClick: newPreset
-					}, [..._cache[50] || (_cache[50] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode(" 新建 ", -1)])])]), createBaseVNode("div", _hoisted_97, [createVNode(TransitionGroup, {
+					}, [..._cache[53] || (_cache[53] = [createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1), createTextVNode(" 新建 ", -1)])])]), createBaseVNode("div", _hoisted_105, [createVNode(TransitionGroup, {
 						name: "cn-list",
 						tag: "ul",
 						class: "preset-list"
@@ -45674,29 +46090,29 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 								class: normalizeClass(["preset-list__item", { "preset-list__item--active": p.id === sceneConfig.value.activeId }]),
 								onClick: ($event) => selectPreset(p.id)
 							}, [
-								createBaseVNode("span", _hoisted_99, [createTextVNode(toDisplayString(p.name) + " ", 1), p.id === sceneConfig.value.defaultId ? (openBlock(), createElementBlock("i", _hoisted_100)) : createCommentVNode("", true)]),
-								createBaseVNode("span", _hoisted_101, toDisplayString(p.segments.length) + "段", 1),
+								createBaseVNode("span", _hoisted_107, [createTextVNode(toDisplayString(p.name) + " ", 1), p.id === sceneConfig.value.defaultId ? (openBlock(), createElementBlock("i", _hoisted_108)) : createCommentVNode("", true)]),
+								createBaseVNode("span", _hoisted_109, toDisplayString(p.segments.length) + "段", 1),
 								p.id !== sceneConfig.value.activeId ? (openBlock(), createElementBlock("button", {
 									key: 0,
 									class: "cn-btn cn-btn--sm cn-btn--text",
 									title: "设为当前",
 									onClick: withModifiers(($event) => selectPreset(p.id), ["stop"])
-								}, [..._cache[52] || (_cache[52] = [createBaseVNode("i", { class: "fa-solid fa-check" }, null, -1)])], 8, _hoisted_102)) : createCommentVNode("", true),
+								}, [..._cache[55] || (_cache[55] = [createBaseVNode("i", { class: "fa-solid fa-check" }, null, -1)])], 8, _hoisted_110)) : createCommentVNode("", true),
 								p.id !== sceneConfig.value.defaultId ? (openBlock(), createElementBlock("button", {
 									key: 1,
 									class: "cn-btn cn-btn--sm cn-btn--text",
 									title: "设为默认",
 									onClick: withModifiers(($event) => setDefaultPreset(p.id), ["stop"])
-								}, [..._cache[53] || (_cache[53] = [createBaseVNode("i", { class: "fa-solid fa-star" }, null, -1)])], 8, _hoisted_103)) : createCommentVNode("", true),
+								}, [..._cache[56] || (_cache[56] = [createBaseVNode("i", { class: "fa-solid fa-star" }, null, -1)])], 8, _hoisted_111)) : createCommentVNode("", true),
 								createBaseVNode("button", {
 									class: "cn-btn cn-btn--sm cn-btn--text",
 									title: "删除",
 									onClick: withModifiers(($event) => deletePreset(p.id), ["stop"])
-								}, [..._cache[54] || (_cache[54] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_104)
-							], 10, _hoisted_98);
+								}, [..._cache[57] || (_cache[57] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_112)
+							], 10, _hoisted_106);
 						}), 128))]),
 						_: 1
-					})])]), createBaseVNode("div", _hoisted_105, [createBaseVNode("div", _hoisted_106, [createBaseVNode("span", null, toDisplayString(activePreset.value?.name), 1), createBaseVNode("span", _hoisted_107, toDisplayString(scenes.find((s) => s.key === activeScene.value)?.desc), 1)]), createBaseVNode("div", _hoisted_108, [createVNode(unref(import_vuedraggable_umd.default), {
+					})])]), createBaseVNode("div", _hoisted_113, [createBaseVNode("div", _hoisted_114, [createBaseVNode("span", null, toDisplayString(activePreset.value?.name), 1), createBaseVNode("span", _hoisted_115, toDisplayString(scenes.find((s) => s.key === activeScene.value)?.desc), 1)]), createBaseVNode("div", _hoisted_116, [createVNode(unref(import_vuedraggable_umd.default), {
 						list: activePreset.value?.segments ?? [],
 						"item-key": "id",
 						animation: 150,
@@ -45704,41 +46120,41 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 						"ghost-class": "seg-item--ghost",
 						class: "block-list"
 					}, {
-						item: withCtx(({ element: seg, index: si }) => [createBaseVNode("div", _hoisted_109, [createBaseVNode("div", _hoisted_110, [
-							_cache[56] || (_cache[56] = createBaseVNode("i", { class: "fa-solid fa-grip-vertical seg-item__grip" }, null, -1)),
+						item: withCtx(({ element: seg, index: si }) => [createBaseVNode("div", _hoisted_117, [createBaseVNode("div", _hoisted_118, [
+							_cache[59] || (_cache[59] = createBaseVNode("i", { class: "fa-solid fa-grip-vertical seg-item__grip" }, null, -1)),
 							createBaseVNode("button", {
 								class: "seg-item__role",
 								title: `点击切换角色（当前 ${roleLabels[seg.role]}）`,
 								onClick: ($event) => cycleRole(seg)
-							}, toDisplayString(roleLabels[seg.role]), 9, _hoisted_111),
+							}, toDisplayString(roleLabels[seg.role]), 9, _hoisted_119),
 							withDirectives(createBaseVNode("input", {
 								class: "cn-input seg-item__name",
 								"onUpdate:modelValue": ($event) => seg.name = $event,
 								placeholder: "段名称"
-							}, null, 8, _hoisted_112), [[vModelText, seg.name]]),
-							createBaseVNode("span", _hoisted_113, "#" + toDisplayString(globalIndex(si)), 1),
+							}, null, 8, _hoisted_120), [[vModelText, seg.name]]),
+							createBaseVNode("span", _hoisted_121, "#" + toDisplayString(globalIndex(si)), 1),
 							createBaseVNode("button", {
 								class: "cn-btn cn-btn--sm cn-btn--text",
 								title: "删除",
 								onClick: ($event) => removeSegment(seg.id)
-							}, [..._cache[55] || (_cache[55] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_114)
+							}, [..._cache[58] || (_cache[58] = [createBaseVNode("i", { class: "fa-solid fa-trash" }, null, -1)])], 8, _hoisted_122)
 						]), createVNode(PromptSegmentEditor_default, {
 							modelValue: seg.content,
 							"onUpdate:modelValue": ($event) => seg.content = $event
 						}, null, 8, ["modelValue", "onUpdate:modelValue"])])]),
 						_: 1
-					}, 8, ["list"]), createBaseVNode("div", _hoisted_115, [(openBlock(), createElementBlock(Fragment, null, renderList(roles, (r) => {
+					}, 8, ["list"]), createBaseVNode("div", _hoisted_123, [(openBlock(), createElementBlock(Fragment, null, renderList(roles, (r) => {
 						return createBaseVNode("button", {
 							key: r,
 							class: "cn-btn cn-btn--sm",
 							onClick: ($event) => addSegment(r)
-						}, [_cache[57] || (_cache[57] = createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1)), createTextVNode(" " + toDisplayString(roleLabels[r]), 1)], 8, _hoisted_116);
+						}, [_cache[60] || (_cache[60] = createBaseVNode("i", { class: "fa-solid fa-plus" }, null, -1)), createTextVNode(" " + toDisplayString(roleLabels[r]), 1)], 8, _hoisted_124);
 					}), 64))])])])])) : createCommentVNode("", true)
 				]),
-				showTemplate.value ? (openBlock(), createElementBlock("div", _hoisted_117, [_cache[61] || (_cache[61] = createBaseVNode("span", { class: "prompt-foot__hint" }, " 每个模板预设含多张数据表及其 AI 行为提示词。导入支持 CN 和 shujuku 两种格式。 ", -1)), createBaseVNode("div", _hoisted_118, [
-					createBaseVNode("label", _hoisted_119, [
-						_cache[58] || (_cache[58] = createBaseVNode("i", { class: "fa-solid fa-upload" }, null, -1)),
-						_cache[59] || (_cache[59] = createTextVNode(" 导入 ", -1)),
+				showTemplate.value ? (openBlock(), createElementBlock("div", _hoisted_125, [_cache[64] || (_cache[64] = createBaseVNode("span", { class: "prompt-foot__hint" }, " 每个模板预设含多张数据表及其 AI 行为提示词。导入支持 CN 和 shujuku 两种格式。 ", -1)), createBaseVNode("div", _hoisted_126, [
+					createBaseVNode("label", _hoisted_127, [
+						_cache[61] || (_cache[61] = createBaseVNode("i", { class: "fa-solid fa-upload" }, null, -1)),
+						_cache[62] || (_cache[62] = createTextVNode(" 导入 ", -1)),
 						createBaseVNode("input", {
 							type: "file",
 							accept: "application/json,.json",
@@ -45749,7 +46165,7 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 					createBaseVNode("button", {
 						class: "cn-btn",
 						onClick: exportTemplate
-					}, [..._cache[60] || (_cache[60] = [createBaseVNode("i", { class: "fa-solid fa-download" }, null, -1), createTextVNode(" 导出 ", -1)])]),
+					}, [..._cache[63] || (_cache[63] = [createBaseVNode("i", { class: "fa-solid fa-download" }, null, -1), createTextVNode(" 导出 ", -1)])]),
 					createBaseVNode("button", {
 						class: "cn-btn cn-btn--primary",
 						onClick: saveTemplate
@@ -45760,20 +46176,20 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 						key: 0,
 						class: "cn-modal-mask",
 						onClick: withModifiers(closeTemplatePreview, ["self"])
-					}, [createBaseVNode("div", _hoisted_120, [createBaseVNode("div", { class: "cn-modal__head" }, [_cache[63] || (_cache[63] = createBaseVNode("span", null, "选中表注入 AI prompt 的内容", -1)), createBaseVNode("button", {
+					}, [createBaseVNode("div", _hoisted_128, [createBaseVNode("div", { class: "cn-modal__head" }, [_cache[66] || (_cache[66] = createBaseVNode("span", null, "选中表注入 AI prompt 的内容", -1)), createBaseVNode("button", {
 						class: "cn-btn cn-btn--sm cn-btn--text",
 						onClick: closeTemplatePreview
-					}, [..._cache[62] || (_cache[62] = [createBaseVNode("i", { class: "fa-solid fa-xmark" }, null, -1)])])]), createBaseVNode("pre", _hoisted_121, toDisplayString(previewTemplateJson.value), 1)])])) : createCommentVNode("", true)]),
+					}, [..._cache[65] || (_cache[65] = [createBaseVNode("i", { class: "fa-solid fa-xmark" }, null, -1)])])]), createBaseVNode("pre", _hoisted_129, toDisplayString(previewTemplateJson.value), 1)])])) : createCommentVNode("", true)]),
 					_: 1
 				}),
-				!showTemplate.value ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [createBaseVNode("div", _hoisted_122, [createBaseVNode("span", { class: "prompt-foot__hint" }, [
-					_cache[64] || (_cache[64] = createTextVNode(" 段内用 ", -1)),
+				!showTemplate.value ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [createBaseVNode("div", _hoisted_130, [createBaseVNode("span", { class: "prompt-foot__hint" }, [
+					_cache[67] || (_cache[67] = createTextVNode(" 段内用 ", -1)),
 					createBaseVNode("code", null, toDisplayString(varExample)),
-					_cache[65] || (_cache[65] = createTextVNode(" 插入变量。点击角色标签切换 System/User/Assistant，拖拽手柄调整顺序。多个段按顺序拼接，模拟多轮对话。 ", -1))
-				]), createBaseVNode("div", _hoisted_123, [
-					createBaseVNode("label", _hoisted_124, [
-						_cache[66] || (_cache[66] = createBaseVNode("i", { class: "fa-solid fa-upload" }, null, -1)),
-						_cache[67] || (_cache[67] = createTextVNode(" 导入 ", -1)),
+					_cache[68] || (_cache[68] = createTextVNode(" 插入变量。点击角色标签切换 System/User/Assistant，拖拽手柄调整顺序。多个段按顺序拼接，模拟多轮对话。 ", -1))
+				]), createBaseVNode("div", _hoisted_131, [
+					createBaseVNode("label", _hoisted_132, [
+						_cache[69] || (_cache[69] = createBaseVNode("i", { class: "fa-solid fa-upload" }, null, -1)),
+						_cache[70] || (_cache[70] = createTextVNode(" 导入 ", -1)),
 						createBaseVNode("input", {
 							type: "file",
 							accept: "application/json,.json",
@@ -45784,11 +46200,11 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 					createBaseVNode("button", {
 						class: "cn-btn",
 						onClick: exportPreset
-					}, [..._cache[68] || (_cache[68] = [createBaseVNode("i", { class: "fa-solid fa-download" }, null, -1), createTextVNode(" 导出 ", -1)])]),
+					}, [..._cache[71] || (_cache[71] = [createBaseVNode("i", { class: "fa-solid fa-download" }, null, -1), createTextVNode(" 导出 ", -1)])]),
 					createBaseVNode("button", {
 						class: "cn-btn",
 						onClick: openPreview
-					}, [..._cache[69] || (_cache[69] = [createBaseVNode("i", { class: "fa-solid fa-eye" }, null, -1), createTextVNode(" 预览 ", -1)])]),
+					}, [..._cache[72] || (_cache[72] = [createBaseVNode("i", { class: "fa-solid fa-eye" }, null, -1), createTextVNode(" 预览 ", -1)])]),
 					createBaseVNode("button", {
 						class: "cn-btn cn-btn--primary",
 						onClick: saveAll
@@ -45798,10 +46214,10 @@ var PromptConfig_default = /* @__PURE__ */ defineComponent({
 						key: 0,
 						class: "cn-modal-mask",
 						onClick: withModifiers(closePreview, ["self"])
-					}, [createBaseVNode("div", _hoisted_125, [createBaseVNode("div", { class: "cn-modal__head" }, [_cache[71] || (_cache[71] = createBaseVNode("span", null, "发给 AI 的 messages", -1)), createBaseVNode("button", {
+					}, [createBaseVNode("div", _hoisted_133, [createBaseVNode("div", { class: "cn-modal__head" }, [_cache[74] || (_cache[74] = createBaseVNode("span", null, "发给 AI 的 messages", -1)), createBaseVNode("button", {
 						class: "cn-btn cn-btn--sm cn-btn--text",
 						onClick: closePreview
-					}, [..._cache[70] || (_cache[70] = [createBaseVNode("i", { class: "fa-solid fa-xmark" }, null, -1)])])]), createBaseVNode("pre", _hoisted_126, toDisplayString(previewJson.value), 1)])])) : createCommentVNode("", true)]),
+					}, [..._cache[73] || (_cache[73] = [createBaseVNode("i", { class: "fa-solid fa-xmark" }, null, -1)])])]), createBaseVNode("pre", _hoisted_134, toDisplayString(previewJson.value), 1)])])) : createCommentVNode("", true)]),
 					_: 1
 				})], 64)) : createCommentVNode("", true)
 			]);
@@ -46382,11 +46798,14 @@ async function boot() {
 	const session = getSession();
 	session.setProgressNotifier(toast.progress);
 	session.setToastNotifier(toast);
+	const recallRenderer = installRecallRenderer(session);
+	session.setRecallCardRenderer((msgId) => recallRenderer.renderFloor(msgId));
 	await session.init();
 	injectTheme();
 	mountDrawer();
 	mountWandButton();
 	hookSendBlock();
+	recallRenderer.rescanAll();
 }
 function injectTheme() {
 	if (themeInjected) return;
@@ -46483,9 +46902,9 @@ function closePanel() {
 }
 //#endregion
 //#region src/core/regex-scripts.ts
-var CN_REGEX_PREFIX = "CN - ";
-var PROMPT_SCRIPT = {
-	scriptName: "CN - 召回 AI 清理",
+var CN_REGEX_PREFIXES = ["CranialNerve - ", "CN - "];
+var PROMPT_CLEAN_SCRIPT = {
+	scriptName: "CranialNerve - 召回防污染",
 	findRegex: "/\\[CN_recall_ui\\][\\s\\S]*?\\[\\/CN_recall_ui\\]\\n?/",
 	replaceString: "",
 	trimStrings: [],
@@ -46498,9 +46917,37 @@ var PROMPT_SCRIPT = {
 	minDepth: null,
 	maxDepth: null
 };
-var DEEP_CLEANUP_AI_SCRIPT = {
-	scriptName: "CN - 召回深层清理（AI）",
-	findRegex: "/^(?:CN\\d{4}\\s*)+\\n/",
+var DISPLAY_SCRIPT = {
+	scriptName: "CranialNerve - 静候佳音",
+	findRegex: "/\\[CN_recall_ui\\]([\\s\\S]*?)\\[\\/CN_recall_ui\\][\\s\\S]*/",
+	replaceString: "$1",
+	trimStrings: [],
+	placement: [1],
+	disabled: false,
+	markdownOnly: true,
+	promptOnly: false,
+	runOnEdit: true,
+	substituteRegex: 0,
+	minDepth: null,
+	maxDepth: 1
+};
+var DISPLAY_FADE_SCRIPT = {
+	scriptName: "CranialNerve - 健忘症",
+	findRegex: "/^(?:CN\\d{4}[ \\t]*)+(?:\\r?\\n|$)/",
+	replaceString: "<div style=\"display:flex;align-items:center;gap:10px;margin:2px 0 10px;color:#a9bcae;user-select:none\"><span style=\"flex:1;height:1px;background:linear-gradient(to right,transparent,#d4e3d9)\"></span><svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#b9d2c0\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12.67 19a2 2 0 0 0 1.416-.588l6.154-6.172a6 6 0 0 0-8.49-8.49L5.586 9.914A2 2 0 0 0 5 11.328V18a1 1 0 0 0 1.53.848\"/><path d=\"M16 8 2 22\"/><path d=\"M17.5 15H9\"/></svg><span style=\"font-size:12px;font-style:italic;letter-spacing:3px;text-indent:3px;\">楼层久远，记忆随风而去</span><span style=\"flex:1;height:1px;background:linear-gradient(to left,transparent,#d4e3d9)\"></span></div>",
+	trimStrings: [],
+	placement: [1],
+	disabled: false,
+	markdownOnly: true,
+	promptOnly: false,
+	runOnEdit: true,
+	substituteRegex: 0,
+	minDepth: 2,
+	maxDepth: null
+};
+var PROMPT_KEYS_CLEAN_SCRIPT = {
+	scriptName: "CranialNerve - 旧忆尘封",
+	findRegex: "/^(?:CN\\d{4}[ \\t]*)+(?:\\r?\\n|$)/",
 	replaceString: "",
 	trimStrings: [],
 	placement: [1],
@@ -46512,66 +46959,44 @@ var DEEP_CLEANUP_AI_SCRIPT = {
 	minDepth: 2,
 	maxDepth: null
 };
-var DISPLAY_SCRIPT = {
-	scriptName: "CN - 召回卡片渲染",
-	findRegex: "/\\[CN_recall_ui\\]([\\s\\S]*?)\\[\\/CN_recall_ui\\][\\s\\S]*/",
-	replaceString: "$1",
-	trimStrings: [],
-	placement: [1],
-	disabled: false,
-	markdownOnly: true,
-	promptOnly: false,
-	runOnEdit: true,
-	substituteRegex: 0,
-	minDepth: null,
-	maxDepth: null
-};
-var DEEP_CLEANUP_DISPLAY_SCRIPT = {
-	scriptName: "CN - 召回深层清理（显示）",
-	findRegex: "/<div class=\"cn-recall-tabs\">[\\s\\S]*?<\\/div>\\s*(?=<div class=\"cn-recall-card__message\">)/",
-	replaceString: "<div class=\"cn-recall-faded\"><i class=\"fa-solid fa-feather cn-recall-faded__icon\"></i><span class=\"cn-recall-faded__text\">楼层久远，记忆随风而去...</span></div>",
-	trimStrings: [],
-	placement: [1],
-	disabled: false,
-	markdownOnly: true,
-	promptOnly: false,
-	runOnEdit: true,
-	substituteRegex: 0,
-	minDepth: 2,
-	maxDepth: null
-};
 function generateId() {
 	return "cn_" + Math.random().toString(36).slice(2, 10) + "_" + Date.now().toString(36);
 }
 function registerCNRegexScripts(regexArr) {
-	const filtered = (Array.isArray(regexArr) ? regexArr : []).filter((s) => typeof s.scriptName === "string" && !s.scriptName.startsWith(CN_REGEX_PREFIX));
+	const filtered = (Array.isArray(regexArr) ? regexArr : []).filter((s) => {
+		const name = s.scriptName;
+		return typeof name === "string" && !CN_REGEX_PREFIXES.some((p) => name.startsWith(p));
+	});
 	const prompt = {
-		...PROMPT_SCRIPT,
-		id: generateId()
-	};
-	const deepCleanupAi = {
-		...DEEP_CLEANUP_AI_SCRIPT,
+		...PROMPT_CLEAN_SCRIPT,
 		id: generateId()
 	};
 	const display = {
 		...DISPLAY_SCRIPT,
 		id: generateId()
 	};
-	const deepCleanupDisplay = {
-		...DEEP_CLEANUP_DISPLAY_SCRIPT,
+	const displayFade = {
+		...DISPLAY_FADE_SCRIPT,
+		id: generateId()
+	};
+	const keysClean = {
+		...PROMPT_KEYS_CLEAN_SCRIPT,
 		id: generateId()
 	};
 	return [
 		...filtered,
 		prompt,
-		deepCleanupAi,
 		display,
-		deepCleanupDisplay
+		displayFade,
+		keysClean
 	];
 }
 function unregisterCNRegexScripts(regexArr) {
 	if (!Array.isArray(regexArr)) return [];
-	return regexArr.filter((s) => typeof s.scriptName === "string" && !s.scriptName.startsWith(CN_REGEX_PREFIX));
+	return regexArr.filter((s) => {
+		const name = s.scriptName;
+		return typeof name === "string" && !CN_REGEX_PREFIXES.some((p) => name.startsWith(p));
+	});
 }
 //#endregion
 //#region src/core/api/groups/session.ts

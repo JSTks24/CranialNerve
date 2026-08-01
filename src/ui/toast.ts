@@ -89,6 +89,7 @@ function show(type: ToastType, text: string): void {
 function progress(text: string): {
   done(): void
   fail(errText: string): void
+  close(): void
   abortSignal: AbortSignal
 } {
   injectStyle()
@@ -135,6 +136,10 @@ function progress(text: string): {
         item.classList.remove('cn-toast--show')
         setTimeout(() => item.remove(), 300)
       }, 2000)
+    },
+    close() {
+      item.classList.remove('cn-toast--show')
+      setTimeout(() => item.remove(), 300)
     },
     fail(errText: string) {
       item.classList.remove('cn-toast--progress')

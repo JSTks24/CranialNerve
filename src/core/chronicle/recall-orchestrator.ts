@@ -1,68 +1,11 @@
 import type { CranialNerveSession } from '../session'
-import type { RecallContext, RecallItem } from '../chronicle'
+import type { RecallContext } from '../chronicle'
 import type { ProgressNotifier } from '@shared/types/config'
 import { pushLog } from '@shared/log-buffer'
 import { getHostContext } from '@db/gateways/host-context'
 import { getPersonaDescription, getCharDescription, getUserName } from '@db/gateways/host-state'
-
-function escapeHtml(text: string): string {
-	return text
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace(/"/g, '&quot;')
-}
-
-function buildRecallCard(items: RecallItem[], userMessage: string): string {
-	const uid = Date.now().toString(36)
-	const countText = `${items.length} 条记忆`
-
-	let tabsHtml = ''
-	let keywords = ''
-
-	for (let i = 0; i < items.length; i++) {
-		const item = items[i]
-		if (!item) {
-			continue
-		}
-		const checked = i === 0 ? ' checked' : ''
-		const rid = `r-${uid}-${i}`
-
-		tabsHtml += `<input type="radio" name="r-${uid}" id="${rid}" class="cn-recall-tabs__radio"${checked}>`
-		tabsHtml += `<label for="${rid}" class="cn-recall-tab">`
-		tabsHtml += `<span class="cn-recall-tab__key">${escapeHtml(item.key)}</span>`
-		tabsHtml += `<span class="cn-recall-tab__time">${escapeHtml(item.timeDeltaText)}</span>`
-		tabsHtml += `<span class="cn-recall-tab__loc">${escapeHtml(item.entry.content.location ?? '')}</span>`
-		tabsHtml += `</label>`
-
-		const summary = item.entry.content.summary ?? ''
-		const dialogue = item.entry.content.keyDialogue ?? ''
-		const timeStart = item.entry.timeStart ?? ''
-		const timeEnd = item.entry.timeEnd ?? ''
-		const location = item.entry.content.location ?? ''
-
-		tabsHtml += `<div class="cn-recall-panel">`
-		tabsHtml += `<div class="cn-recall-panel__row"><span class="cn-recall-panel__label">时间范围</span><span class="cn-recall-panel__value">${escapeHtml(timeStart)} ~ ${escapeHtml(timeEnd)}</span></div>`
-		tabsHtml += `<div class="cn-recall-panel__row"><span class="cn-recall-panel__label">地点</span><span class="cn-recall-panel__value">${escapeHtml(location)}</span></div>`
-		tabsHtml += `<div class="cn-recall-panel__row cn-recall-panel__row--full"><span class="cn-recall-panel__label">纪要正文</span><span class="cn-recall-panel__value">${escapeHtml(summary)}</span></div>`
-		tabsHtml += `<div class="cn-recall-panel__row cn-recall-panel__row--full"><span class="cn-recall-panel__label">重要台词</span><span class="cn-recall-panel__value">${escapeHtml(dialogue)}</span></div>`
-		tabsHtml += `</div>`
-
-		keywords += `${item.key} `
-	}
-
-	const card =
-		`<div class="cn-recall-card">` +
-		`<div class="cn-recall-card__head"><i class="fa-solid fa-brain cn-recall-card__icon"></i><span class="cn-recall-card__brand">CranialNerve</span><span class="cn-recall-card__count">${countText}</span></div>` +
-		`<div class="cn-recall-tabs">${tabsHtml}</div>` +
-		`<div class="cn-recall-card__message">${escapeHtml(userMessage)}</div>` +
-		`</div>`
-
-	const fullMessage =
-		`[CN_recall_ui]\n${card}\n[/CN_recall_ui]\n${keywords.trim()}\n${userMessage}`
-
-	return fullMessage
-}
+import { RECALL_FIELD_PREFIX } from '@shared/constants'
+import { serializeRecallPayload } from '@shared/recall-payload'
 
 function isAbortError(e: unknown, signal?: AbortSignal): boolean {
 	if (signal?.aborted) {
@@ -76,31 +19,32 @@ function isAbortError(e: unknown, signal?: AbortSignal): boolean {
 
 export async function onPromptReady(
 	session: CranialNerveSession,
-	dryRun?: boolean
+	targetUserIdx: number
 ): Promise<boolean> {
-	if (dryRun) {
-		return true
-	}
-
 	const config = session.getConfig()
 	if (!config.recallEnabled) {
+		pushLog('warn', 'recall', 'recallEnabled=false，跳过召回')
 		return true
 	}
 	const preset = session.getAiPresetForScene(config.recallPresetId)
 	if (!preset) {
+		pushLog('warn', 'recall', '无召回AI预设，跳过召回')
 		return true
 	}
 
 	const recaller = session.getChronicleRecaller()
 	if (!recaller) {
+		pushLog('warn', 'recall', '无recaller，跳过召回')
 		return true
 	}
 
 	const chat = session.chat.getChat()
-	const lastUserIdx = session.getLastUserIdx()
-	if (lastUserIdx < 0) {
+	const lastUserIdx = targetUserIdx
+	if (lastUserIdx < 0 || !chat[lastUserIdx]?.is_user) {
+		pushLog('warn', 'recall', `消息索引无效 msgId=${targetUserIdx}，跳过召回`)
 		return true
 	}
+	pushLog('info', 'recall', `开始召回 lastUserIdx=${lastUserIdx}`)
 
 	const userMessage = chat[lastUserIdx]!.mes
 
@@ -146,17 +90,23 @@ export async function onPromptReady(
 
 	try {
 		const items = await session.getWriteQueue().enqueue(() => recaller.recall(recallCtx))
+		pushLog('info', 'recall', `召回返回 items=${items.length}`)
 		if (items.length === 0) {
-			progress?.done()
+			progress?.close()
 			return true
 		}
 		const limited = items.slice(0, config.maxRecallItems)
-		chat[lastUserIdx]!.mes = buildRecallCard(limited, userMessage)
+		const keys = limited.map((it) => it.key).join(' ')
+		chat[lastUserIdx]!.mes = `${keys}\n${userMessage}`
+		session.chat.writeMessageExtra(lastUserIdx, RECALL_FIELD_PREFIX, serializeRecallPayload(limited))
+		pushLog('info', 'recall', `写入mes keys="${keys}" extra已写入`)
 		try {
 			getHostContext().updateMessageBlock?.(lastUserIdx, chat[lastUserIdx]!)
 		} catch (e) {
-			pushLog('warn', 'recall', `召回卡片重渲染失败: ${e instanceof Error ? e.message : String(e)}`)
+			pushLog('warn', 'recall', `召回消息重渲染失败: ${e instanceof Error ? e.message : String(e)}`)
 		}
+		session.renderRecallCard(lastUserIdx)
+		void session.chat.saveChat()
 		progress?.done()
 		return true
 	} catch (e) {

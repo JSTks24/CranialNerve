@@ -122,6 +122,7 @@ export interface ChronicleTableHints {
 export interface ProgressNotifier {
   done(): void
   fail(errText: string): void
+  close(): void
   abortSignal: AbortSignal
 }
 
