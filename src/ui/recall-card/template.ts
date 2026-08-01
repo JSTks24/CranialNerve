@@ -25,64 +25,60 @@ const FEATHER_PATHS =
   '<path d="M16 8 2 22"/>' +
   '<path d="M17.5 15H9"/>'
 
-export function buildRecallCardHtml(payload: RecallCardPayload, userText: string): string {
+export function buildRecallCardHtml(payload: RecallCardPayload, userText: string, faded = false): string {
   const items = payload.items
-  const uid = Math.random().toString(36).slice(2, 10)
   const countText = `${items.length} 条记忆`
+  const head = `<div class="cn-recall-card__head">${svgIcon('cn-recall-card__icon', BRAIN_PATHS)}<span class="cn-recall-card__brand">CranialNerve</span><span class="cn-recall-card__count">${countText}</span></div>`
 
-  let tabsHtml = ''
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i]
-    if (!item) {
-      continue
-    }
-    const checked = i === 0 ? ' checked' : ''
-    const rid = `r-${uid}-${i}`
+  let body: string
+  if (faded) {
+    body = `<div class="cn-recall-card__faded">${svgIcon('cn-recall-card__faded-icon', FEATHER_PATHS)}<span class="cn-recall-card__faded-text">楼层久远，记忆随风而去</span></div>`
+  } else {
+    const uid = Math.random().toString(36).slice(2, 10)
+    let tabsHtml = ''
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i]
+      if (!item) {
+        continue
+      }
+      const checked = i === 0 ? ' checked' : ''
+      const rid = `r-${uid}-${i}`
 
-    tabsHtml += `<input type="radio" name="r-${uid}" id="${rid}" class="cn-recall-tabs__radio"${checked}>`
-    tabsHtml += `<label for="${rid}" class="cn-recall-tab">`
-    tabsHtml += `<span class="cn-recall-tab__key">${escapeHtml(item.key)}</span>`
-    tabsHtml += `<span class="cn-recall-tab__time">${escapeHtml(item.timeDeltaText)}</span>`
-    tabsHtml += `</label>`
+      tabsHtml += `<input type="radio" name="r-${uid}" id="${rid}" class="cn-recall-tabs__radio"${checked}>`
+      tabsHtml += `<label for="${rid}" class="cn-recall-tab">`
+      tabsHtml += `<span class="cn-recall-tab__key">${escapeHtml(item.key)}</span>`
+      tabsHtml += `<span class="cn-recall-tab__time">${escapeHtml(item.timeDeltaText)}</span>`
+      tabsHtml += `</label>`
 
-    const timeRange = [item.timeStart, item.timeEnd].filter((s) => s.length > 0)
-    let meta = ''
-    if (timeRange.length > 0) {
-      meta += `<span class="cn-recall-meta__chip"><span class="cn-recall-meta__label">时间</span>${escapeHtml(timeRange.join(' ~ '))}</span>`
-    }
-    if (item.location.length > 0) {
-      meta += `<span class="cn-recall-meta__chip"><span class="cn-recall-meta__label">地点</span>${escapeHtml(item.location)}</span>`
-    }
+      const timeRange = [item.timeStart, item.timeEnd].filter((s) => s.length > 0)
+      let meta = ''
+      if (timeRange.length > 0) {
+        meta += `<span class="cn-recall-meta__chip"><span class="cn-recall-meta__label">时间</span>${escapeHtml(timeRange.join(' ~ '))}</span>`
+      }
+      if (item.location.length > 0) {
+        meta += `<span class="cn-recall-meta__chip"><span class="cn-recall-meta__label">地点</span>${escapeHtml(item.location)}</span>`
+      }
 
-    tabsHtml += `<div class="cn-recall-panel">`
-    if (meta.length > 0) {
-      tabsHtml += `<div class="cn-recall-meta">${meta}</div>`
+      tabsHtml += `<div class="cn-recall-panel">`
+      if (meta.length > 0) {
+        tabsHtml += `<div class="cn-recall-meta">${meta}</div>`
+      }
+      if (item.summary.length > 0) {
+        tabsHtml += `<p class="cn-recall-summary">${escapeHtml(item.summary)}</p>`
+      }
+      if (item.keyDialogue.length > 0) {
+        tabsHtml += `<blockquote class="cn-recall-quote">${escapeHtml(item.keyDialogue)}</blockquote>`
+      }
+      tabsHtml += `</div>`
     }
-    if (item.summary.length > 0) {
-      tabsHtml += `<p class="cn-recall-summary">${escapeHtml(item.summary)}</p>`
-    }
-    if (item.keyDialogue.length > 0) {
-      tabsHtml += `<blockquote class="cn-recall-quote">${escapeHtml(item.keyDialogue)}</blockquote>`
-    }
-    tabsHtml += `</div>`
+    body = `<div class="cn-recall-tabs">${tabsHtml}</div>`
   }
 
   return (
     `<div class="cn-recall-card">` +
-    `<div class="cn-recall-card__head">${svgIcon('cn-recall-card__icon', BRAIN_PATHS)}<span class="cn-recall-card__brand">CranialNerve</span><span class="cn-recall-card__count">${countText}</span></div>` +
-    `<div class="cn-recall-tabs">${tabsHtml}</div>` +
+    head +
+    body +
     `<div class="cn-recall-card__message"><span class="cn-recall-card__tag">本回合输入</span>${escapeHtml(userText)}</div>` +
-    `</div>`
-  )
-}
-
-export function buildRecallFadedHtml(): string {
-  return (
-    `<div class="cn-recall-faded">` +
-    `<span class="cn-recall-faded__rule cn-recall-faded__rule--left"></span>` +
-    svgIcon('cn-recall-faded__icon', FEATHER_PATHS) +
-    `<span class="cn-recall-faded__text">楼层久远，记忆随风而去</span>` +
-    `<span class="cn-recall-faded__rule cn-recall-faded__rule--right"></span>` +
     `</div>`
   )
 }

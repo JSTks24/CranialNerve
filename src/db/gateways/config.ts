@@ -74,8 +74,11 @@ const DEFAULT_CONFIG: CranialNerveConfig = {
     updateFrequency: 1,
     batchSize: 3,
     skipFloors: 0,
-    groupId: -1,
-    maxRetries: 3
+    maxRetries: 3,
+    manualUpdateContextDepth: null,
+    manualUpdateBatchSize: null,
+    manualSelectedTables: [],
+    hasManualSelection: false
   },
   maxRecallItems: 25,
   recallEnabled: true,
@@ -116,6 +119,7 @@ export default function createConfigGateway(): ConfigGateway {
       const merged = { ...cloneDefault(), ...(raw as Partial<CranialNerveConfig>) }
       merged.vector = { ...DEFAULT_CONFIG.vector, ...merged.vector }
       merged.pending = { ...DEFAULT_CONFIG.pending, ...merged.pending }
+      merged.tableFill = { ...DEFAULT_CONFIG.tableFill, ...merged.tableFill }
       merged.prompt = migratePrompt(merged.prompt, raw as Record<string, unknown>)
       merged.tableTemplate = migrateTableTemplate(merged.tableTemplate)
       merged.chronicleTableDef = migrateChronicleTableDef(merged.chronicleTableDef, merged.chronicleTableHints)

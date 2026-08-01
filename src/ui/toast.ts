@@ -114,7 +114,6 @@ function progress(text: string): {
   vp.appendChild(item)
   const closeBtn = item.querySelector('.cn-toast__close') as HTMLButtonElement
   closeBtn.addEventListener('click', () => {
-    ctrl.abort()
     item.classList.remove('cn-toast--show')
     setTimeout(() => item.remove(), 300)
   })
@@ -127,10 +126,11 @@ function progress(text: string): {
 
   return {
     done() {
+      if (!item.parentNode) return
       item.classList.remove('cn-toast--progress')
       item.classList.add('cn-toast--success')
-      const bd = item.querySelector('.cn-toast__bd')!
-      bd.innerHTML = '<i class="fa-solid fa-circle-check"></i><span>&#x5df2;&#x5b8c;&#x6210;</span>'
+      const bd = item.querySelector('.cn-toast__bd')
+      if (bd) bd.innerHTML = '<i class="fa-solid fa-circle-check"></i><span>&#x5df2;&#x5b8c;&#x6210;</span>'
       item.querySelector('.cn-toast__ft')?.remove()
       setTimeout(() => {
         item.classList.remove('cn-toast--show')
@@ -142,10 +142,11 @@ function progress(text: string): {
       setTimeout(() => item.remove(), 300)
     },
     fail(errText: string) {
+      if (!item.parentNode) return
       item.classList.remove('cn-toast--progress')
       item.classList.add('cn-toast--error')
-      const bd = item.querySelector('.cn-toast__bd')!
-      bd.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i><span>${escapeHtml(errText)}</span>`
+      const bd = item.querySelector('.cn-toast__bd')
+      if (bd) bd.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i><span>${escapeHtml(errText)}</span>`
       item.querySelector('.cn-toast__ft')?.remove()
       setTimeout(() => {
         item.classList.remove('cn-toast--show')

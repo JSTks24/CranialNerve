@@ -5,6 +5,7 @@ import { CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
 import { syncToWorldbook } from '@core/worldbook-sync'
 import toast from '@ui/toast'
 import confirm from '@ui/dialog'
+import ManualFill from './ManualFill.vue'
 
 interface RowData {
   __rowid__: number
@@ -23,6 +24,7 @@ const session = getSession()
 const tables = ref<TableInfo[]>([])
 const chatActive = ref(false)
 const activeName = ref<string>('')
+const pageTab = ref<'tables' | 'fill'>('tables')
 const editingRowid = ref<number | null>(null)
 const editSnapshot = ref<Record<string, string>>({})
 const cellEditEls = new Map<string, HTMLElement>()
@@ -226,10 +228,14 @@ onActivated(refresh)
 <template>
   <div class="tables-page">
     <div v-if="!chatActive" class="cn-empty">未检测到聊天，请先在酒馆中打开一个对话</div>
-    <div v-else-if="tables.length === 0" class="cn-empty">当前会话未载入表格</div>
-
     <template v-else>
-      <div class="tables-toolbar">
+      <div class="page-tabs">
+        <button class="page-tab" :class="{ 'page-tab--active': pageTab === 'tables' }" @click="pageTab = 'tables'"><i class="fa-solid fa-table"></i> 表格</button>
+        <button class="page-tab" :class="{ 'page-tab--active': pageTab === 'fill' }" @click="pageTab = 'fill'"><i class="fa-solid fa-pen-to-square"></i> 手动填表</button>
+      </div>
+      <ManualFill v-if="pageTab === 'fill'" />
+      <template v-else>
+        <div class="tables-toolbar">
         <button class="cn-btn cn-btn--sm" @click="onExportSnapshot">
           <i class="fa-solid fa-download"></i>
           导出快照
@@ -320,6 +326,7 @@ onActivated(refresh)
           </div>
         </div>
       </div>
+      </template>
     </template>
   </div>
 </template>

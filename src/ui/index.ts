@@ -145,6 +145,7 @@ function openPanel(): void {
   appInstance.use(createPinia())
   appInstance.use(router)
   appInstance.mount(root)
+  router.push('/welcome')
 }
 
 function closePanel(): void {

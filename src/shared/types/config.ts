@@ -12,7 +12,7 @@ export interface AiPreset {
   topP: number
   frequencyPenalty: number
   presencePenalty: number
-  seed: number
+  seed: number | null
   stream: boolean
   customIncludeBody: string
   customExcludeBody: string
@@ -77,8 +77,11 @@ export interface TableFillConfig {
   updateFrequency: number
   batchSize: number
   skipFloors: number
-  groupId: number
   maxRetries: number
+  manualUpdateContextDepth: number | null
+  manualUpdateBatchSize: number | null
+  manualSelectedTables: string[]
+  hasManualSelection: boolean
 }
 
 export interface PendingConfig {

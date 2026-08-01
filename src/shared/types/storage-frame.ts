@@ -15,7 +15,7 @@ export interface SqlBatchOperation {
   kind: 'sql_batch'
   statements: string[]
   params?: (string | number | null)[][]
-  reason?: 'ai_fill' | 'manual_edit' | 'import'
+  reason?: 'ai_fill' | 'manual_edit' | 'import' | 'manual_refill'
 }
 
 export type MutationOperation = SqlBatchOperation

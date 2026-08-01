@@ -38,6 +38,11 @@ const editing = computed({
   }
 })
 
+const seedInput = computed({
+  get: () => editing.value.seed === null ? '' : String(editing.value.seed),
+  set: (v) => { editing.value.seed = v === '' ? null : Number(v) }
+})
+
 const vectorEnabled = ref(session.getConfig().vectorEnabled)
 const vector = ref<VectorConfig>({ ...session.getConfig().vector })
 
@@ -53,7 +58,7 @@ function emptyPreset(): AiPreset {
     topP: 1,
     frequencyPenalty: 0,
     presencePenalty: 0,
-    seed: -1,
+    seed: null,
     stream: false,
     customIncludeBody: '',
     customExcludeBody: '',
@@ -201,7 +206,7 @@ async function fetchVectorModels() {
       topP: 1,
       frequencyPenalty: 0,
       presencePenalty: 0,
-      seed: -1,
+      seed: null,
       stream: false,
       customIncludeBody: '',
       customExcludeBody: '',
@@ -334,8 +339,8 @@ function rangeFraction(val: number, min: number, max: number): string {
                 <input
                   class="cn-input cn-input--nospin"
                   type="number"
-                  v-model.number="editing.seed"
-                  placeholder="-1 (随机)"
+                  v-model="seedInput"
+                  placeholder="默认（随机）"
                 />
               </div>
               <div class="cn-field">

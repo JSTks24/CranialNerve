@@ -15,9 +15,19 @@ export interface PromptContext {
   callOptions?: AiCallOptions
 }
 
+export type FillPhase = 'calling_ai' | 'parsing' | 'saving' | 'complete' | 'retry' | 'error'
+export interface FillProgressDetail {
+  attempt?: number
+  maxRetries?: number
+  error?: string
+  currentBucket?: number
+  totalBuckets?: number
+}
+export type FillProgressFn = (phase: FillPhase, detail?: FillProgressDetail) => void
 export interface RunOptions {
   maxRetries: number
   signal?: AbortSignal
+  onProgress?: FillProgressFn
 }
 
 export interface RunPersist {
@@ -50,16 +60,23 @@ export default class TableEditor {
     let lastError = ''
     let lastRaw = ''
     for (let attempt = 1; attempt <= options.maxRetries; attempt++) {
+      if (attempt > 1) {
+        options.onProgress?.('retry', { attempt, maxRetries: options.maxRetries, error: lastError })
+      }
+      options.onProgress?.('calling_ai', { attempt, maxRetries: options.maxRetries })
       const messages =
         attempt === 1 ? baseMessages : buildFeedbackMessages(baseMessages, lastRaw, lastError)
       const raw = await this.ai.chatCompletion(messages, ctx.clientConfig, ctx.params, options.signal, ctx.callOptions)
       lastRaw = raw
+      options.onProgress?.('parsing', { attempt, maxRetries: options.maxRetries })
       const current = parseTableEditSql(raw)
 
       if (current) {
+        options.onProgress?.('saving', { attempt, maxRetries: options.maxRetries })
         const persistArg = persist ? { ctx: persist.ctx, messageId: persist.messageId } : undefined
         const result = executeTableEditSql(this.core, current, persistArg)
         if (result.ok) {
+          options.onProgress?.('complete', { attempt, maxRetries: options.maxRetries })
           return { ok: true, attempts: attempt, lastSql: current.sql }
         }
         lastError = result.error ?? 'unknown sql error'
@@ -68,6 +85,7 @@ export default class TableEditor {
       }
     }
 
+    options.onProgress?.('error', { maxRetries: options.maxRetries, error: lastError })
     return { ok: false, attempts: options.maxRetries, error: lastError }
   }
 }

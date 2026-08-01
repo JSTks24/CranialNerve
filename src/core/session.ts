@@ -44,7 +44,7 @@ import type { ChronicleEntry } from '@shared/types/worldbook'
 import createChronicleRecaller, { type ChronicleRecaller } from './chronicle'
 import createWriteQueue, { type WriteQueue } from './write-queue'
 import { buildBookName, cleanupStaleBooks, syncToWorldbook } from './worldbook-sync'
-import { resetFillScheduler, onGenerationEnded, isFillInProgress, markGenerationStopped, resetGenerationStopped, buildWorldbookContext, snapshotLastAiLength } from './table/fill-orchestrator'
+import { resetFillScheduler, onGenerationEnded, isFillInProgress, markGenerationStopped, resetGenerationStopped, buildWorldbookContext, snapshotLastAiLength, runManualFill, runManualCatchUp, type ExecuteFillOptions, type ManualCatchUpOptions } from './table/fill-orchestrator'
 import { onPromptReady } from './chronicle/recall-orchestrator'
 import { getPersonaDescription, getCharDescription, getUserName } from '@db/gateways/host-state'
 import { stripKeyLineFromMes } from '@shared/recall-payload'
@@ -80,6 +80,7 @@ export class CranialNerveSession {
   private initFailed = false
   private lastRecalledUserSendDate: string | null = null
   private realGenerationPending = false
+  private regenerateFillPending = false
 
   constructor() {
     this.core = new SqliteCore()
@@ -118,7 +119,15 @@ export class CranialNerveSession {
     if (this.eventsBound) return
     this.eventsBound = true
     this.event.makeLast(EVENT_GENERATION_ENDED, () => {
-      pushLog('info', 'session', `GENERATION_ENDED 触发，realGenerationPending=${this.realGenerationPending}`)
+      pushLog('info', 'session', `GENERATION_ENDED 触发，regenerateFillPending=${this.regenerateFillPending} realGenerationPending=${this.realGenerationPending}`)
+      if (this.regenerateFillPending) {
+        this.regenerateFillPending = false
+        this.realGenerationPending = false
+        onGenerationEnded(this, { force: true }).catch((e) => {
+          pushLog('error', 'session', `onGenerationEnded(force) error: ${e instanceof Error ? e.message : String(e)}`)
+        })
+        return
+      }
       if (!this.realGenerationPending) {
         return
       }
@@ -136,9 +145,13 @@ export class CranialNerveSession {
       this.realGenerationPending = true
       const isRegenerate = type === 'regenerate' || type === 'swipe'
       if (isRegenerate) {
-        pushLog('info', 'session', 'regenerate/swipe：回退数据、不召回，生成后填表')
+        pushLog('info', 'session', 'regenerate/swipe：清旧帧、回退数据、不召回，生成后强制填表')
+        const lastAiId = this.getLastAiMessageId()
+        if (lastAiId != null && this.syncBridge) {
+          this.syncBridge.getRepo().removeFrame(lastAiId)
+        }
         return this.reloadForChatChange().then(() => {
-          this.realGenerationPending = true
+          this.regenerateFillPending = true
         }).catch((e) => {
           pushLog('error', 'session', `regenerate 回退失败: ${e instanceof Error ? e.message : String(e)}`)
         })
@@ -314,7 +327,7 @@ export class CranialNerveSession {
     const raw = await this.ai.chatCompletion(
       messages,
       { baseURL: preset.baseURL, apiKey: preset.apiKey, customIncludeBody: preset.customIncludeBody, customExcludeBody: preset.customExcludeBody, customIncludeHeaders: preset.customIncludeHeaders },
-      { model: preset.model, max_tokens: preset.maxTokens, temperature: preset.temperature, top_p: preset.topP, frequency_penalty: preset.frequencyPenalty, presence_penalty: preset.presencePenalty, seed: preset.seed >= 0 ? preset.seed : undefined, stream: preset.stream },
+      { model: preset.model, max_tokens: preset.maxTokens, temperature: preset.temperature, top_p: preset.topP, frequency_penalty: preset.frequencyPenalty, presence_penalty: preset.presencePenalty, seed: preset.seed ?? undefined, stream: preset.stream },
       undefined,
       { timeoutMs: cfg.pending.aiCallTimeoutMs, timeoutRetries: cfg.pending.aiTimeoutRetries }
     )
@@ -326,6 +339,7 @@ export class CranialNerveSession {
       return
     }
     const handler = async () => {
+      this.regenerateFillPending = false
       try {
         await this.reloadForChatChange()
       } catch (e) {
@@ -829,6 +843,21 @@ export class CranialNerveSession {
 
   getSyncBridgeRepo(): import('@db/sqlite/storage-frame-repo').FrameRepo | null {
     return this.syncBridge?.getRepo() ?? null
+  }
+
+  applySnapshot(snapshot: import('@shared/types/table').DatabaseSnapshot): void {
+    if (!this.syncBridge) {
+      throw new Error('session not initialized')
+    }
+    this.syncBridge.applySnapshotExternal(snapshot)
+  }
+
+  async runManualRefill(opts?: ExecuteFillOptions): Promise<import('./table/retry-loop').RunResult> {
+    return runManualFill(this, { ...opts, clearBeforeFill: true, clearTables: opts?.targetTables ?? [] })
+  }
+
+  async runManualCatchUp(opts?: ManualCatchUpOptions): Promise<import('./table/retry-loop').RunResult> {
+    return runManualCatchUp(this, opts)
   }
 
   runWrite<T>(task: () => Promise<T> | T): Promise<T> {

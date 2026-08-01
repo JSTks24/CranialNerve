@@ -11,7 +11,7 @@ import {
 } from '@shared/constants/events'
 import { parseRecallPayload, stripKeyLineFromMes } from '@shared/recall-payload'
 import recallCardCss from './recall-card.css?inline'
-import { buildRecallCardHtml, buildRecallFadedHtml } from './template'
+import { buildRecallCardHtml } from './template'
 
 const HOST_CLASS = 'cn-recall-host'
 const FLOOR_CLASS = 'cn-has-recall'
@@ -97,14 +97,10 @@ export function installRecallRenderer(session: CranialNerveSession): RecallRende
       return
     }
     const depth = chat.length - 1 - msgId
+    const faded = depth >= RECALL_FADE_MIN_DEPTH
     removeHost(mesText)
-    if (depth >= RECALL_FADE_MIN_DEPTH) {
-      mesEl.classList.remove(FLOOR_CLASS)
-      mesText.prepend(makeHost(buildRecallFadedHtml()))
-      return
-    }
     const userText = stripKeyLineFromMes(String(msg.mes ?? ''))
-    const innerHtml = buildRecallCardHtml(payload, userText)
+    const innerHtml = buildRecallCardHtml(payload, userText, faded)
 
     mesEl.classList.add(FLOOR_CLASS)
     mesText.prepend(makeHost(innerHtml))

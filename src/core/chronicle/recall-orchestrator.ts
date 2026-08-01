@@ -68,7 +68,7 @@ export async function onPromptReady(
 			top_p: preset.topP,
 			frequency_penalty: preset.frequencyPenalty,
 			presence_penalty: preset.presencePenalty,
-			seed: preset.seed >= 0 ? preset.seed : undefined,
+			seed: preset.seed ?? undefined,
 			stream: preset.stream,
 		},
 		recallSegments,

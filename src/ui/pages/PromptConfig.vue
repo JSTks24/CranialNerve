@@ -375,31 +375,6 @@ function setExportKeywordAiPrompt(table: TableDef, value: string) {
   table.exportConfig!.keywordAiPrompt = value
 }
 
-async function generateKeywords(table: TableDef) {
-  if (!table.name) {
-    toast.warning('请先填写表名')
-    return
-  }
-  const prompt = table.exportConfig?.keywordAiPrompt?.trim()
-  if (!prompt) {
-    toast.warning('请先填写 AI Prompt')
-    return
-  }
-  try {
-    const keys = await session.generateKeywordsForTable(table.name, prompt)
-    if (keys.length === 0) {
-      toast.info('AI 未生成关键词')
-      return
-    }
-    ensureExportConfig(table)
-    table.exportConfig!.keywords = keys.join(', ')
-    store.save()
-    toast.success(`已生成 ${keys.length} 个关键词`)
-  } catch (e) {
-    toast.error(e instanceof Error ? e.message : String(e))
-  }
-}
-
 function ensureExportConfig(table: TableDef) {
   if (!table.exportConfig) {
     table.exportConfig = {
@@ -1233,28 +1208,14 @@ onActivated(() => {
                         />
                       </div>
                       <div v-else class="tpl-field">
-                        <label class="tpl-label" style="font-size: 12px">AI Prompt（生成关键词用）</label>
+                        <label class="tpl-label" style="font-size: 12px">AI 提示词（更新表格时发送）</label>
                         <textarea
                           class="cn-textarea tpl-textarea"
                           :value="table.exportConfig?.keywordAiPrompt ?? ''"
                           @input="setExportKeywordAiPrompt(table, ($event.target as HTMLTextAreaElement).value)"
                           rows="2"
-                          placeholder="指示 AI 根据表格内容生成触发关键词，如：请根据背包表的物品种类生成可能触发该表注入的关键词"
+                          placeholder="更新表格时发送给 AI，由 AI 决定本表世界书条目的触发关键词，如：请根据背包表内容生成可能触发该表注入的关键词"
                         ></textarea>
-                        <button
-                          class="cn-btn cn-btn--sm"
-                          style="margin-top: 6px"
-                          type="button"
-                          @click="generateKeywords(table)"
-                        >
-                          <i class="fa-solid fa-wand-magic-sparkles"></i> 生成关键词
-                        </button>
-                        <div
-                          v-if="table.exportConfig?.keywords"
-                          style="margin-top: 6px; font-size: 12px; color: var(--cn-text-2)"
-                        >
-                          当前关键词：{{ table.exportConfig.keywords }}
-                        </div>
                       </div>
                     </div>
                   </div>

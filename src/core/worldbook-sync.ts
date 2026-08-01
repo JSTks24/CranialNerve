@@ -98,10 +98,27 @@ export async function syncToWorldbook(session: CranialNerveSession): Promise<voi
         continue
       }
       if (exportCfg && exportCfg.entryType === 'keyword') {
-        const keywordStr = exportCfg.keywords || ''
-        const keys = keywordStr.split(/[,，]/).map((k) => k.trim()).filter(Boolean)
         const tableMarkdown = buildTableMarkdown(tableName, result.columns, result.rows)
-        if (!tableMarkdown || keys.length === 0) {
+        if (!tableMarkdown) {
+          continue
+        }
+        let keys: string[]
+        if (exportCfg.keywordMode === 'ai_prompt') {
+          const aiPrompt = exportCfg.keywordAiPrompt?.trim() ?? ''
+          if (!aiPrompt) {
+            continue
+          }
+          try {
+            keys = await session.generateKeywordsForTable(tableName, aiPrompt)
+          } catch (e) {
+            pushLog('warn', 'worldbook', `AI 生成关键词失败 ${tableName}: ${e instanceof Error ? e.message : String(e)}`)
+            continue
+          }
+        } else {
+          const keywordStr = exportCfg.keywords || ''
+          keys = keywordStr.split(/[,，]/).map((k) => k.trim()).filter(Boolean)
+        }
+        if (keys.length === 0) {
           continue
         }
         const uid = nextUid(entries)
