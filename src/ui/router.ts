@@ -5,7 +5,7 @@ import Tables from './pages/Tables.vue'
 import Chronicle from './pages/Chronicle.vue'
 import PromptConfig from './pages/PromptConfig.vue'
 import Debug from './pages/Debug.vue'
-import PendingConfig from './pages/PendingConfig.vue'
+import Strategy from './pages/Strategy.vue'
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -16,7 +16,7 @@ const router = createRouter({
     { path: '/chronicle', component: Chronicle },
     { path: '/prompts', component: PromptConfig },
     { path: '/api', component: ApiConfig },
-    { path: '/pending', component: PendingConfig },
+    { path: '/strategy', component: Strategy },
     { path: '/debug', component: Debug }
   ]
 })

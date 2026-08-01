@@ -9,23 +9,44 @@ defineProps<{
 const route = useRoute()
 const router = useRouter()
 
-const menuItems = [
-  { key: 'welcome', label: '首页', icon: 'fa-house' },
-  { key: 'tables', label: '表格', icon: 'fa-table' },
-  { key: 'chronicle', label: '纪要', icon: 'fa-clock-rotate-left' },
-  { key: 'prompts', label: '模板和提示词', icon: 'fa-pen-to-square' },
-  { key: 'api', label: 'API 配置', icon: 'fa-plug' },
-  { key: 'pending', label: '待定配置', icon: 'fa-sliders' }
+interface MenuItem {
+  key: string
+  label: string
+  icon: string
+}
+
+const homeItem: MenuItem = { key: 'welcome', label: '首页', icon: 'fa-house' }
+
+const menuSections: { label: string; items: MenuItem[] }[] = [
+  {
+    label: '数据',
+    items: [
+      { key: 'tables', label: '表格', icon: 'fa-table' },
+      { key: 'chronicle', label: '纪要', icon: 'fa-clock-rotate-left' }
+    ]
+  },
+  {
+    label: '配置',
+    items: [
+      { key: 'prompts', label: '模板和提示词', icon: 'fa-pen-to-square' },
+      { key: 'api', label: 'API 配置', icon: 'fa-plug' },
+      { key: 'strategy', label: '运行策略', icon: 'fa-gears' }
+    ]
+  }
 ]
 
-const debugItem = { key: 'debug', label: '调试', icon: 'fa-bug' }
+const debugItem: MenuItem = { key: 'debug', label: '调试', icon: 'fa-bug' }
 
 const currentKey = computed(() => route.path.slice(1) || 'welcome')
 
 const pageTitle = computed(() => {
-  const found = menuItems.find((m) => m.key === currentKey.value)
-  if (found) return found.label
-  if (currentKey.value === 'debug') return '调试工具'
+  const key = currentKey.value
+  if (key === homeItem.key) return homeItem.label
+  for (const s of menuSections) {
+    const found = s.items.find((m) => m.key === key)
+    if (found) return found.label
+  }
+  if (key === debugItem.key) return '调试工具'
   return 'CranialNerve'
 })
 
@@ -43,21 +64,33 @@ function go(key: string) {
       </div>
       <nav class="cn-menu">
         <button
-          v-for="item in menuItems"
-          :key="item.key"
           type="button"
           class="cn-menu__item"
-          :class="{ 'cn-menu__item--active': item.key === currentKey }"
-          @click="go(item.key)"
+          :class="{ 'cn-menu__item--active': homeItem.key === currentKey }"
+          @click="go(homeItem.key)"
         >
-          <i class="fa-solid" :class="item.icon"></i>
-          <span>{{ item.label }}</span>
+          <i class="fa-solid" :class="homeItem.icon"></i>
+          <span>{{ homeItem.label }}</span>
         </button>
+        <template v-for="section in menuSections" :key="section.label">
+          <div class="cn-menu__section">{{ section.label }}</div>
+          <button
+            v-for="item in section.items"
+            :key="item.key"
+            type="button"
+            class="cn-menu__item"
+            :class="{ 'cn-menu__item--active': item.key === currentKey }"
+            @click="go(item.key)"
+          >
+            <i class="fa-solid" :class="item.icon"></i>
+            <span>{{ item.label }}</span>
+          </button>
+        </template>
         <div class="cn-menu__spacer"></div>
         <button
           type="button"
           class="cn-menu__item cn-menu__item--debug"
-          :class="{ 'cn-menu__item--active': 'debug' === currentKey }"
+          :class="{ 'cn-menu__item--active': debugItem.key === currentKey }"
           @click="go(debugItem.key)"
         >
           <i class="fa-solid" :class="debugItem.icon"></i>

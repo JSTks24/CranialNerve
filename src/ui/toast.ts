@@ -16,27 +16,27 @@ function injectStyle(): void {
   s.id = 'cn_toast_style'
   s.textContent = `
 .cn-toast-vp{position:fixed;top:16px;right:16px;z-index:var(--cn-z-toast);display:flex;flex-direction:column;gap:10px;pointer-events:none}
-.cn-toast{display:flex;flex-direction:column;width:360px;max-width:calc(100vw-32px);border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.15);overflow:hidden;pointer-events:auto;opacity:0;transform:translateX(16px);transition:opacity .25s ease,transform .25s ease}
+.cn-toast{display:flex;flex-direction:column;width:360px;max-width:calc(100vw-32px);border-radius:10px;box-shadow:0 6px 24px rgba(16,42,28,.16);overflow:hidden;pointer-events:auto;opacity:0;transform:translateX(16px);transition:opacity .25s ease,transform .25s ease}
 .cn-toast--show{opacity:1;transform:translateX(0)}
-.cn-toast__hd{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#fff;border:1px solid #e8e8e8;border-bottom:0;border-radius:8px 8px 0 0;font-size:13px;font-weight:600;color:#1f1f1f}
+.cn-toast__hd{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#fff;border:1px solid #d8e4db;border-bottom:0;border-radius:10px 10px 0 0;font-size:13px;font-weight:600;color:#1e2c24}
 .cn-toast__hd i{font-size:16px}
-.cn-toast__bd{padding:10px 14px 12px;background:#fff;border:1px solid #e8e8e8;border-top:0;font-size:14px;line-height:1.6;color:#595959}
+.cn-toast__bd{padding:10px 14px 12px;background:#fff;border:1px solid #d8e4db;border-top:0;font-size:14px;line-height:1.6;color:#54675c}
 .cn-toast__bd i{font-size:16px;margin-right:6px;vertical-align:-2px}
-.cn-toast--success{border-left:4px solid #52c41a}
-.cn-toast--error{border-left:4px solid #ff4d4f}
-.cn-toast--warning{border-left:4px solid #faad14}
-.cn-toast--info{border-left:4px solid #1677ff}
-.cn-toast--success .cn-toast__hd i,.cn-toast--success .cn-toast__bd i{color:#52c41a}
-.cn-toast--error .cn-toast__hd i,.cn-toast--error .cn-toast__bd i{color:#ff4d4f}
-.cn-toast--warning .cn-toast__hd i,.cn-toast--warning .cn-toast__bd i{color:#faad14}
-.cn-toast--info .cn-toast__hd i,.cn-toast--info .cn-toast__bd i{color:#1677ff}
-.cn-toast__ft{padding:6px 14px 10px;display:flex;justify-content:flex-end;background:#fff;border:1px solid #e8e8e8;border-top:0;border-radius:0 0 8px 8px}
-.cn-toast__term{height:24px;padding:0 12px;border:1px solid #ff4d4f;border-radius:4px;background:#fff;color:#ff4d4f;font-size:12px;cursor:pointer}
-.cn-toast__term:hover{background:#fff1f0}
-.cn-toast__close{width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;margin-left:auto;border:0;border-radius:4px;background:transparent;color:#8c8c8c;font-size:13px;cursor:pointer;flex-shrink:0;transition:background 0.15s,color 0.15s}
-.cn-toast__close:hover{background:#f0f0f0;color:#1f1f1f}
-.cn-toast--progress .cn-toast__bd i{color:#1677ff}
-.cn-toast--progress{border-left:4px solid #1677ff}
+.cn-toast--success{border-left:4px solid #128252}
+.cn-toast--error{border-left:4px solid #d64545}
+.cn-toast--warning{border-left:4px solid #c97a10}
+.cn-toast--info{border-left:4px solid #128252}
+.cn-toast--success .cn-toast__hd i,.cn-toast--success .cn-toast__bd i{color:#128252}
+.cn-toast--error .cn-toast__hd i,.cn-toast--error .cn-toast__bd i{color:#d64545}
+.cn-toast--warning .cn-toast__hd i,.cn-toast--warning .cn-toast__bd i{color:#c97a10}
+.cn-toast--info .cn-toast__hd i,.cn-toast--info .cn-toast__bd i{color:#128252}
+.cn-toast__ft{padding:6px 14px 10px;display:flex;justify-content:flex-end;background:#fff;border:1px solid #d8e4db;border-top:0;border-radius:0 0 10px 10px}
+.cn-toast__term{height:24px;padding:0 12px;border:1px solid #d64545;border-radius:4px;background:#fff;color:#d64545;font-size:12px;cursor:pointer}
+.cn-toast__term:hover{background:#fbeeee}
+.cn-toast__close{width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;margin-left:auto;border:0;border-radius:4px;background:transparent;color:#8ca196;font-size:13px;cursor:pointer;flex-shrink:0;transition:background 0.15s,color 0.15s}
+.cn-toast__close:hover{background:#f2f7f4;color:#1e2c24}
+.cn-toast--progress .cn-toast__bd i{color:#128252}
+.cn-toast--progress{border-left:4px solid #128252}
 `
   document.head.appendChild(s)
   styleInjected = true
@@ -61,7 +61,7 @@ function show(type: ToastType, text: string): void {
   item.className = `cn-toast cn-toast--${type}`
   item.innerHTML = `
     <div class="cn-toast__hd">
-      <i class="fa-solid fa-brain" style="color:#52c41a"></i>
+      <i class="fa-solid fa-brain" style="color:#128252"></i>
       <span>CranialNerve</span>
       <button class="cn-toast__close" type="button"><i class="fa-solid fa-xmark"></i></button>
     </div>
@@ -99,7 +99,7 @@ function progress(text: string): {
   item.className = 'cn-toast cn-toast--progress cn-toast--show'
   item.innerHTML = `
     <div class="cn-toast__hd">
-      <i class="fa-solid fa-brain" style="color:#52c41a"></i>
+      <i class="fa-solid fa-brain" style="color:#128252"></i>
       <span>CranialNerve</span>
       <button class="cn-toast__close" type="button"><i class="fa-solid fa-xmark"></i></button>
     </div>

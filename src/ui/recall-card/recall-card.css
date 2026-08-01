@@ -6,14 +6,16 @@
 
 .cn-recall-card {
   display: block;
-  border: 1px solid #e4efe8;
-  border-radius: 8px;
+  border: 1px solid #d8e4db;
+  border-radius: 10px;
   overflow: hidden;
   background: #ffffff;
-  box-shadow: 0 1px 2px rgba(33, 48, 41, 0.04), 0 4px 14px rgba(61, 153, 96, 0.07);
+  box-shadow:
+    0 1px 2px rgba(16, 42, 28, 0.05),
+    0 4px 14px rgba(12, 94, 60, 0.07);
   font-size: 13px;
   line-height: 1.65;
-  color: #22302a;
+  color: #1e2c24;
 }
 
 .cn-recall-card__head {
@@ -21,20 +23,26 @@
   align-items: center;
   gap: 8px;
   padding: 7px 12px;
-  background: linear-gradient(to bottom, #f2f9f4, #edf6f0);
-  border-bottom: 1px solid #e4efe8;
+  background: linear-gradient(to bottom, #f0f9f4, #e6f2ec);
+  border-bottom: 1px solid #d8e4db;
 }
 
 .cn-recall-card__icon {
-  color: #3d9960;
-  width: 14px;
-  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: #def3e6;
+  color: #128252;
+  font-size: 11px;
   flex-shrink: 0;
 }
 
 .cn-recall-card__brand {
   font-weight: 600;
-  color: #2c7a45;
+  color: #0a5737;
   font-size: 12.5px;
   letter-spacing: 0.4px;
 }
@@ -43,9 +51,9 @@
   margin-left: auto;
   font-size: 10.5px;
   letter-spacing: 0.5px;
-  color: #64756b;
+  color: #54675c;
   background: #ffffff;
-  border: 1px solid #d8eadf;
+  border: 1px solid #c9e9d6;
   padding: 1px 8px;
   border-radius: 999px;
 }
@@ -54,6 +62,10 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
+  gap: 2px;
+  padding: 4px;
+  background: #f0f9f4;
+  border-bottom: 1px solid #d8e4db;
 }
 
 .cn-recall-tabs__radio {
@@ -64,40 +76,40 @@
   display: flex;
   align-items: baseline;
   gap: 6px;
-  padding: 6px 12px;
+  padding: 5px 11px;
   cursor: pointer;
-  border-bottom: 2px solid transparent;
-  background: #f7fbf8;
+  border-radius: 999px;
+  background: transparent;
   min-width: 0;
   transition:
     background 0.15s ease,
-    border-color 0.15s ease;
+    box-shadow 0.15s ease;
   user-select: none;
 }
 
 .cn-recall-tab:hover {
-  background: #eef7f0;
+  background: rgba(255, 255, 255, 0.65);
 }
 
 .cn-recall-tabs__radio:checked + .cn-recall-tab {
   background: #ffffff;
-  border-bottom-color: #3d9960;
+  box-shadow: 0 1px 2px rgba(16, 42, 28, 0.1);
 }
 
 .cn-recall-tab__key {
   font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
   font-weight: 600;
   font-size: 12px;
-  color: #22302a;
+  color: #1e2c24;
 }
 
 .cn-recall-tabs__radio:checked + .cn-recall-tab .cn-recall-tab__key {
-  color: #2c7a45;
+  color: #128252;
 }
 
 .cn-recall-tab__time {
   font-size: 10.5px;
-  color: #64756b;
+  color: #8ca196;
   white-space: nowrap;
 }
 
@@ -105,7 +117,7 @@
   display: none;
   width: 100%;
   padding: 9px 12px 11px;
-  border-top: 1px solid #eef3ef;
+  border-top: 1px solid #e3ede6;
   order: 1;
 }
 
@@ -136,26 +148,26 @@
   display: inline-flex;
   align-items: baseline;
   gap: 5px;
-  background: #f2f8f4;
-  border: 1px solid #e0efe5;
-  border-radius: 6px;
+  background: #f0f9f4;
+  border: 1px solid #c9e9d6;
+  border-radius: 7px;
   padding: 1px 8px;
   font-size: 11px;
-  color: #3c5147;
+  color: #54675c;
   word-break: break-word;
 }
 
 .cn-recall-meta__label {
   font-size: 9.5px;
   letter-spacing: 1px;
-  color: #7d8f84;
+  color: #8ca196;
 }
 
 .cn-recall-summary {
   margin: 0;
   font-size: 13px;
   line-height: 1.75;
-  color: #2a3a31;
+  color: #33463b;
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -167,36 +179,36 @@
 .cn-recall-quote {
   margin: 0;
   padding: 5px 10px;
-  background: #fbfdfc;
-  border-left: 2px solid #7cc496;
-  border-radius: 0 6px 6px 0;
+  background: #f6fbf8;
+  border-left: 2px solid #30b57a;
+  border-radius: 0 7px 7px 0;
   font-size: 12.5px;
   line-height: 1.7;
-  color: #52655a;
+  color: #54675c;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
 .cn-recall-quote::before {
   content: '“';
-  color: #7cc496;
+  color: #30b57a;
 }
 
 .cn-recall-quote::after {
   content: '”';
-  color: #7cc496;
+  color: #30b57a;
 }
 
 .cn-recall-card__message {
   display: block;
   padding: 8px 12px 10px;
-  border-top: 1px solid #e4efe8;
-  background: #fbfdfc;
+  border-top: 1px solid #e3ede6;
+  background: #f6fbf8;
   font-size: 13px;
   line-height: 1.75;
   white-space: pre-wrap;
   word-break: break-word;
-  color: #22302a;
+  color: #1e2c24;
 }
 
 .cn-recall-card__tag {
@@ -204,7 +216,7 @@
   margin: 0 6px 0 0;
   font-size: 9.5px;
   letter-spacing: 2px;
-  color: #7d8f84;
+  color: #8ca196;
   vertical-align: 2px;
 }
 
@@ -214,13 +226,13 @@
   align-items: center;
   gap: 10px;
   padding: 28px 12px;
-  background: #fbfdfc;
-  border-top: 1px solid #eef3ef;
-  border-bottom: 1px solid #eef3ef;
+  background: #f6fbf8;
+  border-top: 1px solid #e3ede6;
+  border-bottom: 1px solid #e3ede6;
 }
 
 .cn-recall-card__faded-icon {
-  color: #b9d2c0;
+  color: #c3d4c7;
   width: 22px;
   height: 22px;
   flex-shrink: 0;
@@ -230,5 +242,5 @@
   font-size: 12px;
   font-style: italic;
   letter-spacing: 3px;
-  color: #a9bcae;
+  color: #8ca196;
 }
