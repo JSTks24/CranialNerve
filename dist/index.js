@@ -10977,14 +10977,19 @@ function createWorldbookGateway() {
 			await ctx.saveWorldInfo(name, { entries: {} });
 		},
 		async deleteWorldbook(name) {
+			const ctx = getHostContext();
 			const headers = getRequestHeaders();
 			headers["Content-Type"] = "application/json";
-			const res = await fetch("/api/worldinfo/delete", {
-				method: "POST",
-				headers,
-				body: JSON.stringify({ name })
-			});
-			if (!res.ok) throw new Error(`删除世界书失败：${res.status}`);
+			try {
+				const res = await fetch("/api/worldinfo/delete", {
+					method: "POST",
+					headers,
+					body: JSON.stringify({ name })
+				});
+				if (!res.ok) throw new Error(`删除世界书失败：${res.status}`);
+			} finally {
+				if (typeof ctx.updateWorldInfoList === "function") await ctx.updateWorldInfoList();
+			}
 		},
 		listWorldbookNames() {
 			const ctx = getHostContext();
@@ -12782,7 +12787,7 @@ async function cleanupStaleBooks(session) {
 	for (const name of all) if (name.startsWith("CN_Data_") && name !== currentBook) try {
 		await wb.deleteWorldbook(name);
 	} catch (e) {
-		pushLog("error", "worldbook", `清理世界书失败: ${name} - ${e instanceof Error ? e.message : String(e)}`);
+		pushLog("warn", "worldbook", `清理世界书失败: ${name} - ${e instanceof Error ? e.message : String(e)}`);
 	}
 	try {
 		await wb.detachFromChat();
@@ -12991,6 +12996,18 @@ function getUserName() {
 var generationCountSinceLastFill = 0;
 var fillInProgress = false;
 var lastGenerationWasStopped = false;
+var lastAiLenAtStart = -1;
+function getLastAiLength(session) {
+	const chat = session.chat.getChat();
+	for (let i = chat.length - 1; i >= 0; i--) {
+		const m = chat[i];
+		if (m && !m.is_user && !m.is_system) return m.mes?.length ?? 0;
+	}
+	return -1;
+}
+function snapshotLastAiLength(session) {
+	lastAiLenAtStart = getLastAiLength(session);
+}
 function markGenerationStopped() {
 	lastGenerationWasStopped = true;
 }
@@ -13144,6 +13161,12 @@ async function onGenerationEnded(session) {
 	pushLog("info", "fill", `onGenerationEnded 开始 autoFill=${config.tableFill.autoFill}`);
 	if (!config.tableFill.autoFill) {
 		pushLog("info", "fill", "autoFill 关闭，跳过纪要总结");
+		return;
+	}
+	const lastAiLenNow = getLastAiLength(session);
+	if (lastAiLenNow === lastAiLenAtStart) {
+		pushLog("info", "fill", `AI输出无新增（生成错误/中断）len=${lastAiLenNow}，跳过纪要总结与表格更新`);
+		resetGenerationStopped();
 		return;
 	}
 	const frequency = Math.max(0, config.tableFill.updateFrequency ?? 1);
@@ -13372,12 +13395,8 @@ async function onPromptReady(session, targetUserIdx) {
 		const keys = limited.map((it) => it.key).join(" ");
 		chat[lastUserIdx].mes = `${keys}\n${userMessage}`;
 		session.chat.writeMessageExtra(lastUserIdx, RECALL_FIELD_PREFIX, serializeRecallPayload(limited));
+		session.chat.writeMessageExtra(lastUserIdx, "display_text", userMessage);
 		pushLog("info", "recall", `写入mes keys="${keys}" extra已写入`);
-		try {
-			getHostContext().updateMessageBlock?.(lastUserIdx, chat[lastUserIdx]);
-		} catch (e) {
-			pushLog("warn", "recall", `召回消息重渲染失败: ${e instanceof Error ? e.message : String(e)}`);
-		}
 		session.renderRecallCard(lastUserIdx);
 		session.chat.saveChat();
 		progress?.done();
@@ -13601,8 +13620,26 @@ var CranialNerveSession = class {
 				pushLog("error", "session", `onPromptReady error: ${e instanceof Error ? e.message : String(e)}`);
 			});
 		});
-		this.event.on(EVENT_GENERATION_STARTED, () => resetGenerationStopped());
+		this.event.on(EVENT_GENERATION_STARTED, () => {
+			resetGenerationStopped();
+			snapshotLastAiLength(this);
+		});
 		this.event.on(EVENT_GENERATION_STOPPED, () => markGenerationStopped());
+		this.event.on(EVENT_MESSAGE_EDITED, (...args) => {
+			const msgId = args[0];
+			if (typeof msgId !== "number") return;
+			const msg = this.chat.getChat()[msgId];
+			if (!msg || !msg.is_user) return;
+			const extra = msg.extra;
+			if (!extra || !(RECALL_FIELD_PREFIX in extra)) return;
+			const expected = stripKeyLineFromMes(String(msg.mes ?? ""));
+			if (extra.display_text !== expected) {
+				extra.display_text = expected;
+				try {
+					getHostContext().updateMessageBlock?.(msgId, msg);
+				} catch {}
+			}
+		});
 		this.event.on(EVENT_CHAT_RENAMED, (...args) => {
 			const payload = args[0];
 			if (payload?.oldFileName && payload?.newFileName) this.renameWorldbook(payload.oldFileName, payload.newFileName).catch((e) => {
@@ -13772,7 +13809,19 @@ var CranialNerveSession = class {
 		this.core.run(buildCreateTableSql(this.getChronicleTableDef()));
 		this.loadFromChat();
 		if (mySeq !== this.reloadSeq) return;
+		this.backfillRecallDisplayText();
 		await this.setupWorldbook(mySeq);
+	}
+	backfillRecallDisplayText() {
+		const chat = this.chat.getChat();
+		for (let i = 0; i < chat.length; i++) {
+			const msg = chat[i];
+			if (!msg || !msg.is_user) continue;
+			const extra = msg.extra;
+			if (!extra || !(RECALL_FIELD_PREFIX in extra)) continue;
+			const expected = stripKeyLineFromMes(String(msg.mes ?? ""));
+			if (extra.display_text !== expected) extra.display_text = expected;
+		}
 	}
 	getChatToken() {
 		if (this.currentChatToken) return this.currentChatToken;
@@ -14320,7 +14369,7 @@ var toast = {
 };
 //#endregion
 //#region src/ui/recall-card/recall-card.css?inline
-var recall_card_default = ":host {\n  display: block;\n  margin: 0 0 6px 0;\n  font-family: inherit;\n}\n\n.cn-recall-card {\n  display: block;\n  border: 1px solid #e4efe8;\n  border-radius: 8px;\n  overflow: hidden;\n  background: #ffffff;\n  box-shadow: 0 1px 2px rgba(33, 48, 41, 0.04), 0 4px 14px rgba(61, 153, 96, 0.07);\n  font-size: 13px;\n  line-height: 1.65;\n  color: #22302a;\n}\n\n.cn-recall-card__head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 7px 12px;\n  background: linear-gradient(to bottom, #f2f9f4, #edf6f0);\n  border-bottom: 1px solid #e4efe8;\n}\n\n.cn-recall-card__icon {\n  color: #3d9960;\n  width: 14px;\n  height: 14px;\n  flex-shrink: 0;\n}\n\n.cn-recall-card__brand {\n  font-weight: 600;\n  color: #2c7a45;\n  font-size: 12.5px;\n  letter-spacing: 0.4px;\n}\n\n.cn-recall-card__count {\n  margin-left: auto;\n  font-size: 10.5px;\n  letter-spacing: 0.5px;\n  color: #64756b;\n  background: #ffffff;\n  border: 1px solid #d8eadf;\n  padding: 1px 8px;\n  border-radius: 999px;\n}\n\n.cn-recall-tabs {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: flex-start;\n}\n\n.cn-recall-tabs__radio {\n  display: none;\n}\n\n.cn-recall-tab {\n  display: flex;\n  align-items: baseline;\n  gap: 6px;\n  padding: 6px 12px;\n  cursor: pointer;\n  border-bottom: 2px solid transparent;\n  background: #f7fbf8;\n  min-width: 0;\n  transition:\n    background 0.15s ease,\n    border-color 0.15s ease;\n  user-select: none;\n}\n\n.cn-recall-tab:hover {\n  background: #eef7f0;\n}\n\n.cn-recall-tabs__radio:checked + .cn-recall-tab {\n  background: #ffffff;\n  border-bottom-color: #3d9960;\n}\n\n.cn-recall-tab__key {\n  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;\n  font-weight: 600;\n  font-size: 12px;\n  color: #22302a;\n}\n\n.cn-recall-tabs__radio:checked + .cn-recall-tab .cn-recall-tab__key {\n  color: #2c7a45;\n}\n\n.cn-recall-tab__time {\n  font-size: 10.5px;\n  color: #64756b;\n  white-space: nowrap;\n}\n\n.cn-recall-panel {\n  display: none;\n  width: 100%;\n  padding: 9px 12px 11px;\n  border-top: 1px solid #eef3ef;\n  order: 1;\n}\n\n.cn-recall-tabs__radio:checked + .cn-recall-tab + .cn-recall-panel {\n  display: block;\n  animation: cn-recall-panel-in 0.16s ease-out;\n}\n\n@keyframes cn-recall-panel-in {\n  from {\n    opacity: 0;\n    transform: translateY(2px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n\n.cn-recall-meta {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px;\n  margin-bottom: 7px;\n}\n\n.cn-recall-meta__chip {\n  display: inline-flex;\n  align-items: baseline;\n  gap: 5px;\n  background: #f2f8f4;\n  border: 1px solid #e0efe5;\n  border-radius: 6px;\n  padding: 1px 8px;\n  font-size: 11px;\n  color: #3c5147;\n  word-break: break-word;\n}\n\n.cn-recall-meta__label {\n  font-size: 9.5px;\n  letter-spacing: 1px;\n  color: #7d8f84;\n}\n\n.cn-recall-summary {\n  margin: 0;\n  font-size: 13px;\n  line-height: 1.75;\n  color: #2a3a31;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n.cn-recall-summary + .cn-recall-quote {\n  margin-top: 7px;\n}\n\n.cn-recall-quote {\n  margin: 0;\n  padding: 5px 10px;\n  background: #fbfdfc;\n  border-left: 2px solid #7cc496;\n  border-radius: 0 6px 6px 0;\n  font-size: 12.5px;\n  line-height: 1.7;\n  color: #52655a;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n.cn-recall-quote::before {\n  content: '“';\n  color: #7cc496;\n}\n\n.cn-recall-quote::after {\n  content: '”';\n  color: #7cc496;\n}\n\n.cn-recall-card__message {\n  display: block;\n  padding: 8px 12px 10px;\n  border-top: 1px solid #e4efe8;\n  background: #fbfdfc;\n  font-size: 13px;\n  line-height: 1.75;\n  white-space: pre-wrap;\n  word-break: break-word;\n  color: #22302a;\n}\n\n.cn-recall-card__tag {\n  display: inline-block;\n  margin: 0 6px 0 0;\n  font-size: 9.5px;\n  letter-spacing: 2px;\n  color: #7d8f84;\n  vertical-align: 2px;\n}\n";
+var recall_card_default = ":host {\n  display: block;\n  margin: 0 0 6px 0;\n  font-family: inherit;\n}\n\n.cn-recall-card {\n  display: block;\n  border: 1px solid #e4efe8;\n  border-radius: 8px;\n  overflow: hidden;\n  background: #ffffff;\n  box-shadow: 0 1px 2px rgba(33, 48, 41, 0.04), 0 4px 14px rgba(61, 153, 96, 0.07);\n  font-size: 13px;\n  line-height: 1.65;\n  color: #22302a;\n}\n\n.cn-recall-card__head {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 7px 12px;\n  background: linear-gradient(to bottom, #f2f9f4, #edf6f0);\n  border-bottom: 1px solid #e4efe8;\n}\n\n.cn-recall-card__icon {\n  color: #3d9960;\n  width: 14px;\n  height: 14px;\n  flex-shrink: 0;\n}\n\n.cn-recall-card__brand {\n  font-weight: 600;\n  color: #2c7a45;\n  font-size: 12.5px;\n  letter-spacing: 0.4px;\n}\n\n.cn-recall-card__count {\n  margin-left: auto;\n  font-size: 10.5px;\n  letter-spacing: 0.5px;\n  color: #64756b;\n  background: #ffffff;\n  border: 1px solid #d8eadf;\n  padding: 1px 8px;\n  border-radius: 999px;\n}\n\n.cn-recall-tabs {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: flex-start;\n}\n\n.cn-recall-tabs__radio {\n  display: none;\n}\n\n.cn-recall-tab {\n  display: flex;\n  align-items: baseline;\n  gap: 6px;\n  padding: 6px 12px;\n  cursor: pointer;\n  border-bottom: 2px solid transparent;\n  background: #f7fbf8;\n  min-width: 0;\n  transition:\n    background 0.15s ease,\n    border-color 0.15s ease;\n  user-select: none;\n}\n\n.cn-recall-tab:hover {\n  background: #eef7f0;\n}\n\n.cn-recall-tabs__radio:checked + .cn-recall-tab {\n  background: #ffffff;\n  border-bottom-color: #3d9960;\n}\n\n.cn-recall-tab__key {\n  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;\n  font-weight: 600;\n  font-size: 12px;\n  color: #22302a;\n}\n\n.cn-recall-tabs__radio:checked + .cn-recall-tab .cn-recall-tab__key {\n  color: #2c7a45;\n}\n\n.cn-recall-tab__time {\n  font-size: 10.5px;\n  color: #64756b;\n  white-space: nowrap;\n}\n\n.cn-recall-panel {\n  display: none;\n  width: 100%;\n  padding: 9px 12px 11px;\n  border-top: 1px solid #eef3ef;\n  order: 1;\n}\n\n.cn-recall-tabs__radio:checked + .cn-recall-tab + .cn-recall-panel {\n  display: block;\n  animation: cn-recall-panel-in 0.16s ease-out;\n}\n\n@keyframes cn-recall-panel-in {\n  from {\n    opacity: 0;\n    transform: translateY(2px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n\n.cn-recall-meta {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 6px;\n  margin-bottom: 7px;\n}\n\n.cn-recall-meta__chip {\n  display: inline-flex;\n  align-items: baseline;\n  gap: 5px;\n  background: #f2f8f4;\n  border: 1px solid #e0efe5;\n  border-radius: 6px;\n  padding: 1px 8px;\n  font-size: 11px;\n  color: #3c5147;\n  word-break: break-word;\n}\n\n.cn-recall-meta__label {\n  font-size: 9.5px;\n  letter-spacing: 1px;\n  color: #7d8f84;\n}\n\n.cn-recall-summary {\n  margin: 0;\n  font-size: 13px;\n  line-height: 1.75;\n  color: #2a3a31;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n.cn-recall-summary + .cn-recall-quote {\n  margin-top: 7px;\n}\n\n.cn-recall-quote {\n  margin: 0;\n  padding: 5px 10px;\n  background: #fbfdfc;\n  border-left: 2px solid #7cc496;\n  border-radius: 0 6px 6px 0;\n  font-size: 12.5px;\n  line-height: 1.7;\n  color: #52655a;\n  white-space: pre-wrap;\n  word-break: break-word;\n}\n\n.cn-recall-quote::before {\n  content: '“';\n  color: #7cc496;\n}\n\n.cn-recall-quote::after {\n  content: '”';\n  color: #7cc496;\n}\n\n.cn-recall-card__message {\n  display: block;\n  padding: 8px 12px 10px;\n  border-top: 1px solid #e4efe8;\n  background: #fbfdfc;\n  font-size: 13px;\n  line-height: 1.75;\n  white-space: pre-wrap;\n  word-break: break-word;\n  color: #22302a;\n}\n\n.cn-recall-card__tag {\n  display: inline-block;\n  margin: 0 6px 0 0;\n  font-size: 9.5px;\n  letter-spacing: 2px;\n  color: #7d8f84;\n  vertical-align: 2px;\n}\n\n.cn-recall-faded {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  margin: 2px 0 10px;\n  color: #a9bcae;\n  user-select: none;\n}\n\n.cn-recall-faded__rule {\n  flex: 1;\n  height: 1px;\n}\n\n.cn-recall-faded__rule--left {\n  background: linear-gradient(to right, transparent, #d4e3d9);\n}\n\n.cn-recall-faded__rule--right {\n  background: linear-gradient(to left, transparent, #d4e3d9);\n}\n\n.cn-recall-faded__icon {\n  color: #b9d2c0;\n  width: 13px;\n  height: 13px;\n  flex-shrink: 0;\n}\n\n.cn-recall-faded__text {\n  font-size: 12px;\n  font-style: italic;\n  letter-spacing: 3px;\n}\n";
 //#endregion
 //#region src/ui/recall-card/template.ts
 function escapeHtml$1(text) {
@@ -14330,6 +14379,7 @@ function svgIcon(cls, paths) {
 	return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
 }
 var BRAIN_PATHS = "<path d=\"M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z\"/><path d=\"M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z\"/><path d=\"M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4\"/><path d=\"M12 13v8\"/>";
+var FEATHER_PATHS = "<path d=\"M12.67 19a2 2 0 0 0 1.416-.588l6.154-6.172a6 6 0 0 0-8.49-8.49L5.586 9.914A2 2 0 0 0 5 11.328V18a1 1 0 0 0 1.53.848\"/><path d=\"M16 8 2 22\"/><path d=\"M17.5 15H9\"/>";
 function buildRecallCardHtml(payload, userText) {
 	const items = payload.items;
 	const uid = Math.random().toString(36).slice(2, 10);
@@ -14357,11 +14407,13 @@ function buildRecallCardHtml(payload, userText) {
 	}
 	return `<div class="cn-recall-card"><div class="cn-recall-card__head">${svgIcon("cn-recall-card__icon", BRAIN_PATHS)}<span class="cn-recall-card__brand">CranialNerve</span><span class="cn-recall-card__count">${countText}</span></div><div class="cn-recall-tabs">${tabsHtml}</div><div class="cn-recall-card__message"><span class="cn-recall-card__tag">本回合输入</span>${escapeHtml$1(userText)}</div></div>`;
 }
+function buildRecallFadedHtml() {
+	return "<div class=\"cn-recall-faded\"><span class=\"cn-recall-faded__rule cn-recall-faded__rule--left\"></span>" + svgIcon("cn-recall-faded__icon", FEATHER_PATHS) + "<span class=\"cn-recall-faded__text\">楼层久远，记忆随风而去</span><span class=\"cn-recall-faded__rule cn-recall-faded__rule--right\"></span></div>";
+}
 //#endregion
 //#region src/ui/recall-card/renderer.ts
 var HOST_CLASS = "cn-recall-host";
 var FLOOR_CLASS = "cn-has-recall";
-var FADED_DEPTH = 2;
 function installRecallRenderer(session) {
 	let disposed = false;
 	const getFloorEl = (msgId) => document.querySelector(`#chat .mes[mesid="${msgId}"]`);
@@ -14379,6 +14431,18 @@ function installRecallRenderer(session) {
 		mesEl.classList.remove(FLOOR_CLASS);
 		const mesText = mesEl.querySelector(".mes_text");
 		if (mesText) removeHost(mesText);
+	};
+	const makeHost = (innerHtml) => {
+		const host = document.createElement("div");
+		host.className = HOST_CLASS;
+		const shadow = host.attachShadow({ mode: "open" });
+		const styleEl = document.createElement("style");
+		styleEl.textContent = recall_card_default;
+		shadow.appendChild(styleEl);
+		const body = document.createElement("div");
+		body.innerHTML = innerHtml;
+		shadow.appendChild(body);
+		return host;
 	};
 	const clearDomResidue = () => {
 		for (const host of document.querySelectorAll(`#chat .mes_text > .${HOST_CLASS}`)) host.remove();
@@ -14402,23 +14466,16 @@ function installRecallRenderer(session) {
 			return;
 		}
 		if (mesText.querySelector("#curEditTextarea")) return;
-		if (chat.length - 1 - msgId >= FADED_DEPTH) {
-			cleanupFloorEl(mesEl);
+		const depth = chat.length - 1 - msgId;
+		removeHost(mesText);
+		if (depth >= 12) {
+			mesEl.classList.remove(FLOOR_CLASS);
+			mesText.prepend(makeHost(buildRecallFadedHtml()));
 			return;
 		}
 		const innerHtml = buildRecallCardHtml(payload, stripKeyLineFromMes(String(msg.mes ?? "")));
-		removeHost(mesText);
 		mesEl.classList.add(FLOOR_CLASS);
-		const host = document.createElement("div");
-		host.className = HOST_CLASS;
-		const shadow = host.attachShadow({ mode: "open" });
-		const styleEl = document.createElement("style");
-		styleEl.textContent = recall_card_default;
-		shadow.appendChild(styleEl);
-		const body = document.createElement("div");
-		body.innerHTML = innerHtml;
-		shadow.appendChild(body);
-		mesText.prepend(host);
+		mesText.prepend(makeHost(innerHtml));
 	}
 	const refreshAllFloors = () => {
 		if (disposed) return;
@@ -46903,95 +46960,7 @@ function closePanel() {
 //#endregion
 //#region src/core/regex-scripts.ts
 var CN_REGEX_PREFIXES = ["CranialNerve - ", "CN - "];
-var PROMPT_CLEAN_SCRIPT = {
-	scriptName: "CranialNerve - 召回防污染",
-	findRegex: "/\\[CN_recall_ui\\][\\s\\S]*?\\[\\/CN_recall_ui\\]\\n?/",
-	replaceString: "",
-	trimStrings: [],
-	placement: [1],
-	disabled: false,
-	markdownOnly: false,
-	promptOnly: true,
-	runOnEdit: false,
-	substituteRegex: 0,
-	minDepth: null,
-	maxDepth: null
-};
-var DISPLAY_SCRIPT = {
-	scriptName: "CranialNerve - 静候佳音",
-	findRegex: "/\\[CN_recall_ui\\]([\\s\\S]*?)\\[\\/CN_recall_ui\\][\\s\\S]*/",
-	replaceString: "$1",
-	trimStrings: [],
-	placement: [1],
-	disabled: false,
-	markdownOnly: true,
-	promptOnly: false,
-	runOnEdit: true,
-	substituteRegex: 0,
-	minDepth: null,
-	maxDepth: 1
-};
-var DISPLAY_FADE_SCRIPT = {
-	scriptName: "CranialNerve - 健忘症",
-	findRegex: "/^(?:CN\\d{4}[ \\t]*)+(?:\\r?\\n|$)/",
-	replaceString: "<div style=\"display:flex;align-items:center;gap:10px;margin:2px 0 10px;color:#a9bcae;user-select:none\"><span style=\"flex:1;height:1px;background:linear-gradient(to right,transparent,#d4e3d9)\"></span><svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#b9d2c0\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12.67 19a2 2 0 0 0 1.416-.588l6.154-6.172a6 6 0 0 0-8.49-8.49L5.586 9.914A2 2 0 0 0 5 11.328V18a1 1 0 0 0 1.53.848\"/><path d=\"M16 8 2 22\"/><path d=\"M17.5 15H9\"/></svg><span style=\"font-size:12px;font-style:italic;letter-spacing:3px;text-indent:3px;\">楼层久远，记忆随风而去</span><span style=\"flex:1;height:1px;background:linear-gradient(to left,transparent,#d4e3d9)\"></span></div>",
-	trimStrings: [],
-	placement: [1],
-	disabled: false,
-	markdownOnly: true,
-	promptOnly: false,
-	runOnEdit: true,
-	substituteRegex: 0,
-	minDepth: 2,
-	maxDepth: null
-};
-var PROMPT_KEYS_CLEAN_SCRIPT = {
-	scriptName: "CranialNerve - 旧忆尘封",
-	findRegex: "/^(?:CN\\d{4}[ \\t]*)+(?:\\r?\\n|$)/",
-	replaceString: "",
-	trimStrings: [],
-	placement: [1],
-	disabled: false,
-	markdownOnly: false,
-	promptOnly: true,
-	runOnEdit: false,
-	substituteRegex: 0,
-	minDepth: 2,
-	maxDepth: null
-};
-function generateId() {
-	return "cn_" + Math.random().toString(36).slice(2, 10) + "_" + Date.now().toString(36);
-}
-function registerCNRegexScripts(regexArr) {
-	const filtered = (Array.isArray(regexArr) ? regexArr : []).filter((s) => {
-		const name = s.scriptName;
-		return typeof name === "string" && !CN_REGEX_PREFIXES.some((p) => name.startsWith(p));
-	});
-	const prompt = {
-		...PROMPT_CLEAN_SCRIPT,
-		id: generateId()
-	};
-	const display = {
-		...DISPLAY_SCRIPT,
-		id: generateId()
-	};
-	const displayFade = {
-		...DISPLAY_FADE_SCRIPT,
-		id: generateId()
-	};
-	const keysClean = {
-		...PROMPT_KEYS_CLEAN_SCRIPT,
-		id: generateId()
-	};
-	return [
-		...filtered,
-		prompt,
-		display,
-		displayFade,
-		keysClean
-	];
-}
-function unregisterCNRegexScripts(regexArr) {
+function removeCNRegexScripts(regexArr) {
 	if (!Array.isArray(regexArr)) return [];
 	return regexArr.filter((s) => {
 		const name = s.scriptName;
@@ -47111,6 +47080,21 @@ function getCNApi() {
 	return api;
 }
 //#endregion
+//#region src/core/chronicle/generate-interceptor.ts
+var GLOBAL_KEY = "cnGenerateInterceptor";
+function registerGenerateInterceptor() {
+	globalThis[GLOBAL_KEY] = (chat) => {
+		for (let i = 0; i < chat.length; i++) {
+			const item = chat[i];
+			if (!item || item.is_user !== true) continue;
+			if (chat.length - 1 - i < 12) continue;
+			if (typeof item.mes !== "string") continue;
+			const stripped = stripKeyLineFromMes(item.mes);
+			if (stripped !== item.mes) item.mes = stripped;
+		}
+	};
+}
+//#endregion
 //#region src/index.ts
 if (typeof globalThis.process === "undefined") globalThis.process = {
 	env: { NODE_ENV: "production" },
@@ -47121,10 +47105,9 @@ async function init() {
 	await init$1();
 	const session = getSession();
 	const ctx = getHostContext();
-	if (!Array.isArray(ctx.extensionSettings.regex)) ctx.extensionSettings.regex = [];
-	ctx.extensionSettings.regex = registerCNRegexScripts(ctx.extensionSettings.regex);
+	if (Array.isArray(ctx.extensionSettings.regex)) ctx.extensionSettings.regex = removeCNRegexScripts(ctx.extensionSettings.regex);
+	registerGenerateInterceptor();
 	window.addEventListener("beforeunload", () => {
-		ctx.extensionSettings.regex = unregisterCNRegexScripts(ctx.extensionSettings.regex);
 		try {
 			session.worldbook.detachFromChatSync();
 		} catch {}

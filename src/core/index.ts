@@ -15,6 +15,6 @@ export type { TimeCalculator, TimePromptGetter } from './time'
 export { CranialNerveSession, getSession } from './session'
 export { onGenerationEnded, runManualFill } from './table/fill-orchestrator'
 export { onPromptReady } from './chronicle/recall-orchestrator'
-export { registerCNRegexScripts, unregisterCNRegexScripts } from './regex-scripts'
+export { removeCNRegexScripts } from './regex-scripts'
 export { getCNApi } from './api/registry'
 

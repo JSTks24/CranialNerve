@@ -52,15 +52,22 @@ export default function createWorldbookGateway(): WorldbookGateway {
       await ctx.saveWorldInfo(name, empty)
     },
     async deleteWorldbook(name) {
+      const ctx = getHostContext()
       const headers = getRequestHeaders()
       headers['Content-Type'] = 'application/json'
-      const res = await fetch('/api/worldinfo/delete', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ name }),
-      })
-      if (!res.ok) {
-        throw new Error(`删除世界书失败：${res.status}`)
+      try {
+        const res = await fetch('/api/worldinfo/delete', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ name }),
+        })
+        if (!res.ok) {
+          throw new Error(`删除世界书失败：${res.status}`)
+        }
+      } finally {
+        if (typeof ctx.updateWorldInfoList === 'function') {
+          await ctx.updateWorldInfoList()
+        }
       }
     },
     listWorldbookNames() {

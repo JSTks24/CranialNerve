@@ -8,20 +8,20 @@ if (typeof (globalThis as unknown as { process?: unknown }).process === 'undefin
 
 import { init as uiInit } from './ui'
 import { getSession } from '@core/session'
-import { registerCNRegexScripts, unregisterCNRegexScripts } from '@core/regex-scripts'
+import { removeCNRegexScripts } from '@core/regex-scripts'
 import { getCNApi } from '@core/api/registry'
 import { getHostContext } from '@db/gateways/host-context'
+import { registerGenerateInterceptor } from '@core/chronicle/generate-interceptor'
 
 export async function init(): Promise<void> {
 	await uiInit()
 	const session = getSession()
 	const ctx = getHostContext()
-	if (!Array.isArray(ctx.extensionSettings.regex)) {
-		ctx.extensionSettings.regex = []
+	if (Array.isArray(ctx.extensionSettings.regex)) {
+		ctx.extensionSettings.regex = removeCNRegexScripts(ctx.extensionSettings.regex as Record<string, unknown>[])
 	}
-	ctx.extensionSettings.regex = registerCNRegexScripts(ctx.extensionSettings.regex as Record<string, unknown>[])
+	registerGenerateInterceptor()
 	window.addEventListener('beforeunload', () => {
-		ctx.extensionSettings.regex = unregisterCNRegexScripts(ctx.extensionSettings.regex as Record<string, unknown>[])
 		try {
 			session.worldbook.detachFromChatSync()
 		} catch {}

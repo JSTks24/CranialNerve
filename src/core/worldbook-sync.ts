@@ -226,7 +226,7 @@ export async function cleanupStaleBooks(session: CranialNerveSession): Promise<v
       try {
         await wb.deleteWorldbook(name)
       } catch (e) {
-        pushLog('error', 'worldbook', `清理世界书失败: ${name} - ${e instanceof Error ? e.message : String(e)}`)
+        pushLog('warn', 'worldbook', `清理世界书失败: ${name} - ${e instanceof Error ? e.message : String(e)}`)
       }
     }
   }

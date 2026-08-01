@@ -20,6 +20,10 @@ const BRAIN_PATHS =
   '<path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/>' +
   '<path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/>' +
   '<path d="M12 13v8"/>'
+const FEATHER_PATHS =
+  '<path d="M12.67 19a2 2 0 0 0 1.416-.588l6.154-6.172a6 6 0 0 0-8.49-8.49L5.586 9.914A2 2 0 0 0 5 11.328V18a1 1 0 0 0 1.53.848"/>' +
+  '<path d="M16 8 2 22"/>' +
+  '<path d="M17.5 15H9"/>'
 
 export function buildRecallCardHtml(payload: RecallCardPayload, userText: string): string {
   const items = payload.items

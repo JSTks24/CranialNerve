@@ -17,6 +17,22 @@ import { ensureInitCheckpoint } from '@db/sqlite/frame-persist'
 let generationCountSinceLastFill = 0
 let fillInProgress = false
 let lastGenerationWasStopped = false
+let lastAiLenAtStart = -1
+
+function getLastAiLength(session: CranialNerveSession): number {
+	const chat = session.chat.getChat()
+	for (let i = chat.length - 1; i >= 0; i--) {
+		const m = chat[i]
+		if (m && !m.is_user && !m.is_system) {
+			return m.mes?.length ?? 0
+		}
+	}
+	return -1
+}
+
+export function snapshotLastAiLength(session: CranialNerveSession): void {
+	lastAiLenAtStart = getLastAiLength(session)
+}
 
 export function markGenerationStopped(): void {
 	lastGenerationWasStopped = true
@@ -194,6 +210,13 @@ export async function onGenerationEnded(session: CranialNerveSession): Promise<v
 
 	if (!config.tableFill.autoFill) {
 		pushLog('info', 'fill', 'autoFill 关闭，跳过纪要总结')
+		return
+	}
+
+	const lastAiLenNow = getLastAiLength(session)
+	if (lastAiLenNow === lastAiLenAtStart) {
+		pushLog('info', 'fill', `AI输出无新增（生成错误/中断）len=${lastAiLenNow}，跳过纪要总结与表格更新`)
+		resetGenerationStopped()
 		return
 	}
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildRecallCardHtml } from '../src/ui/recall-card/template'
+import { buildRecallCardHtml, buildRecallFadedHtml } from '../src/ui/recall-card/template'
 import type { RecallCardPayload } from '../src/shared/types/recall-card'
 
 const payload: RecallCardPayload = {
@@ -75,5 +75,14 @@ describe('buildRecallCardHtml', () => {
     const nameA = a.match(/name="(r-[^"]+)"/)![1]
     const nameB = b.match(/name="(r-[^"]+)"/)![1]
     expect(nameA).not.toBe(nameB)
+  })
+})
+
+describe('buildRecallFadedHtml', () => {
+  it('含淡化横幅文案与羽毛图标，不含用户原话', () => {
+    const html = buildRecallFadedHtml()
+    expect(html).toContain('楼层久远，记忆随风而去')
+    expect(html).toContain('cn-recall-faded__icon')
+    expect(html).not.toContain('cn-recall-card__message')
   })
 })

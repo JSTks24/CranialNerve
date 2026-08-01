@@ -40,6 +40,7 @@ interface SillyTavernContext {
   loadWorldInfo?: (name: string) => Promise<WorldInfoData>
   saveWorldInfo?: (name: string, data: WorldInfoData, immediately?: boolean) => Promise<void>
   getWorldInfoNames?: () => string[]
+  updateWorldInfoList?: () => Promise<void>
   saveMetadata?: () => Promise<void>
 }
 

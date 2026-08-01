@@ -44,12 +44,14 @@ import type { ChronicleEntry } from '@shared/types/worldbook'
 import createChronicleRecaller, { type ChronicleRecaller } from './chronicle'
 import createWriteQueue, { type WriteQueue } from './write-queue'
 import { buildBookName, cleanupStaleBooks, syncToWorldbook } from './worldbook-sync'
-import { resetFillScheduler, onGenerationEnded, isFillInProgress, markGenerationStopped, resetGenerationStopped, buildWorldbookContext } from './table/fill-orchestrator'
+import { resetFillScheduler, onGenerationEnded, isFillInProgress, markGenerationStopped, resetGenerationStopped, buildWorldbookContext, snapshotLastAiLength } from './table/fill-orchestrator'
 import { onPromptReady } from './chronicle/recall-orchestrator'
 import { getPersonaDescription, getCharDescription, getUserName } from '@db/gateways/host-state'
+import { stripKeyLineFromMes } from '@shared/recall-payload'
+import { RECALL_FIELD_PREFIX } from '@shared/constants'
 import { exportCheckpoint, validateCheckpointFile } from './checkpoint-transfer'
 import { pushLog } from '@shared/log-buffer'
-import { EVENT_GENERATION_ENDED, EVENT_GENERATION_AFTER_COMMANDS, EVENT_CHAT_RENAMED, EVENT_GENERATION_STARTED, EVENT_GENERATION_STOPPED, EVENT_MESSAGE_DELETED, EVENT_MESSAGE_SENT } from '@shared/constants/events'
+import { EVENT_GENERATION_ENDED, EVENT_GENERATION_AFTER_COMMANDS, EVENT_CHAT_RENAMED, EVENT_GENERATION_STARTED, EVENT_GENERATION_STOPPED, EVENT_MESSAGE_DELETED, EVENT_MESSAGE_SENT, EVENT_MESSAGE_EDITED } from '@shared/constants/events'
 
 export class CranialNerveSession {
   readonly core: SqliteCore
@@ -173,8 +175,32 @@ export class CranialNerveSession {
         pushLog('error', 'session', `onPromptReady error: ${e instanceof Error ? e.message : String(e)}`)
       })
     })
-    this.event.on(EVENT_GENERATION_STARTED, () => resetGenerationStopped())
+    this.event.on(EVENT_GENERATION_STARTED, () => {
+      resetGenerationStopped()
+      snapshotLastAiLength(this)
+    })
     this.event.on(EVENT_GENERATION_STOPPED, () => markGenerationStopped())
+    this.event.on(EVENT_MESSAGE_EDITED, (...args: unknown[]) => {
+      const msgId = args[0]
+      if (typeof msgId !== 'number') {
+        return
+      }
+      const msg = this.chat.getChat()[msgId]
+      if (!msg || !msg.is_user) {
+        return
+      }
+      const extra = msg.extra as Record<string, unknown> | undefined
+      if (!extra || !(RECALL_FIELD_PREFIX in extra)) {
+        return
+      }
+      const expected = stripKeyLineFromMes(String(msg.mes ?? ''))
+      if (extra.display_text !== expected) {
+        extra.display_text = expected
+        try {
+          getHostContext().updateMessageBlock?.(msgId, msg)
+        } catch {}
+      }
+    })
     this.event.on(EVENT_CHAT_RENAMED, (...args: unknown[]) => {
       const payload = args[0] as { oldFileName?: string; newFileName?: string } | undefined
       if (payload?.oldFileName && payload?.newFileName) {
@@ -364,7 +390,26 @@ export class CranialNerveSession {
     if (mySeq !== this.reloadSeq) {
       return
     }
+    this.backfillRecallDisplayText()
     await this.setupWorldbook(mySeq)
+  }
+
+  private backfillRecallDisplayText(): void {
+    const chat = this.chat.getChat()
+    for (let i = 0; i < chat.length; i++) {
+      const msg = chat[i]
+      if (!msg || !msg.is_user) {
+        continue
+      }
+      const extra = msg.extra as Record<string, unknown> | undefined
+      if (!extra || !(RECALL_FIELD_PREFIX in extra)) {
+        continue
+      }
+      const expected = stripKeyLineFromMes(String(msg.mes ?? ''))
+      if (extra.display_text !== expected) {
+        extra.display_text = expected
+      }
+    }
   }
 
   getChatToken(): string {

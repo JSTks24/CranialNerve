@@ -2,7 +2,6 @@ import type { CranialNerveSession } from '../session'
 import type { RecallContext } from '../chronicle'
 import type { ProgressNotifier } from '@shared/types/config'
 import { pushLog } from '@shared/log-buffer'
-import { getHostContext } from '@db/gateways/host-context'
 import { getPersonaDescription, getCharDescription, getUserName } from '@db/gateways/host-state'
 import { RECALL_FIELD_PREFIX } from '@shared/constants'
 import { serializeRecallPayload } from '@shared/recall-payload'
@@ -99,12 +98,8 @@ export async function onPromptReady(
 		const keys = limited.map((it) => it.key).join(' ')
 		chat[lastUserIdx]!.mes = `${keys}\n${userMessage}`
 		session.chat.writeMessageExtra(lastUserIdx, RECALL_FIELD_PREFIX, serializeRecallPayload(limited))
+		session.chat.writeMessageExtra(lastUserIdx, 'display_text', userMessage)
 		pushLog('info', 'recall', `写入mes keys="${keys}" extra已写入`)
-		try {
-			getHostContext().updateMessageBlock?.(lastUserIdx, chat[lastUserIdx]!)
-		} catch (e) {
-			pushLog('warn', 'recall', `召回消息重渲染失败: ${e instanceof Error ? e.message : String(e)}`)
-		}
 		session.renderRecallCard(lastUserIdx)
 		void session.chat.saveChat()
 		progress?.done()

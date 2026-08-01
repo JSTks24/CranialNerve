@@ -1,5 +1,5 @@
 import type { CranialNerveSession } from '@core/session'
-import { RECALL_FIELD_PREFIX } from '@shared/constants'
+import { RECALL_FIELD_PREFIX, RECALL_FADE_MIN_DEPTH } from '@shared/constants'
 import {
   EVENT_CHAT_LOADED,
   EVENT_MESSAGE_DELETED,
@@ -11,11 +11,10 @@ import {
 } from '@shared/constants/events'
 import { parseRecallPayload, stripKeyLineFromMes } from '@shared/recall-payload'
 import recallCardCss from './recall-card.css?inline'
-import { buildRecallCardHtml } from './template'
+import { buildRecallCardHtml, buildRecallFadedHtml } from './template'
 
 const HOST_CLASS = 'cn-recall-host'
 const FLOOR_CLASS = 'cn-has-recall'
-const FADED_DEPTH = 2
 
 export interface RecallRenderer {
   renderFloor: (msgId: number) => void
@@ -47,6 +46,19 @@ export function installRecallRenderer(session: CranialNerveSession): RecallRende
     if (mesText) {
       removeHost(mesText)
     }
+  }
+
+  const makeHost = (innerHtml: string): HTMLDivElement => {
+    const host = document.createElement('div')
+    host.className = HOST_CLASS
+    const shadow = host.attachShadow({ mode: 'open' })
+    const styleEl = document.createElement('style')
+    styleEl.textContent = recallCardCss
+    shadow.appendChild(styleEl)
+    const body = document.createElement('div')
+    body.innerHTML = innerHtml
+    shadow.appendChild(body)
+    return host
   }
 
   const clearDomResidue = (): void => {
@@ -85,25 +97,17 @@ export function installRecallRenderer(session: CranialNerveSession): RecallRende
       return
     }
     const depth = chat.length - 1 - msgId
-    if (depth >= FADED_DEPTH) {
-      cleanupFloorEl(mesEl)
+    removeHost(mesText)
+    if (depth >= RECALL_FADE_MIN_DEPTH) {
+      mesEl.classList.remove(FLOOR_CLASS)
+      mesText.prepend(makeHost(buildRecallFadedHtml()))
       return
     }
     const userText = stripKeyLineFromMes(String(msg.mes ?? ''))
     const innerHtml = buildRecallCardHtml(payload, userText)
 
-    removeHost(mesText)
     mesEl.classList.add(FLOOR_CLASS)
-    const host = document.createElement('div')
-    host.className = HOST_CLASS
-    const shadow = host.attachShadow({ mode: 'open' })
-    const styleEl = document.createElement('style')
-    styleEl.textContent = recallCardCss
-    shadow.appendChild(styleEl)
-    const body = document.createElement('div')
-    body.innerHTML = innerHtml
-    shadow.appendChild(body)
-    mesText.prepend(host)
+    mesText.prepend(makeHost(innerHtml))
   }
 
   const refreshAllFloors = (): void => {
