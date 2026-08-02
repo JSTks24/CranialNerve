@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onActivated } from 'vue'
 import { useDebugStore } from '@ui/stores/debug'
 import CNTabs from '@ui/components/CNTabs.vue'
 
@@ -33,6 +33,10 @@ function recoverSnapshot() {
 	if (!Number.isFinite(idx)) return
 	store.recoverSnapshotAt(idx)
 }
+
+onActivated(() => {
+	store.refresh()
+})
 </script>
 
 <template>
@@ -131,45 +135,51 @@ function recoverSnapshot() {
 				<div class="cn-card">
 					<div class="cn-card__head">数据库</div>
 					<div class="cn-card__body">
-						<div class="debug-status-item">
-							<span class="debug-status-item__label">数据表数</span>
-							<span class="debug-status-item__value">{{ store.tableStatus.tableCount }}</span>
-						</div>
-						<div class="debug-status-item">
-							<span class="debug-status-item__label">纪要条数</span>
-							<span class="debug-status-item__value">{{ store.tableStatus.chronicleCount }}</span>
-						</div>
+						<template v-if="store.chatActive">
+							<div class="debug-status-item">
+								<span class="debug-status-item__label">数据表数</span>
+								<span class="debug-status-item__value">{{ store.tableStatus.tableCount }}</span>
+							</div>
+							<div class="debug-status-item">
+								<span class="debug-status-item__label">纪要条数</span>
+								<span class="debug-status-item__value">{{ store.tableStatus.chronicleCount }}</span>
+							</div>
+						</template>
+						<div v-else class="debug-status-empty">未载入聊天</div>
 					</div>
 				</div>
 
 				<div class="cn-card">
 					<div class="cn-card__head">快照</div>
 					<div class="cn-card__body">
-						<div class="debug-status-item">
-							<span class="debug-status-item__label">可用快照数</span>
-							<span class="debug-status-item__value">{{ store.snapshotStatus.snapshotCount }}</span>
-						</div>
-						<div class="debug-status-item">
-							<span class="debug-status-item__label">当前快照位置</span>
-							<span class="debug-status-item__value">
-								{{ store.snapshotStatus.snapshotIndex != null ? `第 ${store.snapshotStatus.snapshotIndex + 1} 楼` : '无' }}
-							</span>
-						</div>
-						<div class="debug-status-item">
-							<span class="debug-status-item__label">最近 AI 楼</span>
-							<span class="debug-status-item__value">
-								{{ store.snapshotStatus.lastAiIndex != null ? `第 ${store.snapshotStatus.lastAiIndex + 1} 楼` : '无' }}
-							</span>
-						</div>
-						<div class="debug-status-actions">
-							<select class="cn-select" id="cn_snapshot_pick" :value="store.snapshotStatus.snapshotIndex ?? ''">
-								<option v-for="idx in store.snapshotStatus.indices" :key="idx" :value="idx">第 {{ idx + 1 }} 楼</option>
-							</select>
-							<button class="cn-btn cn-btn--sm" @click="recoverSnapshot">
-								<i class="fa-solid fa-clock-rotate-left"></i>
-								恢复到此快照
-							</button>
-						</div>
+						<template v-if="store.chatActive">
+							<div class="debug-status-item">
+								<span class="debug-status-item__label">可用快照数</span>
+								<span class="debug-status-item__value">{{ store.snapshotStatus.snapshotCount }}</span>
+							</div>
+							<div class="debug-status-item">
+								<span class="debug-status-item__label">当前快照位置</span>
+								<span class="debug-status-item__value">
+									{{ store.snapshotStatus.snapshotIndex != null ? `第 ${store.snapshotStatus.snapshotIndex + 1} 楼` : '无' }}
+								</span>
+							</div>
+							<div class="debug-status-item">
+								<span class="debug-status-item__label">最近 AI 楼</span>
+								<span class="debug-status-item__value">
+									{{ store.snapshotStatus.lastAiIndex != null ? `第 ${store.snapshotStatus.lastAiIndex + 1} 楼` : '无' }}
+								</span>
+							</div>
+							<div class="debug-status-actions">
+								<select class="cn-select" id="cn_snapshot_pick" :value="store.snapshotStatus.snapshotIndex ?? ''">
+									<option v-for="idx in store.snapshotStatus.indices" :key="idx" :value="idx">第 {{ idx + 1 }} 楼</option>
+								</select>
+								<button class="cn-btn" @click="recoverSnapshot">
+									<i class="fa-solid fa-clock-rotate-left"></i>
+									恢复到此快照
+								</button>
+							</div>
+						</template>
+						<div v-else class="debug-status-empty">未载入聊天</div>
 					</div>
 				</div>
 

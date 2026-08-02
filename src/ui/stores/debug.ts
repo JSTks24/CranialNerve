@@ -16,6 +16,7 @@ export const useDebugStore = defineStore('cn-debug', () => {
 	const keyword = ref('')
 	const paused = ref(false)
 	const autoScroll = ref(true)
+	const chatActive = ref(false)
 	const pendingEntries = ref<LogEntry[]>([])
 	let unsubscribe: (() => void) | null = null
 
@@ -100,6 +101,7 @@ export const useDebugStore = defineStore('cn-debug', () => {
 
 	function refresh() {
 		logs.value = getAllLogs()
+		chatActive.value = session.isChatActive()
 	}
 
 	function setPaused(value: boolean) {
@@ -168,6 +170,7 @@ export const useDebugStore = defineStore('cn-debug', () => {
 
 	return {
 		logs,
+		chatActive,
 		visibleLogs,
 		levelFilter,
 		tagFilter,

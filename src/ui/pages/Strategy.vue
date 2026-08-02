@@ -156,7 +156,7 @@ onActivated(() => {
 				</section>
 
 				<section class="cn-card strategy-section">
-					<div class="strategy-section__head"><span class="strategy-section__title">触发与批量</span></div>
+					<div class="strategy-section__head"><span class="strategy-section__title">触发与批量（表格更新与纪要召回共用参数）</span></div>
 					<div class="strategy-rows">
 						<div class="strategy-row">
 							<div class="strategy-row__text">

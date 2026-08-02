@@ -2540,7 +2540,7 @@
 
 #cn_app .debug-status-grid {
   display: grid;
-  grid-template-columns: 3fr 2fr;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -2582,8 +2582,16 @@
 
 #cn_app .debug-status-actions {
   display: flex;
+  align-items: center;
   gap: 6px;
   padding-top: 8px;
+}
+
+#cn_app .debug-status-empty {
+  padding: 20px 0;
+  text-align: center;
+  color: var(--cn-text-3);
+  font-size: 13px;
 }
 
 #cn_app .preset-list,
