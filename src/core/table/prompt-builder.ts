@@ -3,6 +3,7 @@ import type { PromptSegment } from '@shared/types/config'
 import type { TableDef } from '@shared/types/table'
 import { buildCreateTableSql } from '@shared/template-builder'
 import { SQL_EDIT_FORMAT } from '@shared/constants/sql-json'
+import { CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
 import { interpolate } from '@shared/prompts/interpolate'
 
 export interface BuildPromptOptions {
@@ -16,6 +17,7 @@ export interface BuildPromptOptions {
   chronicleGuide?: string
   personaDescription?: string
   charDescription?: string
+  chronicleSendLatestRows?: number
 }
 
 export function buildTableEditPrompt(
@@ -24,7 +26,7 @@ export function buildTableEditPrompt(
 ): PromptSegment[] {
   const tableSection = options.tableDefs
     .filter((t) => !options.targetTables || options.targetTables.includes(t.name))
-    .map((t) => formatTableForAI(core, t))
+    .map((t) => formatTableForAI(core, t, options.chronicleSendLatestRows ?? 10))
     .join('\n\n')
 
   const filled = cloneSegments(options.segments).map((s) => ({
@@ -52,7 +54,11 @@ function cloneSegments(segments: PromptSegment[]): PromptSegment[] {
   return segments.map((s) => ({ ...s }))
 }
 
-function formatTableForAI(core: SqliteCore, table: TableDef): string {
+function formatTableForAI(
+  core: SqliteCore,
+  table: TableDef,
+  chronicleSendLatestRows: number
+): string {
   const ddl = buildCreateTableSql(table)
   const lines: string[] = [`-- 表: ${table.displayName} (${table.name})`]
   lines.push('-- DDL:')
@@ -78,12 +84,52 @@ function formatTableForAI(core: SqliteCore, table: TableDef): string {
 
   try {
     const result = core.exec(`SELECT * FROM "${table.name.replace(/"/g, '""')}"`)
-    const rows = result.length > 0 ? (result[0]?.rows ?? []) : []
-    lines.push(`-- 当前数据 (${rows.length} 行):`)
-    lines.push(`-- ${JSON.stringify(rows)}`)
+    const allRows = result.length > 0 ? (result[0]?.rows ?? []) : []
+    const limit = resolveRowLimit(table, chronicleSendLatestRows)
+    const { rows, note } = applyRowLimit(allRows, limit)
+    if (note) {
+      lines.push(`-- Note: ${note}`)
+    }
+    lines.push(`-- 当前数据 (${rows.length} rows):`)
+    if (rows.length > 0) {
+      const headers = table.columns.map((c) => c.name)
+      lines.push(`-- | ${headers.join(' | ')} |`)
+      for (const row of rows) {
+        const values = table.columns.map((c) => formatCell(row[c.name]))
+        lines.push(`-- | ${values.join(' | ')} |`)
+      }
+    }
   } catch {
     lines.push('-- 当前数据: 读取失败')
   }
 
   return lines.join('\n')
+}
+
+function resolveRowLimit(table: TableDef, chronicleSendLatestRows: number): number {
+  if (table.name === CHRONICLE_TABLE_NAME) {
+    return chronicleSendLatestRows > 0 ? chronicleSendLatestRows : -1
+  }
+  const configured = table.updateConfig?.sendLatestRows
+  return typeof configured === 'number' ? configured : -1
+}
+
+function applyRowLimit(
+  allRows: Record<string, unknown>[],
+  limit: number
+): { rows: Record<string, unknown>[]; note: string } {
+  if (limit > 0 && allRows.length > limit) {
+    return {
+      rows: allRows.slice(-limit),
+      note: `Showing last ${limit} of ${allRows.length} entries`
+    }
+  }
+  return { rows: allRows, note: '' }
+}
+
+function formatCell(value: unknown): string {
+  if (value === null || value === undefined) {
+    return ''
+  }
+  return String(value).replace(/\n/g, ' ')
 }

@@ -40,6 +40,7 @@ export interface RunResult {
   attempts: number
   error?: string
   lastSql?: string
+  errorCategory?: 'model' | 'infrastructure'
 }
 
 export default class TableEditor {
@@ -59,6 +60,7 @@ export default class TableEditor {
 
     let lastError = ''
     let lastRaw = ''
+    let lastCategory: 'model' | 'infrastructure' = 'model'
     for (let attempt = 1; attempt <= options.maxRetries; attempt++) {
       if (attempt > 1) {
         options.onProgress?.('retry', { attempt, maxRetries: options.maxRetries, error: lastError })
@@ -66,7 +68,20 @@ export default class TableEditor {
       options.onProgress?.('calling_ai', { attempt, maxRetries: options.maxRetries })
       const messages =
         attempt === 1 ? baseMessages : buildFeedbackMessages(baseMessages, lastRaw, lastError)
-      const raw = await this.ai.chatCompletion(messages, ctx.clientConfig, ctx.params, options.signal, ctx.callOptions)
+      let raw: string
+      try {
+        raw = await this.ai.chatCompletion(
+          messages,
+          ctx.clientConfig,
+          ctx.params,
+          options.signal,
+          ctx.callOptions
+        )
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e)
+        options.onProgress?.('error', { maxRetries: options.maxRetries, error: msg })
+        return { ok: false, attempts: attempt, error: msg, errorCategory: 'infrastructure' }
+      }
       lastRaw = raw
       options.onProgress?.('parsing', { attempt, maxRetries: options.maxRetries })
       const current = parseTableEditSql(raw)
@@ -80,18 +95,25 @@ export default class TableEditor {
           return { ok: true, attempts: attempt, lastSql: current.sql }
         }
         lastError = result.error ?? 'unknown sql error'
+        lastCategory = result.errorCategory ?? 'model'
       } else {
         lastError = `AI 输出 format 不是 ${SQL_EDIT_FORMAT}`
+        lastCategory = 'model'
+      }
+
+      if (attempt < options.maxRetries && lastCategory === 'model') {
+        await new Promise((resolve) => setTimeout(resolve, 5000))
       }
     }
 
     options.onProgress?.('error', { maxRetries: options.maxRetries, error: lastError })
-    return { ok: false, attempts: options.maxRetries, error: lastError }
+    return { ok: false, attempts: options.maxRetries, error: lastError, errorCategory: lastCategory }
   }
 }
 
 function parseTableEditSql(raw: string): TableEditSqlV1 | null {
-  const jsonStr = extractJson(raw)
+  const stripped = raw.replace(/<thought>[\s\S]*?<\/thought>/gi, '')
+  const jsonStr = extractJson(stripped)
   if (!jsonStr) {
     return null
   }

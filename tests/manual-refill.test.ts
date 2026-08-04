@@ -62,8 +62,9 @@ function makeSession(core: SqliteCore, chat: FakeMessage[], editorRun: () => Pro
       tableFill: {
         autoFill: true, contextDepth: 3, updateFrequency: 1, batchSize: 3, skipFloors: 0, maxRetries: 3,
         manualUpdateContextDepth: null, manualUpdateBatchSize: null, manualSelectedTables: [], hasManualSelection: false,
+        chronicleSendLatestRows: 10,
       },
-      maxRecallItems: 25, recallEnabled: true, chronicleGenEnabled: false, tableFillPresetId: 'p1',
+      maxRecallItems: 25, recallEnabled: true, recallRecentFixedInjectCount: 5, recallMinScore: 0.45, chronicleGenEnabled: false, tableFillPresetId: 'p1',
       recallPresetId: '', recallContextDepth: 5, retainFloors: 100,
       pending: { aiCallTimeoutMs: 60000, aiTimeoutRetries: 1, listModelsTimeoutMs: 10000, writeQueueDrainTimeoutMs: 8000, summarizeOnManualAbort: false, minSummaryLength: 0 },
       tableTemplate: { presets: [], activeId: '', defaultId: '' },

@@ -22,7 +22,10 @@ function buildSegments(raw: RawSegment[]): PromptSegment[] {
 let tableEditSegments: PromptSegment[] = []
 let chronicleRecallSegments: PromptSegment[] = []
 
-export function setDefaultPrompts(tableEdit: RawSegment[], chronicleRecall: RawSegment[]): void {
+export function setDefaultPrompts(
+  tableEdit: RawSegment[],
+  chronicleRecall: RawSegment[]
+): void {
   tableEditSegments = buildSegments(tableEdit)
   chronicleRecallSegments = buildSegments(chronicleRecall)
 }

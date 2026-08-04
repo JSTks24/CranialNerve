@@ -8,6 +8,7 @@ export interface SqlExecResult {
     ok: boolean
     error?: string
     changes?: number
+    errorCategory?: 'model' | 'infrastructure'
 }
 
 export interface SqlExecPersist {
@@ -39,6 +40,10 @@ export default function executeTableEditSql(
         }
         return { ok: true, changes }
     } catch (e) {
-        return { ok: false, error: e instanceof Error ? e.message : String(e) }
+        return {
+            ok: false,
+            error: e instanceof Error ? e.message : String(e),
+            errorCategory: 'model'
+        }
     }
 }

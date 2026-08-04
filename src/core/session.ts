@@ -6,6 +6,7 @@ import {
   createChatGateway,
   createConfigGateway,
   createEventGateway,
+  createFileStorageGateway,
   createVectorGateway,
   createWorldbookGateway,
   getHostContext
@@ -42,6 +43,7 @@ import { TableEditor } from './table'
 import ChronicleEntryStore from './worldbook-entries'
 import type { ChronicleEntry } from '@shared/types/worldbook'
 import createChronicleRecaller, { type ChronicleRecaller } from './chronicle'
+import createVectorIndexStore, { type VectorIndexStore } from './chronicle/vector-index-store'
 import createWriteQueue, { type WriteQueue } from './write-queue'
 import { buildBookName, cleanupStaleBooks, syncToWorldbook } from './worldbook-sync'
 import { resetFillScheduler, onGenerationEnded, isFillInProgress, markGenerationStopped, resetGenerationStopped, buildWorldbookContext, snapshotLastAiLength, runManualFill, runManualCatchUp, type ExecuteFillOptions, type ManualCatchUpOptions } from './table/fill-orchestrator'
@@ -53,6 +55,31 @@ import { exportCheckpoint, validateCheckpointFile } from './checkpoint-transfer'
 import { pushLog } from '@shared/log-buffer'
 import { EVENT_GENERATION_ENDED, EVENT_GENERATION_AFTER_COMMANDS, EVENT_CHAT_RENAMED, EVENT_GENERATION_STARTED, EVENT_GENERATION_STOPPED, EVENT_MESSAGE_DELETED, EVENT_MESSAGE_SENT, EVENT_MESSAGE_EDITED } from '@shared/constants/events'
 
+function parseRowKeywords(raw: string, expectedRows: number): string[][] {
+  const trimmed = raw.trim()
+  const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i)
+  const candidate = (fenced?.[1] ?? trimmed).trim()
+  const start = candidate.indexOf('[')
+  const end = candidate.lastIndexOf(']')
+  if (start === -1 || end === -1 || end <= start) {
+    return Array.from({ length: expectedRows }, () => [])
+  }
+  try {
+    const parsed = JSON.parse(candidate.slice(start, end + 1))
+    if (!Array.isArray(parsed)) {
+      return Array.from({ length: expectedRows }, () => [])
+    }
+    return parsed.map((item) => {
+      if (!Array.isArray(item)) return []
+      return item
+        .filter((k): k is string => typeof k === 'string' && k.trim().length > 0)
+        .map((k) => k.trim())
+    })
+  } catch {
+    return Array.from({ length: expectedRows }, () => [])
+  }
+}
+
 export class CranialNerveSession {
   readonly core: SqliteCore
   readonly character: CharacterGateway
@@ -62,6 +89,7 @@ export class CranialNerveSession {
   readonly event: EventGateway
   readonly worldbook: WorldbookGateway
   readonly vector: VectorGateway
+  readonly vectorIndexStore: VectorIndexStore
   private syncBridge: SqliteSyncBridge | null = null
   private tableEditor: TableEditor | null = null
   private nameMapper: NameMapper | null = null
@@ -91,6 +119,7 @@ export class CranialNerveSession {
     this.event = createEventGateway()
     this.worldbook = createWorldbookGateway()
     this.vector = createVectorGateway()
+    this.vectorIndexStore = createVectorIndexStore(createFileStorageGateway())
     this.writeQueue = createWriteQueue()
   }
 
@@ -234,7 +263,7 @@ export class CranialNerveSession {
     const name = buildBookName(this.getChatToken())
     this.chronicleStore = new ChronicleEntryStore(this.worldbook, name)
     const tableReader = async (): Promise<ChronicleEntry[]> => this.getChronicleEntries()
-    this.chronicleRecaller = createChronicleRecaller(this.ai, tableReader, this.vector)
+    this.chronicleRecaller = createChronicleRecaller(this.ai, tableReader, this.vector, this.vectorIndexStore)
   }
 
   getChronicleEntries(): ChronicleEntry[] {
@@ -249,7 +278,7 @@ export class CranialNerveSession {
     const kKeyDialogue = colName('keyDialogue')
     let result: QueryResult[]
     try {
-      result = this.core.exec(`SELECT * FROM "${CHRONICLE_TABLE_NAME}"`)
+      result = this.core.exec(`SELECT * FROM "${CHRONICLE_TABLE_NAME.replace(/"/g, '""')}"`)
     } catch (e) {
       pushLog('warn', 'session', `纪要表读取失败: ${e instanceof Error ? e.message : String(e)}`)
       return []
@@ -312,7 +341,7 @@ export class CranialNerveSession {
     return chat[idx]?.mes ?? ''
   }
 
-  async generateKeywordsForTable(tableName: string, aiPrompt: string): Promise<string[]> {
+  async generateKeywordsForRows(tableName: string): Promise<string[][]> {
     const cfg = this.getConfig()
     const preset = this.getAiPresetForScene(cfg.tableFillPresetId)
     if (!preset) {
@@ -320,9 +349,20 @@ export class CranialNerveSession {
     }
     const tableData = this.getTableData(tableName)
     const rows = tableData[0]?.rows ?? []
+    if (rows.length === 0) {
+      return []
+    }
+    const def = this.getTableDef(tableName)
+    const aiSegments = def?.exportConfig?.keywordAiPrompt ?? []
+    if (aiSegments.length === 0) {
+      return []
+    }
     const messages: AiChatMessage[] = [
-      { role: 'system', content: aiPrompt },
-      { role: 'user', content: `表 ${tableName} 当前数据（${rows.length} 行）：\n${JSON.stringify(rows)}\n\n请根据以上表格内容生成用于触发世界书注入的关键词。只输出关键词，用逗号分隔。` }
+      ...aiSegments.map((s) => ({ role: s.role, content: s.content })),
+      {
+        role: 'user',
+        content: `表 ${tableName} 当前数据（${rows.length} 行）：\n${JSON.stringify(rows)}\n\n请为每一行生成用于触发世界书注入的独特关键词。只输出 JSON 数组，每个元素是该行关键词数组，行数与输入行数一致，如：[["行1关键词1","行1关键词2"],["行2关键词1"]]`
+      }
     ]
     const raw = await this.ai.chatCompletion(
       messages,
@@ -331,7 +371,7 @@ export class CranialNerveSession {
       undefined,
       { timeoutMs: cfg.pending.aiCallTimeoutMs, timeoutRetries: cfg.pending.aiTimeoutRetries }
     )
-    return raw.split(/[,，\n]/).map((k) => k.trim()).filter(Boolean)
+    return parseRowKeywords(raw, rows.length)
   }
 
   startAutoSwitch(): void {
@@ -506,7 +546,7 @@ export class CranialNerveSession {
     this.currentTemplateId = id ?? null
     this.nameMapper = new NameMapper(template.tables)
     for (const table of template.tables) {
-      if (!table.name || table.columns.length === 0) continue
+      if (!table.name || table.columns.length === 0 || table.enabled === false) continue
       this.core.run(buildCreateTableSql(table))
     }
     this.core.run(buildCreateTableSql(this.getChronicleTableDef()))
@@ -527,7 +567,7 @@ export class CranialNerveSession {
     this.core.dispose()
     await this.core.init()
     for (const table of template.tables) {
-      if (!table.name || table.columns.length === 0) continue
+      if (!table.name || table.columns.length === 0 || table.enabled === false) continue
       this.core.run(buildCreateTableSql(table))
     }
     this.core.run(buildCreateTableSql(this.getChronicleTableDef()))
@@ -794,6 +834,9 @@ export class CranialNerveSession {
   }
 
   insertRow(tableName: string, values: Record<string, string>): void {
+    if (Object.keys(values).length === 0) {
+      throw new Error(`表「${tableName}」没有列，无法插入空行`)
+    }
     const safeTable = tableName.replace(/"/g, '""')
     const cols = Object.keys(values).map((c) => `"${c.replace(/"/g, '""')}"`)
     const placeholders = cols.map(() => '?').join(', ')

@@ -44,8 +44,11 @@ function parseDdl(ddl: string): ColumnDef[] {
   const bodyMatch = ddl.match(/\(([\s\S]*)\)/i)
   if (!bodyMatch) return columns
 
-  const lines = bodyMatch[1]!.split(',').map((l) => l.trim()).filter((l) => l.length > 0)
-  for (const line of lines) {
+  const rawLines = bodyMatch[1]!.split('\n')
+  for (const raw of rawLines) {
+    const commentIdx = raw.indexOf('--')
+    const line = (commentIdx >= 0 ? raw.slice(0, commentIdx) : raw).trim().replace(/,$/, '').trim()
+    if (!line) continue
     const nameMatch = line.match(/^"?(\w+)"?\s/i)
     if (!nameMatch) continue
     const name = nameMatch[1]!
@@ -53,19 +56,16 @@ function parseDdl(ddl: string): ColumnDef[] {
     const typeMatch = line.match(/\b(TEXT|INTEGER|INT|REAL|BLOB|VARCHAR[^,\s]*)\b/i)
     const type = typeMatch ? typeMatch[1]!.toUpperCase().replace(/^INT$/i, 'INTEGER') : 'TEXT'
 
-    const commentMatch = line.match(/--\s*(.+)/)
-    const displayName = commentMatch ? commentMatch[1]!.trim() : name
-
     const upper = line.toUpperCase()
     const constraints: ColumnDef['constraints'] = {}
     if (upper.includes('PRIMARY KEY')) constraints.primaryKey = true
     if (upper.includes('UNIQUE')) constraints.unique = true
     if (upper.includes('NOT NULL')) constraints.nullable = false
 
-    const defMatch = line.match(/DEFAULT\s+(\S+)/i)
-    if (defMatch) constraints.defaultValue = defMatch[1]!.replace(/^['"]|['"]$/g, '')
+    const defMatch = line.match(/DEFAULT\s+('(?:[^']|'')*'|\S+)/i)
+    if (defMatch) constraints.defaultValue = defMatch[1]!
 
-    columns.push({ name, displayName, type, constraints: Object.keys(constraints).length > 0 ? constraints : undefined })
+    columns.push({ name, displayName: name, type, constraints: Object.keys(constraints).length > 0 ? constraints : undefined })
   }
   return columns
 }
@@ -81,6 +81,14 @@ export function convertShujukuToCardTemplate(shujuku: ShujukuTemplate): CardTemp
   for (const key of keys) {
     const sheet = shujuku[key] as ShujukuSheet
     if (!sheet) continue
+
+    const sheetName = String(sheet.name ?? '').trim()
+    const sheetUid = String(sheet.uid ?? '').trim()
+    const isChronicle =
+      sheetName === '纪要表' ||
+      sheetName === '总结表' ||
+      sheetName === '总体大纲' ||
+      sheetUid.toLowerCase().includes('chronicle')
 
     const src = sheet.sourceData
     let columns: ColumnDef[] = []
@@ -104,6 +112,11 @@ export function convertShujukuToCardTemplate(shujuku: ShujukuTemplate): CardTemp
       }
     }
 
+    columns = columns.filter((c) => c.name !== 'row_id')
+
+    const sendLatestRows = typeof sheet.updateConfig?.sendLatestRows === 'number'
+      ? sheet.updateConfig.sendLatestRows
+      : undefined
     tables.push({
       name: sheet.uid?.replace(/^sheet_/, '') ?? key.replace(/^sheet_/, ''),
       displayName: sheet.name ?? key,
@@ -111,76 +124,11 @@ export function convertShujukuToCardTemplate(shujuku: ShujukuTemplate): CardTemp
       note: src?.note ?? '',
       insertHint: src?.insertNode ?? '',
       updateHint: src?.updateNode ?? '',
-      deleteHint: src?.deleteNode ?? ''
+      deleteHint: src?.deleteNode ?? '',
+      updateConfig: sendLatestRows !== undefined ? { sendLatestRows } : undefined,
+      enabled: isChronicle ? false : undefined
     })
   }
 
   return { templateVersion: 1, tables }
-}
-
-export function convertCardTemplateToShujuku(template: CardTemplate): ShujukuTemplate {
-  const result: ShujukuTemplate = {
-    mate: { type: 'chatSheets', version: 2, updateConfigUiSentinel: -1 }
-  }
-
-  template.tables.forEach((table, idx) => {
-    const colLines: string[] = ['  row_id INTEGER PRIMARY KEY']
-    const colNames: string[] = ['row_id']
-
-    table.columns.forEach((col) => {
-      const constraints = col.constraints
-      let line = `  ${col.name} ${col.type}`
-      if (constraints?.nullable === false) line += ' NOT NULL'
-      if (constraints?.unique) line += ' UNIQUE'
-      if (constraints?.defaultValue !== undefined) line += ` DEFAULT ${constraints.defaultValue}`
-      line += `, -- ${col.displayName || col.name}`
-      colLines.push(line)
-      colNames.push(col.displayName || col.name)
-    })
-
-    const ddl = `CREATE TABLE ${table.name} (\n${colLines.join('\n')}\n);`
-
-    result[`sheet_${idx}`] = {
-      uid: `sheet_${table.name}`,
-      name: table.displayName || table.name,
-      sourceData: {
-        note: table.note ?? '',
-        initNode: '',
-        deleteNode: table.deleteHint ?? '',
-        updateNode: table.updateHint ?? '',
-        insertNode: table.insertHint ?? '',
-        ddl
-      },
-      content: [colNames],
-      updateConfig: {
-        uiSentinel: -1,
-        contextDepth: -1,
-        updateFrequency: -1,
-        batchSize: -1,
-        skipFloors: -1
-      },
-      exportConfig: {
-        enabled: false,
-        splitByRow: false,
-        entryName: table.displayName || table.name,
-        entryType: 'constant',
-        keywords: '',
-        preventRecursion: true,
-        injectionTemplate: '',
-        extraIndexEnabled: false,
-        extraIndexEntryName: '',
-        extraIndexColumns: [],
-        extraIndexColumnModes: {},
-        extraIndexInjectionTemplate: '',
-        entryPlacement: { position: 'at_depth_as_system', depth: 2, order: 10000 },
-        extraIndexPlacement: { position: 'at_depth_as_system', depth: 2, order: 10010 },
-        fixedEntryPlacement: { position: 'at_depth_as_system', depth: 2, order: 99990 },
-        fixedIndexPlacement: { position: 'at_depth_as_system', depth: 2, order: 99991 },
-        injectIntoWorldbook: false
-      },
-      orderNo: idx + 1
-    }
-  })
-
-  return result
 }

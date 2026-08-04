@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, onActivated } from 'vue'
-import draggable from 'vuedraggable'
 import { useConfigStore } from '@ui/stores/config'
 import { getSession } from '@core/session'
 import type { PromptRole, PromptSceneKey, PromptSegment, ScenePreset } from '@shared/types/config'
-import type { ChronicleColumnRole, TableDef, ColumnDef } from '@shared/types/table'
+import type {
+  ChronicleColumnRole,
+  TableDef,
+  ColumnDef,
+  TablePlacementPosition
+} from '@shared/types/table'
 import type { CardTemplate } from '@shared/types/card'
 import {
   isShujukuTemplate,
@@ -16,34 +20,23 @@ import { SQL_EDIT_FORMAT } from '@shared/constants/sql-json'
 import { interpolate } from '@shared/prompts/interpolate'
 import toast from '@ui/toast'
 import confirm from '@ui/dialog'
-import PromptSegmentEditor from '@ui/components/PromptSegmentEditor.vue'
+import PromptBlockEditor from '@ui/components/PromptBlockEditor.vue'
 import CNTabs from '@ui/components/CNTabs.vue'
-import { DEFAULT_CHRONICLE_TABLE } from '@shared/constants/chronicle'
+import VariableHelpModal from '@ui/components/VariableHelpModal.vue'
+import { DEFAULT_CHRONICLE_TABLE, CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
+import { validateTableDef, validateChronicleDef, CHRONICLE_ROLE_LABELS } from '@shared/table-validation'
+import { PROMPT_VARIABLES } from '@shared/constants'
 
 const session = getSession()
 const store = useConfigStore()
 const config = computed(() => store.config.prompt)
 
-const scenes: { key: PromptSceneKey; label: string; desc: string }[] = [
-  {
-    key: 'tableEdit',
-    label: '表格更新',
-    desc: 'AI 填表时发送。变量：{{format}} {{timeFormat}} {{tables}}'
-  },
-  {
-    key: 'chronicleRecall',
-    label: '纪要召回',
-    desc: '筛选相关纪要。变量：{{chronicleList}} {{userInput}} {{keyExample}}'
-  }
-]
+const scenes = (Object.keys(PROMPT_VARIABLES) as PromptSceneKey[]).map((key) => ({
+  key,
+  label: PROMPT_VARIABLES[key].label
+}))
 
 const activeScene = ref<PromptSceneKey>('tableEdit')
-const roles: PromptRole[] = ['system', 'user', 'assistant']
-const roleLabels: Record<PromptRole, string> = {
-  system: 'System',
-  user: 'User',
-  assistant: 'Assistant'
-}
 const varExample = '{{变量名}}'
 
 const sceneConfig = computed(() => config.value[activeScene.value])
@@ -105,34 +98,6 @@ function setDefaultPreset(id: string) {
   toast.success('已设为默认')
 }
 
-function addSegment(role: PromptRole) {
-  if (!activePreset.value) return
-  activePreset.value.segments.push({
-    id: newId('seg'),
-    name: `段 ${activePreset.value.segments.length + 1}`,
-    role,
-    content: ''
-  })
-}
-
-function removeSegment(id: string) {
-  if (!activePreset.value) return
-  if (activePreset.value.segments.length <= 1) {
-    toast.warning('至少保留一个段')
-    return
-  }
-  activePreset.value.segments = activePreset.value.segments.filter((s) => s.id !== id)
-}
-
-function cycleRole(seg: PromptSegment) {
-  const idx = roles.indexOf(seg.role)
-  seg.role = roles[(idx + 1) % roles.length]!
-}
-
-function globalIndex(segIdx: number): number {
-  return segIdx + 1
-}
-
 function save() {
   store.save()
 }
@@ -179,55 +144,79 @@ function buildVarValues(): Record<string, string> {
   return values
 }
 
+const varHelpVisible = ref(false)
 const previewVisible = ref(false)
 const previewJson = ref('')
 
 async function openPreview() {
+  const prog = toast.progress('正在生成预览中…')
+  await new Promise((r) => setTimeout(r, 0))
   save()
   if (!session.isChatActive()) {
+    prog.close()
     toast.warning('请先进入对话再预览（预览需读取对话与世界书数据）')
     return
   }
-  const conversationText = session.getConversationText(10)
-  const worldbookContent = await session.getWorldbookPreview(conversationText)
-  const personaDescription = session.getPersonaDescription()
-  const charDescription = session.getCharDescription()
-  const lastUserMsg = session.getLastUserMessage()
-  const values = buildVarValues()
-  const realValues: Record<string, string> = {
-    ...values,
-    worldbook: worldbookContent,
-    conversation: conversationText,
-    persona: personaDescription,
-    charDescription: charDescription,
-    userInput: lastUserMsg || values.userInput
+  try {
+    const conversationText = session.getConversationText(10)
+    const worldbookContent = await Promise.race([
+      session.getWorldbookPreview(conversationText),
+      new Promise<string>((_, reject) => {
+        prog.abortSignal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')))
+      })
+    ])
+    if (prog.abortSignal.aborted) {
+      prog.close()
+      return
+    }
+    const personaDescription = session.getPersonaDescription()
+    const charDescription = session.getCharDescription()
+    const lastUserMsg = session.getLastUserMessage()
+    const values = buildVarValues()
+    const realValues: Record<string, string> = {
+      ...values,
+      worldbook: worldbookContent,
+      conversation: conversationText,
+      persona: personaDescription,
+      charDescription: charDescription,
+      userInput: lastUserMsg || values.userInput
+    }
+    if (activeScene.value === 'chronicleRecall') {
+      try {
+        const result = session.getTableRowsWithRowid('cn_chronicle')
+        const rows = result[0]?.rows ?? []
+        if (rows.length > 0) {
+          const cDef = store.config.chronicleTableDef ?? DEFAULT_CHRONICLE_TABLE
+          const kKey = cDef.columns.find((c) => c.role === 'key')?.name
+          const kSummary = cDef.columns.find((c) => c.role === 'summary')?.name
+          realValues.chronicleList = JSON.stringify(
+            rows.map((r) => ({
+              key: kKey ? String((r as Record<string, unknown>)[kKey] ?? '') : '',
+              summary: kSummary ? String((r as Record<string, unknown>)[kSummary] ?? '') : ''
+            })),
+            null,
+            2
+          )
+        }
+      } catch {}
+    }
+    const segs = activePreset.value?.segments ?? []
+    const messages = segs.map((s) => ({
+      role: s.role,
+      content: interpolate(s.content, realValues)
+    }))
+    previewJson.value = JSON.stringify(messages, null, 2)
+    previewVisible.value = true
+    prog.close()
+    toast.success('生成成功')
+  } catch (e) {
+    if (e instanceof DOMException && e.name === 'AbortError') {
+      prog.close()
+    } else {
+      prog.close()
+      toast.error(e instanceof Error ? e.message : '预览失败')
+    }
   }
-  if (activeScene.value === 'chronicleRecall') {
-    try {
-      const result = session.getTableRowsWithRowid('cn_chronicle')
-      const rows = result[0]?.rows ?? []
-      if (rows.length > 0) {
-        const cDef = store.config.chronicleTableDef ?? DEFAULT_CHRONICLE_TABLE
-        const kKey = cDef.columns.find((c) => c.role === 'key')?.name
-        const kSummary = cDef.columns.find((c) => c.role === 'summary')?.name
-        realValues.chronicleList = JSON.stringify(
-          rows.map((r) => ({
-            key: kKey ? String((r as Record<string, unknown>)[kKey] ?? '') : '',
-            summary: kSummary ? String((r as Record<string, unknown>)[kSummary] ?? '') : ''
-          })),
-          null,
-          2
-        )
-      }
-    } catch {}
-  }
-  const segs = activePreset.value?.segments ?? []
-  const messages = segs.map((s) => ({
-    role: s.role,
-    content: interpolate(s.content, realValues)
-  }))
-  previewJson.value = JSON.stringify(messages, null, 2)
-  previewVisible.value = true
 }
 
 function closePreview() {
@@ -358,11 +347,8 @@ function freshTable(): TableDef {
     exportConfig: {
       enabled: true,
       entryType: 'constant',
-      splitByRow: false,
       keywordColumn: '',
-      keywords: '',
-      keywordMode: 'custom',
-      keywordAiPrompt: ''
+      keywordMode: 'custom'
     }
   }
 }
@@ -377,19 +363,41 @@ function setExportEntryType(table: TableDef, value: string) {
   table.exportConfig!.entryType = value as 'constant' | 'keyword'
 }
 
-function setExportKeywords(table: TableDef, value: string) {
-  ensureExportConfig(table)
-  table.exportConfig!.keywords = value
-}
-
 function setExportKeywordMode(table: TableDef, value: string) {
   ensureExportConfig(table)
   table.exportConfig!.keywordMode = value as 'custom' | 'ai_prompt'
 }
 
-function setExportKeywordAiPrompt(table: TableDef, value: string) {
+function setExportKeywordColumn(table: TableDef, value: string) {
   ensureExportConfig(table)
-  table.exportConfig!.keywordAiPrompt = value
+  table.exportConfig!.keywordColumn = value
+}
+
+function setExportPlacementPosition(table: TableDef, value: string) {
+  ensureExportConfig(table)
+  ensureEntryPlacement(table)
+  table.exportConfig!.entryPlacement!.position = value as TablePlacementPosition
+}
+
+function setExportPlacementDepth(table: TableDef, value: string) {
+  ensureExportConfig(table)
+  ensureEntryPlacement(table)
+  const n = parseInt(value, 10)
+  table.exportConfig!.entryPlacement!.depth = Number.isFinite(n) ? n : 2
+}
+
+function setExportPlacementOrder(table: TableDef, value: string) {
+  ensureExportConfig(table)
+  ensureEntryPlacement(table)
+  const n = parseInt(value, 10)
+  table.exportConfig!.entryPlacement!.order = Number.isFinite(n) ? n : 10000
+}
+
+function ensureEntryPlacement(table: TableDef) {
+  ensureExportConfig(table)
+  if (!table.exportConfig!.entryPlacement) {
+    table.exportConfig!.entryPlacement = { position: 'at_depth_as_system', depth: 2, order: 10000 }
+  }
 }
 
 function ensureExportConfig(table: TableDef) {
@@ -397,13 +405,45 @@ function ensureExportConfig(table: TableDef) {
     table.exportConfig = {
       enabled: true,
       entryType: 'constant',
-      splitByRow: false,
       keywordColumn: '',
-      keywords: '',
-      keywordMode: 'custom',
-      keywordAiPrompt: ''
+      keywordMode: 'custom'
     }
   }
+}
+
+function openKeywordPromptEditor(table: TableDef) {
+  ensureExportConfig(table)
+  keywordPromptEditing.value = table
+  const raw = table.exportConfig!.keywordAiPrompt
+  keywordPromptDraft.value = Array.isArray(raw) ? raw.map((s) => ({ ...s })) : []
+  keywordPreviewMode.value = false
+}
+
+function saveKeywordPrompt() {
+  if (keywordPromptEditing.value) {
+    ensureExportConfig(keywordPromptEditing.value)
+    keywordPromptEditing.value.exportConfig!.keywordAiPrompt = keywordPromptDraft.value.map((s) => ({ ...s }))
+  }
+  keywordPromptEditing.value = null
+  keywordPromptDraft.value = []
+  keywordPreviewMode.value = false
+}
+
+function closeKeywordPrompt() {
+  keywordPromptEditing.value = null
+  keywordPromptDraft.value = []
+  keywordPreviewMode.value = false
+}
+
+function openKeywordPreview() {
+  const tableName = keywordPromptEditing.value?.name ?? '表名'
+  const segs = keywordPromptDraft.value.map((s) => ({ role: s.role, content: s.content }))
+  const userMsg = {
+    role: 'user',
+    content: `表 ${tableName} 当前数据（N 行）：\n<行数据 JSON>\n\n请为每一行生成用于触发世界书注入的独特关键词。只输出 JSON 数组，每个元素是该行关键词数组，行数与输入行数一致，如：[["行1关键词1","行1关键词2"],["行2关键词1"]]`
+  }
+  keywordPreviewJson.value = JSON.stringify([...segs, userMsg], null, 2)
+  keywordPreviewMode.value = true
 }
 
 function freshColumn(): ColumnDef {
@@ -421,6 +461,11 @@ const activeTemplatePreset = computed(
 const editingTables = computed(() => activeTemplatePreset.value?.template?.tables ?? [])
 
 const selectedTableIdx = ref(-1)
+const keywordPromptEditing = ref<TableDef | null>(null)
+const keywordPromptDraft = ref<PromptSegment[]>([])
+const keywordPreviewMode = ref(false)
+const keywordPreviewJson = ref('')
+const keywordBlockRef = ref<{ addSegment: (role: PromptRole) => void; roles: PromptRole[]; roleLabels: Record<PromptRole, string> } | null>(null)
 
 const selectedTable = computed(() => {
   const tables = editingTables.value
@@ -438,14 +483,6 @@ const CHRONICLE_ROLES: ChronicleColumnRole[] = [
   'summary',
   'keyDialogue'
 ]
-const CHRONICLE_ROLE_LABELS: Record<ChronicleColumnRole, string> = {
-  key: '编码',
-  timeStart: '起始时间',
-  timeEnd: '结束时间',
-  location: '地点',
-  summary: '纪要正文',
-  keyDialogue: '重要台词'
-}
 
 const chronicleDef = computed(() => store.config.chronicleTableDef ?? DEFAULT_CHRONICLE_TABLE)
 
@@ -465,66 +502,6 @@ function removeChronicleColumn(idx: number) {
     return
   }
   chronicleDef.value.columns.splice(idx, 1)
-}
-
-function validateTableDef(table: TableDef, allTables: TableDef[]): string | null {
-  if (!table.name.trim()) return '英文表名不能为空'
-  if (!table.displayName.trim()) return '中文表名不能为空'
-  if (table.columns.length === 0) return '至少需要一列'
-  const nameSet = new Set<string>()
-  for (const col of table.columns) {
-    if (!col.name.trim()) return `表「${table.displayName || table.name}」有列英文名为空`
-    if (!col.displayName.trim()) return `表「${table.displayName || table.name}」有列中文名为空`
-    if (nameSet.has(col.name.trim()))
-      return `表「${table.displayName || table.name}」列英文名重复：${col.name.trim()}`
-    nameSet.add(col.name.trim())
-  }
-  if (table.exportConfig?.entryType === 'keyword' && !table.exportConfig.keywords?.trim()) {
-    return `表「${table.displayName || table.name}」关键词注入模式下，触发关键词不能为空`
-  }
-  const dup = allTables.filter((t) => t !== table && t.name.trim() === table.name.trim())
-  if (dup.length > 0) return `表英文名重复：${table.name.trim()}`
-  return null
-}
-
-function validateChronicleDef(def: TableDef): string | null {
-  const nameSet = new Set<string>()
-  for (const col of def.columns) {
-    if (!col.name.trim()) return '列英文名不能为空'
-    if (!col.displayName.trim()) return '列中文名不能为空'
-    if (!col.note?.trim()) return `列「${col.displayName || col.name}」的列说明不能为空`
-    if (nameSet.has(col.name.trim())) return `列英文名重复：${col.name.trim()}`
-    nameSet.add(col.name.trim())
-  }
-  const roleCounts = new Map<ChronicleColumnRole, number>()
-  for (const col of def.columns) {
-    if (col.role) {
-      roleCounts.set(col.role, (roleCounts.get(col.role) ?? 0) + 1)
-    }
-  }
-  const requiredRoles: ChronicleColumnRole[] = [
-    'key',
-    'timeStart',
-    'timeEnd',
-    'location',
-    'summary',
-    'keyDialogue'
-  ]
-  const missing = requiredRoles.filter((r) => !roleCounts.has(r))
-  const duplicated = [...roleCounts.entries()]
-    .filter(([, n]) => n > 1)
-    .map(([r]) => CHRONICLE_ROLE_LABELS[r])
-  if (missing.length === 0 && duplicated.length === 0) {
-    return null
-  }
-  const parts: string[] = []
-  if (missing.length > 0) {
-    parts.push(`缺少角色: ${missing.map((r) => CHRONICLE_ROLE_LABELS[r]).join('、')}`)
-  }
-  if (duplicated.length > 0) {
-    parts.push(`角色重复: ${duplicated.join('、')}`)
-  }
-  return parts.join('；') + '。6 个语义角色必须各有且仅有一列持有。'
 }
 
 async function saveChronicleTableDef() {
@@ -708,6 +685,10 @@ function addColumnT() {
 
 function removeColumnT(idx: number) {
   if (!selectedTable.value) return
+  if (selectedTable.value.columns.length <= 1) {
+    toast.warning('至少保留一个列')
+    return
+  }
   selectedTable.value.columns.splice(idx, 1)
 }
 
@@ -750,6 +731,13 @@ function importTemplate(e: Event) {
         toast.success('检测到 shujuku 格式，已自动转换')
       } else {
         throw new Error('无法识别模板格式（需要 CardTemplate 或 shujuku TABLE_TEMPLATE）')
+      }
+      for (const t of template.tables) {
+        if (t.name === CHRONICLE_TABLE_NAME && t.enabled !== false) t.enabled = false
+      }
+      const disabledCount = template.tables.filter((t) => t.enabled === false).length
+      if (disabledCount > 0) {
+        toast.warning(`检测到 ${disabledCount} 张纪要表，已禁用，可在模板编辑器手动启用当普通表用`)
       }
 
       const preset = {
@@ -826,7 +814,7 @@ onActivated(() => {
             </button>
           </div>
           <div class="cn-card__body">
-            <TransitionGroup tag="ul" class="preset-list">
+            <ul class="preset-list">
               <li
                 v-for="p in ttConfig.presets"
                 :key="p.id"
@@ -876,7 +864,7 @@ onActivated(() => {
                   <i class="fa-solid fa-trash"></i>
                 </button>
               </li>
-            </TransitionGroup>
+            </ul>
           </div>
           <div class="prompt-side__chronicle">
             <div
@@ -922,7 +910,7 @@ onActivated(() => {
                 <div class="tpl-row">
                   <div class="tpl-field">
                     <label class="tpl-label">英文表名（锁定）</label>
-                    <input class="cn-input" :value="chronicleDef.name" disabled />
+                    <div class="cn-input cn-input--locked">{{ chronicleDef.name }}</div>
                   </div>
                   <div class="tpl-field">
                     <label class="tpl-label">中文表名</label>
@@ -1074,7 +1062,7 @@ onActivated(() => {
               v-for="(table, ti) in editingTables"
               :key="ti"
               class="tpl-table-card"
-              :class="{ 'tpl-table-card--active': ti === selectedTableIdx }"
+              :class="{ 'tpl-table-card--active': ti === selectedTableIdx, 'tpl-table-card--disabled': table.enabled === false }"
             >
               <div
                 class="tpl-table-card__head"
@@ -1083,6 +1071,7 @@ onActivated(() => {
                 <span class="tpl-table-card__name">{{
                   table.displayName || table.name || '(未命名)'
                 }}</span>
+                <span v-if="table.enabled === false" class="tpl-table-card__badge">已禁用</span>
                 <span class="tpl-table-card__meta">{{ table.columns.length }}列</span>
                 <button
                   class="cn-btn cn-btn--sm cn-btn--text"
@@ -1094,6 +1083,20 @@ onActivated(() => {
               </div>
               <Transition name="cn-fold">
                 <div v-if="ti === selectedTableIdx" class="tpl-table-card__body">
+                  <div class="tpl-row" style="align-items: center; flex-wrap: wrap; row-gap: 8px">
+                    <div class="tpl-field" style="flex: 0 0 auto">
+                      <label class="tpl-label" style="font-size: 12px">启用此表</label>
+                      <label class="cn-switch" style="height: 32px; display: inline-flex; align-items: center">
+                        <input
+                          type="checkbox"
+                          :checked="table.enabled !== false"
+                          @change="table.enabled = ($event.target as HTMLInputElement).checked ? undefined : false"
+                        />
+                        <span class="cn-switch__track"></span>
+                      </label>
+                    </div>
+                    <span v-if="table.enabled === false" style="font-size: 12px; color: var(--cn-text-3)">禁用的表不会建表、不参与填表</span>
+                  </div>
                   <div class="tpl-row">
                     <div class="tpl-field">
                       <label class="tpl-label">英文表名</label>
@@ -1119,13 +1122,10 @@ onActivated(() => {
                   </div>
                   <div class="tpl-section">
                     <label class="tpl-label">世界书注入</label>
-                    <div class="tpl-row" style="align-items: center">
-                      <div
-                        class="tpl-field"
-                        style="flex-direction: row; align-items: center; gap: 8px"
-                      >
+                    <div class="tpl-row tpl-row--inject" style="flex-wrap: wrap; row-gap: 8px; align-items: flex-start">
+                      <div class="tpl-field" style="flex: 0 0 auto">
                         <label class="tpl-label" style="font-size: 12px">启用注入</label>
-                        <label class="cn-switch">
+                        <label class="cn-switch" style="height: 32px; display: inline-flex; align-items: center">
                           <input
                             type="checkbox"
                             :checked="table.exportConfig?.enabled !== false"
@@ -1134,11 +1134,10 @@ onActivated(() => {
                           <span class="cn-switch__track"></span>
                         </label>
                       </div>
-                      <div class="tpl-field">
+                      <div class="tpl-field" style="flex: 0 0 180px">
                         <label class="tpl-label" style="font-size: 12px">注入类型</label>
                         <select
                           class="cn-select"
-                          style="width: auto"
                           @change="setExportEntryType(table, ($event.target as HTMLSelectElement).value)"
                         >
                           <option
@@ -1155,54 +1154,114 @@ onActivated(() => {
                           </option>
                         </select>
                       </div>
-                    </div>
-                    <div
-                      v-if="table.exportConfig?.entryType === 'keyword'"
-                      class="tpl-row"
-                      style="margin-top: 8px; flex-direction: column; align-items: stretch"
-                    >
-                      <div class="tpl-field">
+                      <div
+                        class="tpl-field"
+                        :class="{ 'tpl-field--hidden': table.exportConfig?.entryType !== 'keyword' }"
+                        style="flex: 0 0 180px"
+                      >
                         <label class="tpl-label" style="font-size: 12px">关键词来源</label>
                         <select
                           class="cn-select"
-                          style="width: auto"
                           @change="setExportKeywordMode(table, ($event.target as HTMLSelectElement).value)"
                         >
                           <option
                             value="custom"
                             :selected="(table.exportConfig?.keywordMode ?? 'custom') === 'custom'"
                           >
-                            自定义关键词
+                            选列（按列值激活）
                           </option>
                           <option
                             value="ai_prompt"
                             :selected="table.exportConfig?.keywordMode === 'ai_prompt'"
                           >
-                            AI Prompt 生成
+                            AI 生成
                           </option>
                         </select>
                       </div>
                       <div
-                        v-if="(table.exportConfig?.keywordMode ?? 'custom') === 'custom'"
                         class="tpl-field"
+                        :class="{ 'tpl-field--hidden': !(table.exportConfig?.entryType === 'keyword' && (table.exportConfig?.keywordMode ?? 'custom') === 'custom') }"
+                        style="flex: 0 0 180px"
                       >
-                        <label class="tpl-label" style="font-size: 12px">触发关键词</label>
+                        <label class="tpl-label" style="font-size: 12px">关键词列</label>
+                        <select
+                          class="cn-select"
+                          @change="setExportKeywordColumn(table, ($event.target as HTMLSelectElement).value)"
+                        >
+                          <option
+                            value=""
+                            :selected="!table.exportConfig?.keywordColumn"
+                          >
+                            -- 选择列 --
+                          </option>
+                          <option
+                            v-for="c in table.columns"
+                            :key="c.name"
+                            :value="c.name"
+                            :selected="table.exportConfig?.keywordColumn === c.name"
+                          >
+                            {{ c.displayName || c.name }}
+                          </option>
+                        </select>
+                      </div>
+                      <div
+                        class="tpl-field"
+                        :class="{ 'tpl-field--hidden': !(table.exportConfig?.entryType === 'keyword' && table.exportConfig?.keywordMode === 'ai_prompt') }"
+                        style="flex: 0 0 auto"
+                      >
+                        <label class="tpl-label" style="font-size: 12px; visibility: hidden">占</label>
+                        <button class="cn-btn" @click="openKeywordPromptEditor(table)">
+                          <i class="fa-solid fa-pen"></i>
+                          编辑提示词
+                        </button>
+                      </div>
+                      <div class="tpl-field" style="flex: 0 0 180px">
+                        <label class="tpl-label" style="font-size: 12px">注入位置</label>
+                        <select
+                          class="cn-select"
+                          @change="setExportPlacementPosition(table, ($event.target as HTMLSelectElement).value)"
+                        >
+                          <option
+                            value="at_depth_as_system"
+                            :selected="(table.exportConfig?.entryPlacement?.position ?? 'at_depth_as_system') === 'at_depth_as_system'"
+                          >
+                            深度注入
+                          </option>
+                          <option
+                            value="before_character_definition"
+                            :selected="table.exportConfig?.entryPlacement?.position === 'before_character_definition'"
+                          >
+                            角色定义前
+                          </option>
+                          <option
+                            value="after_character_definition"
+                            :selected="table.exportConfig?.entryPlacement?.position === 'after_character_definition'"
+                          >
+                            角色定义后
+                          </option>
+                        </select>
+                      </div>
+                      <div
+                        class="tpl-field"
+                        :class="{ 'tpl-field--hidden': (table.exportConfig?.entryPlacement?.position ?? 'at_depth_as_system') !== 'at_depth_as_system' }"
+                        style="flex: 0 0 88px"
+                      >
+                        <label class="tpl-label" style="font-size: 12px">深度</label>
                         <input
-                          class="cn-input"
-                          :value="table.exportConfig?.keywords ?? ''"
-                          @input="setExportKeywords(table, ($event.target as HTMLInputElement).value)"
-                          placeholder="逗号分隔，如：背包, 物品, 装备"
+                          type="number"
+                          class="cn-input cn-input--nospin"
+                          :value="table.exportConfig?.entryPlacement?.depth ?? 2"
+                          @input="setExportPlacementDepth(table, ($event.target as HTMLInputElement).value)"
                         />
                       </div>
-                      <div v-else class="tpl-field">
-                        <label class="tpl-label" style="font-size: 12px">AI 提示词（更新表格时发送）</label>
-                        <textarea
-                          class="cn-textarea tpl-textarea"
-                          :value="table.exportConfig?.keywordAiPrompt ?? ''"
-                          @input="setExportKeywordAiPrompt(table, ($event.target as HTMLTextAreaElement).value)"
-                          rows="2"
-                          placeholder="更新表格时发送给 AI，由 AI 决定本表世界书条目的触发关键词，如：请根据背包表内容生成可能触发该表注入的关键词"
-                        ></textarea>
+                      <div class="tpl-field" style="flex: 0 0 88px">
+                        <label class="tpl-label" style="font-size: 12px">顺序</label>
+                        <input
+                          type="number"
+                          class="cn-input cn-input--nospin"
+                          :value="table.exportConfig?.entryPlacement?.order ?? 10000"
+                          @input="setExportPlacementOrder(table, ($event.target as HTMLInputElement).value)"
+                        />
                       </div>
                     </div>
                   </div>
@@ -1328,7 +1387,7 @@ onActivated(() => {
               </button>
             </div>
             <div class="cn-card__body">
-              <TransitionGroup tag="ul" class="preset-list">
+              <ul class="preset-list">
                 <li
                   v-for="p in sceneConfig.presets"
                   :key="p.id"
@@ -1369,66 +1428,24 @@ onActivated(() => {
                     <i class="fa-solid fa-trash"></i>
                   </button>
                 </li>
-              </TransitionGroup>
+              </ul>
             </div>
           </div>
 
           <div class="prompt-editor">
             <div class="cn-card__head">
               <span>{{ activePreset?.name }}</span>
-              <span class="prompt-editor__desc">{{
-                scenes.find((s) => s.key === activeScene)?.desc
-              }}</span>
+              <button class="cn-btn cn-btn--soft cn-btn--sm" @click="varHelpVisible = true">
+                <i class="fa-solid fa-tags"></i>
+                可用变量
+              </button>
             </div>
             <div class="cn-card__body">
-              <draggable
-                :list="activePreset?.segments ?? []"
-                item-key="id"
-                :animation="150"
-                handle=".seg-item__grip"
-                ghost-class="seg-item--ghost"
-                class="block-list"
-              >
-                <template #item="{ element: seg, index: si }">
-                  <div class="seg-item">
-                    <div class="seg-item__bar">
-                      <i class="fa-solid fa-grip-vertical seg-item__grip"></i>
-                      <button
-                        class="seg-item__role"
-                        :title="`点击切换角色（当前 ${roleLabels[seg.role]}）`"
-                        @click="cycleRole(seg)"
-                      >
-                        {{ roleLabels[seg.role] }}
-                      </button>
-                      <input
-                        class="cn-input seg-item__name"
-                        v-model="seg.name"
-                        placeholder="段名称"
-                      />
-                      <span class="seg-item__seq">#{{ globalIndex(si) }}</span>
-                      <button
-                        class="cn-btn cn-btn--sm cn-btn--text"
-                        title="删除"
-                        @click="removeSegment(seg.id)"
-                      >
-                        <i class="fa-solid fa-trash"></i>
-                      </button>
-                    </div>
-                    <PromptSegmentEditor v-model="seg.content" />
-                  </div>
-                </template>
-              </draggable>
-              <div class="seg-add-row">
-                <button
-                  v-for="r in roles"
-                  :key="r"
-                  class="cn-btn cn-btn--sm"
-                  @click="addSegment(r)"
-                >
-                  <i class="fa-solid fa-plus"></i>
-                  {{ roleLabels[r] }}
-                </button>
-              </div>
+              <PromptBlockEditor
+                v-if="activePreset"
+                v-model="activePreset.segments"
+                :min-segments="1"
+              />
             </div>
           </div>
         </div>
@@ -1443,7 +1460,7 @@ onActivated(() => {
         <label class="cn-btn">
           <i class="fa-solid fa-upload"></i>
           导入
-          <input type="file" accept="application/json,.json" hidden @change="importTemplate" />
+          <input type="file" accept=".json" hidden @change="importTemplate" />
         </label>
         <button class="cn-btn" @click="exportTemplate">
           <i class="fa-solid fa-download"></i>
@@ -1467,6 +1484,51 @@ onActivated(() => {
       </div>
     </Transition>
 
+    <Transition name="cn-modal">
+      <div v-if="keywordPromptEditing" class="cn-modal-mask" @click.self="closeKeywordPrompt">
+        <div class="cn-modal">
+          <div class="cn-modal__head">
+            <span class="cn-modal__title">编辑关键词生成提示词</span>
+            <button class="cn-btn cn-btn--sm cn-btn--text" @click="closeKeywordPrompt">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <div class="cn-modal__body">
+            <p v-if="!keywordPreviewMode" style="font-size: 12px; color: var(--cn-text-3); margin-bottom: 8px">
+              此提示词在表格更新时发送给 AI，为每行生成用于触发世界书注入的独特关键词。多段按顺序拼接，模拟多轮对话。
+            </p>
+            <div v-if="!keywordPreviewMode" class="keyword-editor-pane">
+              <PromptBlockEditor ref="keywordBlockRef" v-model="keywordPromptDraft" :show-add-row="false" />
+            </div>
+            <div v-if="!keywordPreviewMode" class="seg-add-row" style="margin-top: 8px">
+              <button
+                v-for="r in keywordBlockRef?.roles ?? []"
+                :key="r"
+                class="cn-btn cn-btn--sm"
+                @click="keywordBlockRef?.addSegment(r)"
+              >
+                <i class="fa-solid fa-plus"></i>
+                {{ keywordBlockRef?.roleLabels[r] ?? r }}
+              </button>
+            </div>
+            <pre v-else class="cn-modal__code">{{ keywordPreviewJson }}</pre>
+          </div>
+          <div style="display: flex; justify-content: flex-end; gap: 8px; padding: 12px 16px">
+            <button v-if="!keywordPreviewMode" class="cn-btn cn-btn--sm" @click="openKeywordPreview">
+              <i class="fa-solid fa-eye"></i>
+              预览
+            </button>
+            <button v-else class="cn-btn cn-btn--sm" @click="keywordPreviewMode = false">
+              <i class="fa-solid fa-pen"></i>
+              返回编辑
+            </button>
+            <button class="cn-btn cn-btn--sm" @click="closeKeywordPrompt">取消</button>
+            <button class="cn-btn cn-btn--sm cn-btn--primary" @click="saveKeywordPrompt">保存</button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
     <template v-if="!showTemplate">
       <div class="prompt-foot">
         <span class="prompt-foot__hint">
@@ -1477,7 +1539,7 @@ onActivated(() => {
           <label class="cn-btn">
             <i class="fa-solid fa-upload"></i>
             导入
-            <input type="file" accept="application/json,.json" hidden @change="importPreset" />
+            <input type="file" accept=".json" hidden @change="importPreset" />
           </label>
           <button class="cn-btn" @click="exportPreset">
             <i class="fa-solid fa-download"></i>
@@ -1504,6 +1566,8 @@ onActivated(() => {
           </div>
         </div>
       </Transition>
+
+      <VariableHelpModal v-model:visible="varHelpVisible" :scene="activeScene" />
     </template>
   </div>
 </template>

@@ -10,6 +10,8 @@ import type { PromptSegment, VectorConfig } from '@shared/types/config'
 import { interpolate } from '@shared/prompts/interpolate'
 import { computeTimeDelta, resolveStoryNowTime } from './time'
 import type { ChronicleEntry } from '@shared/types/worldbook'
+import type { VectorIndexStore, ChronicleVectorIndex } from './chronicle/vector-index-store'
+import { sparseSearchBm25, reciprocalRankFusion } from './chronicle/bm25'
 
 const VECTOR_TOP_K = 20
 
@@ -27,6 +29,8 @@ export interface RecallContext {
   vectorEnabled: boolean
   vectorConfig: VectorConfig
   chatToken: string
+  recallRecentFixedInjectCount: number
+  recallMinScore: number
   signal?: AbortSignal
   callOptions?: AiCallOptions
 }
@@ -44,7 +48,8 @@ export interface ChronicleRecaller {
 export default function createChronicleRecaller(
   ai: AiGateway,
   getEntries: () => Promise<ChronicleEntry[]>,
-  vector: VectorGateway
+  vector: VectorGateway,
+  indexStore: VectorIndexStore
 ): ChronicleRecaller {
   return {
     async recall(ctx) {
@@ -52,11 +57,14 @@ export default function createChronicleRecaller(
       if (all.length === 0) {
         return []
       }
-      const candidates = await prefilterByVector(vector, ctx, all)
+      const index = await indexStore.ensureVectors(ctx.chatToken, all, vector, ctx.vectorConfig)
+      const candidates = await prefilterByVector(vector, ctx, all, index)
       const keys = await filterRelevantKeys(ai, ctx, candidates)
+      const recentKeys = getRecentKeys(all, ctx.recallRecentFixedInjectCount)
+      const mergedKeys = [...new Set([...keys, ...recentKeys])]
       const referenceTime = resolveStoryNowTime(all) ?? ctx.currentTime
       const items: RecallItem[] = []
-      for (const key of keys) {
+      for (const key of mergedKeys) {
         const entry = all.find((e) => e.key === key)
         if (!entry) {
           continue
@@ -75,7 +83,8 @@ export default function createChronicleRecaller(
 async function prefilterByVector(
   vector: VectorGateway,
   ctx: RecallContext,
-  all: ChronicleEntry[]
+  all: ChronicleEntry[],
+  index: ChronicleVectorIndex
 ): Promise<ChronicleEntry[]> {
   if (!ctx.vectorEnabled) {
     return all
@@ -84,23 +93,36 @@ async function prefilterByVector(
     return all
   }
   try {
-    const docs = all.map((e) => e.content.summary ?? e.key)
-    const [queryVec, ...docVecs] = await vector.embed([ctx.userMessage, ...docs], ctx.vectorConfig)
+    const queryVec = (await vector.embed([ctx.userMessage], ctx.vectorConfig))[0]
     if (!queryVec || queryVec.length === 0) {
       return all
     }
-    const scored = docVecs.map((vec, i) => ({
-      entry: all[i] as ChronicleEntry,
-      score: cosine(queryVec, vec)
-    }))
-    if (ctx.vectorConfig.rerankEndpoint && ctx.vectorConfig.rerankModel) {
-      const order = await vector.rerank(ctx.userMessage, docs, ctx.vectorConfig)
-      return order.map((idx) => all[idx]).filter((e): e is ChronicleEntry => e != null)
-    }
-    return scored
+    const indexMap = new Map(index.entries.map((e) => [e.key, e.vector]))
+    const denseScored = all
+      .map((entry) => {
+        const score = cosine(queryVec, indexMap.get(entry.key) ?? [])
+        return { key: entry.key, score, denseScore: score }
+      })
+      .filter((s) => s.score >= ctx.recallMinScore)
       .sort((a, b) => b.score - a.score)
       .slice(0, Math.min(VECTOR_TOP_K, all.length))
-      .map((s) => s.entry)
+    const docs = all.map((e) => ({ key: e.key, text: e.content.summary ?? e.key }))
+    const bm25Scored = sparseSearchBm25(ctx.userMessage, docs, Math.min(VECTOR_TOP_K, all.length))
+    const fused = reciprocalRankFusion(
+      [denseScored, bm25Scored],
+      60,
+      Math.min(VECTOR_TOP_K, all.length)
+    )
+    const fusedKeys = new Set(fused.map((f) => f.key))
+    const candidates = all.filter((e) => fusedKeys.has(e.key))
+    if (ctx.vectorConfig.rerankEndpoint && ctx.vectorConfig.rerankModel) {
+      const candidateDocs = candidates.map((e) => e.content.summary ?? e.key)
+      const order = await vector.rerank(ctx.userMessage, candidateDocs, ctx.vectorConfig)
+      return order
+        .map((idx) => candidates[idx])
+        .filter((e): e is ChronicleEntry => e != null)
+    }
+    return candidates
   } catch {
     return all
   }
@@ -124,6 +146,22 @@ function cosine(a: number[], b: number[]): number {
     return 0
   }
   return dot / (Math.sqrt(na) * Math.sqrt(nb))
+}
+
+function parseTimeMs(iso: string | undefined): number | undefined {
+  if (!iso) return undefined
+  const ms = new Date(iso).getTime()
+  return Number.isNaN(ms) ? undefined : ms
+}
+
+function getRecentKeys(entries: ChronicleEntry[], count: number): string[] {
+  if (count <= 0 || entries.length === 0) return []
+  const sorted = [...entries].sort((a, b) => {
+    const ta = parseTimeMs(a.timeStart) ?? 0
+    const tb = parseTimeMs(b.timeStart) ?? 0
+    return tb - ta
+  })
+  return sorted.slice(0, count).map((e) => e.key)
 }
 
 async function filterRelevantKeys(
@@ -163,7 +201,8 @@ async function filterRelevantKeys(
 }
 
 function parseKeys(raw: string): string[] {
-  const json = extractJson(raw)
+  const stripped = raw.replace(/<thought>[\s\S]*?<\/thought>/gi, '')
+  const json = extractJson(stripped)
   if (!json) {
     return []
   }

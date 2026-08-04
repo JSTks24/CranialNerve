@@ -86,6 +86,12 @@ function saveEdit() {
     const el = cellEditEls.get(f.key)
     collected[f.key] = el ? el.innerText : String(row[f.key] ?? '')
   }
+  for (const f of fields.value) {
+    if (!collected[f.key].trim()) {
+      toast.error(`「${f.label}」不能为空`)
+      return
+    }
+  }
   void session.runWrite(async () => {
     try {
       if (row.__rowid__ < 0) {
@@ -195,7 +201,6 @@ onActivated(refresh)
       </div>
 
     <div v-else class="chronicle-list">
-      <TransitionGroup name="cn-list">
         <div
           v-for="row in filtered"
           :key="row.__rowid__"
@@ -255,7 +260,6 @@ onActivated(refresh)
             </div>
           </div>
         </div>
-      </TransitionGroup>
     </div>
     </template>
   </div>

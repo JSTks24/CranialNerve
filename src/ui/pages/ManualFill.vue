@@ -54,7 +54,7 @@ const expectedRange = computed(() => {
   const end = chat.length - 1
   const aiBefore = chat.slice(0, start).filter((m) => !m.is_user && !m.is_system).length
   const aiInSlice = chat.slice(start, end + 1).filter((m) => !m.is_user && !m.is_system).length
-  const aiLabel = aiInSlice > 0 ? `（AI ${aiBefore + 1}~${aiBefore + aiInSlice}）` : ''
+  const aiLabel = aiInSlice > 0 ? `（AI第 ${aiBefore + 1}~${aiBefore + aiInSlice} 层）` : ''
   return `第 ${start}~${end} 层${aiLabel}`
 })
 

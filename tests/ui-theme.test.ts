@@ -11,6 +11,11 @@ const appShell = readProjectFile('src/ui/App.vue')
 const strategyPage = readProjectFile('src/ui/pages/Strategy.vue')
 const routerSource = readProjectFile('src/ui/router.ts')
 const toastSource = readProjectFile('src/ui/toast.ts')
+const promptConfigPage = readProjectFile('src/ui/pages/PromptConfig.vue')
+const varHelpModal = readProjectFile('src/ui/components/VariableHelpModal.vue')
+const tableTypes = readProjectFile('src/shared/types/table.ts')
+const sessionSource = readProjectFile('src/core/session.ts')
+const blockEditor = readProjectFile('src/ui/components/PromptBlockEditor.vue')
 
 describe('UI 主题守卫（深翠框景）', () => {
   it('必备设计 token 存在', () => {
@@ -110,5 +115,72 @@ describe('UI 主题守卫（深翠框景）', () => {
 
   it('首页统计带非三等分', () => {
     expect(theme).not.toContain('repeat(3, minmax(0, 1fr))')
+  })
+
+  it('变量说明弹窗类名已入 theme.css', () => {
+    const classes = ['.cn-modal--md', '.cn-modal__body', '.var-card', '.var-card__tag', '.var-card__desc']
+    for (const cls of classes) expect(theme, `缺少样式 ${cls}`).toContain(cls)
+  })
+
+  it('提示词配置页接入变量说明弹窗', () => {
+    expect(promptConfigPage).toContain('VariableHelpModal')
+    expect(promptConfigPage).toContain('varHelpVisible')
+    expect(promptConfigPage).toContain('可用变量')
+  })
+
+  it('预设列表用普通 ul 无进场动画', () => {
+    expect(promptConfigPage).toContain('<ul class="preset-list">')
+  })
+
+  it('VariableHelpModal 禁硬编码色值', () => {
+    expect(varHelpModal).not.toMatch(/#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b/)
+  })
+
+  it('世界书注入行控件等高对齐 + 固定宽靠左 + 显隐宽度过渡', () => {
+    expect(promptConfigPage).toContain('tpl-row--inject')
+    expect(promptConfigPage).toContain('align-items: flex-start')
+    expect(promptConfigPage).not.toContain('justify-content: space-between')
+    expect(promptConfigPage).not.toContain('flex: 1 1 120px')
+    expect(promptConfigPage).toContain("'tpl-field--hidden'")
+    expect(theme).toContain('.tpl-field--hidden')
+    expect(theme).toMatch(/\.tpl-field \{[\s\S]*?transition:\s*max-width/)
+    expect(promptConfigPage).toContain('<button class="cn-btn" @click="openKeywordPromptEditor(table)">')
+    expect(promptConfigPage).toContain('class="cn-switch" style="height: 32px')
+  })
+
+  it('关键词提示词弹窗脱离 !showTemplate 分支（顶层渲染）', () => {
+    const previewIdx = promptConfigPage.indexOf('v-if="previewTemplateVisible"')
+    const modalIdx = promptConfigPage.indexOf('v-if="keywordPromptEditing"')
+    const lastNotTplIdx = promptConfigPage.lastIndexOf('<template v-if="!showTemplate">')
+    expect(modalIdx, '关键词弹窗存在').toBeGreaterThan(-1)
+    expect(modalIdx, '关键词弹窗应在 previewTemplate 弹窗之后').toBeGreaterThan(previewIdx)
+    expect(modalIdx, '关键词弹窗应在最后一个 !showTemplate 块之前（顶层）').toBeLessThan(lastNotTplIdx)
+  })
+
+  it('cn-select 强制 margin:0 覆盖酒馆全局 select margin（控件中线对齐）', () => {
+    expect(theme).toMatch(/\.cn-select \{[\s\S]*?margin:\s*0\s*!important/)
+  })
+
+  it('keywordAiPrompt 类型为 PromptSegment[]（支持块级编辑）', () => {
+    expect(tableTypes).toMatch(/keywordAiPrompt\?:\s*PromptSegment\[\]/)
+  })
+
+  it('PromptBlockEditor 组件存在且被预设与关键词编辑复用', () => {
+    expect(blockEditor).toContain('PromptSegmentEditor')
+    expect(blockEditor).toContain('draggable')
+    expect(promptConfigPage).toContain('PromptBlockEditor')
+    expect(promptConfigPage).toMatch(/v-model="activePreset\.segments"/)
+    expect(promptConfigPage).toMatch(/v-model="keywordPromptDraft"/)
+  })
+
+  it('关键词提示词弹窗用块级编辑 + 预览切换', () => {
+    expect(promptConfigPage).toContain('keywordPreviewMode')
+    expect(promptConfigPage).toContain('openKeywordPreview')
+  })
+
+  it('后端 generateKeywordsForRows 用 keywordAiPrompt segments 拼 messages', () => {
+    expect(sessionSource).toContain('aiSegments')
+    expect(sessionSource).toContain('role: s.role, content: s.content')
+    expect(sessionSource).not.toContain("role: 'system', content: aiPrompt")
   })
 })

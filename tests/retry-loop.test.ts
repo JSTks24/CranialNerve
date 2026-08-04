@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import TableEditor, { type PromptContext } from '../src/core/table/retry-loop'
 import { SQL_EDIT_FORMAT } from '../src/shared/constants/sql-json'
 
@@ -20,6 +20,9 @@ function validRaw(): string {
 }
 
 describe('TableEditor.run onProgress 阶段事件', () => {
+  beforeEach(() => vi.useFakeTimers())
+  afterEach(() => vi.useRealTimers())
+
   it('成功路径发射 calling_ai/parsing/saving/complete', async () => {
     const ai = { chatCompletion: vi.fn(async () => validRaw()) }
     const editor = new TableEditor({} as never, ai as never)
@@ -29,14 +32,28 @@ describe('TableEditor.run onProgress 阶段事件', () => {
     expect(phases).toEqual(['calling_ai', 'parsing', 'saving', 'complete'])
   })
 
+  it('AI 输出含 <thought> 思考链时正确剥离并解析 JSON', async () => {
+    const ai = {
+      chatCompletion: vi.fn(async () => `<thought>分析剧情变化，需要更新主角信息</thought>\n${validRaw()}`)
+    }
+    const editor = new TableEditor({} as never, ai as never)
+    const result = await editor.run(makeCtx(), { maxRetries: 1 })
+    expect(result.ok).toBe(true)
+    expect(result.lastSql).toBe('INSERT INTO t VALUES (1)')
+  })
+
   it('失败重试时发射 retry，最终 error', async () => {
-    const sqlExecutor = (await import('../src/core/table/sql-executor')).default as unknown as { mockImplementationOnce: (fn: () => unknown) => void }
+    const sqlExecutor = (await import('../src/core/table/sql-executor')).default as unknown as {
+      mockImplementationOnce: (fn: () => unknown) => void
+    }
     sqlExecutor.mockImplementationOnce(() => ({ ok: false, error: 'err' }))
     sqlExecutor.mockImplementationOnce(() => ({ ok: false, error: 'err' }))
     const ai = { chatCompletion: vi.fn(async () => validRaw()) }
     const editor = new TableEditor({} as never, ai as never)
     const phases: string[] = []
-    const result = await editor.run(makeCtx(), { maxRetries: 2, onProgress: (p) => phases.push(p) })
+    const promise = editor.run(makeCtx(), { maxRetries: 2, onProgress: (p) => phases.push(p) })
+    await vi.runAllTimersAsync()
+    const result = await promise
     expect(result.ok).toBe(false)
     expect(phases).toContain('retry')
     expect(phases).toContain('error')
@@ -46,7 +63,9 @@ describe('TableEditor.run onProgress 阶段事件', () => {
     const ai = { chatCompletion: vi.fn(async () => 'not json') }
     const editor = new TableEditor({} as never, ai as never)
     const phases: string[] = []
-    const result = await editor.run(makeCtx(), { maxRetries: 1, onProgress: (p) => phases.push(p) })
+    const promise = editor.run(makeCtx(), { maxRetries: 1, onProgress: (p) => phases.push(p) })
+    await vi.runAllTimersAsync()
+    const result = await promise
     expect(result.ok).toBe(false)
     expect(phases).toContain('calling_ai')
     expect(phases).toContain('parsing')
@@ -61,5 +80,55 @@ describe('TableEditor.run onProgress 阶段事件', () => {
     await editor.run(makeCtx(), { maxRetries: 3, onProgress: (_p, d) => { detail = d } })
     expect(detail?.maxRetries).toBe(3)
     expect(detail?.attempt).toBe(1)
+  })
+})
+
+describe('TableEditor.run 错误分类', () => {
+  beforeEach(() => vi.useFakeTimers())
+  afterEach(() => vi.useRealTimers())
+
+  it('AI 调用失败(infrastructure)不重试，直接返回 errorCategory=infrastructure', async () => {
+    const ai = {
+      chatCompletion: vi.fn(async () => {
+        throw new Error('network timeout')
+      })
+    }
+    const editor = new TableEditor({} as never, ai as never)
+    const result = await editor.run(makeCtx(), { maxRetries: 3 })
+    expect(result.ok).toBe(false)
+    expect(result.errorCategory).toBe('infrastructure')
+    expect(result.attempts).toBe(1)
+    expect(ai.chatCompletion).toHaveBeenCalledTimes(1)
+  })
+
+  it('SQL 执行失败(model)重试至 maxRetries，返回 errorCategory=model', async () => {
+    const sqlExecutor = (await import('../src/core/table/sql-executor')).default as unknown as {
+      mockImplementation: (fn: () => unknown) => void
+    }
+    sqlExecutor.mockImplementation(() => ({
+      ok: false,
+      error: 'syntax error',
+      errorCategory: 'model'
+    }))
+    const ai = { chatCompletion: vi.fn(async () => validRaw()) }
+    const editor = new TableEditor({} as never, ai as never)
+    const promise = editor.run(makeCtx(), { maxRetries: 2 })
+    await vi.runAllTimersAsync()
+    const result = await promise
+    expect(result.ok).toBe(false)
+    expect(result.errorCategory).toBe('model')
+    expect(result.attempts).toBe(2)
+    expect(ai.chatCompletion).toHaveBeenCalledTimes(2)
+  })
+
+  it('解析失败(model)重试', async () => {
+    const ai = { chatCompletion: vi.fn(async () => 'not json') }
+    const editor = new TableEditor({} as never, ai as never)
+    const promise = editor.run(makeCtx(), { maxRetries: 2 })
+    await vi.runAllTimersAsync()
+    const result = await promise
+    expect(result.ok).toBe(false)
+    expect(result.errorCategory).toBe('model')
+    expect(ai.chatCompletion).toHaveBeenCalledTimes(2)
   })
 })

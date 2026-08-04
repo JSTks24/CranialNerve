@@ -5,7 +5,7 @@ export interface WorldInfoEntry {
   comment: string
   constant: boolean
   selective: boolean
-  position: number
+  position: number | string
   role: number
   depth: number
   order: number

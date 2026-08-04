@@ -78,10 +78,13 @@ const DEFAULT_CONFIG: CranialNerveConfig = {
     manualUpdateContextDepth: null,
     manualUpdateBatchSize: null,
     manualSelectedTables: [],
-    hasManualSelection: false
+    hasManualSelection: false,
+    chronicleSendLatestRows: 10
   },
   maxRecallItems: 25,
   recallEnabled: true,
+  recallRecentFixedInjectCount: 5,
+  recallMinScore: 0.45,
   chronicleGenEnabled: true,
   tableFillPresetId: '',
   recallPresetId: '',

@@ -80,6 +80,8 @@ export async function onPromptReady(
 		vectorEnabled: config.vectorEnabled,
 		vectorConfig: config.vector,
 		chatToken: session.getChatToken(),
+		recallRecentFixedInjectCount: config.recallRecentFixedInjectCount,
+		recallMinScore: config.recallMinScore,
 		signal: progress?.abortSignal,
 		callOptions: {
 			timeoutMs: config.pending.aiCallTimeoutMs,

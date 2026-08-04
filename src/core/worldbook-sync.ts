@@ -1,7 +1,7 @@
 import type { CranialNerveSession } from './session'
 import type { WorldInfoData, WorldInfoEntry } from '@shared/types/worldbook'
 import { CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
-import { WORLDBOOK_ORDER_MIN } from '@shared/constants/worldbook'
+import { DEFAULT_ENTRY_PLACEMENT, CHRONICLE_ENTRY_PLACEMENT } from '@shared/constants/worldbook'
 import { pushLog } from '@shared/log-buffer'
 
 export const WORLD_BOOK_PREFIX = 'CN_Data_' as const
@@ -30,8 +30,6 @@ export async function syncToWorldbook(session: CranialNerveSession): Promise<voi
     await wb.createWorldbook(bookName)
   }
   const entries: Record<number, WorldInfoEntry> = {}
-  const usedOrders = new Set<number>()
-  let orderCounter = WORLDBOOK_ORDER_MIN
   try {
     const existing = await wb.loadLorebook(bookName)
     for (const [uidStr, entry] of Object.entries(existing.entries)) {
@@ -44,14 +42,6 @@ export async function syncToWorldbook(session: CranialNerveSession): Promise<voi
     }
   } catch (e) {
     pushLog('warn', 'worldbook', `加载现有书 ${bookName} 失败（视为无手动条目）: ${e instanceof Error ? e.message : String(e)}`)
-  }
-  for (const entry of Object.values(entries)) {
-    if (Number.isFinite(entry.order)) {
-      usedOrders.add(entry.order)
-    }
-  }
-  while (usedOrders.has(orderCounter)) {
-    orderCounter++
   }
   const chronicleDef = session.getChronicleTableDef()
   const chronicleKeyCol = chronicleDef.columns.find((c) => c.role === 'key')?.name
@@ -71,7 +61,9 @@ export async function syncToWorldbook(session: CranialNerveSession): Promise<voi
     }
     const isChronicle = tableName === CHRONICLE_TABLE_NAME
     if (isChronicle) {
-      for (const row of result.rows) {
+      const placement = CHRONICLE_ENTRY_PLACEMENT
+      for (let i = 0; i < result.rows.length; i++) {
+        const row = result.rows[i]!
         const keyCol = findKeyColumn(result.columns, tableName, row, chronicleKeyCol)
         const summaryCol = findSummaryColumn(result.columns, tableName, row, chronicleSummaryCols)
         const uid = nextUid(entries)
@@ -82,10 +74,10 @@ export async function syncToWorldbook(session: CranialNerveSession): Promise<voi
           comment: 'CN_auto_generated',
           constant: false,
           selective: true,
-          position: 4,
+          position: placement.position,
           role: 0,
-          depth: 4,
-          order: orderCounter++,
+          depth: placement.depth,
+          order: placement.order + i,
           displayIndex: uid,
           disable: false
         }
@@ -97,44 +89,48 @@ export async function syncToWorldbook(session: CranialNerveSession): Promise<voi
       if (exportCfg && !exportCfg.enabled) {
         continue
       }
+      const placement = exportCfg?.entryPlacement ?? DEFAULT_ENTRY_PLACEMENT
       if (exportCfg && exportCfg.entryType === 'keyword') {
-        const tableMarkdown = buildTableMarkdown(tableName, result.columns, result.rows)
-        if (!tableMarkdown) {
-          continue
-        }
-        let keys: string[]
+        const rows = result.rows
+        let rowKeysList: string[][]
         if (exportCfg.keywordMode === 'ai_prompt') {
-          const aiPrompt = exportCfg.keywordAiPrompt?.trim() ?? ''
-          if (!aiPrompt) {
-            continue
-          }
           try {
-            keys = await session.generateKeywordsForTable(tableName, aiPrompt)
+            rowKeysList = await session.generateKeywordsForRows(tableName)
           } catch (e) {
-            pushLog('warn', 'worldbook', `AI 生成关键词失败 ${tableName}: ${e instanceof Error ? e.message : String(e)}`)
+            pushLog('warn', 'worldbook', `AI 生成行关键词失败 ${tableName}: ${e instanceof Error ? e.message : String(e)}`)
             continue
           }
         } else {
-          const keywordStr = exportCfg.keywords || ''
-          keys = keywordStr.split(/[,，]/).map((k) => k.trim()).filter(Boolean)
+          const keywordCol = exportCfg.keywordColumn
+          rowKeysList = rows.map((row) => {
+            const val = keywordCol ? String(row[keywordCol] ?? '').trim() : ''
+            return val ? val.split(/[,，]/).map((k) => k.trim()).filter(Boolean) : []
+          })
         }
-        if (keys.length === 0) {
-          continue
-        }
-        const uid = nextUid(entries)
-        entries[uid] = {
-          uid,
-          key: keys,
-          content: tableMarkdown,
-          comment: 'CN_auto_generated',
-          constant: false,
-          selective: true,
-          position: 4,
-          role: 0,
-          depth: 4,
-          order: orderCounter++,
-          displayIndex: uid,
-          disable: false
+        for (let i = 0; i < rows.length; i++) {
+          const keys = rowKeysList[i] ?? []
+          if (keys.length === 0) {
+            continue
+          }
+          const rowMarkdown = buildRowMarkdown(tableName, result.columns, rows[i]!)
+          if (!rowMarkdown) {
+            continue
+          }
+          const uid = nextUid(entries)
+          entries[uid] = {
+            uid,
+            key: keys,
+            content: rowMarkdown,
+            comment: 'CN_auto_generated',
+            constant: false,
+            selective: true,
+            position: placement.position,
+            role: 0,
+            depth: placement.depth,
+            order: placement.order + i,
+            displayIndex: uid,
+            disable: false
+          }
         }
       } else {
         const tableMarkdown = buildTableMarkdown(tableName, result.columns, result.rows)
@@ -149,10 +145,10 @@ export async function syncToWorldbook(session: CranialNerveSession): Promise<voi
           comment: 'CN_auto_generated',
           constant: true,
           selective: false,
-          position: 4,
+          position: placement.position,
           role: 0,
-          depth: 4,
-          order: orderCounter++,
+          depth: placement.depth,
+          order: placement.order,
           displayIndex: uid,
           disable: false
         }
@@ -231,6 +227,23 @@ function buildTableMarkdown(
     const cells = filteredCols.map((c) => String(row[c] ?? ''))
     md += `| ${cells.join(' | ')} |\n`
   }
+  return md
+}
+
+function buildRowMarkdown(
+  tableName: string,
+  columns: string[],
+  row: Record<string, unknown>
+): string {
+  const filteredCols = columns.filter((c) => c !== '__rowid__')
+  if (filteredCols.length === 0) {
+    return ''
+  }
+  let md = `# ${tableName}\n\n`
+  md += `| ${filteredCols.join(' | ')} |\n`
+  md += `|${filteredCols.map(() => '---').join('|')}|\n`
+  const cells = filteredCols.map((c) => String(row[c] ?? ''))
+  md += `| ${cells.join(' | ')} |\n`
   return md
 }
 

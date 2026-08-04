@@ -1,4 +1,5 @@
 import type { SqlValue } from 'sql.js'
+import type { PromptSegment } from './config'
 
 export interface ColumnConstraints {
     primaryKey?: boolean
@@ -24,6 +25,10 @@ export interface ColumnDef {
     role?: ChronicleColumnRole
 }
 
+export interface TableUpdateConfig {
+    sendLatestRows?: number
+}
+
 export interface TableDef {
     name: string
     displayName: string
@@ -33,6 +38,8 @@ export interface TableDef {
     updateHint?: string
     deleteHint?: string
     exportConfig?: TableExportConfig
+    updateConfig?: TableUpdateConfig
+    enabled?: boolean
 }
 
 export interface QueryResult {
@@ -50,12 +57,22 @@ export interface DatabaseSnapshot {
     tables: TableSnapshot[]
 }
 
+export type TablePlacementPosition =
+    | 'at_depth_as_system'
+    | 'before_character_definition'
+    | 'after_character_definition'
+
+export interface TablePlacement {
+    position: TablePlacementPosition
+    depth: number
+    order: number
+}
+
 export interface TableExportConfig {
     enabled: boolean
     entryType: 'constant' | 'keyword'
-    splitByRow: boolean
     keywordColumn: string
-    keywords: string
     keywordMode?: 'custom' | 'ai_prompt'
-    keywordAiPrompt?: string
+    keywordAiPrompt?: PromptSegment[]
+    entryPlacement?: TablePlacement
 }

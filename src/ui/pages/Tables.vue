@@ -61,15 +61,16 @@ function refresh() {
   tables.value = names
     .filter((n) => !n.startsWith('sqlite_') && n !== CHRONICLE_TABLE_NAME)
     .map((name) => {
-      const result = session.getTableRowsWithRowid(name)
-      const first = result[0]
-      const cols = (first?.columns ?? []).filter((c) => c !== '__rowid__')
-      const rows = (first?.rows ?? []) as RowData[]
       const def = session.getTableDef(name)
       const colNames: Record<string, string> = {}
       for (const c of def?.columns ?? []) {
         colNames[c.name] = c.displayName
       }
+      const result = session.getTableRowsWithRowid(name)
+      const first = result[0]
+      const rowCols = (first?.columns ?? []).filter((c) => c !== '__rowid__')
+      const cols = def?.columns?.length ? def.columns.map((c) => c.name) : rowCols
+      const rows = (first?.rows ?? []) as RowData[]
       return { name, displayName: def?.displayName ?? name, columns: cols, colNames, rows }
     })
   if (!tables.value.find((t) => t.name === activeName.value) && tables.value.length > 0) {
@@ -126,6 +127,25 @@ function saveEdit() {
   for (const c of activeTable.value.columns) {
     const el = cellEditEls.get(c)
     collected[c] = el ? el.innerText : String(row[c] ?? '')
+  }
+  const def = session.getTableDef(activeTable.value.name)
+  for (const col of def?.columns ?? []) {
+    const isNotNull =
+      col.constraints?.nullable === false || col.constraints?.primaryKey === true
+    if (isNotNull) {
+      const val = String(collected[col.name] ?? '').trim()
+      if (!val) {
+        toast.warning(`列「${col.displayName || col.name}」不能为空`)
+        return
+      }
+    }
+  }
+  const hasContent = activeTable.value.columns.some(
+    (c) => String(collected[c] ?? '').trim().length > 0
+  )
+  if (!hasContent) {
+    toast.warning('至少填写一列内容，不能保存全空行')
+    return
   }
   void session.runWrite(async () => {
     try {
@@ -264,7 +284,7 @@ watch(
         <label class="cn-btn cn-btn--sm">
           <i class="fa-solid fa-upload"></i>
           导入快照
-          <input type="file" accept="application/json,.json" hidden @change="onImportSnapshot" />
+          <input type="file" accept=".json" hidden @change="onImportSnapshot" />
         </label>
       </div>
       <div class="cn-card table-wrap-card">
@@ -273,7 +293,6 @@ watch(
           <div v-if="(activeTable?.rows.length ?? 0) === 0" class="cn-empty">暂无数据</div>
 
           <div v-else class="table-row-grid">
-            <TransitionGroup name="cn-list">
               <div
                 v-for="row in activeTable?.rows ?? []"
                 :key="row.__rowid__"
@@ -323,7 +342,6 @@ watch(
                   </template>
                 </div>
               </div>
-            </TransitionGroup>
           </div>
           <div class="table-body__foot">
             <span class="table-body__meta">

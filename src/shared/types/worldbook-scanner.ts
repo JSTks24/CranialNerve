@@ -20,7 +20,7 @@ export interface ScanEntry {
 	constant: boolean
 	selective: boolean
 	disable: boolean
-	position: number
+	position: number | string
 	depth: number
 	order: number
 	world: string

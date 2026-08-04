@@ -131,12 +131,13 @@ async function executeFill(session: CranialNerveSession, opts?: ExecuteFillOptio
 	const segments = session.getActiveSegments('tableEdit')
 	const chronicleEnabled = opts?.includeChronicle != null ? opts.includeChronicle : config.chronicleGenEnabled
 	const chronicleTable = config.chronicleTableDef ?? DEFAULT_CHRONICLE_TABLE
+	const activeTables = template.tables.filter((t) => t.enabled !== false)
 	const tableDefs: TableDef[] = chronicleEnabled
-		? [...template.tables, chronicleTable]
-		: [...template.tables]
+		? [...activeTables, chronicleTable]
+		: [...activeTables]
 	const defaultTargetTables = chronicleEnabled
-		? [...template.tables.map((t) => t.name), CHRONICLE_TABLE_NAME]
-		: template.tables.map((t) => t.name)
+		? [...activeTables.map((t) => t.name), CHRONICLE_TABLE_NAME]
+		: activeTables.map((t) => t.name)
 	const targetTables = opts?.targetTables != null ? opts.targetTables : defaultTargetTables
 
 	const timeFormat = getTimePromptDescription(session.getChatToken())
@@ -192,7 +193,8 @@ async function executeFill(session: CranialNerveSession, opts?: ExecuteFillOptio
 				segments,
 				extraHint: opts?.extraHint,
 				personaDescription,
-				charDescription
+				charDescription,
+				chronicleSendLatestRows: config.tableFill.chronicleSendLatestRows
 			})
 			const promptCtx: PromptContext = {
 				segments: filledSegments,

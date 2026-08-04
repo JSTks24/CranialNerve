@@ -34,7 +34,8 @@ export const DEFAULT_TABLE_TEMPLATE: CardTemplate = {
       updateHint:
         '主角各项状态变化时更新；过往经历列随剧情增量更新，超过300字需压缩。\nSQL示例: UPDATE protagonist_info SET past_experience = \'更新后经历\', occupation = \'新职业\' WHERE char_name = \'主角名\';',
       deleteHint: '禁止 DELETE。',
-      exportConfig: { enabled: true, entryType: 'constant', splitByRow: false, keywordColumn: '', keywords: '' }
+      exportConfig: { enabled: true, entryType: 'constant', keywordColumn: '', entryPlacement: { position: 'at_depth_as_system', depth: 2, order: 10000 } },
+      updateConfig: { sendLatestRows: -1 }
     },
     {
       name: 'important_characters',
@@ -76,7 +77,8 @@ export const DEFAULT_TABLE_TEMPLATE: CardTemplate = {
       updateHint:
         '角色状态/关系/经历变化时更新；角色死亡在姓名旁标注（已死亡）。\nSQL示例: UPDATE important_characters SET is_absent = \'是\', past_experience = \'新增经历\' WHERE name = \'角色名\';',
       deleteHint: '禁止 DELETE。',
-      exportConfig: { enabled: true, entryType: 'keyword', splitByRow: true, keywordColumn: 'name', keywords: '' }
+      exportConfig: { enabled: true, entryType: 'keyword', keywordColumn: 'name', entryPlacement: { position: 'at_depth_as_system', depth: 10000, order: 10100 } },
+      updateConfig: { sendLatestRows: -1 }
     },
     {
       name: 'inventory',
@@ -106,7 +108,8 @@ export const DEFAULT_TABLE_TEMPLATE: CardTemplate = {
         '已有物品数量变化或状态变化时更新。\nSQL示例: UPDATE inventory SET quantity = quantity + 3 WHERE item_name = \'治疗药水\';',
       deleteHint:
         '物品被完全消耗、丢弃或摧毁时删除。\nSQL示例: DELETE FROM inventory WHERE item_name = \'已消耗物品\';',
-      exportConfig: { enabled: true, entryType: 'constant', splitByRow: false, keywordColumn: '', keywords: '' }
+      exportConfig: { enabled: true, entryType: 'constant', keywordColumn: '', entryPlacement: { position: 'at_depth_as_system', depth: 2, order: 10200 } },
+      updateConfig: { sendLatestRows: -1 }
     },
     {
       name: 'quests_events',
@@ -134,7 +137,8 @@ export const DEFAULT_TABLE_TEMPLATE: CardTemplate = {
         '任务取得关键进展时更新。\nSQL示例: UPDATE quests_events SET current_progress = \'已完成第一阶段\', time_limit = \'剩余3天\' WHERE quest_name = \'拯救公主\';',
       deleteHint:
         '任务完成、失败或过期时删除。\nSQL示例: DELETE FROM quests_events WHERE quest_name = \'已完成的任务\';',
-      exportConfig: { enabled: true, entryType: 'constant', splitByRow: false, keywordColumn: '', keywords: '' }
+      exportConfig: { enabled: true, entryType: 'constant', keywordColumn: '', entryPlacement: { position: 'at_depth_as_system', depth: 2, order: 10300 } },
+      updateConfig: { sendLatestRows: -1 }
     }
   ]
 }

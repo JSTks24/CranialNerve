@@ -82,6 +82,7 @@ export interface TableFillConfig {
   manualUpdateBatchSize: number | null
   manualSelectedTables: string[]
   hasManualSelection: boolean
+  chronicleSendLatestRows: number
 }
 
 export interface PendingConfig {
@@ -104,6 +105,8 @@ export interface CranialNerveConfig {
   tableFill: TableFillConfig
   maxRecallItems: number
   recallEnabled: boolean
+  recallRecentFixedInjectCount: number
+  recallMinScore: number
   chronicleGenEnabled: boolean
   tableFillPresetId: string
   recallPresetId: string
