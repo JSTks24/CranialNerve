@@ -8,21 +8,12 @@ export interface ColumnConstraints {
     defaultValue?: string
 }
 
-export type ChronicleColumnRole =
-    | 'key'
-    | 'timeStart'
-    | 'timeEnd'
-    | 'location'
-    | 'summary'
-    | 'keyDialogue'
-
 export interface ColumnDef {
     name: string
     displayName: string
     type: string
     constraints?: ColumnConstraints
     note?: string
-    role?: ChronicleColumnRole
 }
 
 export interface TableUpdateConfig {
@@ -59,6 +50,8 @@ export interface DatabaseSnapshot {
 
 export type TablePlacementPosition =
     | 'at_depth_as_system'
+    | 'at_depth_as_user'
+    | 'at_depth_as_assistant'
     | 'before_character_definition'
     | 'after_character_definition'
 

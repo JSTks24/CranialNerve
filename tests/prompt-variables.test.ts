@@ -21,6 +21,11 @@ describe('提示词变量说明数据', () => {
     expect(names).toEqual(['keyExample', 'chronicleList', 'userInput'])
   })
 
+  it('纪要生成变量名含 chronicleTable 专属 + 共有变量', () => {
+    const names = PROMPT_VARIABLES.chronicleGen.variables.map((v) => v.name)
+    expect(names).toEqual(['format', 'timeFormat', 'chronicleTable', 'worldbook', 'conversation', 'persona', 'charDescription'])
+  })
+
   it('每个变量 name 与 desc 非空', () => {
     for (const scene of Object.values(PROMPT_VARIABLES)) {
       for (const v of scene.variables) {
@@ -30,8 +35,9 @@ describe('提示词变量说明数据', () => {
     }
   })
 
-  it('两个场景 label 非空', () => {
+  it('三个场景 label 非空', () => {
     expect(PROMPT_VARIABLES.tableEdit.label).toBeTruthy()
+    expect(PROMPT_VARIABLES.chronicleGen.label).toBeTruthy()
     expect(PROMPT_VARIABLES.chronicleRecall.label).toBeTruthy()
   })
 })

@@ -29,6 +29,28 @@ const snapshotValue = computed({
 	}
 })
 
+const autoFillTabs = [
+	{ key: 'off', label: '关闭' },
+	{ key: 'after-ai', label: 'AI生成后' },
+	{ key: 'after-send', label: '输入发送后' }
+]
+const autoFillValue = computed({
+	get: () => cfg.value.tableFill.autoFillTrigger,
+	set: (v: string) => {
+		cfg.value.tableFill.autoFillTrigger = v as typeof cfg.value.tableFill.autoFillTrigger
+		saveCfg()
+	}
+})
+const autoFillFreqDisabled = computed(() => cfg.value.tableFill.autoFillTrigger !== 'after-ai')
+const chronicleAutoFillValue = computed({
+	get: () => cfg.value.chronicleFill.autoFillTrigger,
+	set: (v: string) => {
+		cfg.value.chronicleFill.autoFillTrigger = v as typeof cfg.value.chronicleFill.autoFillTrigger
+		saveCfg()
+	}
+})
+const chronicleFreqDisabled = computed(() => cfg.value.chronicleFill.autoFillTrigger !== 'after-ai')
+
 const tabs: { key: StrategyTab; label: string; icon: string }[] = [
 	{ key: 'fill', label: '填表管线', icon: 'fa-diagram-project' },
 	{ key: 'recall', label: '纪要召回', icon: 'fa-clock-rotate-left' },
@@ -56,33 +78,13 @@ function saveBoolean(field: 'summarizeOnManualAbort') {
 	toast.success('已保存')
 }
 
-function onAutoFillChange(v: boolean) {
-	if (!v) {
-		cfg.value.tableFill.updateFrequency = 0
-	} else if (cfg.value.tableFill.updateFrequency <= 0) {
-		cfg.value.tableFill.updateFrequency = 1
-	}
-	saveCfg()
-}
-
-function onRecallChange(v: boolean) {
-	if (v && !cfg.value.chronicleGenEnabled) {
-		cfg.value.chronicleGenEnabled = true
-	}
-	saveCfg()
-}
-
-function onChronicleGenChange(v: boolean) {
-	if (!v) {
-		cfg.value.recallEnabled = false
-	}
+function onRecallChange() {
 	saveCfg()
 }
 
 function onUpdateFreqChange(raw: unknown) {
-	const n = clampInt(typeof raw === 'number' ? raw : 1, 0, 20, 1)
+	const n = clampInt(typeof raw === 'number' ? raw : 1, 1, 20, 1)
 	cfg.value.tableFill.updateFrequency = n
-	cfg.value.tableFill.autoFill = n > 0
 	saveCfg()
 }
 
@@ -96,6 +98,12 @@ function presetHint(pid: string): string {
 
 function saveTableField(field: 'contextDepth' | 'updateFrequency' | 'batchSize' | 'skipFloors' | 'maxRetries', min: number, max: number, fallback: number) {
 	cfg.value.tableFill[field] = clampInt(cfg.value.tableFill[field] as number, min, max, fallback)
+	saveCfg()
+	toast.success('已保存')
+}
+
+function saveChronicleField(field: 'contextDepth' | 'updateFrequency' | 'batchSize' | 'skipFloors' | 'maxRetries', min: number, max: number, fallback: number) {
+	cfg.value.chronicleFill[field] = clampInt(cfg.value.chronicleFill[field] as number, min, max, fallback)
 	saveCfg()
 	toast.success('已保存')
 }
@@ -126,13 +134,22 @@ onActivated(() => {
 						<div class="strategy-row">
 							<div class="strategy-row__text">
 								<span class="strategy-row__label">自动填表</span>
-								<span class="strategy-row__desc">AI 生成回复后自动提取/更新结构化表格。关闭则更新频率归零，设正数自动开启。</span>
+								<span class="strategy-row__desc">选择触发时机。关闭=不自动填；AI生成后=生成完立即填本轮；输入发送后=下次发送时填上一轮（已定型，可先 review/编辑）。</span>
 							</div>
-							<label class="cn-switch">
-								<input type="checkbox" v-model="cfg.tableFill.autoFill" @change="onAutoFillChange(cfg.tableFill.autoFill)" />
-								<span class="cn-switch__track"></span>
-							</label>
+							<CNTabs level="l2" :items="autoFillTabs" v-model="autoFillValue" />
 						</div>
+						<Transition name="cn-fold">
+							<div v-if="cfg.tableFill.autoFillTrigger === 'after-ai'" class="strategy-row">
+								<div class="strategy-row__text">
+									<span class="strategy-row__label">重新生成时自动填表</span>
+									<span class="strategy-row__desc">重新生成/swipe 产生新回复后是否自动填表。关闭则需手动填表。</span>
+								</div>
+								<label class="cn-switch">
+									<input type="checkbox" v-model="cfg.tableFill.regenerateFill" @change="saveCfg" />
+									<span class="cn-switch__track"></span>
+								</label>
+							</div>
+						</Transition>
 						<div class="strategy-row">
 							<div class="strategy-row__text">
 								<span class="strategy-row__label">手动中止时仍触发</span>
@@ -156,14 +173,15 @@ onActivated(() => {
 				</section>
 
 				<section class="cn-card strategy-section">
-					<div class="strategy-section__head"><span class="strategy-section__title">触发与批量（表格更新与纪要召回共用参数）</span></div>
+					<div class="strategy-section__head"><span class="strategy-section__title">触发与批量（表格更新参数）</span></div>
 					<div class="strategy-rows">
 						<div class="strategy-row">
 							<div class="strategy-row__text">
 								<span class="strategy-row__label">更新频率</span>
-								<span class="strategy-row__desc">积累 N 条新 AI 回复后触发一次填表。1=每条都触发。0=关闭自动填表。</span>
+								<span class="strategy-row__desc">积累 N 条新 AI 回复后触发一次填表（仅「AI生成后」模式生效）。1=每条都触发。</span>
 							</div>
-							<input class="cn-input cn-input--nospin strategy-num" type="number" min="0" max="20" step="1"
+							<input class="cn-input cn-input--nospin strategy-num" type="number" min="1" max="20" step="1"
+								:disabled="autoFillFreqDisabled"
 								v-model.number="cfg.tableFill.updateFrequency"
 								@blur="onUpdateFreqChange(cfg.tableFill.updateFrequency)" />
 						</div>
@@ -229,23 +247,103 @@ onActivated(() => {
 					<div class="strategy-rows">
 						<div class="strategy-row">
 							<div class="strategy-row__text">
-								<span class="strategy-row__label">纪要生成</span>
-								<span class="strategy-row__desc">AI 生成回复后自动提取事件摘要存入纪要表。关闭时联动关闭召回。</span>
+								<span class="strategy-row__label">自动生成纪要</span>
+								<span class="strategy-row__desc">选择触发时机。关闭=不自动生成；AI生成后=生成完立即生成纪要；输入发送后=下次发送时生成上一轮纪要。</span>
 							</div>
-							<label class="cn-switch">
-								<input type="checkbox" v-model="cfg.chronicleGenEnabled" @change="onChronicleGenChange(cfg.chronicleGenEnabled)" />
-								<span class="cn-switch__track"></span>
-							</label>
+							<CNTabs level="l2" :items="autoFillTabs" v-model="chronicleAutoFillValue" />
 						</div>
+						<Transition name="cn-fold">
+							<div v-if="cfg.chronicleFill.autoFillTrigger === 'after-ai'" class="strategy-row">
+								<div class="strategy-row__text">
+									<span class="strategy-row__label">重新生成时自动生成纪要</span>
+									<span class="strategy-row__desc">重新生成/swipe 产生新回复后是否自动生成纪要。关闭则需手动生成。</span>
+								</div>
+								<label class="cn-switch">
+									<input type="checkbox" v-model="cfg.chronicleFill.regenerateFill" @change="saveCfg" />
+									<span class="cn-switch__track"></span>
+								</label>
+							</div>
+						</Transition>
 						<div class="strategy-row">
 							<div class="strategy-row__text">
 								<span class="strategy-row__label">纪要召回</span>
 								<span class="strategy-row__desc">发消息时 AI 筛选相关历史纪要，关键词注入激活世界书条目。</span>
 							</div>
 							<label class="cn-switch">
-								<input type="checkbox" v-model="cfg.recallEnabled" @change="onRecallChange(cfg.recallEnabled)" />
+								<input type="checkbox" v-model="cfg.recallEnabled" @change="onRecallChange" />
 								<span class="cn-switch__track"></span>
 							</label>
+						</div>
+						<div class="strategy-row">
+							<div class="strategy-row__text">
+								<span class="strategy-row__label">手动中止时仍触发</span>
+								<span class="strategy-row__desc">与表格更新共用。用户手动中断 AI 生成时是否仍生成纪要/更新表格。</span>
+							</div>
+							<label class="cn-switch">
+								<input type="checkbox" v-model="cfg.pending.summarizeOnManualAbort" @change="saveBoolean('summarizeOnManualAbort')" />
+								<span class="cn-switch__track"></span>
+							</label>
+						</div>
+						<div class="strategy-row">
+							<div class="strategy-row__text">
+								<span class="strategy-row__label">最小回复字数</span>
+								<span class="strategy-row__desc">与表格更新共用。AI 回复少于该字数时跳过本轮。0=不限制。默认 100。</span>
+							</div>
+							<input class="cn-input cn-input--nospin strategy-num" type="number" min="0" max="10000" step="10"
+								v-model.number="cfg.pending.minSummaryLength"
+								@blur="saveField('minSummaryLength', 0, 10000, 100)" @change="saveField('minSummaryLength', 0, 10000, 100)" />
+						</div>
+					</div>
+				</section>
+
+				<section class="cn-card strategy-section">
+					<div class="strategy-section__head"><span class="strategy-section__title">触发与批量（纪要生成参数）</span></div>
+					<div class="strategy-rows">
+						<div class="strategy-row">
+							<div class="strategy-row__text">
+								<span class="strategy-row__label">更新频率</span>
+								<span class="strategy-row__desc">积累 N 条新 AI 回复后触发一次纪要生成（仅「AI生成后」模式生效）。1=每条都触发。</span>
+							</div>
+							<input class="cn-input cn-input--nospin strategy-num" type="number" min="1" max="20" step="1"
+								:disabled="chronicleFreqDisabled"
+								v-model.number="cfg.chronicleFill.updateFrequency"
+								@blur="saveChronicleField('updateFrequency', 1, 20, 1)" />
+						</div>
+						<div class="strategy-row">
+							<div class="strategy-row__text">
+								<span class="strategy-row__label">上下文深度</span>
+								<span class="strategy-row__desc">纪要生成 AI 往回看最近 N 条 AI 回复。0=不传上下文。</span>
+							</div>
+							<input class="cn-input cn-input--nospin strategy-num" type="number" min="0" max="50" step="1"
+								v-model.number="cfg.chronicleFill.contextDepth"
+								@blur="saveChronicleField('contextDepth', 0, 50, 3)" />
+						</div>
+						<div class="strategy-row">
+							<div class="strategy-row__text">
+								<span class="strategy-row__label">批处理大小</span>
+								<span class="strategy-row__desc">待处理消息过多时分多少条一组喂给 AI。</span>
+							</div>
+							<input class="cn-input cn-input--nospin strategy-num" type="number" min="1" max="30" step="1"
+								v-model.number="cfg.chronicleFill.batchSize"
+								@blur="saveChronicleField('batchSize', 1, 30, 3)" />
+						</div>
+						<div class="strategy-row">
+							<div class="strategy-row__text">
+								<span class="strategy-row__label">跳过楼层</span>
+								<span class="strategy-row__desc">忽略最近 N 条 AI 回复不参与纪要生成。</span>
+							</div>
+							<input class="cn-input cn-input--nospin strategy-num" type="number" min="0" max="20" step="1"
+								v-model.number="cfg.chronicleFill.skipFloors"
+								@blur="saveChronicleField('skipFloors', 0, 20, 0)" />
+						</div>
+						<div class="strategy-row">
+							<div class="strategy-row__text">
+								<span class="strategy-row__label">最大重试</span>
+								<span class="strategy-row__desc">纪要 SQL 执行失败后最多重试几次。0=不重试。</span>
+							</div>
+							<input class="cn-input cn-input--nospin strategy-num" type="number" min="0" max="10" step="1"
+								v-model.number="cfg.chronicleFill.maxRetries"
+								@blur="saveChronicleField('maxRetries', 0, 10, 3)" />
 						</div>
 					</div>
 				</section>
@@ -277,6 +375,16 @@ onActivated(() => {
 				<section class="cn-card strategy-section">
 					<div class="strategy-section__head"><span class="strategy-section__title">模型</span></div>
 					<div class="strategy-rows">
+						<div class="strategy-row">
+							<div class="strategy-row__text">
+								<span class="strategy-row__label">纪要生成预设</span>
+								<span class="strategy-row__desc">纪要生成用哪组 AI 预设。{{ presetHint(cfg.chronicleGenPresetId) }}</span>
+							</div>
+							<select class="cn-select strategy-select" v-model="cfg.chronicleGenPresetId" @change="saveCfg">
+								<option value="">跟随全局</option>
+								<option v-for="p in presetList" :key="p.id" :value="p.id">{{ p.name }}</option>
+							</select>
+						</div>
 						<div class="strategy-row">
 							<div class="strategy-row__text">
 								<span class="strategy-row__label">纪要召回预设</span>

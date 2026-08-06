@@ -9,7 +9,6 @@ export interface RecallItemLike {
     content: {
       location?: string
       summary?: string
-      keyDialogue?: string
     }
   }
 }
@@ -24,7 +23,6 @@ export function serializeRecallPayload(items: RecallItemLike[]): string {
       timeEnd: it.entry.timeEnd ?? '',
       location: it.entry.content.location ?? '',
       summary: it.entry.content.summary ?? '',
-      keyDialogue: it.entry.content.keyDialogue ?? '',
     })),
   }
   return JSON.stringify(payload)
@@ -59,7 +57,6 @@ export function parseRecallPayload(raw: unknown): RecallCardPayload | null {
         timeEnd: typeof item.timeEnd === 'string' ? item.timeEnd : '',
         location: typeof item.location === 'string' ? item.location : '',
         summary: typeof item.summary === 'string' ? item.summary : '',
-        keyDialogue: typeof item.keyDialogue === 'string' ? item.keyDialogue : '',
       })
     }
     return { v: 1, items: normalized }

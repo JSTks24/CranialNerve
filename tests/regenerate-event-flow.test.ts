@@ -1,5 +1,6 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { CranialNerveSession } from '../src/core/session'
+import type { AutoFillTrigger } from '../src/shared/types/config'
 import {
   EVENT_GENERATION_AFTER_COMMANDS,
   EVENT_GENERATION_ENDED,
@@ -32,6 +33,8 @@ interface SetupOpts {
   chat: unknown[]
   eventSource: ReturnType<typeof makeEventSource>
   frequency: number
+  trigger?: AutoFillTrigger
+  regenerateFill?: boolean
 }
 
 function setupHost(opts: SetupOpts) {
@@ -42,12 +45,17 @@ function setupHost(opts: SetupOpts) {
     extensionSettings: {
       cranialnerve: {
         tableFill: {
-          autoFill: true,
+          autoFillTrigger: opts.trigger ?? 'after-ai',
+          regenerateFill: opts.regenerateFill ?? true,
           contextDepth: 3,
           updateFrequency: opts.frequency,
           batchSize: 3,
           skipFloors: 0,
           maxRetries: 3,
+        },
+        chronicleFill: {
+          autoFillTrigger: 'off',
+          regenerateFill: false,
         },
         pending: {
           aiCallTimeoutMs: 60000,
@@ -152,14 +160,69 @@ describe('regenerate 事件时序（模拟酒馆 Generate）', () => {
     expect(getAiPresetForScene).not.toHaveBeenCalled()
   })
 
-  it('regenerate 但 autoFill 关闭仍不总结', async () => {
+  it('regenerate 但 trigger=off 仍不总结', async () => {
     const chat = [
       { is_user: true, is_system: false, mes: 'hi', extra: {} },
       { is_user: false, is_system: false, mes: 'old', extra: {} },
     ]
     const eventSource = makeEventSource()
-    setupHost({ chat, eventSource, frequency: 2 })
-    ;((globalThis as unknown as { window: { SillyTavern: { getContext: () => { extensionSettings: { cranialnerve: { tableFill: { autoFill: boolean } } } } } } }).window.SillyTavern.getContext().extensionSettings.cranialnerve.tableFill).autoFill = false
+    setupHost({ chat, eventSource, frequency: 2, trigger: 'off' })
+
+    const session = new CranialNerveSession()
+    const removeFrame = vi.fn()
+    const getAiPresetForScene = vi.fn(() => null)
+    const stub = stubSession(session, removeFrame)
+    stub.getAiPresetForScene = getAiPresetForScene
+
+    eventSource.emit(EVENT_GENERATION_STARTED, 'regenerate')
+    eventSource.emit(EVENT_GENERATION_AFTER_COMMANDS, 'regenerate', {}, false)
+
+    await vi.waitFor(() => {
+      expect(stub.regenerateFillPending).toBe(true)
+    })
+
+    ;(chat[1] as { mes: string }).mes = 'brand new reply content'
+    eventSource.emit(EVENT_GENERATION_ENDED, chat.length)
+
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(getAiPresetForScene).not.toHaveBeenCalled()
+  })
+
+  it('after-send 模式 regenerate 不总结（等下次 message_sent）', async () => {
+    const chat = [
+      { is_user: true, is_system: false, mes: 'hi', extra: {} },
+      { is_user: false, is_system: false, mes: 'old', extra: {} },
+    ]
+    const eventSource = makeEventSource()
+    setupHost({ chat, eventSource, frequency: 1, trigger: 'after-send' })
+
+    const session = new CranialNerveSession()
+    const removeFrame = vi.fn()
+    const getAiPresetForScene = vi.fn(() => null)
+    const stub = stubSession(session, removeFrame)
+    stub.getAiPresetForScene = getAiPresetForScene
+
+    eventSource.emit(EVENT_GENERATION_STARTED, 'regenerate')
+    eventSource.emit(EVENT_GENERATION_AFTER_COMMANDS, 'regenerate', {}, false)
+
+    await vi.waitFor(() => {
+      expect(stub.regenerateFillPending).toBe(true)
+    })
+
+    ;(chat[1] as { mes: string }).mes = 'brand new reply content'
+    eventSource.emit(EVENT_GENERATION_ENDED, chat.length)
+
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(getAiPresetForScene).not.toHaveBeenCalled()
+  })
+
+  it('after-ai 但 regenerateFill=false 时 regenerate 不总结', async () => {
+    const chat = [
+      { is_user: true, is_system: false, mes: 'hi', extra: {} },
+      { is_user: false, is_system: false, mes: 'old', extra: {} },
+    ]
+    const eventSource = makeEventSource()
+    setupHost({ chat, eventSource, frequency: 2, trigger: 'after-ai', regenerateFill: false })
 
     const session = new CranialNerveSession()
     const removeFrame = vi.fn()

@@ -15,7 +15,7 @@ export interface SqlBatchOperation {
   kind: 'sql_batch'
   statements: string[]
   params?: (string | number | null)[][]
-  reason?: 'ai_fill' | 'manual_edit' | 'import' | 'manual_refill'
+  reason?: 'ai_fill' | 'ai_fill_table' | 'ai_fill_chronicle' | 'manual_edit' | 'import' | 'manual_refill'
 }
 
 export type MutationOperation = SqlBatchOperation
@@ -31,5 +31,6 @@ export interface StorageFrame {
   headRevision?: string | null
   checkpoint?: FullCheckpoint
   logEntries: LogEntry[]
+  summarizedReasons?: SqlBatchOperation['reason'][]
   templateId?: string
 }

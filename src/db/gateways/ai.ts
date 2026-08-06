@@ -1,5 +1,6 @@
 import { getRequestHeaders } from './host-context'
 import { pushLog } from '@shared/log-buffer'
+import { pushPromptTrace } from '@shared/prompt-trace'
 
 export interface AiChatMessage {
     role: 'system' | 'user' | 'assistant'
@@ -12,6 +13,7 @@ export interface AiClientConfig {
     customIncludeBody?: string
     customExcludeBody?: string
     customIncludeHeaders?: string
+    responseFormat?: 'none' | 'json_object'
 }
 
 export interface ChatCompletionParams {
@@ -30,6 +32,7 @@ export interface ChatCompletionParams {
 export interface AiCallOptions {
     timeoutMs?: number
     timeoutRetries?: number
+    scene?: string
 }
 
 export interface AiGateway {
@@ -45,6 +48,13 @@ export interface AiGateway {
 export default function createAiGateway(): AiGateway {
     return {
         async chatCompletion(messages, clientConfig, params, signal, callOptions) {
+            const scene = callOptions?.scene ?? 'ai'
+            const traceId = pushPromptTrace({
+                scene,
+                model: params.model,
+                segments: messages.map((m) => ({ role: m.role, content: m.content })),
+            })
+            pushLog('debug', 'ai', `-> ${scene} 已发送 ${messages.length} 段提示词`, traceId)
             const timeoutMs = callOptions?.timeoutMs ?? 0
             const timeoutRetries = Math.max(0, callOptions?.timeoutRetries ?? 0)
             const maxAttempts = timeoutMs > 0 ? timeoutRetries + 1 : 1
@@ -93,6 +103,9 @@ async function doChatCompletion(
     }
     if (clientConfig.customExcludeBody) {
         body.custom_exclude_body = clientConfig.customExcludeBody
+    }
+    if (clientConfig.responseFormat === 'json_object') {
+        body.custom_include_body = JSON.stringify({ response_format: { type: 'json_object' } })
     }
 
     const headers = getRequestHeaders()

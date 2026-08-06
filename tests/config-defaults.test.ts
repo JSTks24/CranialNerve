@@ -21,6 +21,13 @@ describe('config 默认值 null 语义', () => {
     expect((cfg.tableFill as unknown as Record<string, unknown>).groupId).toBeUndefined()
   })
 
+  it('autoFillTrigger 默认 after-ai，regenerateFill 默认 true', () => {
+    stubEmptyHost()
+    const cfg = createConfigGateway().read()
+    expect(cfg.tableFill.autoFillTrigger).toBe('after-ai')
+    expect(cfg.tableFill.regenerateFill).toBe(true)
+  })
+
   it('seed 默认 null（emptyPreset 经 gateway 读取为 null）', () => {
     ;(globalThis as unknown as { window: unknown }).window = {
       SillyTavern: {

@@ -4,7 +4,9 @@ import draggable from 'vuedraggable'
 import PromptSegmentEditor from './PromptSegmentEditor.vue'
 import type { PromptSegment, PromptRole } from '@shared/types/config'
 
-const props = defineProps<{ modelValue: PromptSegment[]; minSegments?: number; showAddRow?: boolean }>()
+const props = withDefaults(defineProps<{ modelValue: PromptSegment[]; minSegments?: number; showAddRow?: boolean }>(), {
+  showAddRow: true
+})
 const emit = defineEmits<{ 'update:modelValue': [PromptSegment[]] }>()
 
 const roles: PromptRole[] = ['system', 'user', 'assistant']

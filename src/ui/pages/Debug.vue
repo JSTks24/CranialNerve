@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { ref, computed, onActivated } from 'vue'
+import { computed, onActivated } from 'vue'
 import { useDebugStore } from '@ui/stores/debug'
 import CNTabs from '@ui/components/CNTabs.vue'
+import type { PromptTraceEntry } from '@shared/prompt-trace'
 
 const store = useDebugStore()
 
-const activePanel = ref<'logs' | 'status'>('logs')
 const debugTabs = computed(() => [
 	{ key: 'logs', label: '运行日志', icon: 'fa-list', badge: store.filteredCount || undefined },
 	{ key: 'status', label: '运行状态', icon: 'fa-circle-info' }
 ])
 const activePanelValue = computed({
-	get: () => activePanel.value,
+	get: () => store.activePanel,
 	set: (v: string) => {
-		activePanel.value = v as 'logs' | 'status'
+		store.activePanel = v as 'logs' | 'status'
 	}
 })
 
@@ -34,6 +34,20 @@ function recoverSnapshot() {
 	store.recoverSnapshotAt(idx)
 }
 
+async function copyText(text: string) {
+	try {
+		await navigator.clipboard.writeText(text)
+	} catch {}
+}
+
+function copyTraceAll(t: PromptTraceEntry) {
+	void copyText(JSON.stringify(t.segments, null, 2))
+}
+
+function copySegment(content: string) {
+	void copyText(content)
+}
+
 onActivated(() => {
 	store.refresh()
 })
@@ -43,12 +57,12 @@ onActivated(() => {
 	<div class="debug-page">
 		<CNTabs level="l2" :items="debugTabs" v-model="activePanelValue" />
 
-		<div v-if="activePanel === 'logs'" class="debug-panel">
+		<div v-if="store.activePanel === 'logs'" class="debug-panel">
 			<div class="debug-toolbar">
 				<select class="cn-select debug-toolbar__select" v-model="store.levelFilter">
-					<option value="all">全部级别</option>
-					<option value="info">信息</option>
-					<option value="warn">警告</option>
+					<option value="debug">调试（全部）</option>
+					<option value="info">信息+</option>
+					<option value="warn">警告+</option>
 					<option value="error">错误</option>
 				</select>
 				<select class="cn-select debug-toolbar__select" v-model="store.tagFilter">
@@ -70,6 +84,16 @@ onActivated(() => {
 					<i class="fa-solid fa-trash"></i>
 					清空
 				</button>
+				<label class="cn-switch debug-toolbar__debug">
+					<input type="checkbox" class="cn-switch__input" :checked="store.debugMode" @change="store.toggleDebugMode" />
+					<span class="cn-switch__track">
+						<span class="cn-switch__knob"></span>
+					</span>
+					<span class="cn-switch__text">
+						<i class="fa-solid fa-bug"></i>
+						调试模式
+					</span>
+				</label>
 			</div>
 
 			<div class="debug-toolbar__hint">
@@ -78,23 +102,62 @@ onActivated(() => {
 				<span v-if="store.pendingCount">暂停期间新增 {{ store.pendingCount }} 条</span>
 			</div>
 
-			<div class="debug-log-list" ref="logList">
+			<div class="debug-log-list">
 				<div v-if="store.visibleLogs.length === 0" class="cn-empty">暂无日志</div>
 				<div
 					v-for="log in store.visibleLogs"
 					:key="log.id"
 					class="debug-log-row"
-					:class="`debug-log-row--${log.level}`"
+					:class="[
+						`debug-log-row--${log.level}`,
+						{ 'debug-log-row--clickable': log.traceId, 'debug-log-row--expanded': log.traceId && store.expandedLogId === log.id }
+					]"
+					@click="log.traceId && store.toggleLogExpand(log.id)"
 				>
 					<span class="debug-log-row__time">{{ formatTime(log.timestamp) }}</span>
-					<span class="debug-log-row__level" :class="`debug-log-row__level--${log.level}`">{{ log.level === 'error' ? 'ERROR' : log.level === 'warn' ? 'WARN' : 'INFO' }}</span>
+					<span class="debug-log-row__level" :class="`debug-log-row__level--${log.level}`">{{ log.level === 'error' ? 'ERROR' : log.level === 'warn' ? 'WARN' : log.level === 'info' ? 'INFO' : 'DEBUG' }}</span>
 					<span class="debug-log-row__tag">{{ log.tag }}</span>
 					<span class="debug-log-row__msg">{{ log.message }}</span>
+					<button
+						v-if="log.traceId"
+						class="cn-btn cn-btn--sm cn-btn--text debug-log-row__trace"
+						@click.stop="log.traceId && store.toggleLogExpand(log.id)"
+					>
+						<i class="fa-solid" :class="store.expandedLogId === log.id ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+					</button>
+					<div v-if="log.traceId && store.expandedLogId === log.id" class="debug-log-expand">
+						<template v-if="store.expandedTrace">
+							<div class="debug-log-expand__head">
+								<span>{{ store.expandedTrace.scene }} · {{ store.expandedTrace.model }}</span>
+								<span>{{ store.expandedTrace.segmentCount }} 段</span>
+								<button class="cn-btn cn-btn--sm cn-btn--text" @click.stop="copyTraceAll(store.expandedTrace)">
+									<i class="fa-solid fa-copy"></i>
+									复制全部
+								</button>
+							</div>
+							<div
+								v-for="(seg, i) in store.expandedTrace.segments"
+								:key="i"
+								class="debug-trace-seg"
+								:class="`debug-trace-seg--${seg.role}`"
+							>
+								<div class="debug-trace-seg__head">
+									<span class="debug-trace-seg__role">{{ seg.role }}</span>
+									<span class="debug-trace-seg__len">{{ seg.content.length }}字</span>
+									<button class="cn-btn cn-btn--sm cn-btn--text" @click.stop="copySegment(seg.content)">
+										<i class="fa-solid fa-copy"></i>
+									</button>
+								</div>
+								<pre class="debug-trace-seg__pre">{{ seg.content }}</pre>
+							</div>
+						</template>
+						<div v-else class="debug-log-expand__empty">该提示词已超出保留范围（最近 20 条），无法查看</div>
+					</div>
 				</div>
 			</div>
 		</div>
 
-		<div v-if="activePanel === 'status'" class="debug-panel">
+		<div v-if="store.activePanel === 'status'" class="debug-panel">
 			<div class="debug-status-grid">
 				<div class="cn-card">
 					<div class="cn-card__head">世界书</div>

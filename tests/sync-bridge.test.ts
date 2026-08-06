@@ -108,4 +108,31 @@ describe('sync-bridge load 真实 replay（含 applySnapshot）', () => {
     expect(rows[0]!.rows[1]!.c).toBe('C')
     core.dispose()
   })
+
+  it('同帧相同 SQL 双 reason（merged）回放只执行一次', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    const frame: StorageFrame = {
+      version: 2,
+      logEntries: [{
+        seq: 1,
+        createdAt: 0,
+        operations: [
+          { kind: 'sql_batch', statements: ["INSERT INTO t VALUES ('C')"], reason: 'ai_fill_table' },
+          { kind: 'sql_batch', statements: ["INSERT INTO t VALUES ('C')"], reason: 'ai_fill_chronicle' },
+        ],
+      }],
+      checkpoint: { kind: 'full', createdAt: 0, reason: 'init', data: makeSnapshot('A') },
+    }
+    const { gateway } = makeChatGateway({ 1: JSON.stringify(frame) })
+    const bridge = new SqliteSyncBridge(core, gateway)
+    const result = bridge.load()
+    expect(result.ok).toBe(true)
+    expect(result.warnings).toHaveLength(0)
+    const rows = core.exec('SELECT * FROM t ORDER BY c')
+    expect(rows[0]!.rows).toHaveLength(2)
+    expect(rows[0]!.rows[0]!.c).toBe('A')
+    expect(rows[0]!.rows[1]!.c).toBe('C')
+    core.dispose()
+  })
 })

@@ -234,6 +234,9 @@
   line-height: 24px;
   cursor: default;
   user-select: all;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 #cn_app .cn-input:hover,
 #cn_app .cn-select:hover,
@@ -562,6 +565,35 @@
   background: var(--cn-surface);
   border-color: var(--cn-primary);
   box-shadow: 0 0 0 3px rgba(18, 130, 82, 0.16);
+}
+
+#cn_app .chronicle-iw-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 10px;
+  border: 1px solid var(--cn-border);
+  border-radius: var(--cn-radius-sm);
+  background: var(--cn-surface-3);
+}
+
+#cn_app .chronicle-iw-item {
+  display: flex;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+#cn_app .chronicle-iw-item__label {
+  flex-shrink: 0;
+  min-width: 96px;
+  font-weight: 600;
+  color: var(--cn-primary-deep);
+}
+
+#cn_app .chronicle-iw-item__value {
+  color: var(--cn-text);
+  word-break: break-word;
 }
 
 #cn_app .cn-empty {
@@ -1014,6 +1046,13 @@
   font-weight: 500;
 }
 
+#cn_app .preset-list__item--selected {
+  border-color: var(--cn-primary);
+  background: var(--cn-surface);
+  color: var(--cn-primary-active);
+  box-shadow: inset 0 0 0 1px var(--cn-primary);
+}
+
 #cn_app .preset-list__name {
   flex: 1;
   min-width: 0;
@@ -1047,6 +1086,15 @@
   color: var(--cn-text-3);
   font-size: 12px;
   font-weight: 400;
+  flex: 1;
+  min-width: 0;
+}
+
+#cn_app .prompt-editor__title-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
 }
 
 #cn_app .block-list {
@@ -1362,9 +1410,6 @@
   flex-direction: column;
 }
 
-/* 模板/纪要表编辑区：body 内部纵向滚动（head 与左侧不滚）。
-   提示词配置的 .block-list 自身已 overflow-y:auto，无需此规则。
-   特异性需高于 .prompt-editor .cn-card__body 的 overflow:hidden 才能生效。 */
 #cn_app .prompt-editor .cn-card__body.template-editor-body {
   overflow-y: auto;
   overflow-x: hidden;
@@ -1434,6 +1479,54 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+#cn_app .cn-modal-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--cn-surface-3);
+  border: 1px solid var(--cn-border);
+  border-radius: var(--cn-radius-lg);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+#cn_app .cn-modal-option:hover {
+  border-color: var(--cn-primary);
+  background: var(--cn-primary-mist);
+}
+
+#cn_app .cn-modal-option__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--cn-text);
+}
+
+#cn_app .cn-modal-option__desc {
+  font-size: 12px;
+  color: var(--cn-text-3);
+}
+
+#cn_app .cn-modal-option__hint {
+  font-size: 12px;
+  color: var(--cn-danger);
+}
+
+#cn_app .cn-modal-option--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#cn_app .cn-modal-option--disabled:hover {
+  border-color: var(--cn-border);
+  background: var(--cn-surface-3);
 }
 
 #cn_app .var-card {
@@ -1647,6 +1740,39 @@
   font-size: 14px;
   line-height: 1.6;
   white-space: pre-wrap;
+}
+
+#cn_app .cn-dialog__field {
+  margin-top: 14px;
+}
+
+#cn_app .cn-dialog--form {
+  width: min(480px, 92vw);
+}
+
+#cn_app .cn-dialog__body--form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#cn_app .cn-dialog__field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cn-text-2);
+  letter-spacing: 0.2px;
+}
+
+#cn_app .cn-dialog__body--form .cn-dialog__field {
+  width: 100%;
+  margin-top: 0;
+  box-sizing: border-box;
+}
+
+#cn_app .cn-dialog__field-hint {
+  font-size: 12px;
+  color: var(--cn-text-3);
+  line-height: 1.4;
 }
 
 #cn_app .cn-dialog__foot {
@@ -2260,7 +2386,12 @@
   color: var(--cn-text-2);
 }
 
-/* ── 表格模板编辑器 ── */
+#cn_app .api-switch-group {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 14px;
+}
 
 #cn_app .tpl-table-card {
   border: 1px solid var(--cn-border);
@@ -2464,7 +2595,7 @@
 }
 
 #cn_app .tpl-col-cell.name {
-  width: 100px;
+  width: 128px;
   flex-shrink: 0;
 }
 #cn_app .tpl-col-cell.type {
@@ -2580,7 +2711,7 @@
 
 #cn_app .debug-log-row {
   display: grid;
-  grid-template-columns: 90px 44px 80px 1fr;
+  grid-template-columns: 90px 44px 80px 1fr auto;
   padding: 3px 8px;
   border-bottom: 1px solid var(--cn-border);
   align-items: baseline;
@@ -2685,6 +2816,173 @@
   text-align: center;
   color: var(--cn-text-3);
   font-size: 13px;
+}
+
+#cn_app .debug-log-row--debug {
+  background: rgba(128, 128, 128, 0.04);
+}
+
+#cn_app .debug-log-row__level--debug {
+  color: var(--cn-text-3);
+  background: rgba(128, 128, 128, 0.12);
+}
+
+#cn_app .debug-log-row__trace {
+  padding: 1px 6px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+#cn_app .debug-toolbar__debug {
+  margin-left: auto;
+}
+
+#cn_app .cn-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 12px;
+  color: var(--cn-text-2);
+}
+
+#cn_app .cn-switch__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  pointer-events: none;
+}
+
+#cn_app .cn-switch__track {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  border-radius: 10px;
+  background: rgba(128, 128, 128, 0.35);
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+}
+
+#cn_app .cn-switch__knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+}
+
+#cn_app .cn-switch__input:checked + .cn-switch__track {
+  background: var(--cn-primary);
+}
+
+#cn_app .cn-switch__input:checked + .cn-switch__track .cn-switch__knob {
+  transform: translateX(16px);
+}
+
+#cn_app .cn-switch__text {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+#cn_app .debug-log-row--clickable {
+  cursor: pointer;
+}
+
+#cn_app .debug-log-row--expanded {
+  background: rgba(18, 130, 82, 0.05);
+}
+
+#cn_app .debug-log-expand {
+  grid-column: 1 / -1;
+  padding: 6px 8px 8px;
+  border-top: 1px dashed var(--cn-border);
+  background: var(--cn-bg);
+}
+
+#cn_app .debug-log-expand__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--cn-text-2);
+  margin-bottom: 6px;
+}
+
+#cn_app .debug-log-expand__head .cn-btn {
+  margin-left: auto;
+}
+
+#cn_app .debug-log-expand__empty {
+  font-size: 11px;
+  color: var(--cn-text-3);
+  padding: 4px 0;
+}
+
+#cn_app .debug-trace-seg {
+  margin-bottom: 8px;
+  border: 1px solid var(--cn-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+#cn_app .debug-trace-seg__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: rgba(128, 128, 128, 0.06);
+  font-size: 11px;
+}
+
+#cn_app .debug-trace-seg__role {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: #fff;
+}
+
+#cn_app .debug-trace-seg--system .debug-trace-seg__role {
+  background: #5b7a9e;
+}
+
+#cn_app .debug-trace-seg--user .debug-trace-seg__role {
+  background: var(--cn-primary);
+}
+
+#cn_app .debug-trace-seg--assistant .debug-trace-seg__role {
+  background: #8a5e9e;
+}
+
+#cn_app .debug-trace-seg__len {
+  color: var(--cn-text-3);
+}
+
+#cn_app .debug-trace-seg__head .cn-btn {
+  margin-left: auto;
+}
+
+#cn_app .debug-trace-seg__pre {
+  margin: 0;
+  padding: 8px;
+  max-height: 320px;
+  overflow: auto;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  color: var(--cn-text);
 }
 
 #cn_app .preset-list,

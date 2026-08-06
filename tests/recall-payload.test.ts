@@ -16,7 +16,6 @@ const sampleItems: RecallItemLike[] = [
       content: {
         location: '咖啡馆',
         summary: '主角与友人重逢',
-        keyDialogue: '好久不见',
       },
     },
   },
@@ -29,7 +28,6 @@ const sampleItems: RecallItemLike[] = [
       content: {
         location: '',
         summary: '雨夜追车',
-        keyDialogue: '',
       },
     },
   },
@@ -49,7 +47,6 @@ describe('serializeRecallPayload / parseRecallPayload', () => {
       timeEnd: '7月29日',
       location: '咖啡馆',
       summary: '主角与友人重逢',
-      keyDialogue: '好久不见',
     })
   })
 
@@ -84,7 +81,6 @@ describe('serializeRecallPayload / parseRecallPayload', () => {
       timeEnd: '',
       location: '',
       summary: '',
-      keyDialogue: '',
     })
   })
 })

@@ -60,7 +60,7 @@ export async function onPromptReady(
 	const progress: ProgressNotifier | undefined = starter?.('正在召回数据...')
 
 	const recallCtx: RecallContext = {
-		clientConfig: { baseURL: preset.baseURL, apiKey: preset.apiKey, customIncludeBody: preset.customIncludeBody, customExcludeBody: preset.customExcludeBody, customIncludeHeaders: preset.customIncludeHeaders },
+		clientConfig: { baseURL: preset.baseURL, apiKey: preset.apiKey, customIncludeBody: preset.customIncludeBody, customExcludeBody: preset.customExcludeBody, customIncludeHeaders: preset.customIncludeHeaders, responseFormat: preset.responseFormat },
 		params: {
 			model: preset.model,
 			max_tokens: preset.maxTokens,
@@ -85,7 +85,8 @@ export async function onPromptReady(
 		signal: progress?.abortSignal,
 		callOptions: {
 			timeoutMs: config.pending.aiCallTimeoutMs,
-			timeoutRetries: config.pending.aiTimeoutRetries
+			timeoutRetries: config.pending.aiTimeoutRetries,
+			scene: 'chronicle-recall'
 		}
 	}
 

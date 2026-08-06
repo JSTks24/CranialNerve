@@ -42,6 +42,19 @@ describe('TableEditor.run onProgress 阶段事件', () => {
     expect(result.lastSql).toBe('INSERT INTO t VALUES (1)')
   })
 
+  it('AI 输出多个 JSON 时代码层面合并 sql（合并运行兜底）', async () => {
+    const raw = [
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO hero VALUES (1)' }),
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: "INSERT INTO cn_chronicle VALUES ('CN0001')" })
+    ].join('\n')
+    const ai = { chatCompletion: vi.fn(async () => raw) }
+    const editor = new TableEditor({} as never, ai as never)
+    const result = await editor.run(makeCtx(), { maxRetries: 1 })
+    expect(result.ok).toBe(true)
+    expect(result.lastSql).toContain('INSERT INTO hero VALUES (1)')
+    expect(result.lastSql).toContain("INSERT INTO cn_chronicle VALUES ('CN0001')")
+  })
+
   it('失败重试时发射 retry，最终 error', async () => {
     const sqlExecutor = (await import('../src/core/table/sql-executor')).default as unknown as {
       mockImplementationOnce: (fn: () => unknown) => void

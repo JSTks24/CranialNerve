@@ -66,9 +66,6 @@ export function buildRecallCardHtml(payload: RecallCardPayload, userText: string
       if (item.summary.length > 0) {
         tabsHtml += `<p class="cn-recall-summary">${escapeHtml(item.summary)}</p>`
       }
-      if (item.keyDialogue.length > 0) {
-        tabsHtml += `<blockquote class="cn-recall-quote">${escapeHtml(item.keyDialogue)}</blockquote>`
-      }
       tabsHtml += `</div>`
     }
     body = `<div class="cn-recall-tabs">${tabsHtml}</div>`

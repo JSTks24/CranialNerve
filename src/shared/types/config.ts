@@ -14,6 +14,7 @@ export interface AiPreset {
   presencePenalty: number
   seed: number | null
   stream: boolean
+  responseFormat: 'none' | 'json_object'
   customIncludeBody: string
   customExcludeBody: string
   customIncludeHeaders: string
@@ -39,7 +40,7 @@ export interface PromptSegment {
   content: string
 }
 
-export type PromptSceneKey = 'tableEdit' | 'chronicleRecall'
+export type PromptSceneKey = 'tableEdit' | 'chronicleGen' | 'chronicleRecall'
 
 export interface ScenePreset {
   id: string
@@ -55,6 +56,7 @@ export interface ScenePromptConfig {
 
 export interface PromptConfig {
   tableEdit: ScenePromptConfig
+  chronicleGen: ScenePromptConfig
   chronicleRecall: ScenePromptConfig
 }
 
@@ -71,8 +73,11 @@ export interface TableTemplateConfig {
   defaultId: string
 }
 
+export type AutoFillTrigger = 'off' | 'after-ai' | 'after-send'
+
 export interface TableFillConfig {
-  autoFill: boolean
+  autoFillTrigger: AutoFillTrigger
+  regenerateFill: boolean
   contextDepth: number
   updateFrequency: number
   batchSize: number
@@ -82,7 +87,21 @@ export interface TableFillConfig {
   manualUpdateBatchSize: number | null
   manualSelectedTables: string[]
   hasManualSelection: boolean
+  manualIncludeChronicle: boolean
+}
+
+export interface ChronicleFillConfig {
+  autoFillTrigger: AutoFillTrigger
+  regenerateFill: boolean
+  contextDepth: number
+  updateFrequency: number
+  batchSize: number
+  skipFloors: number
+  maxRetries: number
   chronicleSendLatestRows: number
+  manualUpdateContextDepth: number | null
+  manualUpdateBatchSize: number | null
+  manualIncludeTables: boolean
 }
 
 export interface PendingConfig {
@@ -99,16 +118,16 @@ export interface CranialNerveConfig {
   activeAiPresetId: string
   vector: VectorConfig
   vectorEnabled: boolean
-  maxRetries: number
   snapshotStrategy: SnapshotStrategy
   prompt: PromptConfig
   tableFill: TableFillConfig
+  chronicleFill: ChronicleFillConfig
   maxRecallItems: number
   recallEnabled: boolean
   recallRecentFixedInjectCount: number
   recallMinScore: number
-  chronicleGenEnabled: boolean
   tableFillPresetId: string
+  chronicleGenPresetId: string
   recallPresetId: string
   recallContextDepth: number
   retainFloors: number
@@ -129,6 +148,7 @@ export interface ProgressNotifier {
   done(): void
   fail(errText: string): void
   close(): void
+  update?(text: string): void
   abortSignal: AbortSignal
 }
 

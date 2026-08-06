@@ -12,8 +12,8 @@ function makeSession(overrides: Record<string, unknown> = {}) {
   const chronicleDef = {
     name: 'cn_chronicle',
     columns: [
-      { name: 'key', role: 'key' },
-      { name: 'chronicle_text', role: 'summary' }
+      { name: 'key', displayName: '编码', type: 'TEXT', note: 'x' },
+      { name: 'chronicle_text', displayName: '纪要正文', type: 'TEXT', note: 'x' }
     ]
   }
   return {
@@ -128,5 +128,71 @@ describe('syncToWorldbook constant', () => {
     expect(entries.length).toBe(1)
     expect(entries[0]!.key).toEqual(['t1'])
     expect(entries[0]!.constant).toBe(true)
+  })
+})
+
+describe('syncToWorldbook 注入位置 role 映射', () => {
+  it('at_depth_as_user -> role=1', async () => {
+    const session = makeSession({
+      getTableDef: vi.fn(() => ({
+        name: 't1',
+        exportConfig: {
+          enabled: true,
+          entryType: 'keyword',
+          keywordMode: 'custom',
+          keywordColumn: 'name',
+          entryPlacement: { position: 'at_depth_as_user', depth: 3, order: 10000 }
+        }
+      }))
+    })
+    await syncToWorldbook(session as never)
+    const calls = session.worldbook.saveLorebook.mock.calls as unknown as Array<
+      [unknown, { entries: Record<number, { role: number; position: string }> }]
+    >
+    const entries = Object.values(calls[0]![1].entries)
+    expect(entries.length).toBeGreaterThan(0)
+    expect(entries.every((e) => e.role === 1)).toBe(true)
+  })
+
+  it('at_depth_as_assistant -> role=2', async () => {
+    const session = makeSession({
+      getTableDef: vi.fn(() => ({
+        name: 't1',
+        exportConfig: {
+          enabled: true,
+          entryType: 'constant',
+          keywordColumn: '',
+          entryPlacement: { position: 'at_depth_as_assistant', depth: 3, order: 10000 }
+        }
+      }))
+    })
+    await syncToWorldbook(session as never)
+    const calls = session.worldbook.saveLorebook.mock.calls as unknown as Array<
+      [unknown, { entries: Record<number, { role: number; position: string }> }]
+    >
+    const entries = Object.values(calls[0]![1].entries)
+    expect(entries.length).toBeGreaterThan(0)
+    expect(entries.every((e) => e.role === 2)).toBe(true)
+  })
+
+  it('at_depth_as_system -> role=0', async () => {
+    const session = makeSession({
+      getTableDef: vi.fn(() => ({
+        name: 't1',
+        exportConfig: {
+          enabled: true,
+          entryType: 'constant',
+          keywordColumn: '',
+          entryPlacement: { position: 'at_depth_as_system', depth: 2, order: 10000 }
+        }
+      }))
+    })
+    await syncToWorldbook(session as never)
+    const calls = session.worldbook.saveLorebook.mock.calls as unknown as Array<
+      [unknown, { entries: Record<number, { role: number; position: string }> }]
+    >
+    const entries = Object.values(calls[0]![1].entries)
+    expect(entries.length).toBeGreaterThan(0)
+    expect(entries.every((e) => e.role === 0)).toBe(true)
   })
 })

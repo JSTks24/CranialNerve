@@ -11,15 +11,13 @@ import type {
 } from '@shared/types/config'
 import type { CardTemplate } from '@shared/types/card'
 import type { TableDef } from '@shared/types/table'
-import { DEFAULT_CHRONICLE_TABLE } from '@shared/constants/chronicle'
 import {
+  getDefaultChronicleGenPrompt,
   getDefaultChronicleRecallPrompt,
   getDefaultTableEditPrompt
 } from '@shared/prompts/defaults'
-import {
-  createDefaultTemplatePreset,
-  DEFAULT_TEMPLATE_PRESET_ID
-} from '@shared/constants/default-template'
+import { DEFAULT_TEMPLATE_PRESET_ID } from '@shared/constants/default-template'
+import { getDefaultChronicleTable, createDefaultTemplatePreset } from './template'
 import { getHostContext, getRequestHeaders } from './host-context'
 import { pushLog } from '@shared/log-buffer'
 
@@ -49,6 +47,7 @@ function sceneFromSegments(segments: PromptSegment[]): ScenePromptConfig {
 function defaultPromptConfig(): PromptConfig {
   return {
     tableEdit: sceneFromSegments(getDefaultTableEditPrompt()),
+    chronicleGen: sceneFromSegments(getDefaultChronicleGenPrompt()),
     chronicleRecall: sceneFromSegments(getDefaultChronicleRecallPrompt())
   }
 }
@@ -65,28 +64,41 @@ const DEFAULT_CONFIG: CranialNerveConfig = {
     rerankModel: ''
   },
   vectorEnabled: false,
-  maxRetries: 3,
   snapshotStrategy: 'every-message',
   prompt: defaultPromptConfig(),
   tableFill: {
-    autoFill: true,
+    autoFillTrigger: 'after-ai',
+    regenerateFill: true,
     contextDepth: 3,
     updateFrequency: 1,
-    batchSize: 3,
+    batchSize: 10,
     skipFloors: 0,
     maxRetries: 3,
     manualUpdateContextDepth: null,
     manualUpdateBatchSize: null,
     manualSelectedTables: [],
     hasManualSelection: false,
-    chronicleSendLatestRows: 10
+    manualIncludeChronicle: false
+  },
+  chronicleFill: {
+    autoFillTrigger: 'after-ai',
+    regenerateFill: true,
+    contextDepth: 3,
+    updateFrequency: 1,
+    batchSize: 10,
+    skipFloors: 0,
+    maxRetries: 3,
+    chronicleSendLatestRows: 10,
+    manualUpdateContextDepth: null,
+    manualUpdateBatchSize: null,
+    manualIncludeTables: false
   },
   maxRecallItems: 25,
   recallEnabled: true,
   recallRecentFixedInjectCount: 5,
   recallMinScore: 0.45,
-  chronicleGenEnabled: true,
   tableFillPresetId: '',
+  chronicleGenPresetId: '',
   recallPresetId: '',
   recallContextDepth: 5,
   retainFloors: 100,
@@ -120,9 +132,15 @@ export default function createConfigGateway(): ConfigGateway {
         return cloneDefault()
       }
       const merged = { ...cloneDefault(), ...(raw as Partial<CranialNerveConfig>) }
+      merged.aiPresets = (merged.aiPresets ?? []).map((p) => ({ ...p, responseFormat: p.responseFormat ?? 'none' }))
       merged.vector = { ...DEFAULT_CONFIG.vector, ...merged.vector }
       merged.pending = { ...DEFAULT_CONFIG.pending, ...merged.pending }
       merged.tableFill = { ...DEFAULT_CONFIG.tableFill, ...merged.tableFill }
+      merged.chronicleFill = { ...DEFAULT_CONFIG.chronicleFill, ...merged.chronicleFill }
+      const rawObj = raw as Record<string, unknown>
+      if (rawObj.chronicleGenEnabled !== undefined && rawObj.chronicleFill === undefined) {
+        merged.chronicleFill.autoFillTrigger = rawObj.chronicleGenEnabled ? 'after-ai' : 'off'
+      }
       merged.prompt = migratePrompt(merged.prompt, raw as Record<string, unknown>)
       merged.tableTemplate = migrateTableTemplate(merged.tableTemplate)
       merged.chronicleTableDef = migrateChronicleTableDef(merged.chronicleTableDef, merged.chronicleTableHints)
@@ -185,14 +203,16 @@ function cloneDefault(): CranialNerveConfig {
     vector: { ...DEFAULT_CONFIG.vector },
     prompt: clonePromptConfig(defaultPromptConfig()),
     tableFill: { ...DEFAULT_CONFIG.tableFill },
+    chronicleFill: { ...DEFAULT_CONFIG.chronicleFill },
     pending: { ...DEFAULT_CONFIG.pending },
-    tableTemplate: cloneTableTemplate(DEFAULT_CONFIG.tableTemplate)
+    tableTemplate: cloneTableTemplate({ presets: [createDefaultTemplatePreset()], activeId: DEFAULT_TEMPLATE_PRESET_ID, defaultId: DEFAULT_TEMPLATE_PRESET_ID })
   }
 }
 
 function clonePromptConfig(p: PromptConfig): PromptConfig {
   return {
     tableEdit: cloneScene(p.tableEdit),
+    chronicleGen: cloneScene(p.chronicleGen),
     chronicleRecall: cloneScene(p.chronicleRecall)
   }
 }
@@ -218,6 +238,7 @@ function migratePrompt(
   }
   const merged: PromptConfig = {
     tableEdit: mergeScene(base.tableEdit, migrateScene(current.tableEdit)),
+    chronicleGen: mergeScene(base.chronicleGen, migrateScene(current.chronicleGen)),
     chronicleRecall: mergeScene(base.chronicleRecall, migrateScene(current.chronicleRecall))
   }
   return migrateFromLegacy(raw, merged)
@@ -307,7 +328,7 @@ function migrateFromLegacy(raw: Record<string, unknown>, base: PromptConfig): Pr
   if (!templates || typeof templates !== 'object') {
     return base
   }
-  const scenes: PromptSceneKey[] = ['tableEdit', 'chronicleRecall']
+  const scenes: PromptSceneKey[] = ['tableEdit', 'chronicleGen', 'chronicleRecall']
   const result = clonePromptConfig(base)
   for (const key of scenes) {
     const segs = migrateField(templates[key])
@@ -346,7 +367,7 @@ function cloneTableTemplate(t: TableTemplateConfig): TableTemplateConfig {
 }
 
 function migrateTableTemplate(cur: TableTemplateConfig | undefined): TableTemplateConfig {
-  if (!cur || !Array.isArray(cur.presets)) {
+  if (!cur || !Array.isArray(cur.presets) || cur.presets.length === 0) {
     return {
       presets: [createDefaultTemplatePreset()],
       activeId: DEFAULT_TEMPLATE_PRESET_ID,
@@ -354,16 +375,14 @@ function migrateTableTemplate(cur: TableTemplateConfig | undefined): TableTempla
     }
   }
   const presets = [...cur.presets]
-  if (!presets.find((p) => p.id === DEFAULT_TEMPLATE_PRESET_ID)) {
-    presets.unshift(createDefaultTemplatePreset())
-  }
-  let activeId = cur.activeId || DEFAULT_TEMPLATE_PRESET_ID
-  let defaultId = cur.defaultId || DEFAULT_TEMPLATE_PRESET_ID
+  const fallbackId = presets[0]?.id ?? DEFAULT_TEMPLATE_PRESET_ID
+  let activeId = cur.activeId || fallbackId
+  let defaultId = cur.defaultId || fallbackId
   if (!presets.find((p) => p.id === activeId)) {
-    activeId = DEFAULT_TEMPLATE_PRESET_ID
+    activeId = fallbackId
   }
   if (!presets.find((p) => p.id === defaultId)) {
-    defaultId = DEFAULT_TEMPLATE_PRESET_ID
+    defaultId = fallbackId
   }
   return { presets, activeId, defaultId }
 }
@@ -372,9 +391,14 @@ function migrateChronicleTableDef(
   cur: TableDef | undefined,
   legacyHints: ChronicleTableHints | undefined
 ): TableDef {
+  const defaultChronicle = getDefaultChronicleTable() ?? { name: 'cn_chronicle', displayName: '纪要表', columns: [] }
+  const base = legacyHints ? { ...defaultChronicle, ...legacyHints } : defaultChronicle
   if (cur && Array.isArray(cur.columns) && cur.columns.length > 0) {
+    const hasLegacy = cur.columns.some((c) => typeof c.displayName === 'string' && c.displayName.includes('台词'))
+    if (hasLegacy) {
+      return JSON.parse(JSON.stringify(base)) as TableDef
+    }
     return cur
   }
-  const base = legacyHints ? { ...DEFAULT_CHRONICLE_TABLE, ...legacyHints } : DEFAULT_CHRONICLE_TABLE
   return JSON.parse(JSON.stringify(base)) as TableDef
 }

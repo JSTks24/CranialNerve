@@ -1,0 +1,50 @@
+{
+  "name": "cn_chronicle",
+  "displayName": "纪要表",
+  "columns": [
+    {
+      "name": "key",
+      "displayName": "编码",
+      "type": "TEXT",
+      "constraints": { "primaryKey": true, "unique": true, "nullable": false },
+      "note": "CN 编码，格式 CNXXXX（4位零填充递增），纪要唯一标识，作召回关键词"
+    },
+    {
+      "name": "time_start",
+      "displayName": "起始时间",
+      "type": "TEXT",
+      "constraints": { "nullable": false },
+      "note": "事件起始时间，ISO 8601（YYYY-MM-DDTHH:MM）。召回算时间跨度用此列"
+    },
+    {
+      "name": "time_end",
+      "displayName": "结束时间",
+      "type": "TEXT",
+      "note": "事件结束时间，格式同 time_start。可算事件持续时长"
+    },
+    {
+      "name": "location",
+      "displayName": "地点",
+      "type": "TEXT",
+      "constraints": { "nullable": false },
+      "note": "本轮事件主要发生地点，从大到小描述（如: 王都·下城区·破桶酒馆）。作检索维度之一，参与 Embedding/BM25/Rerank/LLM 检索"
+    },
+    {
+      "name": "chronicle_text",
+      "displayName": "纪要正文",
+      "type": "TEXT",
+      "constraints": { "nullable": false },
+      "note": "展示给用户阅读的剧情纪要，自然语言叙述，不是结构化索引。要求：客观叙述、保留未来仍重要的信息、优先记录未来可能影响剧情发展的内容、不文学创作、不分析人物心理、不写感悟总结、不省略关键因果。重点记录：谁参与、在哪发生、发生什么、获得或失去什么、关系变化、状态变化、未来影响。长度150~300字。仅输出自然语言剧情纪要，不输出结构化标签/JSON/Markdown。首次提及角色用原名不用代词。忠于本轮正文，不补充未发生的情节。作检索维度之一，参与 Embedding/BM25/Rerank/LLM 检索"
+    },
+    {
+      "name": "important_word",
+      "displayName": "记忆索引",
+      "type": "TEXT",
+      "note": "结构化记忆索引，用于 Embedding/BM25/Rerank/LLM 检索，不展示给用户。从剧情提取长期记忆检索所需信息，固定7字段纯文本格式，每字段一行，无对应内容填\"无\"，禁止编造：\n人物: 本轮出现或提及的具名角色，逗号分隔，首次出现附身份\n组织: 涉及的组织/势力/团体\n物品: 获得、失去、发现或使用的重要物品\n事件: 真正改变剧情走向的事件\n状态变化: 受伤/中毒/失忆/获得能力/身份变化/立场变化等长期状态\n关系变化: 信任/敌对/好感/依赖/怀疑/忠诚等变化\n未解决线索与伏笔: 尚未完成的线索、目标、威胁、伏笔\n仅输出上述7字段纯文本，使用短词语，不使用完整句子，不添加解释，不输出JSON/Markdown，不省略重要实体。地点信息不在此提取，由 location 列承担"
+    }
+  ],
+  "note": "纪要表，每轮交互后必须立即插入一条新记录，禁止 UPDATE/DELETE（纪要只追加不改写）。chronicle_text 为自然语言剧情纪要（150~300字），important_word 为7字段结构化记忆索引，二者加 location 共同作召回记忆源，三字段全部参与 Embedding/BM25/Rerank/LLM 检索。",
+  "insertHint": "每轮交互后必须 INSERT 一条新记录。\nkey 用 CNXXXX 递增（查现有最大序号+1）。\ntime_start/time_end 用正文明确时间或合理推算，只提取时间点本身，不要计算时间差。\nlocation 填本轮事件主要发生地，从大到小描述。\nchronicle_text 填自然语言剧情纪要，150~300字，客观叙述，不输出结构化标签/JSON/Markdown。\nimportant_word 严格按该列 Note 的7字段纯文本格式填写，多行文本，短词语，不输出JSON/Markdown。地点不进 important_word，由 location 列承担。\nchronicle_text/important_word 作为 SQL 字符串值时内部换行保留，值内单引号用两个单引号转义。\nSQL示例: INSERT INTO cn_chronicle (key, time_start, time_end, location, chronicle_text, important_word) VALUES ('CN0001', '2024-03-15T14:00', '2024-03-15T15:00', '王都·中央广场', '艾琳当众撕毁通缉令，公开与王国决裂。她表明不再逃亡，号召在场民众见证。此举令其身份彻底暴露，后续去向不明，可能引发追捕。', '人物: 艾琳（叛逃骑士）\n组织: 王国通缉系统\n物品: 通缉令\n事件: 撕毁通缉令公开决裂\n状态变化: 身份暴露\n关系变化: 与王国公开敌对\n未解决线索与伏笔: 艾琳下一步去向不明');",
+  "updateHint": "禁止 UPDATE 纪要表。纪要只追加不改写。",
+  "deleteHint": "禁止 DELETE 纪要表记录。"
+}

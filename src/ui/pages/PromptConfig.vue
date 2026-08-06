@@ -4,7 +4,6 @@ import { useConfigStore } from '@ui/stores/config'
 import { getSession } from '@core/session'
 import type { PromptRole, PromptSceneKey, PromptSegment, ScenePreset } from '@shared/types/config'
 import type {
-  ChronicleColumnRole,
   TableDef,
   ColumnDef,
   TablePlacementPosition
@@ -13,18 +12,25 @@ import type { CardTemplate } from '@shared/types/card'
 import {
   isShujukuTemplate,
   convertShujukuToCardTemplate,
-  isCardTemplate
+  isCardTemplate,
+  createUserTemplatePreset
 } from '@shared/template-convert'
 import { buildCreateTableSql } from '@shared/template-builder'
 import { SQL_EDIT_FORMAT } from '@shared/constants/sql-json'
+import {
+  createDefaultPreset,
+  getDefaultTableEditPrompt,
+  getDefaultChronicleRecallPrompt
+} from '@shared/prompts/defaults'
 import { interpolate } from '@shared/prompts/interpolate'
 import toast from '@ui/toast'
-import confirm from '@ui/dialog'
+import confirm, { promptRename } from '@ui/dialog'
 import PromptBlockEditor from '@ui/components/PromptBlockEditor.vue'
 import CNTabs from '@ui/components/CNTabs.vue'
 import VariableHelpModal from '@ui/components/VariableHelpModal.vue'
-import { DEFAULT_CHRONICLE_TABLE, CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
-import { validateTableDef, validateChronicleDef, CHRONICLE_ROLE_LABELS } from '@shared/table-validation'
+import PresetSourceModal from '@ui/components/PresetSourceModal.vue'
+import { CHRONICLE_TABLE_NAME, CHRONICLE_COLUMNS } from '@shared/constants/chronicle'
+import { validateTableDef, validateChronicleDef } from '@shared/table-validation'
 import { PROMPT_VARIABLES } from '@shared/constants'
 
 const session = getSession()
@@ -39,9 +45,24 @@ const scenes = (Object.keys(PROMPT_VARIABLES) as PromptSceneKey[]).map((key) => 
 const activeScene = ref<PromptSceneKey>('tableEdit')
 const varExample = '{{变量名}}'
 
+const newPresetVisible = ref(false)
+const newPresetTVisible = ref(false)
+
+const defaultTemplateAvailable = computed(() => !!session.getDefaultTemplate())
+
+const defaultPromptAvailable = computed(
+  () =>
+    (activeScene.value === 'chronicleRecall'
+      ? getDefaultChronicleRecallPrompt()
+      : getDefaultTableEditPrompt()
+    ).length > 0
+)
+
 const sceneConfig = computed(() => config.value[activeScene.value])
+const selectedScenePresetId = ref<string | null>(null)
 const activePreset = computed(
   () =>
+    sceneConfig.value.presets.find((p) => p.id === selectedScenePresetId.value) ??
     sceneConfig.value.presets.find((p) => p.id === sceneConfig.value.activeId) ??
     sceneConfig.value.presets[0]
 )
@@ -55,16 +76,23 @@ function selectPreset(id: string) {
   save()
 }
 
-function newPreset() {
-  const p: ScenePreset = {
-    id: newId('preset'),
-    name: `预设 ${sceneConfig.value.presets.length + 1}`,
-    segments: [{ id: newId('seg'), name: '主指令', role: 'system', content: '' }]
+function handleNewPreset(mode: 'blank' | 'default') {
+  newPresetVisible.value = false
+  let p: ScenePreset
+  if (mode === 'blank') {
+    p = {
+      id: newId('preset'),
+      name: `预设 ${sceneConfig.value.presets.length + 1}`,
+      segments: [{ id: newId('seg'), name: '主指令', role: 'system', content: '' }]
+    }
+  } else {
+    p = createDefaultPreset(activeScene.value)
   }
   sceneConfig.value.presets.push(p)
   sceneConfig.value.activeId = p.id
+  selectedScenePresetId.value = p.id
   save()
-  toast.success('已新建预设')
+  toast.success(mode === 'blank' ? '已新建预设' : '已从默认提示词创建')
 }
 
 async function deletePreset(id: string) {
@@ -88,6 +116,7 @@ async function deletePreset(id: string) {
   if (sceneConfig.value.defaultId === id) {
     sceneConfig.value.defaultId = sceneConfig.value.presets[0]!.id
   }
+  if (selectedScenePresetId.value === id) selectedScenePresetId.value = null
   save()
   toast.success('已删除')
 }
@@ -127,10 +156,11 @@ function buildVarValues(): Record<string, string> {
     keyExample: 'CN0001',
     userInput: '（玩家输入：无）',
     tables: '（当前无表数据）',
+    chronicleTable: '（当前无纪要表数据）',
     chronicleList: '（当前无纪要）'
   }
   if (activeScene.value === 'tableEdit') {
-    const tables = session.listTables()
+    const tables = session.listTables().filter((n) => n !== CHRONICLE_TABLE_NAME && !n.startsWith('sqlite_'))
     if (tables.length > 0) {
       values.tables = tables
         .map((t) => {
@@ -140,6 +170,13 @@ function buildVarValues(): Record<string, string> {
         })
         .join('\n\n')
     }
+  }
+  if (activeScene.value === 'chronicleGen') {
+    try {
+      const result = session.getTableRowsWithRowid(CHRONICLE_TABLE_NAME)
+      const rows = result[0]?.rows ?? []
+      values.chronicleTable = `-- 纪要表: cn_chronicle\n-- 当前数据 (${rows.length} 行):\n${JSON.stringify(rows)}`
+    } catch {}
   }
   return values
 }
@@ -186,13 +223,12 @@ async function openPreview() {
         const result = session.getTableRowsWithRowid('cn_chronicle')
         const rows = result[0]?.rows ?? []
         if (rows.length > 0) {
-          const cDef = store.config.chronicleTableDef ?? DEFAULT_CHRONICLE_TABLE
-          const kKey = cDef.columns.find((c) => c.role === 'key')?.name
-          const kSummary = cDef.columns.find((c) => c.role === 'summary')?.name
+          const kKey = CHRONICLE_COLUMNS.key
+          const kSummary = CHRONICLE_COLUMNS.summary
           realValues.chronicleList = JSON.stringify(
             rows.map((r) => ({
-              key: kKey ? String((r as Record<string, unknown>)[kKey] ?? '') : '',
-              summary: kSummary ? String((r as Record<string, unknown>)[kSummary] ?? '') : ''
+              key: String((r as Record<string, unknown>)[kKey] ?? ''),
+              summary: String((r as Record<string, unknown>)[kSummary] ?? '')
             })),
             null,
             2
@@ -379,6 +415,10 @@ function setExportPlacementPosition(table: TableDef, value: string) {
   table.exportConfig!.entryPlacement!.position = value as TablePlacementPosition
 }
 
+function isAtDepthPosition(position: string | undefined): boolean {
+  return position === 'at_depth_as_system' || position === 'at_depth_as_user' || position === 'at_depth_as_assistant'
+}
+
 function setExportPlacementDepth(table: TableDef, value: string) {
   ensureExportConfig(table)
   ensureEntryPlacement(table)
@@ -451,9 +491,11 @@ function freshColumn(): ColumnDef {
 }
 
 const ttConfig = computed(() => store.config.tableTemplate)
+const selectedPresetId = ref<string | null>(null)
 
 const activeTemplatePreset = computed(
   () =>
+    ttConfig.value.presets.find((p) => p.id === selectedPresetId.value) ??
     ttConfig.value.presets.find((p) => p.id === ttConfig.value.activeId) ??
     ttConfig.value.presets[0]
 )
@@ -475,33 +517,14 @@ const selectedTable = computed(() => {
 
 const selectedView = ref<'preset' | 'chronicle'>('preset')
 
-const CHRONICLE_ROLES: ChronicleColumnRole[] = [
-  'key',
-  'timeStart',
-  'timeEnd',
-  'location',
-  'summary',
-  'keyDialogue'
-]
-
-const chronicleDef = computed(() => store.config.chronicleTableDef ?? DEFAULT_CHRONICLE_TABLE)
+const chronicleDef = computed(
+  () => store.config.chronicleTableDef ?? session.getChronicleTableDef()
+)
 
 function syncChronicleTableDef() {
   if (!store.config.chronicleTableDef) {
-    store.config.chronicleTableDef = JSON.parse(JSON.stringify(DEFAULT_CHRONICLE_TABLE))
+    store.config.chronicleTableDef = JSON.parse(JSON.stringify(session.getChronicleTableDef()))
   }
-}
-
-function addChronicleColumn() {
-  chronicleDef.value.columns.push(freshColumn())
-}
-
-function removeChronicleColumn(idx: number) {
-  if (chronicleDef.value.columns.length <= 1) {
-    toast.warning('至少保留一个列')
-    return
-  }
-  chronicleDef.value.columns.splice(idx, 1)
 }
 
 async function saveChronicleTableDef() {
@@ -534,22 +557,60 @@ async function saveChronicleTableDef() {
   }
 }
 
+async function resetChronicleTableDef() {
+  const def = session.getDefaultChronicleTable()
+  if (!def) {
+    toast.error('默认纪要表未加载，无法恢复')
+    return
+  }
+  const ok = await confirm(
+    '恢复默认纪要表',
+    '恢复后将当前结构替换为默认纪要表结构并立即重建表：同名列数据迁移保留，删改列名的列数据丢失，此操作不可撤销。继续？',
+    '恢复',
+    true
+  )
+  if (!ok) return
+  try {
+    await session.applyChronicleTableDef(JSON.parse(JSON.stringify(def)))
+    store.reload()
+    toast.success('已恢复默认纪要表')
+  } catch (err) {
+    toast.error(err instanceof Error ? err.message : String(err))
+  }
+}
+
 function selectChronicle() {
   selectedView.value = 'chronicle'
 }
 
-function newPresetT() {
-  const p = {
-    id: newId('tpl'),
-    name: `模板 ${ttConfig.value.presets.length + 1}`,
-    template: { templateVersion: 1, tables: [] },
-    source: 'user' as const
+function handleNewPresetT(mode: 'blank' | 'default') {
+  newPresetTVisible.value = false
+  if (mode === 'blank') {
+    const p = {
+      id: newId('tpl'),
+      name: `模板 ${ttConfig.value.presets.length + 1}`,
+      template: { templateVersion: 1, tables: [] },
+      source: 'user' as const
+    }
+    ttConfig.value.presets.push(p)
+    ttConfig.value.activeId = p.id
+    selectedPresetId.value = p.id
+    selectedTableIdx.value = -1
+    store.save()
+    toast.success('已新建模板预设')
+    return
+  }
+  const p = createUserTemplatePreset(session.getDefaultTemplate())
+  if (!p) {
+    toast.error('默认模板未加载，无法从默认创建')
+    return
   }
   ttConfig.value.presets.push(p)
   ttConfig.value.activeId = p.id
+  selectedPresetId.value = p.id
   selectedTableIdx.value = -1
   store.save()
-  toast.success('已新建模板预设')
+  toast.success('已从默认模板创建')
 }
 
 function syncCardTemplate() {
@@ -581,6 +642,11 @@ function syncCardTemplate() {
     ttConfig.value.defaultId = CARD_PRESET_ID
   }
   store.save()
+}
+
+function selectPresetItem(id: string) {
+  selectedView.value = 'preset'
+  selectedPresetId.value = id
 }
 
 async function selectPresetT(id: string) {
@@ -631,8 +697,8 @@ async function deletePresetT(id: string) {
   }
   const target = ttConfig.value.presets.find((p) => p.id === id)
   if (!target) return
-  if (target.source === 'card' || target.source === 'builtin') {
-    toast.warning('内置模板不可删除')
+  if (target.source === 'card') {
+    toast.warning('角色卡模板不可删除')
     return
   }
   const ok = await confirm(
@@ -645,6 +711,7 @@ async function deletePresetT(id: string) {
   ttConfig.value.presets = ttConfig.value.presets.filter((p) => p.id !== id)
   if (ttConfig.value.activeId === id) ttConfig.value.activeId = ttConfig.value.presets[0]!.id
   if (ttConfig.value.defaultId === id) ttConfig.value.defaultId = ttConfig.value.presets[0]!.id
+  if (selectedPresetId.value === id) selectedPresetId.value = null
   selectedTableIdx.value = -1
   store.save()
   toast.success('已删除')
@@ -654,6 +721,34 @@ function setDefaultPresetT(id: string) {
   ttConfig.value.defaultId = id
   store.save()
   toast.success('已设为默认')
+}
+
+async function renamePresetT(id: string) {
+  const p = ttConfig.value.presets.find((p) => p.id === id)
+  if (!p) return
+  const name = await promptRename('重命名模板预设', '输入新的模板预设名称：', p.name)
+  if (name == null) return
+  if (!name.trim()) {
+    toast.error('名称不能为空')
+    return
+  }
+  p.name = name.trim()
+  store.save()
+  toast.success('已重命名')
+}
+
+async function renamePreset(id: string) {
+  const p = sceneConfig.value.presets.find((p) => p.id === id)
+  if (!p) return
+  const name = await promptRename('重命名预设', '输入新的预设名称：', p.name)
+  if (name == null) return
+  if (!name.trim()) {
+    toast.error('名称不能为空')
+    return
+  }
+  p.name = name.trim()
+  save()
+  toast.success('已重命名')
 }
 
 function addTableT() {
@@ -796,19 +891,16 @@ onActivated(() => {
 <template>
   <div class="prompt-page">
     <div class="prompt-wrap cn-card">
-      <!-- ═══ 顶层 Tab：表格模板 / 提示词配置 ═══ -->
       <div class="prompt-head">
         <CNTabs level="l1" :items="promptTabs" v-model="promptTabValue" />
         <CNTabs v-if="!showTemplate" level="l1" :items="scenes" v-model="sceneTabValue" />
       </div>
 
-      <!-- ═══ 表格模板编辑器 ═══ -->
       <div v-if="showTemplate" class="prompt-split">
-        <!-- 左侧：模板预设列表 -->
         <div class="prompt-side">
           <div class="cn-card__head">
             <span>模板预设</span>
-            <button class="cn-btn cn-btn--sm" @click="newPresetT">
+            <button class="cn-btn cn-btn--sm" @click="newPresetTVisible = true">
               <i class="fa-solid fa-plus"></i>
               新建
             </button>
@@ -821,9 +913,11 @@ onActivated(() => {
                 class="preset-list__item"
                 :class="{
                   'preset-list__item--active':
-                    p.id === ttConfig.activeId && selectedView === 'preset'
+                    p.id === ttConfig.activeId && selectedView === 'preset',
+                  'preset-list__item--selected':
+                    selectedPresetId === p.id && p.id !== ttConfig.activeId
                 }"
-                @click="selectPresetT(p.id)"
+                @click="selectPresetItem(p.id)"
               >
                 <span class="preset-list__name">
                   <i
@@ -840,7 +934,7 @@ onActivated(() => {
                 </span>
                 <span class="preset-list__count">{{ p.template.tables.length }}表</span>
                 <button
-                  v-if="p.id !== ttConfig.activeId"
+                  v-if="selectedPresetId === p.id && p.id !== ttConfig.activeId"
                   class="cn-btn cn-btn--sm cn-btn--text"
                   title="设为当前"
                   @click.stop="selectPresetT(p.id)"
@@ -886,13 +980,16 @@ onActivated(() => {
           </div>
         </div>
 
-        <!-- 右侧：选中模板的全部表 -->
         <div class="prompt-editor" v-if="selectedView === 'chronicle'">
           <div class="cn-card__head">
             <span>纪要表（系统内置）</span>
             <span class="prompt-editor__desc"
               >结构可编辑；保存后按新结构重建表（同名列数据迁移）。表名固定不可改。</span
             >
+            <button class="cn-btn cn-btn--sm" @click="resetChronicleTableDef">
+              <i class="fa-solid fa-rotate-left"></i>
+              恢复默认
+            </button>
             <button class="cn-btn cn-btn--sm cn-btn--primary" @click="saveChronicleTableDef">
               <i class="fa-solid fa-save"></i>
               保存并重建
@@ -933,9 +1030,6 @@ onActivated(() => {
                 <div class="tpl-section">
                   <div class="tpl-section__head">
                     <label class="tpl-label">列定义</label>
-                    <button class="cn-btn cn-btn--sm" @click="addChronicleColumn">
-                      <i class="fa-solid fa-plus"></i>添加列
-                    </button>
                   </div>
                   <div class="tpl-cols">
                     <div class="tpl-col-head">
@@ -943,22 +1037,16 @@ onActivated(() => {
                       <span class="tpl-col-cell name">中文名</span>
                       <span class="tpl-col-cell type">类型</span>
                       <span class="tpl-col-cell flags">约束</span>
-                      <span class="tpl-col-cell role">语义角色</span>
                       <span class="tpl-col-cell note">AI 提示</span>
-                      <span class="tpl-col-cell del"></span>
                     </div>
                     <div v-for="(col, ci) in chronicleDef.columns" :key="ci" class="tpl-col-row">
-                      <input
-                        class="cn-input tpl-col-cell name"
-                        v-model="col.name"
-                        placeholder="col_name"
-                      />
+                      <div class="cn-input cn-input--locked tpl-col-cell name">{{ col.name }}</div>
                       <input
                         class="cn-input tpl-col-cell name"
                         v-model="col.displayName"
                         placeholder="中文名"
                       />
-                      <select class="cn-select tpl-col-cell type" v-model="col.type">
+                      <select class="cn-select tpl-col-cell type" v-model="col.type" disabled>
                         <option v-for="t in COL_TYPES" :key="t" :value="t">{{ t }}</option>
                       </select>
                       <span class="tpl-col-cell flags">
@@ -966,7 +1054,7 @@ onActivated(() => {
                           class="cn-btn cn-btn--xs"
                           :class="{ 'cn-btn--primary': col.constraints?.primaryKey }"
                           title="主键"
-                          @click="toggleConstraint(col, 'primaryKey')"
+                          disabled
                         >
                           PK
                         </button>
@@ -974,7 +1062,7 @@ onActivated(() => {
                           class="cn-btn cn-btn--xs"
                           :class="{ 'cn-btn--primary': col.constraints?.unique }"
                           title="唯一"
-                          @click="toggleConstraint(col, 'unique')"
+                          disabled
                         >
                           UQ
                         </button>
@@ -982,29 +1070,16 @@ onActivated(() => {
                           class="cn-btn cn-btn--xs"
                           :class="{ 'cn-btn--primary': !col.constraints?.nullable }"
                           title="非空"
-                          @click="toggleConstraint(col, 'nullable')"
+                          disabled
                         >
                           NN
                         </button>
                       </span>
-                      <select class="cn-select tpl-col-cell role" v-model="col.role">
-                        <option :value="undefined">无</option>
-                        <option v-for="r in CHRONICLE_ROLES" :key="r" :value="r">
-                          {{ CHRONICLE_ROLE_LABELS[r] }}
-                        </option>
-                      </select>
                       <input
                         class="cn-input tpl-col-cell note"
                         v-model="col.note"
                         placeholder="列说明（注入 AI prompt）"
                       />
-                      <button
-                        class="cn-btn cn-btn--sm cn-btn--text tpl-col-cell del"
-                        title="删除列"
-                        @click="removeChronicleColumn(ci)"
-                      >
-                        <i class="fa-solid fa-trash"></i>
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -1041,12 +1116,16 @@ onActivated(() => {
         </div>
         <div class="prompt-editor" v-else-if="activeTemplatePreset">
           <div class="cn-card__head">
-            <input
-              class="cn-input"
-              style="width: 200px; font-weight: 600"
-              v-model="activeTemplatePreset.name"
-              placeholder="模板名称"
-            />
+            <span class="prompt-editor__title-group">
+              <span class="prompt-editor__title">{{ activeTemplatePreset.name }}</span>
+              <button
+                class="cn-btn cn-btn--sm cn-btn--text"
+                title="重命名"
+                @click="renamePresetT(activeTemplatePreset.id)"
+              >
+                <i class="fa-solid fa-pen"></i>
+              </button>
+            </span>
             <button class="cn-btn cn-btn--sm" @click="addTableT">
               <i class="fa-solid fa-plus"></i>添加表
             </button>
@@ -1225,7 +1304,19 @@ onActivated(() => {
                             value="at_depth_as_system"
                             :selected="(table.exportConfig?.entryPlacement?.position ?? 'at_depth_as_system') === 'at_depth_as_system'"
                           >
-                            深度注入
+                            系统深度 @D
+                          </option>
+                          <option
+                            value="at_depth_as_user"
+                            :selected="table.exportConfig?.entryPlacement?.position === 'at_depth_as_user'"
+                          >
+                            用户深度 @D
+                          </option>
+                          <option
+                            value="at_depth_as_assistant"
+                            :selected="table.exportConfig?.entryPlacement?.position === 'at_depth_as_assistant'"
+                          >
+                            Assistant深度 @D
                           </option>
                           <option
                             value="before_character_definition"
@@ -1243,7 +1334,7 @@ onActivated(() => {
                       </div>
                       <div
                         class="tpl-field"
-                        :class="{ 'tpl-field--hidden': (table.exportConfig?.entryPlacement?.position ?? 'at_depth_as_system') !== 'at_depth_as_system' }"
+                        :class="{ 'tpl-field--hidden': !isAtDepthPosition(table.exportConfig?.entryPlacement?.position) }"
                         style="flex: 0 0 88px"
                       >
                         <label class="tpl-label" style="font-size: 12px">深度</label>
@@ -1375,13 +1466,12 @@ onActivated(() => {
         </div>
       </div>
 
-      <!-- ═══ 提示词编辑器（现有内容，原封不动） ═══ -->
       <template v-if="!showTemplate">
         <div class="prompt-split">
           <div class="prompt-side">
             <div class="cn-card__head">
               <span>预设</span>
-              <button class="cn-btn cn-btn--sm" @click="newPreset">
+              <button class="cn-btn cn-btn--sm" @click="newPresetVisible = true">
                 <i class="fa-solid fa-plus"></i>
                 新建
               </button>
@@ -1392,8 +1482,12 @@ onActivated(() => {
                   v-for="p in sceneConfig.presets"
                   :key="p.id"
                   class="preset-list__item"
-                  :class="{ 'preset-list__item--active': p.id === sceneConfig.activeId }"
-                  @click="selectPreset(p.id)"
+                  :class="{
+                    'preset-list__item--active': p.id === sceneConfig.activeId,
+                    'preset-list__item--selected':
+                      selectedScenePresetId === p.id && p.id !== sceneConfig.activeId
+                  }"
+                  @click="selectedScenePresetId = p.id"
                 >
                   <span class="preset-list__name">
                     {{ p.name }}
@@ -1405,7 +1499,7 @@ onActivated(() => {
                   </span>
                   <span class="preset-list__count">{{ p.segments.length }}段</span>
                   <button
-                    v-if="p.id !== sceneConfig.activeId"
+                    v-if="selectedScenePresetId === p.id && p.id !== sceneConfig.activeId"
                     class="cn-btn cn-btn--sm cn-btn--text"
                     title="设为当前"
                     @click.stop="selectPreset(p.id)"
@@ -1434,7 +1528,16 @@ onActivated(() => {
 
           <div class="prompt-editor">
             <div class="cn-card__head">
-              <span>{{ activePreset?.name }}</span>
+              <span v-if="activePreset" class="prompt-editor__title-group">
+                <span class="prompt-editor__title">{{ activePreset.name }}</span>
+                <button
+                  class="cn-btn cn-btn--sm cn-btn--text"
+                  title="重命名"
+                  @click="renamePreset(activePreset.id)"
+                >
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+              </span>
               <button class="cn-btn cn-btn--soft cn-btn--sm" @click="varHelpVisible = true">
                 <i class="fa-solid fa-tags"></i>
                 可用变量
@@ -1569,5 +1672,25 @@ onActivated(() => {
 
       <VariableHelpModal v-model:visible="varHelpVisible" :scene="activeScene" />
     </template>
+
+    <PresetSourceModal
+      v-model:visible="newPresetVisible"
+      title="新建预设"
+      default-label="从默认提示词创建"
+      :default-desc="`以默认「${PROMPT_VARIABLES[activeScene].label}」提示词为起点`"
+      :default-disabled="!defaultPromptAvailable"
+      default-disabled-hint="默认提示词加载失败，暂不可用"
+      @pick="handleNewPreset"
+    />
+
+    <PresetSourceModal
+      v-model:visible="newPresetTVisible"
+      title="新建模板预设"
+      default-label="从默认模板创建"
+      default-desc="以扩展自带的默认表格模板为起点（含全部默认表）"
+      :default-disabled="!defaultTemplateAvailable"
+      default-disabled-hint="默认模板加载失败，暂不可用"
+      @pick="handleNewPresetT"
+    />
   </div>
 </template>

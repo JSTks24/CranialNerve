@@ -5,7 +5,6 @@ export interface RecallCardItem {
   timeEnd: string
   location: string
   summary: string
-  keyDialogue: string
 }
 
 export interface RecallCardPayload {

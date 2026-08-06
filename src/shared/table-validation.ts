@@ -1,13 +1,7 @@
-import type { ChronicleColumnRole, TableDef } from './types/table'
+import type { TableDef } from './types/table'
+import { CHRONICLE_COLUMNS } from './constants/chronicle'
 
-export const CHRONICLE_ROLE_LABELS: Record<ChronicleColumnRole, string> = {
-  key: '编码',
-  timeStart: '起始时间',
-  timeEnd: '结束时间',
-  location: '地点',
-  summary: '纪要正文',
-  keyDialogue: '重要台词'
-}
+const REQUIRED_CHRONICLE_COLUMNS = Object.values(CHRONICLE_COLUMNS)
 
 export function validateTableDef(table: TableDef, allTables: TableDef[]): string | null {
   if (!table.name.trim()) return '英文表名不能为空'
@@ -42,33 +36,10 @@ export function validateChronicleDef(def: TableDef): string | null {
     if (nameSet.has(col.name.trim())) return `列英文名重复：${col.name.trim()}`
     nameSet.add(col.name.trim())
   }
-  const roleCounts = new Map<ChronicleColumnRole, number>()
-  for (const col of def.columns) {
-    if (col.role) {
-      roleCounts.set(col.role, (roleCounts.get(col.role) ?? 0) + 1)
-    }
-  }
-  const requiredRoles: ChronicleColumnRole[] = [
-    'key',
-    'timeStart',
-    'timeEnd',
-    'location',
-    'summary',
-    'keyDialogue'
-  ]
-  const missing = requiredRoles.filter((r) => !roleCounts.has(r))
-  const duplicated = [...roleCounts.entries()]
-    .filter(([, n]) => n > 1)
-    .map(([r]) => CHRONICLE_ROLE_LABELS[r])
-  if (missing.length === 0 && duplicated.length === 0) {
-    return null
-  }
-  const parts: string[] = []
+  const colNames = new Set(def.columns.map((c) => c.name.trim()))
+  const missing = REQUIRED_CHRONICLE_COLUMNS.filter((n) => !colNames.has(n))
   if (missing.length > 0) {
-    parts.push(`缺少角色: ${missing.map((r) => CHRONICLE_ROLE_LABELS[r]).join('、')}`)
+    return `纪要表缺少固定列：${missing.join('、')}。纪要表 6 列固定，不可改名或删除。`
   }
-  if (duplicated.length > 0) {
-    parts.push(`角色重复: ${duplicated.join('、')}`)
-  }
-  return parts.join('；') + '。6 个语义角色必须各有且仅有一列持有。'
+  return null
 }

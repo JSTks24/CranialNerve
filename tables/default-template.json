@@ -1,0 +1,99 @@
+{
+  "templateVersion": 2,
+  "tables": [
+    {
+      "name": "global_data",
+      "displayName": "全局数据表",
+      "columns": [
+        { "name": "state_key", "displayName": "状态键", "type": "TEXT", "constraints": { "primaryKey": true, "nullable": false }, "note": "固定值 global，全表唯一，保证此表有且仅有一行" },
+        { "name": "story_state", "displayName": "全局状态", "type": "TEXT", "constraints": { "nullable": false }, "note": "固定字符串“全局状态”，标题性质" },
+        { "name": "current_location", "displayName": "当前详细地点", "type": "TEXT", "constraints": { "nullable": false }, "note": "当前详细地点，只写本级名称" },
+        { "name": "current_minor_region", "displayName": "当前次要地区", "type": "TEXT", "constraints": { "nullable": false }, "note": "当前次要地区，只写本级名称" },
+        { "name": "current_major_region", "displayName": "当前主要地区", "type": "TEXT", "constraints": { "nullable": false }, "note": "当前主要地区，只写本级名称" },
+        { "name": "prev_scene_time", "displayName": "上轮场景时间", "type": "TEXT", "note": "上一轮的 cur_time，初始化时为 NULL；格式见时间约束" },
+        { "name": "elapsed_time", "displayName": "经过的时间", "type": "TEXT", "constraints": { "nullable": false }, "note": "本轮经过的时间，如“3小时20分”" },
+        { "name": "cur_time", "displayName": "当前时间", "type": "TEXT", "constraints": { "nullable": false }, "note": "当前剧情时间，格式见时间约束" }
+      ],
+      "note": "记录主角当前所在地点及时间参数。此表有且仅有一行（state_key 固定为 global），初始化时插入，之后仅 UPDATE，禁止 INSERT/DELETE。\n\n【地点约束】\n地点层级从小到大：详细地点 < 次要地区 < 主要地区。每列只写本级名称，禁止拼接上级前缀。\n√ current_location 填“破桶酒馆”，current_minor_region 填“下城区”，current_major_region 填“王都”\n× current_location 填“王都·下城区·破桶酒馆”\n\n【时间约束】\nprev_scene_time / cur_time 格式：ISO 8601（YYYY-MM-DDTHH:MM），与纪要表时间列一致。\nelapsed_time 格式：{数值}{单位}，多单位用空格连接。单位集合：[年,月,周,天,小时,分]。\n示例：“3小时20分” | “2天” | “3年6月”\n\n时间计算公式：cur_time = prev_scene_time + elapsed_time\n- 初始化时 prev_scene_time 为 NULL，cur_time 直接填初始时间，无需计算\n- 每轮推进：将上一轮的 cur_time 写入 prev_scene_time，填写本轮 elapsed_time，再计算新 cur_time",
+      "insertHint": "故事初始化时插入唯一条目，记录初始时间与初始地点。禁止照搬示例中的地点和日期。\nSQL示例: INSERT INTO global_data (state_key, story_state, current_location, current_minor_region, current_major_region, prev_scene_time, elapsed_time, cur_time) VALUES ('global', '全局状态', '破桶酒馆', '下城区', '王都', NULL, '0分', '2024-03-15T14:00');",
+      "updateHint": "每轮推进时更新 prev_scene_time、elapsed_time、cur_time；地点变动时同步更新三级地点字段。此表仅 UPDATE。\n【更新约束】除初始化外，prev_scene_time、elapsed_time、cur_time 均不可写 NULL 或空串。\nSQL示例(推进时间): UPDATE global_data SET prev_scene_time = '2024-03-15T14:00', elapsed_time = '3小时', cur_time = '2024-03-15T17:00' WHERE state_key = 'global';\nSQL示例(含位置变动): UPDATE global_data SET current_location = '中央广场', current_minor_region = '中央城区', current_major_region = '王都', prev_scene_time = '2024-03-15T17:00', elapsed_time = '30分', cur_time = '2024-03-15T17:30' WHERE state_key = 'global';",
+      "deleteHint": "禁止 DELETE。",
+      "exportConfig": { "enabled": false, "entryType": "constant", "keywordColumn": "", "entryPlacement": { "position": "at_depth_as_system", "depth": 2, "order": 9900 } },
+      "updateConfig": { "sendLatestRows": -1 }
+    },
+    {
+      "name": "protagonist_info",
+      "displayName": "主角信息表",
+      "columns": [
+        { "name": "char_name", "displayName": "人物名称", "type": "TEXT", "constraints": { "primaryKey": true, "nullable": false }, "note": "主角的名字" },
+        { "name": "gender_age", "displayName": "性别/年龄", "type": "TEXT", "note": "主角的生理性别和年龄" },
+        { "name": "appearance", "displayName": "外貌特征", "type": "TEXT", "note": "对主角外貌的客观文字描写" },
+        { "name": "occupation", "displayName": "职业/身份", "type": "TEXT", "note": "主角在社会中的主要角色" },
+        { "name": "past_experience", "displayName": "过往经历", "type": "TEXT", "note": "主角背景故事与关键经历，随剧情增量更新，不超过300字，超过时压缩" },
+        { "name": "current_condition", "displayName": "近况", "type": "TEXT", "note": "用一句话描述主角当前的身体感受、情绪状态或心头惦记的事" }
+      ],
+      "note": "记录主角的核心身份信息。此表有且仅有一行，初始化时插入，之后仅 UPDATE，禁止 INSERT/DELETE。性格不单列，由用户演绎。\n\n【近况约束】\ncurrent_condition 用一句话描述主角当前的身体感受、情绪状态或心头惦记的事。\n正常时期填“一切如常”，有异常时直接写具体感受，不用标签堆叠。\n√ 昨晚没睡好，脑子有点沉\n√ 刚从雨里跑回来，衣服还湿着\n× 健康\n\n【过往经历约束】\npast_experience 随剧情增量更新，不超过300字，超过时压缩。",
+      "insertHint": "禁止 INSERT。仅在游戏初始化时插入主角的唯一一行。\nSQL示例: INSERT INTO protagonist_info (char_name, gender_age, appearance, occupation, past_experience, current_condition) VALUES ('主角名', '男/20', '外貌描写', '职业身份', '背景经历', '一切如常');",
+      "updateHint": "主角各项状态变化时更新；过往经历列随剧情增量更新，超过300字需压缩；近况随剧情变化及时更新。\nSQL示例: UPDATE protagonist_info SET past_experience = '更新后经历', current_condition = '左膝擦伤，心情沉重' WHERE char_name = '主角名';",
+      "deleteHint": "禁止 DELETE。",
+      "exportConfig": { "enabled": true, "entryType": "constant", "keywordColumn": "", "entryPlacement": { "position": "at_depth_as_system", "depth": 2, "order": 10000 } },
+      "updateConfig": { "sendLatestRows": -1 }
+    },
+    {
+      "name": "important_characters",
+      "displayName": "重要角色表",
+      "columns": [
+        { "name": "name", "displayName": "姓名", "type": "TEXT", "constraints": { "primaryKey": true, "unique": true, "nullable": false }, "note": "NPC 的名字" },
+        { "name": "gender_age", "displayName": "性别/年龄", "type": "TEXT", "note": "NPC 的生理性别和年龄" },
+        { "name": "brief_intro", "displayName": "一句话介绍", "type": "TEXT", "note": "不超过15字概括角色身份背景，不含主观评价" },
+        { "name": "appearance", "displayName": "外貌特征", "type": "TEXT", "note": "NPC 外貌和当前衣着描写" },
+        { "name": "key_items", "displayName": "持有的重要物品", "type": "TEXT", "note": "关键物品列表，分号分隔" },
+        { "name": "is_absent", "displayName": "是否离场", "type": "TEXT", "constraints": { "nullable": false }, "note": "该角色是否能直接与主角互动，填“是”或“否”" },
+        { "name": "past_experience", "displayName": "过往经历", "type": "TEXT", "note": "角色背景与关键事件，随剧情增量更新，不超过300字，超过时压缩" },
+        { "name": "relation_text", "displayName": "人际关系", "type": "TEXT", "note": "该角色与其他角色的关系，格式见表说明" }
+      ],
+      "note": "记录所有关键 NPC 的详细信息与动态状态。每个角色一行。\n\n【人际关系格式】（强制）\nrelation_text 必须显式写“角色名:”前缀，禁止省略角色名直接写关系内容。\n同一角色多个关系标签/描述用英文逗号 , 分隔；不同角色之间用英文分号 ; 分隔。\n关系描述去除人称，使用简短陈述。至少包含与主角的关系。\n√ 主角:曾帮其修过自行车,旧识;艾莉丝:监护人\n√ 主角:校长身份,从未直接交谈\n× 曾帮主角修过自行车（缺角色名前缀）\n× 主角:旧识,艾莉丝:监护人（不同角色错用逗号）\n× 主角:旧识;艾莉丝:监护人;室友（同角色多标签错用分号）\n\n【过往经历约束】\npast_experience 随剧情增量更新，不超过300字，超过时压缩。",
+      "insertHint": "剧情中有未记录的重要人物登场时添加。人际关系列必须带“角色名:”前缀，至少包含与主角的关系。\nSQL示例: INSERT INTO important_characters (name, gender_age, brief_intro, appearance, key_items, is_absent, past_experience, relation_text) VALUES ('艾琳', '女/24', '叛逃骑士', '银发，身披旧披风', '断剑', '是', '曾是王国骑士团成员', '主角:曾救过其性命,旧识');",
+      "updateHint": "角色状态/关系/经历变化时更新；角色死亡在姓名旁标注（已死亡）。人际关系变化时重写 relation_text 中相应角色段。\nSQL示例: UPDATE important_characters SET is_absent = '是', relation_text = '主角:旧识,近期开始互相怀疑' WHERE name = '艾琳';",
+      "deleteHint": "禁止 DELETE。",
+      "exportConfig": { "enabled": true, "entryType": "keyword", "keywordColumn": "name", "keywordMode": "ai_prompt", "keywordAiPrompt": [{ "id": "important_chars_kw_sys", "name": "激活词生成指令", "role": "system", "content": "你是角色记忆激活词生成器。\n\n任务：为重要角色表的每一行角色生成激活关键词。当玩家对话出现这些词时，该角色信息条目会被激活注入 AI 上下文。\n\n要求：\n1. 每个角色生成 4-6 个激活词。\n2. 覆盖角色在对话中可能被提及的多种方式：本名、别名、昵称、称号、身份头衔、强关联实体（专属地点/所属组织/标志物品，仅当几乎只与此角色绑定）。\n3. 激活词必须独特，不与其他角色混淆，不用泛化通用词（如“老板”太泛，需“破桶酒馆老板”）。\n4. 使用短词或短语，不加解释，不加标点修饰。\n5. 信息不足以生成 4 个独特词时，至少给角色名与最显著标识，宁缺毋滥，禁止编造。\n6. 不同角色的激活词不得重复。\n\n输出严格 JSON 数组，每元素是该行角色的激活词数组，行数与输入一致、顺序对应。\n示例：[[“艾琳”,“叛逃骑士”,“通缉令撕毁者”],[“马尔科”,“破桶酒馆老板”]]" }], "entryPlacement": { "position": "at_depth_as_system", "depth": 10000, "order": 10100 } },
+      "updateConfig": { "sendLatestRows": -1 }
+    },
+    {
+      "name": "inventory",
+      "displayName": "背包物品表",
+      "columns": [
+        { "name": "item_name", "displayName": "物品名称", "type": "TEXT", "constraints": { "primaryKey": true, "unique": true, "nullable": false }, "note": "物品的名称" },
+        { "name": "quantity", "displayName": "数量", "type": "INTEGER", "constraints": { "nullable": false }, "note": "拥有的数量，必须大于 0，数值不加引号" },
+        { "name": "description", "displayName": "描述/效果", "type": "TEXT", "note": "物品的功能或背景描述" },
+        { "name": "category", "displayName": "类别", "type": "TEXT", "note": "如：武器、防具、消耗品、杂物" }
+      ],
+      "note": "记录主角拥有的所有物品、装备。每种物品一行，同物品合并为一行用数量累计。",
+      "insertHint": "主角获得背包中没有的全新物品时添加。\nSQL示例: INSERT INTO inventory (item_name, quantity, description, category) VALUES ('治疗药水', 3, '恢复少量生命', '消耗品');",
+      "updateHint": "已有物品数量变化或状态变化时更新；数量变化用表达式计算，不手算结果。\nSQL示例: UPDATE inventory SET quantity = quantity + 3 WHERE item_name = '治疗药水';",
+      "deleteHint": "物品被完全消耗、丢弃或摧毁时删除。\nSQL示例: DELETE FROM inventory WHERE item_name = '已消耗物品';",
+      "exportConfig": { "enabled": true, "entryType": "constant", "keywordColumn": "", "entryPlacement": { "position": "at_depth_as_system", "depth": 2, "order": 10200 } },
+      "updateConfig": { "sendLatestRows": -1 }
+    },
+    {
+      "name": "quests_events",
+      "displayName": "任务与事件表",
+      "columns": [
+        { "name": "quest_name", "displayName": "任务名称", "type": "TEXT", "constraints": { "primaryKey": true, "unique": true, "nullable": false }, "note": "任务的标题" },
+        { "name": "quest_type", "displayName": "任务类型", "type": "TEXT", "note": "主线任务、支线任务等明确类型" },
+        { "name": "issuer", "displayName": "发布者", "type": "TEXT", "note": "发布任务的角色或势力" },
+        { "name": "detail_desc", "displayName": "详细描述", "type": "TEXT", "note": "任务的目标和要求" },
+        { "name": "current_progress", "displayName": "当前进度", "type": "TEXT", "note": "任务完成度的简要描述，随进展更新" },
+        { "name": "time_limit", "displayName": "任务时限", "type": "TEXT", "note": "完成任务的剩余时间，无时限填“无”" },
+        { "name": "reward", "displayName": "奖励", "type": "TEXT", "note": "完成任务可获得的奖励" },
+        { "name": "penalty", "displayName": "惩罚", "type": "TEXT", "note": "任务失败的后果，无惩罚填“无”" }
+      ],
+      "note": "记录所有当前正在进行的任务。每个任务一行；任务完成、失败或过期后删除该行，不在表中保留已完成状态。",
+      "insertHint": "主角接取或触发新任务时添加。\nSQL示例: INSERT INTO quests_events (quest_name, quest_type, issuer, detail_desc, current_progress, time_limit, reward, penalty) VALUES ('拯救公主', '主线任务', '国王', '从魔王城救回公主', '尚未出发', '剩余30天', '王位继承权', '被流放');",
+      "updateHint": "任务取得关键进展时更新当前进度与时限。\nSQL示例: UPDATE quests_events SET current_progress = '已救出公主，正在撤离', time_limit = '剩余3天' WHERE quest_name = '拯救公主';",
+      "deleteHint": "任务完成、失败或过期时删除。\nSQL示例: DELETE FROM quests_events WHERE quest_name = '已完成的任务';",
+      "exportConfig": { "enabled": true, "entryType": "constant", "keywordColumn": "", "entryPlacement": { "position": "at_depth_as_system", "depth": 2, "order": 10300 } },
+      "updateConfig": { "sendLatestRows": -1 }
+    }
+  ]
+}

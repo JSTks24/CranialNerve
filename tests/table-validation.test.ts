@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { validateTableDef, validateChronicleDef } from '../src/shared/table-validation'
-import type { TableDef, ColumnDef, ChronicleColumnRole } from '../src/shared/types/table'
+import type { TableDef, ColumnDef } from '../src/shared/types/table'
 
 function makeTable(overrides: Partial<TableDef> = {}): TableDef {
   return {
@@ -86,64 +86,47 @@ describe('validateTableDef', () => {
 })
 
 describe('validateChronicleDef', () => {
-  function chronicleCol(name: string, role: ChronicleColumnRole, display = name): ColumnDef {
-    return { name, displayName: display, type: 'TEXT', note: '说明', role }
+  function chronicleCol(name: string, display = name, note = '说明'): ColumnDef {
+    return { name, displayName: display, type: 'TEXT', note }
   }
 
-  it('6 角色齐全且不重复返回 null', () => {
-    const def: TableDef = {
+  function fullChronicle(): TableDef {
+    return {
       name: 'cn_chronicle',
       displayName: '纪要表',
       columns: [
-        chronicleCol('key', 'key', '编码'),
-        chronicleCol('time_start', 'timeStart', '起始时间'),
-        chronicleCol('time_end', 'timeEnd', '结束时间'),
-        chronicleCol('location', 'location', '地点'),
-        chronicleCol('chronicle_text', 'summary', '纪要正文'),
-        chronicleCol('key_dialogue', 'keyDialogue', '重要台词')
+        chronicleCol('key', '编码'),
+        chronicleCol('time_start', '起始时间'),
+        chronicleCol('time_end', '结束时间'),
+        chronicleCol('location', '地点'),
+        chronicleCol('chronicle_text', '纪要正文'),
+        chronicleCol('important_word', '记忆索引')
       ]
     }
-    expect(validateChronicleDef(def)).toBeNull()
+  }
+
+  it('6 固定列齐全返回 null', () => {
+    expect(validateChronicleDef(fullChronicle())).toBeNull()
   })
 
-  it('缺少角色报错', () => {
-    const def: TableDef = {
-      name: 'cn_chronicle',
-      displayName: '纪要表',
-      columns: [
-        chronicleCol('key', 'key'),
-        chronicleCol('time_start', 'timeStart'),
-        chronicleCol('time_end', 'timeEnd'),
-        chronicleCol('location', 'location'),
-        chronicleCol('chronicle_text', 'summary')
-      ]
-    }
-    expect(validateChronicleDef(def)).toContain('缺少角色')
+  it('缺少固定列报错', () => {
+    const def = fullChronicle()
+    def.columns = def.columns.filter((c) => c.name !== 'location')
+    expect(validateChronicleDef(def)).toContain('缺少固定列')
   })
 
   it('列说明空报错', () => {
     const def: TableDef = {
       name: 'cn_chronicle',
       displayName: '纪要表',
-      columns: [{ name: 'key', displayName: '编码', type: 'TEXT', role: 'key', note: '' }]
+      columns: [{ name: 'key', displayName: '编码', type: 'TEXT', note: '' }]
     }
     expect(validateChronicleDef(def)).toContain('列说明不能为空')
   })
 
-  it('角色重复报错', () => {
-    const def: TableDef = {
-      name: 'cn_chronicle',
-      displayName: '纪要表',
-      columns: [
-        chronicleCol('k1', 'key'),
-        chronicleCol('k2', 'key'),
-        chronicleCol('time_start', 'timeStart'),
-        chronicleCol('time_end', 'timeEnd'),
-        chronicleCol('location', 'location'),
-        chronicleCol('chronicle_text', 'summary'),
-        chronicleCol('key_dialogue', 'keyDialogue')
-      ]
-    }
-    expect(validateChronicleDef(def)).toContain('角色重复')
+  it('列英文名重复报错', () => {
+    const def = fullChronicle()
+    def.columns.push(chronicleCol('key', '重复'))
+    expect(validateChronicleDef(def)).toContain('列英文名重复')
   })
 })

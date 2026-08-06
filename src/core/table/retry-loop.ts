@@ -113,29 +113,80 @@ export default class TableEditor {
 
 function parseTableEditSql(raw: string): TableEditSqlV1 | null {
   const stripped = raw.replace(/<thought>[\s\S]*?<\/thought>/gi, '')
-  const jsonStr = extractJson(stripped)
-  if (!jsonStr) {
+  const jsonStrs = extractJsons(stripped)
+  if (jsonStrs.length === 0) {
     return null
   }
-  try {
-    const parsed = JSON.parse(jsonStr) as TableEditSqlV1
-    if (parsed.format !== SQL_EDIT_FORMAT || typeof parsed.sql !== 'string' || parsed.sql.trim().length === 0) {
-      return null
+  const sqls: string[] = []
+  for (const jsonStr of jsonStrs) {
+    try {
+      const parsed = JSON.parse(jsonStr) as TableEditSqlV1
+      if (parsed.format !== SQL_EDIT_FORMAT || typeof parsed.sql !== 'string') {
+        continue
+      }
+      const s = parsed.sql.trim()
+      if (s.length > 0) {
+        sqls.push(s)
+      }
+    } catch {
+      continue
     }
-    return parsed
-  } catch {
+  }
+  if (sqls.length === 0) {
     return null
   }
+  if (sqls.length === 1) {
+    return { format: SQL_EDIT_FORMAT, sql: sqls[0]! }
+  }
+  const normalized = sqls.map((s) => (s.endsWith(';') ? s : s + ';'))
+  return { format: SQL_EDIT_FORMAT, sql: normalized.join('\n') }
 }
 
-function extractJson(raw: string): string | null {
+function extractJsons(raw: string): string[] {
   const trimmed = raw.trim()
-  const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i)
-  const candidate = (fenced?.[1] ?? trimmed).trim()
-  const start = candidate.indexOf('{')
-  const end = candidate.lastIndexOf('}')
-  if (start === -1 || end === -1 || end <= start) {
-    return null
+  const fenced = [...trimmed.matchAll(/```(?:json)?\s*([\s\S]*?)```/gi)]
+  const candidates = fenced.length > 0 ? fenced.map((m) => m[1]!.trim()) : [trimmed]
+  const results: string[] = []
+  for (const candidate of candidates) {
+    results.push(...extractTopLevelJsonObjects(candidate))
   }
-  return candidate.slice(start, end + 1)
+  return results
+}
+
+function extractTopLevelJsonObjects(text: string): string[] {
+  const results: string[] = []
+  let depth = 0
+  let start = -1
+  let inString = false
+  let escape = false
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i]
+    if (inString) {
+      if (escape) {
+        escape = false
+      } else if (ch === '\\') {
+        escape = true
+      } else if (ch === '"') {
+        inString = false
+      }
+      continue
+    }
+    if (ch === '"') {
+      inString = true
+    } else if (ch === '{') {
+      if (depth === 0) {
+        start = i
+      }
+      depth++
+    } else if (ch === '}') {
+      if (depth > 0) {
+        depth--
+        if (depth === 0 && start >= 0) {
+          results.push(text.slice(start, i + 1))
+          start = -1
+        }
+      }
+    }
+  }
+  return results
 }

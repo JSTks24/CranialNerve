@@ -12,10 +12,9 @@ import { computeTimeDelta, resolveStoryNowTime } from './time'
 import type { ChronicleEntry } from '@shared/types/worldbook'
 import type { VectorIndexStore, ChronicleVectorIndex } from './chronicle/vector-index-store'
 import { sparseSearchBm25, reciprocalRankFusion } from './chronicle/bm25'
+import { buildSearchableText } from './chronicle/searchable-text'
 
 const VECTOR_TOP_K = 20
-
-export type { ChronicleDraft } from './worldbook-entries'
 
 export interface RecallContext {
   clientConfig: AiClientConfig
@@ -106,7 +105,7 @@ async function prefilterByVector(
       .filter((s) => s.score >= ctx.recallMinScore)
       .sort((a, b) => b.score - a.score)
       .slice(0, Math.min(VECTOR_TOP_K, all.length))
-    const docs = all.map((e) => ({ key: e.key, text: e.content.summary ?? e.key }))
+    const docs = all.map((e) => ({ key: e.key, text: buildSearchableText(e) }))
     const bm25Scored = sparseSearchBm25(ctx.userMessage, docs, Math.min(VECTOR_TOP_K, all.length))
     const fused = reciprocalRankFusion(
       [denseScored, bm25Scored],
@@ -116,7 +115,7 @@ async function prefilterByVector(
     const fusedKeys = new Set(fused.map((f) => f.key))
     const candidates = all.filter((e) => fusedKeys.has(e.key))
     if (ctx.vectorConfig.rerankEndpoint && ctx.vectorConfig.rerankModel) {
-      const candidateDocs = candidates.map((e) => e.content.summary ?? e.key)
+      const candidateDocs = candidates.map((e) => buildSearchableText(e))
       const order = await vector.rerank(ctx.userMessage, candidateDocs, ctx.vectorConfig)
       return order
         .map((idx) => candidates[idx])
@@ -172,6 +171,8 @@ async function filterRelevantKeys(
   const catalog = all.map((e) => ({
     key: e.key,
     summary: e.content.summary ?? '',
+    location: e.content.location ?? '',
+    importantWord: e.content.importantWord ?? '',
     storyTime: e.content.storyTime ?? ''
   }))
   const chronicleList = JSON.stringify(catalog)

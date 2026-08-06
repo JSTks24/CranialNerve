@@ -23,7 +23,7 @@ export interface WorldInfoData {
 export interface ChronicleContent {
   summary?: string
   storyTime?: string
-  keyDialogue?: string
+  importantWord?: string
   [key: string]: string | undefined
 }
 

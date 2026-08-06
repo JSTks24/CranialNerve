@@ -60,6 +60,7 @@ function emptyPreset(): AiPreset {
     presencePenalty: 0,
     seed: null,
     stream: false,
+    responseFormat: 'none',
     customIncludeBody: '',
     customExcludeBody: '',
     customIncludeHeaders: ''
@@ -189,6 +190,16 @@ const filteredVectorModels = computed(() => {
   return vectorModels.value.filter((m) => m.toLowerCase().includes(kw))
 })
 
+const rerankModels = ref<string[]>([])
+const rerankPickerVisible = ref(false)
+const rerankModelSearch = ref('')
+
+const filteredRerankModels = computed(() => {
+  const kw = rerankModelSearch.value.trim().toLowerCase()
+  if (!kw) return rerankModels.value
+  return rerankModels.value.filter((m) => m.toLowerCase().includes(kw))
+})
+
 async function fetchVectorModels() {
   if (!vector.value.embeddingEndpoint) {
     toast.warning('请先填写 endpoint')
@@ -208,6 +219,7 @@ async function fetchVectorModels() {
       presencePenalty: 0,
       seed: null,
       stream: false,
+      responseFormat: 'none',
       customIncludeBody: '',
       customExcludeBody: '',
       customIncludeHeaders: ''
@@ -227,6 +239,47 @@ async function fetchVectorModels() {
 function pickVectorModel(m: string) {
   vector.value.embeddingModel = m
   vectorPickerVisible.value = false
+}
+
+async function fetchRerankModels() {
+  if (!vector.value.rerankEndpoint) {
+    toast.warning('请先填写 rerank endpoint')
+    return
+  }
+  try {
+    const tempPreset: AiPreset = {
+      id: '__rerank__',
+      name: '__rerank__',
+      baseURL: vector.value.rerankEndpoint,
+      apiKey: vector.value.rerankApiKey,
+      model: vector.value.rerankModel,
+      maxTokens: 0,
+      temperature: 1,
+      topP: 1,
+      frequencyPenalty: 0,
+      presencePenalty: 0,
+      seed: null,
+      stream: false,
+      responseFormat: 'none',
+      customIncludeBody: '',
+      customExcludeBody: '',
+      customIncludeHeaders: ''
+    }
+    rerankModels.value = await session.listModels(tempPreset)
+    if (rerankModels.value.length === 0) {
+      toast.info('该 API 未返回模型列表，请手动填写 model 名称')
+      return
+    }
+    rerankModelSearch.value = ''
+    rerankPickerVisible.value = true
+  } catch (e) {
+    toast.error(e instanceof Error ? e.message : String(e))
+  }
+}
+
+function pickRerankModel(m: string) {
+  vector.value.rerankModel = m
+  rerankPickerVisible.value = false
 }
 
 function saveVector() {
@@ -432,10 +485,22 @@ function rangeFraction(val: number, min: number, max: number): string {
                 </div>
               </div>
             </div>
-            <label class="cn-check">
-              <input type="checkbox" v-model="editing.stream" />
-              <span>流式输出 (stream)</span>
-            </label>
+            <div class="api-switch-group">
+              <label class="cn-switch">
+                <input type="checkbox" v-model="editing.stream" />
+                <span class="cn-switch__track"></span>
+                <span class="cn-switch__label">流式输出 (stream)</span>
+              </label>
+              <label class="cn-switch">
+                <input
+                  type="checkbox"
+                  :checked="editing.responseFormat === 'json_object'"
+                  @change="editing.responseFormat = $event.target.checked ? 'json_object' : 'none'"
+                />
+                <span class="cn-switch__track"></span>
+                <span class="cn-switch__label">JSON 输出模式 (json_object)</span>
+              </label>
+            </div>
 
             <div class="api-section-divider"></div>
 
@@ -552,11 +617,15 @@ function rangeFraction(val: number, min: number, max: number): string {
         </div>
         <div class="cn-field">
           <label class="cn-field__label">rerank model</label>
-          <input
-            class="cn-input"
-            v-model="vector.rerankModel"
-            placeholder="rerank-multilingual-v3.0"
-          />
+          <div class="model-row">
+            <input
+              class="cn-input"
+              v-model="vector.rerankModel"
+              placeholder="rerank-multilingual-v3.0"
+              style="flex: 1"
+            />
+            <button class="cn-btn cn-btn--sm" @click="fetchRerankModels">获取模型列表</button>
+          </div>
         </div>
         <button
           class="cn-btn cn-btn--primary cn-btn--block"
@@ -624,6 +693,37 @@ function rangeFraction(val: number, min: number, max: number): string {
           </button>
           <div v-if="filteredVectorModels.length === 0" class="cn-empty" style="padding: 24px 0">
             {{ vectorModelSearch ? '无匹配模型' : '无模型' }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </Transition>
+
+  <Transition name="cn-modal">
+    <div v-if="rerankPickerVisible" class="cn-modal-mask" @click.self="rerankPickerVisible = false">
+      <div class="cn-modal model-picker-modal">
+        <div class="cn-modal__head">
+          <span>选择 Rerank 模型 - 共 {{ rerankModels.length }} 个</span>
+          <button class="cn-btn cn-btn--sm cn-btn--text" @click="rerankPickerVisible = false">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="model-picker__search">
+          <input class="cn-input" v-model="rerankModelSearch" placeholder="搜索模型…" />
+        </div>
+        <div class="model-picker__list">
+          <button
+            v-for="m in filteredRerankModels"
+            :key="m"
+            class="model-picker__item"
+            :class="{ 'model-picker__item--picked': m === vector.rerankModel }"
+            @click="pickRerankModel(m)"
+          >
+            <span class="model-picker__name">{{ m }}</span>
+            <i v-if="m === vector.rerankModel" class="fa-solid fa-check model-picker__check"></i>
+          </button>
+          <div v-if="filteredRerankModels.length === 0" class="cn-empty" style="padding: 24px 0">
+            {{ rerankModelSearch ? '无匹配模型' : '无模型' }}
           </div>
         </div>
       </div>

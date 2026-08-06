@@ -1,4 +1,11 @@
-export type LogLevel = 'info' | 'warn' | 'error'
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error'
+
+export const LEVEL_ORDER: Record<LogLevel, number> = {
+	debug: 0,
+	info: 1,
+	warn: 2,
+	error: 3,
+}
 
 export interface LogEntry {
 	id: number
@@ -6,6 +13,7 @@ export interface LogEntry {
 	level: LogLevel
 	tag: string
 	message: string
+	traceId?: number
 }
 
 const MAX_ENTRIES = 2000
@@ -13,13 +21,23 @@ let nextId = 1
 const buffer: LogEntry[] = []
 const subscribers: Array<(entry: LogEntry) => void> = []
 
-export function pushLog(level: LogLevel, tag: string, message: string): void {
+let debugMode = false
+export function setDebugMode(value: boolean): void {
+	debugMode = value
+}
+export function isDebugMode(): boolean {
+	return debugMode
+}
+
+export function pushLog(level: LogLevel, tag: string, message: string, traceId?: number): void {
+	if (level === 'debug' && !debugMode) return
 	const entry: LogEntry = {
 		id: nextId++,
 		timestamp: Date.now(),
 		level,
 		tag,
 		message,
+		traceId,
 	}
 	buffer.push(entry)
 	if (buffer.length > MAX_ENTRIES) {

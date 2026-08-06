@@ -1,5 +1,11 @@
 import type { CardTemplate } from '@shared/types/card'
 import type { TableDef, ColumnDef } from '@shared/types/table'
+import type { TableTemplatePreset } from '@shared/types/config'
+import { CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
+
+function newId(prefix: string): string {
+  return `${prefix}_${Math.random().toString(36).slice(2, 10)}`
+}
 
 interface ShujukuSheet {
   uid?: string
@@ -131,4 +137,18 @@ export function convertShujukuToCardTemplate(shujuku: ShujukuTemplate): CardTemp
   }
 
   return { templateVersion: 1, tables }
+}
+
+export function createUserTemplatePreset(tpl: CardTemplate | null): TableTemplatePreset | null {
+  if (!tpl) return null
+  const template = JSON.parse(JSON.stringify(tpl)) as CardTemplate
+  for (const t of template.tables) {
+    if (t.name === CHRONICLE_TABLE_NAME && t.enabled !== false) t.enabled = false
+  }
+  return {
+    id: newId('tpl'),
+    name: '默认模板副本',
+    template,
+    source: 'user'
+  }
 }

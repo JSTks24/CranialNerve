@@ -12,6 +12,7 @@ const strategyPage = readProjectFile('src/ui/pages/Strategy.vue')
 const routerSource = readProjectFile('src/ui/router.ts')
 const toastSource = readProjectFile('src/ui/toast.ts')
 const promptConfigPage = readProjectFile('src/ui/pages/PromptConfig.vue')
+const dialogSource = readProjectFile('src/ui/dialog.ts')
 const varHelpModal = readProjectFile('src/ui/components/VariableHelpModal.vue')
 const tableTypes = readProjectFile('src/shared/types/table.ts')
 const sessionSource = readProjectFile('src/core/session.ts')
@@ -182,5 +183,140 @@ describe('UI 主题守卫（深翠框景）', () => {
     expect(sessionSource).toContain('aiSegments')
     expect(sessionSource).toContain('role: s.role, content: s.content')
     expect(sessionSource).not.toContain("role: 'system', content: aiPrompt")
+  })
+
+  it('新建来源弹窗类名已入 theme.css', () => {
+    const classes = [
+      '.cn-modal-option',
+      '.cn-modal-option__label',
+      '.cn-modal-option__desc',
+      '.cn-modal-option__hint',
+      '.cn-modal-option--disabled'
+    ]
+    for (const cls of classes) expect(theme, `缺少样式 ${cls}`).toContain(cls)
+  })
+
+  it('提示词配置页接入新建来源弹窗', () => {
+    expect(promptConfigPage).toContain('PresetSourceModal')
+    expect(promptConfigPage).toContain('newPresetVisible')
+    expect(promptConfigPage).toContain('newPresetTVisible')
+    expect(promptConfigPage).toContain('handleNewPreset')
+    expect(promptConfigPage).toContain('handleNewPresetT')
+  })
+
+  it('PresetSourceModal 禁硬编码色值', () => {
+    const presetSourceModal = readProjectFile('src/ui/components/PresetSourceModal.vue')
+    expect(presetSourceModal).not.toMatch(/#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b/)
+  })
+
+  it('纪要表恢复默认按钮与逻辑已接入', () => {
+    expect(promptConfigPage).toContain('resetChronicleTableDef')
+    expect(promptConfigPage).toContain('恢复默认')
+    expect(sessionSource).toContain('getDefaultChronicleTable(): TableDef | null')
+    expect(sessionSource).toContain('getGatewayDefaultChronicleTable')
+  })
+
+  it('纪要索引不再显示七字段提示', () => {
+    const chroniclePage = readProjectFile('src/ui/pages/Chronicle.vue')
+    expect(chroniclePage).not.toContain('七字段')
+    expect(chroniclePage).not.toContain('IMPORTANT_WORD_FIELDS')
+    expect(theme).not.toContain('.chronicle-field__hint')
+  })
+
+  it('手动填表/纪要 contextDepth 文案改为处理最近N条对话', () => {
+    const manualFillPage = readProjectFile('src/ui/pages/ManualFill.vue')
+    const chroniclePage = readProjectFile('src/ui/pages/Chronicle.vue')
+    const cases: ReadonlyArray<readonly [string, string]> = [['ManualFill', manualFillPage], ['Chronicle', chroniclePage]]
+    for (const [name, src] of cases) {
+      expect(src, `${name} 应含新文案`).toContain('处理最近 N 条对话')
+      expect(src, `${name} 应含新 hint`).toContain('处理最近多少条消息')
+      expect(src, `${name} 不应含旧文案`).not.toContain('参考最近 N 轮对话')
+    }
+  })
+
+  it('调试模式开关移入运行日志工具栏最右侧', () => {
+    const debugPage = readProjectFile('src/ui/pages/Debug.vue')
+    expect(debugPage).not.toContain('debug-mode-row')
+    expect(debugPage).not.toContain('开启后采集 debug 日志与 AI 提示词')
+    expect(debugPage).toContain('debug-toolbar__debug')
+    expect(debugPage).toContain('调试模式')
+    expect(theme).not.toContain('.debug-mode-row')
+    expect(theme).toContain('.debug-toolbar__debug')
+  })
+
+  it('batchSize 标签改为每桶 N 个 AI 楼层', () => {
+    const manualFillPage = readProjectFile('src/ui/pages/ManualFill.vue')
+    const chroniclePage = readProjectFile('src/ui/pages/Chronicle.vue')
+    const cases: ReadonlyArray<readonly [string, string]> = [['ManualFill', manualFillPage], ['Chronicle', chroniclePage]]
+    for (const [name, src] of cases) {
+      expect(src, `${name} 应含新 batchSize 标签`).toContain('每桶 N 个 AI 楼层')
+      expect(src, `${name} 不应含旧 batchSize 标签`).not.toContain('一次处理 N 条消息')
+    }
+  })
+
+  it('merged 双向转圈：两页接入 fillStatusStore 与转圈图标', () => {
+    const manualFillPage = readProjectFile('src/ui/pages/ManualFill.vue')
+    const chroniclePage = readProjectFile('src/ui/pages/Chronicle.vue')
+    expect(manualFillPage).toContain('useFillStatusStore')
+    expect(manualFillPage).toContain('tableBusy')
+    expect(manualFillPage).toContain('fa-spinner fa-spin')
+    expect(chroniclePage).toContain('useFillStatusStore')
+    expect(chroniclePage).toContain('chronicleBusy')
+    expect(chroniclePage).toContain('fa-spinner fa-spin')
+    expect(readProjectFile('src/ui/stores/fill-status.ts')).toContain('subscribeFillState')
+  })
+})
+
+describe('模板与提示词预设弹窗改名', () => {
+  it('dialog.ts 提供带输入框的改名弹窗', () => {
+    expect(dialogSource).toContain('promptRename')
+    expect(dialogSource).toContain('cn-dlg-input')
+    expect(dialogSource).toContain('input.focus()')
+    expect(dialogSource).toContain('input.select()')
+    expect(dialogSource).toContain("e.key === 'Enter'")
+  })
+
+  it('模板预设与提示词预设均有弹窗改名入口（编辑器头部）', () => {
+    expect(promptConfigPage).toContain('renamePresetT')
+    expect(promptConfigPage).toContain('renamePreset')
+    expect(promptConfigPage).toContain('renamePresetT(activeTemplatePreset.id)')
+    expect(promptConfigPage).toContain('renamePreset(activePreset.id)')
+    expect(promptConfigPage).toContain('fa-pen')
+    expect(promptConfigPage).toContain('prompt-editor__title-group')
+  })
+
+  it('改名入口隐藏于角色卡来源预设', () => {
+    expect(promptConfigPage).toContain(`v-if="p.source !== 'card'"`)
+  })
+
+  it('预设列表点击选中、对号浮现才切换，选中态高亮独立', () => {
+    expect(promptConfigPage).toContain('selectedPresetId')
+    expect(promptConfigPage).toContain('selectedScenePresetId')
+    expect(promptConfigPage).toContain('selectPresetItem')
+    expect(promptConfigPage).toContain('preset-list__item--selected')
+    expect(promptConfigPage).toContain('@click="selectPresetItem(p.id)"')
+    expect(promptConfigPage).toContain(
+      'v-if="selectedPresetId === p.id && p.id !== ttConfig.activeId"'
+    )
+    expect(theme).toContain('.preset-list__item--selected')
+  })
+
+  it('内置模板预设可删除，不再强制恒存在', () => {
+    expect(promptConfigPage).not.toContain('内置模板不可删除')
+    const configGateway = readProjectFile('src/db/gateways/config.ts')
+    expect(configGateway).toContain('cur.presets.length === 0')
+  })
+
+  it('纪要表编辑与恢复默认使用响应式 store 源', () => {
+    expect(promptConfigPage).toContain(
+      'store.config.chronicleTableDef ?? session.getChronicleTableDef()'
+    )
+  })
+
+  it('纪要表头部说明弹性布局与弹窗输入框样式已入 theme.css', () => {
+    expect(theme).toMatch(/\.prompt-editor__desc \{[\s\S]*?flex:\s*1;/)
+    expect(theme).toMatch(/\.prompt-editor__desc \{[\s\S]*?min-width:\s*0;/)
+    expect(theme).toContain('.prompt-editor__title-group')
+    expect(theme).toContain('.cn-dialog__field')
   })
 })

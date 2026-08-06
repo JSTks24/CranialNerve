@@ -24,6 +24,16 @@ function nextSeq(frame: StorageFrame | null): number {
 	return frame.logEntries[frame.logEntries.length - 1]!.seq + 1
 }
 
+function collectAiFillReasons(operations: MutationOperation[]): SqlBatchOperation['reason'][] {
+	const reasons: SqlBatchOperation['reason'][] = []
+	for (const op of operations) {
+		if (op.kind === 'sql_batch' && op.reason && (op.reason === 'ai_fill' || op.reason === 'ai_fill_table' || op.reason === 'ai_fill_chronicle')) {
+			if (!reasons.includes(op.reason)) reasons.push(op.reason)
+		}
+	}
+	return reasons
+}
+
 export function appendSqlLog(
 	ctx: PersistContext,
 	messageId: number,
@@ -33,6 +43,13 @@ export function appendSqlLog(
 	let frame = ctx.repo.loadFrame(messageId)
 	if (!frame) {
 		frame = { version: 2, logEntries: [] }
+	}
+	const reasons = frame.summarizedReasons ?? []
+	for (const r of collectAiFillReasons(operations)) {
+		if (!reasons.includes(r)) reasons.push(r)
+	}
+	if (reasons.length > 0) {
+		frame.summarizedReasons = reasons
 	}
 	const entry: LogEntry = {
 		seq: nextSeq(frame),
@@ -71,8 +88,14 @@ export function writeCheckpoint(
 	if (!frame) {
 		frame = { version: 2, logEntries: [] }
 	}
+	const summarizedReasons = frame.summarizedReasons
 	frame.checkpoint = checkpoint
 	frame.logEntries = []
+	if (summarizedReasons && summarizedReasons.length > 0) {
+		frame.summarizedReasons = summarizedReasons
+	} else {
+		delete frame.summarizedReasons
+	}
 	if (templateId !== undefined) {
 		frame.templateId = templateId
 	}

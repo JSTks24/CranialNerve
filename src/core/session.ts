@@ -1,6 +1,11 @@
 import SqliteCore from '@db/sqlite/core'
 import { loadDefaultPrompts } from '@db/gateways/prompt'
 import {
+  loadDefaultTemplate,
+  getDefaultTemplate as getGatewayDefaultTemplate,
+  getDefaultChronicleTable as getGatewayDefaultChronicleTable
+} from '@db/gateways/template'
+import {
   createAiGateway,
   createCharacterGateway,
   createChatGateway,
@@ -24,11 +29,11 @@ import type { ConfigGateway } from '@db/gateways/config'
 import SqliteSyncBridge from '@db/sqlite/sync-bridge'
 import NameMapper from '@shared/namemapper'
 import { buildCreateTableSql, quoteIdent } from '@shared/template-builder'
-import { DEFAULT_CHRONICLE_TABLE, CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
+import { CHRONICLE_TABLE_NAME, CHRONICLE_COLUMNS } from '@shared/constants/chronicle'
 import { validateTimeRegistration, clearTimeRegistration } from './time'
 import { EVENT_CHAT_CHANGED } from '@shared/constants/events'
 import type { CardTemplate } from '@shared/types/card'
-import type { ChronicleColumnRole, QueryResult, TableDef } from '@shared/types/table'
+import type { QueryResult, TableDef } from '@shared/types/table'
 import type {
   CranialNerveConfig,
   AiPreset,
@@ -40,13 +45,12 @@ import type {
   TableTemplatePreset
 } from '@shared/types/config'
 import { TableEditor } from './table'
-import ChronicleEntryStore from './worldbook-entries'
 import type { ChronicleEntry } from '@shared/types/worldbook'
 import createChronicleRecaller, { type ChronicleRecaller } from './chronicle'
 import createVectorIndexStore, { type VectorIndexStore } from './chronicle/vector-index-store'
 import createWriteQueue, { type WriteQueue } from './write-queue'
 import { buildBookName, cleanupStaleBooks, syncToWorldbook } from './worldbook-sync'
-import { resetFillScheduler, onGenerationEnded, isFillInProgress, markGenerationStopped, resetGenerationStopped, buildWorldbookContext, snapshotLastAiLength, runManualFill, runManualCatchUp, type ExecuteFillOptions, type ManualCatchUpOptions } from './table/fill-orchestrator'
+import { resetFillScheduler, onGenerationEnded, onMessageSentForFill, isFillInProgress, markGenerationStopped, resetGenerationStopped, buildWorldbookContext, snapshotLastAiLength, runManualFill, runManualCatchUp, type ExecuteFillOptions, type ManualCatchUpOptions } from './table/fill-orchestrator'
 import { onPromptReady } from './chronicle/recall-orchestrator'
 import { getPersonaDescription, getCharDescription, getUserName } from '@db/gateways/host-state'
 import { stripKeyLineFromMes } from '@shared/recall-payload'
@@ -95,7 +99,6 @@ export class CranialNerveSession {
   private nameMapper: NameMapper | null = null
   private template: CardTemplate | null = null
   private currentTemplateId: string | null = null
-  private chronicleStore: ChronicleEntryStore | null = null
   private chronicleRecaller: ChronicleRecaller | null = null
   private writeQueue: WriteQueue
   private progressNotifier?: ProgressStarter
@@ -126,6 +129,7 @@ export class CranialNerveSession {
   async init(): Promise<void> {
     try {
       await loadDefaultPrompts()
+      await loadDefaultTemplate()
       await this.core.init()
       this.syncBridge = new SqliteSyncBridge(this.core, this.chat)
       this.tableEditor = new TableEditor(this.core, this.ai)
@@ -152,9 +156,18 @@ export class CranialNerveSession {
       if (this.regenerateFillPending) {
         this.regenerateFillPending = false
         this.realGenerationPending = false
-        onGenerationEnded(this, { force: true }).catch((e) => {
-          pushLog('error', 'session', `onGenerationEnded(force) error: ${e instanceof Error ? e.message : String(e)}`)
-        })
+        const cfg = this.getConfig()
+        const tableFreq = Math.max(0, cfg.tableFill.updateFrequency ?? 1)
+        const chronicleFreq = Math.max(0, cfg.chronicleFill.updateFrequency ?? 1)
+        const tableRegen = cfg.tableFill.autoFillTrigger === 'after-ai' && cfg.tableFill.regenerateFill && tableFreq > 0
+        const chronicleRegen = cfg.chronicleFill.autoFillTrigger === 'after-ai' && cfg.chronicleFill.regenerateFill && chronicleFreq > 0
+        if (tableRegen || chronicleRegen) {
+          onGenerationEnded(this, { force: true }).catch((e) => {
+            pushLog('error', 'session', `onGenerationEnded(force) error: ${e instanceof Error ? e.message : String(e)}`)
+          })
+        } else {
+          pushLog('info', 'session', 'regenerate 但无 after-ai 场景开启 regenerateFill，跳过')
+        }
         return
       }
       if (!this.realGenerationPending) {
@@ -174,7 +187,7 @@ export class CranialNerveSession {
       this.realGenerationPending = true
       const isRegenerate = type === 'regenerate' || type === 'swipe'
       if (isRegenerate) {
-        pushLog('info', 'session', 'regenerate/swipe：清旧帧、回退数据、不召回，生成后强制填表')
+        pushLog('info', 'session', 'regenerate/swipe：清旧帧、回退数据、不召回，生成后按模式决定填表')
         const lastAiId = this.getLastAiMessageId()
         if (lastAiId != null && this.syncBridge) {
           this.syncBridge.getRepo().removeFrame(lastAiId)
@@ -193,7 +206,7 @@ export class CranialNerveSession {
         return
       }
       if (isFillInProgress()) {
-        pushLog('warn', 'session', '纪要生成中，跳过本轮召回')
+        pushLog('warn', 'session', '填表/纪要生成中，跳过本轮召回')
         return
       }
       const chat = this.chat.getChat()
@@ -213,6 +226,9 @@ export class CranialNerveSession {
           this.lastRecalledUserSendDate = null
           this.realGenerationPending = false
         }
+        onMessageSentForFill(this, msgId).catch((e) => {
+          pushLog('error', 'session', `onMessageSentForFill error: ${e instanceof Error ? e.message : String(e)}`)
+        })
       }).catch((e) => {
         pushLog('error', 'session', `onPromptReady error: ${e instanceof Error ? e.message : String(e)}`)
       })
@@ -260,22 +276,17 @@ export class CranialNerveSession {
   }
 
   private setupChronicle(): void {
-    const name = buildBookName(this.getChatToken())
-    this.chronicleStore = new ChronicleEntryStore(this.worldbook, name)
     const tableReader = async (): Promise<ChronicleEntry[]> => this.getChronicleEntries()
     this.chronicleRecaller = createChronicleRecaller(this.ai, tableReader, this.vector, this.vectorIndexStore)
   }
 
   getChronicleEntries(): ChronicleEntry[] {
-    const def = this.getChronicleTableDef()
-    const colName = (role: ChronicleColumnRole) =>
-      def.columns.find((c) => c.role === role)?.name
-    const kKey = colName('key')
-    const kTimeStart = colName('timeStart')
-    const kTimeEnd = colName('timeEnd')
-    const kLocation = colName('location')
-    const kSummary = colName('summary')
-    const kKeyDialogue = colName('keyDialogue')
+    const kKey = CHRONICLE_COLUMNS.key
+    const kTimeStart = CHRONICLE_COLUMNS.timeStart
+    const kTimeEnd = CHRONICLE_COLUMNS.timeEnd
+    const kLocation = CHRONICLE_COLUMNS.location
+    const kSummary = CHRONICLE_COLUMNS.summary
+    const kImportantWord = CHRONICLE_COLUMNS.importantWord
     let result: QueryResult[]
     try {
       result = this.core.exec(`SELECT * FROM "${CHRONICLE_TABLE_NAME.replace(/"/g, '""')}"`)
@@ -294,7 +305,7 @@ export class CranialNerveSession {
       content: {
         summary: pick(r, kSummary),
         storyTime: pick(r, kTimeStart),
-        keyDialogue: pick(r, kKeyDialogue),
+        importantWord: pick(r, kImportantWord),
         location: pick(r, kLocation)
       }
     }))
@@ -366,10 +377,10 @@ export class CranialNerveSession {
     ]
     const raw = await this.ai.chatCompletion(
       messages,
-      { baseURL: preset.baseURL, apiKey: preset.apiKey, customIncludeBody: preset.customIncludeBody, customExcludeBody: preset.customExcludeBody, customIncludeHeaders: preset.customIncludeHeaders },
+      { baseURL: preset.baseURL, apiKey: preset.apiKey, customIncludeBody: preset.customIncludeBody, customExcludeBody: preset.customExcludeBody, customIncludeHeaders: preset.customIncludeHeaders, responseFormat: preset.responseFormat },
       { model: preset.model, max_tokens: preset.maxTokens, temperature: preset.temperature, top_p: preset.topP, frequency_penalty: preset.frequencyPenalty, presence_penalty: preset.presencePenalty, seed: preset.seed ?? undefined, stream: preset.stream },
       undefined,
-      { timeoutMs: cfg.pending.aiCallTimeoutMs, timeoutRetries: cfg.pending.aiTimeoutRetries }
+      { timeoutMs: cfg.pending.aiCallTimeoutMs, timeoutRetries: cfg.pending.aiTimeoutRetries, scene: 'keyword-gen' }
     )
     return parseRowKeywords(raw, rows.length)
   }
@@ -771,7 +782,7 @@ export class CranialNerveSession {
   }
 
   getChronicleTableDef(): TableDef {
-    return this.config.read().chronicleTableDef ?? DEFAULT_CHRONICLE_TABLE
+    return this.config.read().chronicleTableDef ?? getGatewayDefaultChronicleTable() ?? { name: CHRONICLE_TABLE_NAME, displayName: '纪要表', columns: [] }
   }
 
   saveConfig(config: CranialNerveConfig): void {
@@ -868,16 +879,20 @@ export class CranialNerveSession {
     return this.template
   }
 
+  getDefaultTemplate(): CardTemplate | null {
+    return getGatewayDefaultTemplate()
+  }
+
+  getDefaultChronicleTable(): TableDef | null {
+    return getGatewayDefaultChronicleTable()
+  }
+
   getCurrentTemplateId(): string | null {
     return this.currentTemplateId
   }
 
   getChronicleRecaller(): ChronicleRecaller | null {
     return this.chronicleRecaller
-  }
-
-  getChronicleStore(): ChronicleEntryStore | null {
-    return this.chronicleStore
   }
 
   getWriteQueue(): WriteQueue {
@@ -896,11 +911,19 @@ export class CranialNerveSession {
   }
 
   async runManualRefill(opts?: ExecuteFillOptions): Promise<import('./table/retry-loop').RunResult> {
-    return runManualFill(this, { ...opts, clearBeforeFill: true, clearTables: opts?.targetTables ?? [] })
+    return runManualFill(this, { ...opts, clearBeforeFill: true, clearTables: opts?.targetTables ?? [], skipFloors: 0, suppressProgressNotifier: opts?.suppressProgressNotifier ?? true })
   }
 
   async runManualCatchUp(opts?: ManualCatchUpOptions): Promise<import('./table/retry-loop').RunResult> {
-    return runManualCatchUp(this, opts)
+    return runManualCatchUp(this, { ...opts, suppressProgressNotifier: opts?.suppressProgressNotifier ?? true })
+  }
+
+  async runManualChronicleFill(opts?: ExecuteFillOptions): Promise<import('./table/retry-loop').RunResult> {
+    return runManualFill(this, { ...opts, runMode: opts?.runMode ?? 'chronicle', skipFloors: 0, suppressProgressNotifier: opts?.suppressProgressNotifier ?? true })
+  }
+
+  async runManualChronicleCatchUp(opts?: ManualCatchUpOptions): Promise<import('./table/retry-loop').RunResult> {
+    return runManualCatchUp(this, { ...opts, runMode: opts?.runMode ?? 'chronicle', suppressProgressNotifier: opts?.suppressProgressNotifier ?? true })
   }
 
   runWrite<T>(task: () => Promise<T> | T): Promise<T> {

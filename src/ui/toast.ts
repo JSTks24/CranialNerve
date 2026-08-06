@@ -90,6 +90,7 @@ function progress(text: string): {
   done(): void
   fail(errText: string): void
   close(): void
+  update(text: string): void
   abortSignal: AbortSignal
 } {
   injectStyle()
@@ -140,6 +141,10 @@ function progress(text: string): {
     close() {
       item.classList.remove('cn-toast--show')
       setTimeout(() => item.remove(), 300)
+    },
+    update(text: string) {
+      const span = item.querySelector('.cn-toast__bd > span')
+      if (span) span.textContent = text
     },
     fail(errText: string) {
       if (!item.parentNode) return

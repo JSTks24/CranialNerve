@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
 import SqliteCore from '../src/db/sqlite/core'
 import SqliteSyncBridge from '../src/db/sqlite/sync-bridge'
-import { runManualFill } from '../src/core/table/fill-orchestrator'
+import { runManualFill, onMessageSentForFill } from '../src/core/table/fill-orchestrator'
+import { CHRONICLE_TABLE_NAME } from '../src/shared/constants/chronicle'
 import type { ChatGateway } from '../src/db/gateways/chat'
 import type { CranialNerveSession } from '../src/core/session'
 import type { AiPreset } from '../src/shared/types/config'
@@ -27,7 +28,7 @@ function makePreset(): AiPreset {
   return {
     id: 'p1', name: 'p', baseURL: 'http://x', apiKey: 'k', model: 'm',
     maxTokens: 100, temperature: 0, topP: 1, frequencyPenalty: 0, presencePenalty: 0,
-    seed: null, stream: false, customIncludeBody: '', customExcludeBody: '', customIncludeHeaders: '',
+    seed: null, stream: false, responseFormat: 'none', customIncludeBody: '', customExcludeBody: '', customIncludeHeaders: '',
   }
 }
 
@@ -54,17 +55,21 @@ function makeSession(core: SqliteCore, chat: FakeMessage[], editorRun: () => Pro
       aiPresets: [], activeAiPresetId: '', vector: {
         embeddingEndpoint: '', embeddingApiKey: '', embeddingModel: '', rerankEndpoint: '', rerankApiKey: '', rerankModel: '',
       },
-      vectorEnabled: false, maxRetries: 3, snapshotStrategy: 'every-message',
+      vectorEnabled: false, snapshotStrategy: 'every-message',
       prompt: {
         tableEdit: { presets: [], activeId: '', defaultId: '' },
+        chronicleGen: { presets: [], activeId: '', defaultId: '' },
         chronicleRecall: { presets: [], activeId: '', defaultId: '' },
       },
       tableFill: {
-        autoFill: true, contextDepth: 3, updateFrequency: 1, batchSize: 3, skipFloors: 0, maxRetries: 3,
+        autoFillTrigger: 'after-ai', regenerateFill: true, contextDepth: 3, updateFrequency: 1, batchSize: 3, skipFloors: 0, maxRetries: 3,
         manualUpdateContextDepth: null, manualUpdateBatchSize: null, manualSelectedTables: [], hasManualSelection: false,
-        chronicleSendLatestRows: 10,
       },
-      maxRecallItems: 25, recallEnabled: true, recallRecentFixedInjectCount: 5, recallMinScore: 0.45, chronicleGenEnabled: false, tableFillPresetId: 'p1',
+      chronicleFill: {
+        autoFillTrigger: 'off', regenerateFill: false, contextDepth: 3, updateFrequency: 1, batchSize: 3, skipFloors: 0, maxRetries: 3, chronicleSendLatestRows: 10,
+        manualUpdateContextDepth: null, manualUpdateBatchSize: null,
+      },
+      maxRecallItems: 25, recallEnabled: true, recallRecentFixedInjectCount: 5, recallMinScore: 0.45, tableFillPresetId: 'p1', chronicleGenPresetId: '',
       recallPresetId: '', recallContextDepth: 5, retainFloors: 100,
       pending: { aiCallTimeoutMs: 60000, aiTimeoutRetries: 1, listModelsTimeoutMs: 10000, writeQueueDrainTimeoutMs: 8000, summarizeOnManualAbort: false, minSummaryLength: 0 },
       tableTemplate: { presets: [], activeId: '', defaultId: '' },
@@ -97,7 +102,7 @@ describe('runManualFill 重填分支', () => {
       return { ok: true, attempts: 1, lastSql: "INSERT INTO t VALUES ('new')" }
     }))
 
-    const result = await runManualFill(session, { clearBeforeFill: true, clearTables: ['t'], targetTables: ['t'], includeChronicle: false })
+    const result = await runManualFill(session, { clearBeforeFill: true, clearTables: ['t'], targetTables: ['t'] })
 
     expect(result.ok).toBe(true)
     const rows = core.exec('SELECT * FROM t')
@@ -108,7 +113,7 @@ describe('runManualFill 重填分支', () => {
     expect(frame.logEntries).toHaveLength(1)
     expect(frame.logEntries[0].operations).toHaveLength(2)
     expect(frame.logEntries[0].operations[0].reason).toBe('manual_refill')
-    expect(frame.logEntries[0].operations[1].reason).toBe('ai_fill')
+    expect(frame.logEntries[0].operations[1].reason).toBe('ai_fill_table')
     core.dispose()
   })
 
@@ -120,7 +125,7 @@ describe('runManualFill 重填分支', () => {
     const chat: FakeMessage[] = [{ is_user: false, is_system: false, mes: 'story', extra: {} }]
     const session = makeSession(core, chat, vi.fn().mockResolvedValue({ ok: false, attempts: 3, error: 'AI fail' }))
 
-    const result = await runManualFill(session, { clearBeforeFill: true, clearTables: ['t'], targetTables: ['t'], includeChronicle: false })
+    const result = await runManualFill(session, { clearBeforeFill: true, clearTables: ['t'], targetTables: ['t'] })
 
     expect(result.ok).toBe(false)
     const rows = core.exec('SELECT * FROM t')
@@ -128,6 +133,96 @@ describe('runManualFill 重填分支', () => {
     const repo = (session as unknown as { getSyncBridgeRepo: () => any }).getSyncBridgeRepo()
     const frame = repo.loadFrame(0)
     expect(frame).toBeNull()
+    core.dispose()
+  })
+})
+
+describe('merged 模式 reason 按 SQL 内容精确拆分', () => {
+  async function runMerged(core: SqliteCore, chat: FakeMessage[], lastSql: string) {
+    const session = makeSession(core, chat, vi.fn(async () => ({ ok: true, attempts: 1, lastSql })))
+    const baseCfg = (session as unknown as { getConfig: () => any }).getConfig()
+    ;(session as unknown as { getConfig: () => any }).getConfig = () => ({
+      ...baseCfg,
+      chronicleTableDef: {
+        name: CHRONICLE_TABLE_NAME,
+        displayName: '纪要表',
+        columns: [{ name: 'key', displayName: '编码', type: 'TEXT' }],
+      },
+    })
+    await runManualFill(session, { runMode: 'merged', targetTables: ['t'] })
+    return (session as unknown as { getSyncBridgeRepo: () => any }).getSyncBridgeRepo()
+  }
+
+  function frameReasons(repo: any): (string | undefined)[] {
+    const frame = repo.loadFrame(0) as import('../src/shared/types/storage-frame').StorageFrame
+    return frame.logEntries.flatMap((e) => e.operations.map((o) => o.reason))
+  }
+
+  it('AI 只输出纪要 SQL 时只标 ai_fill_chronicle', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    core.run('CREATE TABLE t (c TEXT)')
+    const chat: FakeMessage[] = [{ is_user: false, is_system: false, mes: 'story', extra: {} }]
+    const repo = await runMerged(core, chat, "INSERT INTO cn_chronicle (key) VALUES ('CN0001')")
+    expect(frameReasons(repo)).toEqual(['ai_fill_chronicle'])
+    core.dispose()
+  })
+
+  it('AI 只输出普通表 SQL 时只标 ai_fill_table', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    core.run('CREATE TABLE t (c TEXT)')
+    const chat: FakeMessage[] = [{ is_user: false, is_system: false, mes: 'story', extra: {} }]
+    const repo = await runMerged(core, chat, "INSERT INTO t (c) VALUES ('x')")
+    expect(frameReasons(repo)).toEqual(['ai_fill_table'])
+    core.dispose()
+  })
+
+  it('AI 双输出时两条 reason 都标', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    core.run('CREATE TABLE t (c TEXT)')
+    const chat: FakeMessage[] = [{ is_user: false, is_system: false, mes: 'story', extra: {} }]
+    const repo = await runMerged(core, chat, "INSERT INTO t (c) VALUES ('x'); INSERT INTO cn_chronicle (key) VALUES ('CN0002')")
+    expect(frameReasons(repo)).toEqual(['ai_fill_chronicle', 'ai_fill_table'])
+    core.dispose()
+  })
+
+  it('SQL 未提及任何表时（空操作）不标任何 reason', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    core.run('CREATE TABLE t (c TEXT)')
+    const chat: FakeMessage[] = [{ is_user: false, is_system: false, mes: 'story', extra: {} }]
+    const repo = await runMerged(core, chat, 'SELECT 1')
+    expect(frameReasons(repo)).toEqual([])
+    core.dispose()
+  })
+})
+
+describe('onMessageSentForFill after-send 截断', () => {
+  it('按 contextDepth 截断 messages，只填上一轮附近（1 bucket 而非全量 2 bucket）', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    const chat: FakeMessage[] = [
+      { is_user: true, is_system: false, mes: 'u0', extra: {} },
+      { is_user: false, is_system: false, mes: 'a1', extra: {} },
+      { is_user: true, is_system: false, mes: 'u2', extra: {} },
+      { is_user: false, is_system: false, mes: 'a3', extra: {} },
+      { is_user: true, is_system: false, mes: 'u4', extra: {} },
+      { is_user: false, is_system: false, mes: 'a5', extra: {} },
+      { is_user: true, is_system: false, mes: 'new', extra: {} },
+    ]
+    const editorRun = vi.fn(async () => ({ ok: true, attempts: 1, lastSql: '' }))
+    const session = makeSession(core, chat, editorRun)
+    const baseCfg = (session as unknown as { getConfig: () => any }).getConfig()
+    ;(session as unknown as { getConfig: () => any }).getConfig = () => ({
+      ...baseCfg,
+      tableFill: { ...baseCfg.tableFill, autoFillTrigger: 'off' },
+      chronicleFill: { ...baseCfg.chronicleFill, autoFillTrigger: 'after-send', contextDepth: 3, batchSize: 3 },
+      chronicleTableDef: { name: 'cn_chronicle', displayName: '纪要表', columns: [{ name: 'key', displayName: 'k', type: 'TEXT' }] },
+    })
+    await onMessageSentForFill(session, 6)
+    expect(editorRun).toHaveBeenCalledTimes(1)
     core.dispose()
   })
 })

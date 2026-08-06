@@ -1,8 +1,15 @@
 import type { CranialNerveSession } from './session'
 import type { WorldInfoData, WorldInfoEntry } from '@shared/types/worldbook'
-import { CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
+import type { TablePlacementPosition } from '@shared/types/table'
+import { CHRONICLE_TABLE_NAME, CHRONICLE_COLUMNS } from '@shared/constants/chronicle'
 import { DEFAULT_ENTRY_PLACEMENT, CHRONICLE_ENTRY_PLACEMENT } from '@shared/constants/worldbook'
 import { pushLog } from '@shared/log-buffer'
+
+function positionToRole(position: TablePlacementPosition): number {
+  if (position === 'at_depth_as_user') return 1
+  if (position === 'at_depth_as_assistant') return 2
+  return 0
+}
 
 export const WORLD_BOOK_PREFIX = 'CN_Data_' as const
 
@@ -43,12 +50,8 @@ export async function syncToWorldbook(session: CranialNerveSession): Promise<voi
   } catch (e) {
     pushLog('warn', 'worldbook', `加载现有书 ${bookName} 失败（视为无手动条目）: ${e instanceof Error ? e.message : String(e)}`)
   }
-  const chronicleDef = session.getChronicleTableDef()
-  const chronicleKeyCol = chronicleDef.columns.find((c) => c.role === 'key')?.name
-  const chronicleSummaryCols = [
-    chronicleDef.columns.find((c) => c.role === 'summary')?.name,
-    chronicleDef.columns.find((c) => c.role === 'keyDialogue')?.name
-  ].filter((v): v is string => typeof v === 'string')
+  const chronicleKeyCol = CHRONICLE_COLUMNS.key
+  const chronicleSummaryCols = [CHRONICLE_COLUMNS.summary, CHRONICLE_COLUMNS.importantWord]
   const tableNames = session.listTables()
   for (const tableName of tableNames) {
     const results = session.getTableRowsWithRowid(tableName)
@@ -75,7 +78,7 @@ export async function syncToWorldbook(session: CranialNerveSession): Promise<voi
           constant: false,
           selective: true,
           position: placement.position,
-          role: 0,
+          role: positionToRole(placement.position),
           depth: placement.depth,
           order: placement.order + i,
           displayIndex: uid,
@@ -125,7 +128,7 @@ export async function syncToWorldbook(session: CranialNerveSession): Promise<voi
             constant: false,
             selective: true,
             position: placement.position,
-            role: 0,
+            role: positionToRole(placement.position),
             depth: placement.depth,
             order: placement.order + i,
             displayIndex: uid,
@@ -146,7 +149,7 @@ export async function syncToWorldbook(session: CranialNerveSession): Promise<voi
           constant: true,
           selective: false,
           position: placement.position,
-          role: 0,
+          role: positionToRole(placement.position),
           depth: placement.depth,
           order: placement.order,
           displayIndex: uid,
@@ -187,7 +190,7 @@ function findSummaryColumn(
 ): string {
   const summaryCols =
     tableName === CHRONICLE_TABLE_NAME
-      ? [...(chronicleSummaryCols ?? []), 'chronicle_text', 'key_dialogue']
+      ? [...(chronicleSummaryCols ?? []), 'chronicle_text', 'important_word']
       : ['summary', 'desc', 'description', 'note', columns[1] ?? '']
   for (const col of summaryCols) {
     const v = row[col]

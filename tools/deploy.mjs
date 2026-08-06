@@ -21,6 +21,7 @@ if (!existsSync(manifestSrc)) {
   process.exit(1)
 }
 const promptsSrc = path.join(projectRoot, 'prompts')
+const tablesSrc = path.join(projectRoot, 'tables')
 
 rmSync(DEPLOY_TARGET, { recursive: true, force: true })
 mkdirSync(DEPLOY_TARGET, { recursive: true })
@@ -29,6 +30,9 @@ copyFileSync(manifestSrc, path.join(DEPLOY_TARGET, 'manifest.json'))
 cpSync(distSrc, path.join(DEPLOY_TARGET, 'dist'), { recursive: true })
 if (existsSync(promptsSrc)) {
   cpSync(promptsSrc, path.join(DEPLOY_TARGET, 'prompts'), { recursive: true })
+}
+if (existsSync(tablesSrc)) {
+  cpSync(tablesSrc, path.join(DEPLOY_TARGET, 'tables'), { recursive: true })
 }
 
 console.log(`[CranialNerve deploy] 已部署到 ${DEPLOY_TARGET}`)

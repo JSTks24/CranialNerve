@@ -1,23 +1,30 @@
 import { defineStore } from 'pinia'
 import { ref, computed, onBeforeUnmount, onMounted } from 'vue'
-import { getAllLogs, clearLogs, subscribe, pushLog } from '@shared/log-buffer'
+import { getAllLogs, clearLogs, subscribe, pushLog, isDebugMode, setDebugMode, LEVEL_ORDER } from '@shared/log-buffer'
 import type { LogEntry, LogLevel } from '@shared/log-buffer'
+import { getAllPromptTraces } from '@shared/prompt-trace'
+import type { PromptTraceEntry } from '@shared/prompt-trace'
 import { getSession } from '@core/session'
 import { buildBookName } from '@core/worldbook-sync'
 import { cleanupStaleBooks, syncToWorldbook } from '@core/worldbook-sync'
 
 export type LogLevelFilter = LogLevel | 'all'
 
+export type DebugPanel = 'logs' | 'status'
+
 export const useDebugStore = defineStore('cn-debug', () => {
 	const session = getSession()
 	const logs = ref<LogEntry[]>([])
-	const levelFilter = ref<LogLevelFilter>('all')
+	const levelFilter = ref<LogLevelFilter>('warn')
 	const tagFilter = ref('all')
 	const keyword = ref('')
 	const paused = ref(false)
 	const autoScroll = ref(true)
 	const chatActive = ref(false)
 	const pendingEntries = ref<LogEntry[]>([])
+	const debugMode = ref(false)
+	const expandedLogId = ref<number | null>(null)
+	const activePanel = ref<DebugPanel>('logs')
 	let unsubscribe: (() => void) | null = null
 
 	const tagOptions = computed(() => {
@@ -28,7 +35,7 @@ export const useDebugStore = defineStore('cn-debug', () => {
 	const filteredLogs = computed(() => {
 		const needle = keyword.value.trim().toLowerCase()
 		return logs.value.filter((entry) => {
-			if (levelFilter.value !== 'all' && entry.level !== levelFilter.value) return false
+			if (levelFilter.value !== 'all' && LEVEL_ORDER[entry.level] < LEVEL_ORDER[levelFilter.value as LogLevel]) return false
 			if (tagFilter.value !== 'all' && entry.tag !== tagFilter.value) return false
 			if (needle && !entry.message.toLowerCase().includes(needle)) return false
 			return true
@@ -42,6 +49,12 @@ export const useDebugStore = defineStore('cn-debug', () => {
 	const statusLabel = computed(() => {
 		if (paused.value) return pendingCount.value ? `已暂停，${pendingCount.value} 条待显示` : '已暂停'
 		return '实时更新中'
+	})
+
+	const expandedTrace = computed<PromptTraceEntry | null>(() => {
+		const id = expandedLogId.value
+		if (id == null) return null
+		return getAllPromptTraces().find((t) => t.id === id) ?? null
 	})
 
 	const worldbookStatus = computed(() => {
@@ -93,8 +106,8 @@ export const useDebugStore = defineStore('cn-debug', () => {
 		return {
 			hasAI: cfg.aiPresets.length > 0 && !!cfg.activeAiPresetId,
 			recallEnabled: cfg.recallEnabled,
-			chronicleGenEnabled: cfg.chronicleGenEnabled,
-			autoFill: cfg.tableFill.autoFill,
+			chronicleGenEnabled: cfg.chronicleFill.autoFillTrigger !== 'off',
+			autoFill: cfg.tableFill.autoFillTrigger !== 'off',
 			vectorEnabled: cfg.vectorEnabled,
 		}
 	})
@@ -152,7 +165,17 @@ export const useDebugStore = defineStore('cn-debug', () => {
 		}
 	}
 
+	function toggleDebugMode() {
+		debugMode.value = !debugMode.value
+		setDebugMode(debugMode.value)
+	}
+
+	function toggleLogExpand(id: number) {
+		expandedLogId.value = expandedLogId.value === id ? null : id
+	}
+
 	onMounted(() => {
+		debugMode.value = isDebugMode()
 		refresh()
 		unsubscribe = subscribe((entry) => {
 			if (paused.value) {
@@ -187,11 +210,17 @@ export const useDebugStore = defineStore('cn-debug', () => {
 		snapshotStatus,
 		recoverSnapshotAt,
 		configStatus,
+		debugMode,
+		expandedLogId,
+		expandedTrace,
+		activePanel,
 		refresh,
 		setPaused,
 		clearAll,
 		exportLogs,
 		forceCleanupBooks,
 		forceSyncBooks,
+		toggleDebugMode,
+		toggleLogExpand,
 	}
 })

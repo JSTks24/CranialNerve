@@ -8,10 +8,10 @@ export function createFillApi(ctx: ApiGroupContext): Record<string, Function> {
 			return runManualFill(ctx.getSession())
 		},
 		async runManualRefill(opts?: ExecuteFillOptions): Promise<RunResult> {
-			return runManualFill(ctx.getSession(), { ...opts, clearBeforeFill: true, clearTables: opts?.targetTables ?? [] })
+			return runManualFill(ctx.getSession(), { ...opts, clearBeforeFill: true, clearTables: opts?.targetTables ?? [], skipFloors: 0, suppressProgressNotifier: opts?.suppressProgressNotifier ?? true })
 		},
 		async runManualCatchUp(opts?: ManualCatchUpOptions): Promise<RunResult> {
-			return runManualCatchUp(ctx.getSession(), opts)
+			return runManualCatchUp(ctx.getSession(), { ...opts, suppressProgressNotifier: opts?.suppressProgressNotifier ?? true })
 		},
 		async enqueueWrite<T>(task: () => Promise<T>): Promise<T> {
 			return ctx.getSession().getWriteQueue().enqueue(task)
