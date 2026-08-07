@@ -189,6 +189,7 @@ async function readStream(res: Response, signal: AbortSignal): Promise<string> {
     const reader = res.body.getReader()
     const decoder = new TextDecoder()
     let content = ''
+    let pending = ''
     try {
         while (true) {
             if (signal.aborted) {
@@ -197,25 +198,39 @@ async function readStream(res: Response, signal: AbortSignal): Promise<string> {
             }
             const { done, value } = await reader.read()
             if (done) break
-            const text = decoder.decode(value, { stream: true })
-            for (const line of text.split('\n')) {
-                const trimmed = line.trim()
-                if (!trimmed.startsWith('data: ')) continue
-                const payload = trimmed.slice(6)
-                if (payload === '[DONE]') continue
-                try {
-                    const chunk = JSON.parse(payload) as {
-                        choices?: Array<{ delta?: { content?: string } }>
-                    }
-                    const delta = chunk.choices?.[0]?.delta?.content
-                    if (delta) content += delta
-                } catch (e) {
-                    pushLog('warn', 'ai', `SSE chunk 解析失败: ${e instanceof Error ? e.message : String(e)}`)
-                }
+            pending += decoder.decode(value, { stream: true })
+            const lines = pending.split('\n')
+            pending = lines.pop() ?? ''
+            for (const line of lines) {
+                const delta = parseSseLine(line)
+                if (delta) content += delta
             }
+        }
+        if (pending.trim().length > 0) {
+            const delta = parseSseLine(pending)
+            if (delta) content += delta
         }
     } finally {
         try { reader.releaseLock() } catch {}
     }
     return content
+}
+
+function parseSseLine(line: string): string | null {
+    const trimmed = line.trim()
+    if (!trimmed) return null
+    const m = trimmed.match(/^data:\s?(.*)$/)
+    if (!m) return null
+    const payload = m[1]!.trim()
+    if (payload === '[DONE]') return null
+    try {
+        const chunk = JSON.parse(payload) as {
+            choices?: Array<{ delta?: { content?: string } }>
+        }
+        const delta = chunk.choices?.[0]?.delta?.content
+        return delta ?? null
+    } catch (e) {
+        pushLog('warn', 'ai', `SSE chunk 解析失败: ${e instanceof Error ? e.message : String(e)}`)
+        return null
+    }
 }

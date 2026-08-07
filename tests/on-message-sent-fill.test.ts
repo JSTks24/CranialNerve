@@ -53,12 +53,17 @@ function makeConfig(): CranialNerveConfig {
   }
 }
 
-function makeMockSession(chat: unknown[]) {
+function makeMockSession(chat: unknown[], meta: Record<string, unknown> = {}) {
   const getAiPresetForScene = vi.fn(() => null)
   const session = {
     getConfig: () => makeConfig(),
-    chat: { getChat: () => chat },
+    chat: {
+      getChat: () => chat,
+      readChatMetadata: (k: string) => meta[k],
+    },
     getAiPresetForScene,
+    getSyncBridgeRepo: () => null,
+    getTaskAbortSignal: () => undefined,
   } as unknown as CranialNerveSession
   return { session, getAiPresetForScene }
 }
@@ -123,6 +128,94 @@ describe('onMessageSentForFill（after-send 填上一轮）', () => {
     ]
     const { session, getAiPresetForScene } = makeMockSession(chat)
     await onMessageSentForFill(session, 6)
+    expect(getAiPresetForScene).toHaveBeenCalled()
+  })
+})
+
+describe('onMessageSentForFill after-send 幂等（3.7 修复：跳过已填楼层）', () => {
+  beforeEach(() => {
+    resetFillScheduler()
+  })
+
+  it('上一轮已填（FILL_PROGRESS 覆盖）时跳过不重填', async () => {
+    const chat = [
+      { is_user: true, is_system: false, mes: 'hi' },
+      { is_user: false, is_system: false, mes: 'ai reply' },
+      { is_user: true, is_system: false, mes: 'new msg' },
+    ]
+    const { session, getAiPresetForScene } = makeMockSession(chat, { CN_FILL_PROGRESS: { tableFloor: 1 } })
+    await onMessageSentForFill(session, 2)
+    expect(getAiPresetForScene).not.toHaveBeenCalled()
+  })
+
+  it('有未填楼层时触发填表', async () => {
+    const chat = [
+      { is_user: true, is_system: false, mes: 'hi' },
+      { is_user: false, is_system: false, mes: 'ai reply' },
+      { is_user: true, is_system: false, mes: 'new msg' },
+    ]
+    const { session, getAiPresetForScene } = makeMockSession(chat, { CN_FILL_PROGRESS: { tableFloor: 0 } })
+    await onMessageSentForFill(session, 2)
+    expect(getAiPresetForScene).toHaveBeenCalled()
+  })
+
+  it('已填楼层较早时只填未填楼层（lastAiId 覆盖但 baseLast 之后的 AI 楼触发）', async () => {
+    const chat = [
+      { is_user: true, is_system: false, mes: 'u0' },
+      { is_user: false, is_system: false, mes: 'a1' },
+      { is_user: true, is_system: false, mes: 'u2' },
+      { is_user: false, is_system: false, mes: 'a3' },
+      { is_user: true, is_system: false, mes: 'new msg' },
+    ]
+    const { session, getAiPresetForScene } = makeMockSession(chat, { CN_FILL_PROGRESS: { tableFloor: 1 } })
+    await onMessageSentForFill(session, 4)
+    expect(getAiPresetForScene).toHaveBeenCalled()
+  })
+})
+
+describe('onMessageSentForFill merged（双 after-send，一侧游标 null 不塌缩）', () => {
+  beforeEach(() => {
+    resetFillScheduler()
+  })
+
+  function makeMergedSession(chat: unknown[], meta: Record<string, unknown> = {}) {
+    const cfg = makeConfig()
+    cfg.tableFill.autoFillTrigger = 'after-send'
+    cfg.chronicleFill.autoFillTrigger = 'after-send'
+    const getAiPresetForScene = vi.fn(() => null)
+    const session = {
+      getConfig: () => cfg,
+      chat: {
+        getChat: () => chat,
+        readChatMetadata: (k: string) => meta[k],
+      },
+      getAiPresetForScene,
+      getSyncBridgeRepo: () => null,
+      getTaskAbortSignal: () => undefined,
+      getTemplate: () => ({ tables: [{ name: 't', displayName: 't', columns: [{ name: 'c', displayName: 'c', type: 'TEXT' }], enabled: true }] }),
+    } as unknown as CranialNerveSession
+    return { session, getAiPresetForScene }
+  }
+
+  it('tableFloor 已到顶但 chronicleFloor 缺失时不塌缩全量重填（跳过本轮）', async () => {
+    const chat = [
+      { is_user: true, is_system: false, mes: 'hi' },
+      { is_user: false, is_system: false, mes: 'ai reply' },
+      { is_user: true, is_system: false, mes: 'new msg' },
+    ]
+    const { session, getAiPresetForScene } = makeMergedSession(chat, { CN_FILL_PROGRESS: { tableFloor: 1 } })
+    await onMessageSentForFill(session, 2)
+    expect(getAiPresetForScene).not.toHaveBeenCalled()
+  })
+
+  it('两侧游标均缺失时仍走 merged 填上一轮', async () => {
+    const chat = [
+      { is_user: true, is_system: false, mes: 'hi' },
+      { is_user: false, is_system: false, mes: 'ai reply' },
+      { is_user: true, is_system: false, mes: 'new msg' },
+    ]
+    const { session, getAiPresetForScene } = makeMergedSession(chat)
+    await onMessageSentForFill(session, 2)
     expect(getAiPresetForScene).toHaveBeenCalled()
   })
 })

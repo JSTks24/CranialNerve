@@ -761,11 +761,6 @@ async function selectPresetT(id: string) {
   }
 }
 
-function unbindBoundPreset() {
-  session.unbindBoundTemplate()
-  toast.success('已解除聊天模板绑定')
-}
-
 async function deletePresetT(id: string) {
   if (ttConfig.value.presets.length <= 1) {
     toast.warning('至少保留一个预设')
@@ -796,22 +791,6 @@ async function deletePresetT(id: string) {
   selectedTableIdx.value = -1
   store.save()
   toast.success('已删除')
-}
-
-function duplicatePresetT(id: string) {
-  const p = ttConfig.value.presets.find((x) => x.id === id)
-  if (!p) return
-  const copy = {
-    id: newId('tpl'),
-    name: p.name + '（副本）',
-    template: JSON.parse(JSON.stringify(p.template)),
-    source: 'user' as const
-  }
-  ttConfig.value.presets.push(copy)
-  selectedPresetId.value = copy.id
-  selectedTableIdx.value = -1
-  store.save()
-  toast.success('已复制模板，点击「设为当前」应用')
 }
 
 function setDefaultPresetT(id: string) {
@@ -915,12 +894,13 @@ function importTemplate(e: Event) {
     try {
       const raw = JSON.parse(String(reader.result))
       let template: CardTemplate
+      const notes: string[] = []
 
       if (isCardTemplate(raw)) {
         template = raw
       } else if (isShujukuTemplate(raw)) {
         template = convertShujukuToCardTemplate(raw)
-        toast.success('检测到 shujuku 格式，已自动转换')
+        notes.push('检测到 shujuku 格式，已自动转换')
       } else {
         throw new Error('无法识别模板格式（需要 CardTemplate 或 shujuku TABLE_TEMPLATE）')
       }
@@ -929,7 +909,7 @@ function importTemplate(e: Event) {
       }
       const disabledCount = template.tables.filter((t) => t.enabled === false).length
       if (disabledCount > 0) {
-        toast.warning(`检测到 ${disabledCount} 张纪要表，已禁用，可在模板编辑器手动启用当普通表用`)
+        notes.push(`检测到 ${disabledCount} 张纪要表，已禁用，可在模板编辑器手动启用当普通表用`)
       }
 
       const preset = {
@@ -941,7 +921,7 @@ function importTemplate(e: Event) {
       ttConfig.value.presets.push(preset)
       selectedTableIdx.value = -1
       store.save()
-      toast.success('已导入，点击「设为当前」应用')
+      toast.success(['已导入，点击「设为当前」应用', ...notes].join('\n'))
     } catch (err) {
       toast.error(err instanceof Error ? err.message : '导入失败')
     }
@@ -988,7 +968,6 @@ function onDocClick(e: MouseEvent) {
   if (target instanceof Element && target.closest('.preset-list')) return
   selectedScenePresetId.value = null
   selectedPresetId.value = null
-  selectedTableIdx.value = -1
 }
 onMounted(() => document.addEventListener('click', onDocClick))
 onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
@@ -1019,17 +998,10 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
               >
                 <span class="preset-list__name">
                   <i class="fa-solid fa-link preset-list__card" title="本聊天绑定模板"></i>
-                  本聊天绑定模板
+                  <span class="preset-list__name-text">本聊天绑定模板</span>
                 </span>
                 <span class="preset-list__badge">使用中</span>
                 <span class="preset-list__count">{{ boundTemplate?.tables.length ?? 0 }}表</span>
-                <button
-                  class="cn-btn cn-btn--sm cn-btn--text"
-                  title="解除绑定"
-                  @click="unbindBoundPreset"
-                >
-                  <i class="fa-solid fa-unlink"></i>
-                </button>
               </li>
               <li
                 v-for="p in ttConfig.presets"
@@ -1050,7 +1022,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
                     class="fa-solid fa-id-card preset-list__card"
                     title="角色卡自带模板"
                   ></i>
-                  {{ p.name }}
+                  <span class="preset-list__name-text">{{ p.name }}</span>
                   <i
                     v-if="p.id === ttConfig.defaultId"
                     class="fa-solid fa-star preset-list__default"
@@ -1059,38 +1031,33 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
                 </span>
                 <span class="preset-list__count">{{ p.template.tables.length }}表</span>
                 <span v-if="p.id === boundMatchPresetId" class="preset-list__badge">使用中</span>
-                <button
-                  v-if="selectedPresetId === p.id && p.id !== ttConfig.activeId"
-                  class="cn-btn cn-btn--sm cn-btn--text"
-                  title="设为当前"
-                  @click.stop="selectPresetT(p.id)"
-                >
-                  <i class="fa-solid fa-check"></i>
-                </button>
-                <button
-                  v-if="selectedPresetId === p.id && p.id !== ttConfig.defaultId"
-                  class="cn-btn cn-btn--sm cn-btn--text"
-                  title="设为默认"
-                  @click.stop="setDefaultPresetT(p.id)"
-                >
-                  <i class="fa-solid fa-star"></i>
-                </button>
-                <button
-                  v-if="selectedPresetId === p.id && p.source !== 'card'"
-                  class="cn-btn cn-btn--sm cn-btn--text"
-                  title="复制"
-                  @click.stop="duplicatePresetT(p.id)"
-                >
-                  <i class="fa-solid fa-copy"></i>
-                </button>
-                <button
-                  v-if="selectedPresetId === p.id && p.source !== 'card'"
-                  class="cn-btn cn-btn--sm cn-btn--text"
-                  title="删除"
-                  @click.stop="deletePresetT(p.id)"
-                >
-                  <i class="fa-solid fa-trash"></i>
-                </button>
+                <span class="preset-list__actions">
+                  <button
+                    class="cn-btn cn-btn--sm cn-btn--text"
+                    :class="{ 'preset-list__btn-hidden': selectedPresetId !== p.id || p.id === ttConfig.activeId }"
+                    title="设为当前"
+                    @click.stop="selectPresetT(p.id)"
+                  >
+                    <i class="fa-solid fa-check"></i>
+                  </button>
+                  <button
+                    class="cn-btn cn-btn--sm cn-btn--text"
+                    :class="{ 'preset-list__btn-hidden': selectedPresetId !== p.id || p.id === ttConfig.defaultId }"
+                    title="设为默认"
+                    @click.stop="setDefaultPresetT(p.id)"
+                  >
+                    <i class="fa-solid fa-star"></i>
+                  </button>
+                  <button
+                    v-if="p.source !== 'card'"
+                    class="cn-btn cn-btn--sm cn-btn--text"
+                    :class="{ 'preset-list__btn-hidden': selectedPresetId !== p.id }"
+                    title="删除"
+                    @click.stop="deletePresetT(p.id)"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </span>
               </li>
             </ul>
           </div>
@@ -1102,7 +1069,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
             >
               <span class="preset-list__name">
                 <i class="fa-solid fa-clock-rotate-left preset-list__card"></i>
-                纪要表
+                <span class="preset-list__name-text">纪要表</span>
                 <i
                   class="fa-solid fa-circle-info"
                   style="color: var(--cn-text-3); font-size: 11px"
@@ -1624,7 +1591,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
                   @click="selectedScenePresetId = p.id"
                 >
                   <span class="preset-list__name">
-                    {{ p.name }}
+                    <span class="preset-list__name-text">{{ p.name }}</span>
                     <i
                       v-if="p.id === sceneConfig.defaultId"
                       class="fa-solid fa-star preset-list__default"
@@ -1632,30 +1599,32 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
                     ></i>
                   </span>
                   <span class="preset-list__count">{{ p.segments.length }}段</span>
-                  <button
-                    v-if="selectedScenePresetId === p.id && p.id !== sceneConfig.activeId"
-                    class="cn-btn cn-btn--sm cn-btn--text"
-                    title="设为当前"
-                    @click.stop="selectPreset(p.id)"
-                  >
-                    <i class="fa-solid fa-check"></i>
-                  </button>
-                  <button
-                    v-if="selectedScenePresetId === p.id && p.id !== sceneConfig.defaultId"
-                    class="cn-btn cn-btn--sm cn-btn--text"
-                    title="设为默认"
-                    @click.stop="setDefaultPreset(p.id)"
-                  >
-                    <i class="fa-solid fa-star"></i>
-                  </button>
-                  <button
-                    v-if="selectedScenePresetId === p.id"
-                    class="cn-btn cn-btn--sm cn-btn--text"
-                    title="删除"
-                    @click.stop="deletePreset(p.id)"
-                  >
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
+                  <span class="preset-list__actions">
+                    <button
+                      class="cn-btn cn-btn--sm cn-btn--text"
+                      :class="{ 'preset-list__btn-hidden': selectedScenePresetId !== p.id || p.id === sceneConfig.activeId }"
+                      title="设为当前"
+                      @click.stop="selectPreset(p.id)"
+                    >
+                      <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button
+                      class="cn-btn cn-btn--sm cn-btn--text"
+                      :class="{ 'preset-list__btn-hidden': selectedScenePresetId !== p.id || p.id === sceneConfig.defaultId }"
+                      title="设为默认"
+                      @click.stop="setDefaultPreset(p.id)"
+                    >
+                      <i class="fa-solid fa-star"></i>
+                    </button>
+                    <button
+                      class="cn-btn cn-btn--sm cn-btn--text"
+                      :class="{ 'preset-list__btn-hidden': selectedScenePresetId !== p.id }"
+                      title="删除"
+                      @click.stop="deletePreset(p.id)"
+                    >
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </span>
                 </li>
               </ul>
             </div>

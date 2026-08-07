@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { detectLastSummarizedAiFloor, detectLastUpdatedAiFloorForTable, runManualCatchUp, runManualFill, subscribeFillState } from '../src/core/table/fill-orchestrator'
+import { detectLastSummarizedAiFloor, detectLastUpdatedAiFloorForTable, detectMergedLastFilled, runManualCatchUp, runManualFill, subscribeFillState } from '../src/core/table/fill-orchestrator'
 import createFrameRepo from '../src/db/sqlite/storage-frame-repo'
 import { createPersistContext, appendSqlLog, writeCheckpoint, persistFill } from '../src/db/sqlite/frame-persist'
 import SqliteCore from '../src/db/sqlite/core'
@@ -196,6 +196,46 @@ describe('detectLastSummarizedAiFloor', () => {
   })
 })
 
+describe('detectMergedLastFilled', () => {
+  it('双 null 返回 null', () => {
+    const chat: FakeMessage[] = [{ is_user: true, is_system: false, mes: 'hi', extra: {} }]
+    const session = makeSession(chat, {})
+    expect(detectMergedLastFilled(session)).toBe(null)
+  })
+
+  it('仅一侧有值返回该值（不塌缩 -1）', () => {
+    const chat: FakeMessage[] = [
+      { is_user: true, is_system: false, mes: 'hi', extra: {} },
+      { is_user: false, is_system: false, mes: 'ai1', extra: {} },
+      { is_user: false, is_system: false, mes: 'ai2', extra: {} },
+    ]
+    const session = makeSession(chat, {})
+    session.chat.writeChatMetadata('CN_FILL_PROGRESS', { tableFloor: 1 })
+    expect(detectMergedLastFilled(session)).toBe(1)
+  })
+
+  it('双值取小', () => {
+    const chat: FakeMessage[] = [
+      { is_user: true, is_system: false, mes: 'hi', extra: {} },
+      { is_user: false, is_system: false, mes: 'ai1', extra: {} },
+      { is_user: false, is_system: false, mes: 'ai2', extra: {} },
+    ]
+    const session = makeSession(chat, {})
+    session.chat.writeChatMetadata('CN_FILL_PROGRESS', { tableFloor: 5, chronicleFloor: 2 })
+    expect(detectMergedLastFilled(session)).toBe(2)
+  })
+
+  it('帧扫描兜底：无 metadata 时取双侧帧的最小最后总结层', () => {
+    const chat: FakeMessage[] = [
+      { is_user: true, is_system: false, mes: 'hi', extra: {} },
+      { is_user: false, is_system: false, mes: 'ai1', extra: {} },
+      { is_user: false, is_system: false, mes: 'ai2', extra: {} },
+    ]
+    const session = makeSession(chat, { 1: 'ai_fill_table', 2: 'ai_fill_chronicle' })
+    expect(detectMergedLastFilled(session)).toBe(1)
+  })
+})
+
 describe('runManualCatchUp 切片与 merged 范围', () => {
   function makePreset(maxTokens = 100) {
     return { id: 'p1', name: 'p', baseURL: 'http://x', apiKey: 'k', model: 'm', maxTokens, temperature: 0, topP: 1, frequencyPenalty: 0, presencePenalty: 0, seed: null, stream: false, responseFormat: 'none' as const, customIncludeBody: '', customExcludeBody: '', customIncludeHeaders: '' }
@@ -239,6 +279,7 @@ describe('runManualCatchUp 切片与 merged 范围', () => {
       getSyncBridgeRepo: () => syncBridge.getRepo(),
       applySnapshot: () => {},
       getProgressNotifier: () => undefined,
+      getTaskAbortSignal: () => undefined,
       getWriteQueue: () => ({ enqueue: (fn: () => Promise<any>) => fn() }),
       getCurrentTemplateId: () => null,
       cleanupOldSnapshots: () => {},
@@ -305,6 +346,71 @@ describe('runManualCatchUp 切片与 merged 范围', () => {
     expect(capturedList[1]).toContain('u4')
     expect(capturedList[1]).toContain('a5')
     expect(capturedList[1]).not.toContain('a3')
+    core.dispose()
+  })
+
+  it('merged 追平 chronicle 腿限批 cap=5，表腿保持用户 batchSize', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    core.run('CREATE TABLE t (c TEXT)')
+    const chat: FakeMessage[] = []
+    for (let i = 0; i < 24; i++) {
+      chat.push({ is_user: i % 2 === 0, is_system: false, mes: `m${i}`, extra: {} })
+    }
+    const captured: Array<{ userPrompt: string; expectedSqlObjects?: number }> = []
+    const { session } = makeRunSession(core, chat, {}, vi.fn(async (ctx: { segments: { content: string }[]; userPrompt?: string }, options?: { expectedSqlObjects?: number }) => {
+      captured.push({ userPrompt: ctx.userPrompt ?? '', expectedSqlObjects: options?.expectedSqlObjects })
+      return { ok: true, attempts: 1, sqls: [] }
+    }))
+    const result = await runManualCatchUp(session, { runMode: 'merged', targetTables: ['t'], batchSize: 10 })
+    if (!result.ok) console.error('merged catchup error:', result.error)
+    expect(result.ok).toBe(true)
+    const tableCalls = captured.filter((c) => !c.userPrompt.includes('纪要'))
+    const chronicleCalls = captured.filter((c) => c.userPrompt.includes('纪要'))
+    expect(tableCalls.length).toBe(2)
+    expect(chronicleCalls.length).toBe(3)
+    for (const c of tableCalls) expect(c.expectedSqlObjects!).toBeLessThanOrEqual(10)
+    for (const c of chronicleCalls) expect(c.expectedSqlObjects!).toBeLessThanOrEqual(5)
+    core.dispose()
+  })
+
+  it('merged 追平表腿失败返回「表格追平失败：」', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    core.run('CREATE TABLE t (c TEXT)')
+    const chat: FakeMessage[] = [
+      { is_user: true, is_system: false, mes: 'u0', extra: {} },
+      { is_user: false, is_system: false, mes: 'a1', extra: {} },
+    ]
+    let call = 0
+    const { session } = makeRunSession(core, chat, {}, vi.fn(async () => {
+      call++
+      if (call === 1) return { ok: false, attempts: 1, error: 'boom-table' }
+      return { ok: true, attempts: 1, sqls: [] }
+    }))
+    const result = await runManualCatchUp(session, { runMode: 'merged', targetTables: ['t'] })
+    expect(result.ok).toBe(false)
+    expect(result.error).toMatch(/^表格追平失败：/)
+    core.dispose()
+  })
+
+  it('merged 追平 chronicle 腿失败返回「纪要追平失败：」，表腿成果不被掩盖', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    core.run('CREATE TABLE t (c TEXT)')
+    const chat: FakeMessage[] = [
+      { is_user: true, is_system: false, mes: 'u0', extra: {} },
+      { is_user: false, is_system: false, mes: 'a1', extra: {} },
+    ]
+    let call = 0
+    const { session } = makeRunSession(core, chat, {}, vi.fn(async () => {
+      call++
+      if (call === 2) return { ok: false, attempts: 1, error: 'boom-chronicle' }
+      return { ok: true, attempts: 1, sqls: [] }
+    }))
+    const result = await runManualCatchUp(session, { runMode: 'merged', targetTables: ['t'] })
+    expect(result.ok).toBe(false)
+    expect(result.error).toMatch(/^纪要追平失败：/)
     core.dispose()
   })
 
@@ -594,6 +700,35 @@ describe('runManualCatchUp 切片与 merged 范围', () => {
     await runManualFill(session, { targetTables: ['t'] })
     unsub()
     expect(warns.every((w) => w === null)).toBe(true)
+    core.dispose()
+  })
+
+  it('并发 executeFill 排队执行而非跳过（3.8 修复）', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    core.run('CREATE TABLE t (c TEXT)')
+    const chat: FakeMessage[] = [
+      { is_user: true, is_system: false, mes: 'u0', extra: {} },
+      { is_user: false, is_system: false, mes: 'a1', extra: {} },
+    ]
+    let runCalls = 0
+    let active = 0
+    let maxActive = 0
+    const { session } = makeRunSession(core, chat, {}, vi.fn(async () => {
+      runCalls++
+      active++
+      maxActive = Math.max(maxActive, active)
+      await new Promise((r) => setTimeout(r, 20))
+      active--
+      return { ok: true, attempts: 1, sqls: [] }
+    }))
+    const p1 = runManualFill(session, { targetTables: ['t'], batchSize: 10 })
+    const p2 = runManualFill(session, { targetTables: ['t'], batchSize: 10 })
+    const [r1, r2] = await Promise.all([p1, p2])
+    expect(r1.ok).toBe(true)
+    expect(r2.ok).toBe(true)
+    expect(runCalls).toBe(2)
+    expect(maxActive).toBe(1)
     core.dispose()
   })
 })

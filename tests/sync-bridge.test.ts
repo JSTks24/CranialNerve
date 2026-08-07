@@ -217,4 +217,70 @@ describe('sync-bridge load 真实 replay（含 applySnapshot）', () => {
     expect(result.warnings.join('; ')).toContain('第 2 楼')
     core.dispose()
   })
+
+  it('回放 SQL 失败时 lastLoadWarnings 含「回放 SQL 失败」关键告警（1.4 修复）', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    const frame: StorageFrame = {
+      version: 2,
+      logEntries: [{
+        seq: 1,
+        createdAt: 0,
+        operations: [{ kind: 'sql_batch', statements: ["INSERT INTO missing_table VALUES ('X')"], reason: 'ai_fill' }],
+      }],
+      checkpoint: { kind: 'full', createdAt: 0, reason: 'init', data: makeSnapshot('A') },
+    }
+    const { gateway } = makeChatGateway({ 1: JSON.stringify(frame) })
+    const bridge = new SqliteSyncBridge(core, gateway)
+    const result = bridge.load()
+    expect(result.ok).toBe(true)
+    expect(bridge.lastLoadWarnings.join('; ')).toContain('回放 SQL 失败 1 条')
+    core.dispose()
+  })
+
+  it('回放全部成功时不产生「回放 SQL 失败」告警', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    const frame: StorageFrame = {
+      version: 2,
+      logEntries: [{
+        seq: 1,
+        createdAt: 0,
+        operations: [{ kind: 'sql_batch', statements: ["INSERT INTO t VALUES ('C')"], reason: 'ai_fill' }],
+      }],
+      checkpoint: { kind: 'full', createdAt: 0, reason: 'init', data: makeSnapshot('A') },
+    }
+    const { gateway } = makeChatGateway({ 1: JSON.stringify(frame) })
+    const bridge = new SqliteSyncBridge(core, gateway)
+    const result = bridge.load()
+    expect(result.ok).toBe(true)
+    expect(bridge.lastLoadWarnings.join('; ')).not.toContain('回放 SQL 失败')
+    core.dispose()
+  })
+
+  it('回放中途失败时整体回滚到快照（3.5 修复：不再部分生效）', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    const frame: StorageFrame = {
+      version: 2,
+      logEntries: [{
+        seq: 1,
+        createdAt: 0,
+        operations: [
+          { kind: 'sql_batch', statements: ["INSERT INTO t VALUES ('B')"], reason: 'ai_fill' },
+          { kind: 'sql_batch', statements: ["INSERT INTO missing_table VALUES ('X')"], reason: 'ai_fill' },
+        ],
+      }],
+      checkpoint: { kind: 'full', createdAt: 0, reason: 'init', data: makeSnapshot('A') },
+    }
+    const { gateway } = makeChatGateway({ 1: JSON.stringify(frame) })
+    const bridge = new SqliteSyncBridge(core, gateway)
+    const result = bridge.load()
+    expect(result.ok).toBe(true)
+    const rows = core.exec('SELECT * FROM t ORDER BY c')
+    expect(rows[0]!.rows).toHaveLength(1)
+    expect(rows[0]!.rows[0]!.c).toBe('A')
+    expect(bridge.lastLoadWarnings.join('; ')).toContain('回放 SQL 失败')
+    core.dispose()
+  })
 })

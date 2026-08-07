@@ -149,6 +149,31 @@ describe('VectorIndexStore ensureVectors', () => {
     expect(vector.embed).toHaveBeenCalledTimes(1)
     expect(index.entries[0]?.vector).toEqual([0, 0.1])
   })
+
+  it('embed 返回空向量时不写缓存，下次调用重新 embed（3.3 修复）', async () => {
+    const fs = makeFileStorage()
+    const vector = makeVector()
+    vector.embed = vi.fn(async () => [] as number[][])
+    const store = createVectorIndexStore(fs)
+    const index = await store.ensureVectors('tok', [entry('k1', 's1')], vector, vectorConfig)
+    expect(index.entries).toHaveLength(0)
+    vector.embed = makeVector().embed
+    const index2 = await store.ensureVectors('tok', [entry('k1', 's1')], vector, vectorConfig)
+    expect(index2.entries).toHaveLength(1)
+    expect(index2.entries[0]!.vector).toEqual([0, 0.1])
+  })
+
+  it('embed 抛错时不写缓存，下次调用重新尝试（3.3 修复）', async () => {
+    const fs = makeFileStorage()
+    const vector = makeVector()
+    vector.embed = vi.fn(async () => { throw new Error('embed down') })
+    const store = createVectorIndexStore(fs)
+    const index = await store.ensureVectors('tok', [entry('k1', 's1')], vector, vectorConfig)
+    expect(index.entries).toHaveLength(0)
+    vector.embed = makeVector().embed
+    const index2 = await store.ensureVectors('tok', [entry('k1', 's1')], vector, vectorConfig)
+    expect(index2.entries).toHaveLength(1)
+  })
 })
 
 describe('buildSearchableText', () => {

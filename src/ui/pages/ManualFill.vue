@@ -110,6 +110,15 @@ function aiFloorSeqOf(msgIndex: number): number {
   return seq
 }
 
+function firstAiSeqAt(fromIdx: number): number {
+  const chat = session.chat.getChat()
+  for (let i = fromIdx; i < chat.length; i++) {
+    const m = chat[i]
+    if (m && !m.is_user && !m.is_system) return aiFloorSeqOf(i)
+  }
+  return 0
+}
+
 function computeCatchUpRange() {
   const chat = session.chat.getChat()
   const aiFloors: number[] = []
@@ -118,24 +127,41 @@ function computeCatchUpRange() {
     if (m && !m.is_user && !m.is_system) aiFloors.push(i)
   }
   if (aiFloors.length === 0) return null
-  let baseLast: number | null
-  if (includeChronicle.value) {
-    const t = detectLastSummarizedAiFloor(session, 'table')
-    const c = detectLastSummarizedAiFloor(session, 'chronicle')
-    baseLast = (t == null && c == null) ? null : Math.min(t ?? -1, c ?? -1)
-    if (baseLast != null && baseLast < 0) baseLast = null
-  } else {
-    baseLast = detectLastSummarizedAiFloor(session, 'table')
-  }
-  const fromIdx = baseLast != null ? baseLast + 1 : 0
   const toIdx = aiFloors[aiFloors.length - 1]!
-  if (fromIdx > toIdx) return null
-  const fromSeq = aiFloorSeqOf(fromIdx)
   const toSeq = aiFloorSeqOf(toIdx)
-  const aiCount = aiFloors.filter((idx) => idx >= fromIdx && idx <= toIdx).length
+  if (!includeChronicle.value) {
+    const t = detectLastSummarizedAiFloor(session, 'table')
+    const fromIdx = t != null && t >= 0 ? t + 1 : 0
+    if (fromIdx > toIdx) return null
+    const aiCount = aiFloors.filter((idx) => idx >= fromIdx && idx <= toIdx).length
+    const batch = Math.max(1, manualBatch.value ?? cfg.value.tableFill.batchSize)
+    const totalBuckets = Math.max(1, Math.ceil(aiCount / batch))
+    return { fromIdx, toIdx, fromSeq: firstAiSeqAt(fromIdx), toSeq, aiCount, totalBuckets }
+  }
+  const t = detectLastSummarizedAiFloor(session, 'table')
+  const c = detectLastSummarizedAiFloor(session, 'chronicle')
+  const tableFrom = t != null && t >= 0 ? t + 1 : 0
+  const chronicleFrom = c != null && c >= 0 ? c + 1 : 0
+  if (tableFrom > toIdx && chronicleFrom > toIdx) return null
+  const tableAiCount = aiFloors.filter((idx) => idx >= tableFrom && idx <= toIdx).length
+  const chronicleAiCount = aiFloors.filter((idx) => idx >= chronicleFrom && idx <= toIdx).length
   const batch = Math.max(1, manualBatch.value ?? cfg.value.tableFill.batchSize)
-  const totalBuckets = Math.max(1, Math.ceil(aiCount / batch))
-  return { fromIdx, toIdx, fromSeq, toSeq, aiCount, totalBuckets }
+  const tableBuckets = Math.max(1, Math.ceil(tableAiCount / batch))
+  const chronicleBuckets = Math.max(1, Math.ceil(chronicleAiCount / batch))
+  return {
+    fromIdx: Math.min(tableFrom, chronicleFrom),
+    toIdx,
+    fromSeq: firstAiSeqAt(Math.min(tableFrom, chronicleFrom)),
+    toSeq,
+    aiCount: Math.max(tableAiCount, chronicleAiCount),
+    totalBuckets: tableBuckets + chronicleBuckets,
+    tableFrom,
+    chronicleFrom,
+    tableFromSeq: firstAiSeqAt(tableFrom),
+    chronicleFromSeq: firstAiSeqAt(chronicleFrom),
+    tableAiCount,
+    chronicleAiCount
+  }
 }
 
 function makeProgressUpdater(prog: ReturnType<typeof toast.progress>, prefix: string): FillProgressFn {
@@ -143,13 +169,14 @@ function makeProgressUpdater(prog: ReturnType<typeof toast.progress>, prefix: st
     const b = detail?.currentBucket
     const n = detail?.totalBuckets
     const batchStr = b && n ? `第${b}/${n}批 · ` : ''
+    const legText = detail?.leg === 'chronicle' ? '纪要 · ' : detail?.leg === 'table' ? '表格 · ' : ''
     const phaseText = phase === 'calling_ai' ? '调用AI…'
       : phase === 'parsing' ? '解析中'
       : phase === 'saving' ? '保存中'
       : phase === 'retry' ? `重试(第${detail?.attempt ?? '?'}次)`
       : phase === 'error' ? '出错'
       : ''
-    if (phaseText) prog.update(`${prefix}${batchStr}${phaseText}`)
+    if (phaseText) prog.update(`${prefix}${legText}${batchStr}${phaseText}`)
   }
 }
 
@@ -190,11 +217,13 @@ async function runCatchUp() {
     return
   }
   const merged = includeChronicle.value
-  const rangeText = `将从第 ${range.fromSeq} 层追平至第 ${range.toSeq} 层（共 ${range.aiCount} 个 AI 楼层，约 ${range.totalBuckets} 批）${merged ? '，同时更新表格与纪要' : ''}`
+  const rangeText = merged
+    ? `表格：从第 ${range.tableFromSeq} 层追平至第 ${range.toSeq} 层（${range.tableAiCount} 个 AI 楼层）；纪要：从第 ${range.chronicleFromSeq} 层追平至第 ${range.toSeq} 层（${range.chronicleAiCount} 个 AI 楼层，约 ${range.totalBuckets} 批）`
+    : `将从第 ${range.fromSeq} 层追平至第 ${range.toSeq} 层（共 ${range.aiCount} 个 AI 楼层，约 ${range.totalBuckets} 批）`
   const confirmed = await confirm('追平未更新楼层', rangeText, '确认追平')
   if (!confirmed) return
   busy.value = true
-  const prefix = `追平 第${range.fromSeq}→${range.toSeq}层 · `
+  const prefix = merged ? '追平 · ' : `追平 第${range.fromSeq}→${range.toSeq}层 · `
   const prog = toast.progress(`${prefix}调用AI…`)
   try {
     const result = await session.runManualCatchUp({

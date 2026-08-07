@@ -5,6 +5,7 @@ import { pushLog } from '@shared/log-buffer'
 import { getPersonaDescription, getCharDescription, getUserName } from '@db/gateways/host-state'
 import { RECALL_FIELD_PREFIX } from '@shared/constants'
 import { serializeRecallPayload } from '@shared/recall-payload'
+import { combineSignals } from '../table/fill-orchestrator'
 
 function isAbortError(e: unknown, signal?: AbortSignal): boolean {
 	if (signal?.aborted) {
@@ -82,7 +83,7 @@ export async function onPromptReady(
 		chatToken: session.getChatToken(),
 		recallRecentFixedInjectCount: config.recallRecentFixedInjectCount,
 		recallMinScore: config.recallMinScore,
-		signal: progress?.abortSignal,
+		signal: combineSignals(session.getTaskAbortSignal(), progress?.abortSignal),
 		callOptions: {
 			timeoutMs: config.pending.aiCallTimeoutMs,
 			timeoutRetries: config.pending.aiTimeoutRetries,

@@ -22,6 +22,7 @@ const chatActive = ref(false)
 const keyword = ref('')
 const editingRowid = ref<number | null>(null)
 const editSnapshot = ref<RowData | null>(null)
+const saving = ref(false)
 const cellEditEls = new Map<string, HTMLElement>()
 
 const pageTab = ref<'list' | 'fill'>('list')
@@ -102,6 +103,7 @@ function cancelEdit() {
 
 function saveEdit() {
   if (editingRowid.value == null) return
+  if (saving.value) return
   const row = rows.value.find((r) => r.__rowid__ === editingRowid.value)
   if (!row) {
     editingRowid.value = null
@@ -117,6 +119,7 @@ function saveEdit() {
     toast.error(requiredError)
     return
   }
+  saving.value = true
   void session.runWrite(async () => {
     try {
       if (row.__rowid__ < 0) {
@@ -142,6 +145,8 @@ function saveEdit() {
       refresh()
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err))
+    } finally {
+      saving.value = false
     }
   })
 }
@@ -471,8 +476,8 @@ onActivated(() => {
                 <span class="chronicle-item__key">{{ keyColName ? (row[keyColName] ?? '') : '' }}</span>
                 <template v-if="row.__rowid__ === editingRowid">
                   <div class="cn-space">
-                    <button class="cn-btn cn-btn--sm cn-btn--primary" :disabled="chronicleBusy" @click="saveEdit">保存</button>
-                    <button class="cn-btn cn-btn--sm" @click="cancelEdit">取消</button>
+                    <button class="cn-btn cn-btn--sm cn-btn--primary" :disabled="chronicleBusy || saving" @click="saveEdit">保存</button>
+                    <button class="cn-btn cn-btn--sm" :disabled="saving" @click="cancelEdit">取消</button>
                   </div>
                 </template>
                 <template v-else>

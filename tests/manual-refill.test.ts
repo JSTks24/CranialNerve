@@ -84,6 +84,7 @@ function makeSession(core: SqliteCore, chat: FakeMessage[], editorRun: () => Pro
     getSyncBridgeRepo: () => syncBridge.getRepo(),
     applySnapshot: (snapshot: import('../src/shared/types/table').DatabaseSnapshot) => syncBridge.applySnapshotExternal(snapshot),
     getProgressNotifier: () => undefined,
+    getTaskAbortSignal: () => undefined,
     getWriteQueue: () => ({ enqueue: (fn: () => Promise<any>) => fn() }),
     getCurrentTemplateId: () => null,
     cleanupOldSnapshots: () => {},

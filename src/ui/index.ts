@@ -1,5 +1,5 @@
 import { createApp, type App as VueApp } from 'vue'
-import { createPinia } from 'pinia'
+import { createPinia, type Pinia } from 'pinia'
 import themeCss from './theme.css?inline'
 import { getSession } from '@core/session'
 import { isFillInProgress } from '@core/table/fill-orchestrator'
@@ -11,6 +11,7 @@ import router from './router'
 let themeInjected = false
 let appMounted = false
 let appInstance: VueApp | null = null
+let appPinia: Pinia | null = null
 let prevBodyOverflow = ''
 
 export async function init(): Promise<void> {
@@ -108,12 +109,18 @@ function mountWandButton(): void {
   menu.append(wrapper)
 }
 
+let lastSendBlockToastAt = 0
+
 function hookSendBlock(): void {
   const block = (e: Event) => {
     if (isFillInProgress()) {
       e.stopImmediatePropagation()
       e.preventDefault()
-      toast.warning('CranialNerve 纪要生成中，请稍候，请勿重复发送')
+      const now = Date.now()
+      if (now - lastSendBlockToastAt > 3000) {
+        lastSendBlockToastAt = now
+        toast.warning('CranialNerve 正在更新数据，请稍候再发送')
+      }
     }
   }
   const sendBtn = document.getElementById('send_but')
@@ -141,8 +148,9 @@ function openPanel(): void {
   root.id = 'cn_app'
   root.style.cssText = 'position:fixed;inset:0;z-index:var(--cn-z-app);background:var(--cn-bg);'
   document.body.appendChild(root)
+  appPinia = createPinia()
   appInstance = createApp(App, { onClose: closePanel })
-  appInstance.use(createPinia())
+  appInstance.use(appPinia)
   appInstance.use(router)
   appInstance.mount(root)
   router.push('/welcome')
@@ -151,6 +159,11 @@ function openPanel(): void {
 function closePanel(): void {
   appInstance?.unmount()
   appInstance = null
+  if (appPinia) {
+    const store = (appPinia as unknown as { _s: Map<string, { $dispose: () => void }> })._s.get('cn-fill-status')
+    store?.$dispose()
+    appPinia = null
+  }
   const root = document.getElementById('cn_app')
   if (root) {
     root.remove()

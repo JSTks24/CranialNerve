@@ -2,7 +2,6 @@
 import { ref, computed, watch, onActivated } from 'vue'
 import { getSession } from '@core/session'
 import type { CranialNerveConfig } from '@shared/types/config'
-import toast from '@ui/toast'
 import CNTabs from '@ui/components/CNTabs.vue'
 
 const session = getSession()
@@ -71,7 +70,6 @@ function saveCfg() {
 function saveField(field: 'aiCallTimeoutMs' | 'aiTimeoutRetries' | 'listModelsTimeoutMs' | 'writeQueueDrainTimeoutMs' | 'minSummaryLength', min: number, max: number, fallback: number) {
 	cfg.value.pending[field] = clampInt(cfg.value.pending[field] as number, min, max, fallback)
 	session.saveConfig(cfg.value)
-	toast.success('已保存')
 }
 
 const aiTimeoutText = ref('')
@@ -109,7 +107,6 @@ function onBlurAiTimeout() {
 
 function saveBoolean(field: 'summarizeOnManualAbort') {
 	session.saveConfig(cfg.value)
-	toast.success('已保存')
 }
 
 function onRecallChange() {
@@ -133,27 +130,23 @@ function presetHint(pid: string): string {
 function saveTableField(field: 'contextDepth' | 'updateFrequency' | 'batchSize' | 'skipFloors' | 'maxRetries', min: number, max: number, fallback: number) {
 	cfg.value.tableFill[field] = clampInt(cfg.value.tableFill[field] as number, min, max, fallback)
 	saveCfg()
-	toast.success('已保存')
 }
 
 function saveChronicleField(field: 'contextDepth' | 'updateFrequency' | 'batchSize' | 'skipFloors' | 'maxRetries' | 'chronicleSendLatestRows', min: number, max: number, fallback: number) {
 	cfg.value.chronicleFill[field] = clampInt(cfg.value.chronicleFill[field] as number, min, max, fallback)
 	saveCfg()
-	toast.success('已保存')
 }
 
 function saveRecallField(field: 'maxRecallItems' | 'recallContextDepth' | 'retainFloors' | 'checkpointInterval' | 'recallRecentFixedInjectCount', min: number, max: number, fallback: number) {
 	const c = cfg.value as unknown as Record<string, unknown>
 	c[field] = clampInt(c[field] as number, min, max, fallback)
 	saveCfg()
-	toast.success('已保存')
 }
 
 function saveRecallFloat(field: 'recallMinScore', min: number, max: number, fallback: number) {
 	const raw = cfg.value[field] as number
 	cfg.value[field] = Number.isFinite(raw) ? Math.min(max, Math.max(min, raw)) : fallback
 	saveCfg()
-	toast.success('已保存')
 }
 
 onActivated(() => {
@@ -208,7 +201,7 @@ onActivated(() => {
 							</div>
 							<input class="cn-input cn-input--nospin strategy-num" type="number" min="0" max="10000" step="10"
 								v-model.number="cfg.pending.minSummaryLength"
-								@blur="saveField('minSummaryLength', 0, 10000, 100)" @change="saveField('minSummaryLength', 0, 10000, 100)" />
+								@change="saveField('minSummaryLength', 0, 10000, 100)" />
 						</div>
 					</div>
 				</section>
@@ -332,7 +325,7 @@ onActivated(() => {
 							</div>
 							<input class="cn-input cn-input--nospin strategy-num" type="number" min="0" max="10000" step="10"
 								v-model.number="cfg.pending.minSummaryLength"
-								@blur="saveField('minSummaryLength', 0, 10000, 100)" @change="saveField('minSummaryLength', 0, 10000, 100)" />
+								@change="saveField('minSummaryLength', 0, 10000, 100)" />
 						</div>
 					</div>
 				</section>
@@ -529,7 +522,7 @@ onActivated(() => {
 							</div>
 							<input class="cn-input cn-input--nospin strategy-num" type="number" min="0" max="10" step="1"
 								v-model.number="cfg.pending.aiTimeoutRetries"
-								@blur="saveField('aiTimeoutRetries', 0, 10, 1)" @change="saveField('aiTimeoutRetries', 0, 10, 1)" />
+								@change="saveField('aiTimeoutRetries', 0, 10, 1)" />
 						</div>
 						<div class="strategy-row">
 							<div class="strategy-row__text">
@@ -538,7 +531,7 @@ onActivated(() => {
 							</div>
 							<input class="cn-input cn-input--nospin strategy-num" type="number" min="1000" max="600000" step="1000"
 								v-model.number="cfg.pending.listModelsTimeoutMs"
-								@blur="saveField('listModelsTimeoutMs', 1000, 600000, 10000)" @change="saveField('listModelsTimeoutMs', 1000, 600000, 10000)" />
+								@change="saveField('listModelsTimeoutMs', 1000, 600000, 10000)" />
 						</div>
 						<div class="strategy-row">
 							<div class="strategy-row__text">
@@ -547,7 +540,7 @@ onActivated(() => {
 							</div>
 							<input class="cn-input cn-input--nospin strategy-num" type="number" min="1000" max="600000" step="1000"
 								v-model.number="cfg.pending.writeQueueDrainTimeoutMs"
-								@blur="saveField('writeQueueDrainTimeoutMs', 1000, 600000, 8000)" @change="saveField('writeQueueDrainTimeoutMs', 1000, 600000, 8000)" />
+								@change="saveField('writeQueueDrainTimeoutMs', 1000, 600000, 8000)" />
 						</div>
 					</div>
 				</section>

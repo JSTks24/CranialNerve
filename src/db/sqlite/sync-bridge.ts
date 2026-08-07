@@ -77,31 +77,38 @@ export default class SqliteSyncBridge {
 			return { ok: false, warnings: this.lastLoadWarnings, snapshotIndex: replay.snapshotIndex }
 		}
 
-		for (const group of replay.operations) {
-			const seen = new Set<string>()
-			for (const op of group) {
-				if (op.kind === 'sql_batch') {
-					for (let i = 0; i < op.statements.length; i++) {
-						const stmt = op.statements[i]
-						if (!stmt) continue
-						const params = op.params?.[i]
-						const key = stmt + ' ' + JSON.stringify(params ?? null)
-						if (seen.has(key)) continue
-						seen.add(key)
-						try {
-							if (params) {
-								this.core.run(stmt, params)
-							} else {
-								this.core.run(stmt)
+		let replayFailures = 0
+		try {
+			this.core.transaction((tx) => {
+				for (const group of replay.operations) {
+					const seen = new Set<string>()
+					for (const op of group) {
+						if (op.kind === 'sql_batch') {
+							for (let i = 0; i < op.statements.length; i++) {
+								const stmt = op.statements[i]
+								if (!stmt) continue
+								const params = op.params?.[i]
+								const key = stmt + ' ' + JSON.stringify(params ?? null)
+								if (seen.has(key)) continue
+								seen.add(key)
+								if (params) {
+									tx.run(stmt, params)
+								} else {
+									tx.run(stmt)
+								}
 							}
-						} catch (e) {
-							const msg = e instanceof Error ? e.message : String(e)
-							pushLog('warn', 'replay', `回放 SQL 失败（已跳过）: ${stmt} -> ${msg}`)
-							this.lastLoadWarnings.push(`回放 SQL 失败已跳过: ${msg}`)
 						}
 					}
 				}
-			}
+			})
+		} catch (e) {
+			replayFailures++
+			const msg = e instanceof Error ? e.message : String(e)
+			pushLog('warn', 'replay', `回放失败（已整体回滚到快照）: ${msg}`)
+			this.lastLoadWarnings.push(`回放 SQL 失败已整体回滚到快照: ${msg}`)
+		}
+		if (replayFailures > 0) {
+			this.lastLoadWarnings.push(`回放 SQL 失败 ${replayFailures} 条，当前数据库已回滚到快照状态，请导出快照备份`)
 		}
 
 		return { ok: true, warnings: this.lastLoadWarnings, snapshotIndex: replay.snapshotIndex }
@@ -127,28 +134,35 @@ export default class SqliteSyncBridge {
 			const msg = e instanceof Error ? e.message : String(e)
 			return { ok: false, warnings: [`快照重建失败: ${msg}`], snapshotIndex: index }
 		}
-		for (const entry of frame.logEntries) {
-			const seen = new Set<string>()
-			for (const op of entry.operations) {
-				if (op.kind === 'sql_batch') {
-					for (let i = 0; i < op.statements.length; i++) {
-						const stmt = op.statements[i]
-						if (!stmt) continue
-						const params = op.params?.[i]
-						const key = stmt + ' ' + JSON.stringify(params ?? null)
-						if (seen.has(key)) continue
-						seen.add(key)
-						try {
-							if (params) this.core.run(stmt, params)
-							else this.core.run(stmt)
-						} catch (e) {
-							const msg = e instanceof Error ? e.message : String(e)
-							pushLog('warn', 'replay', `回放 SQL 失败（已跳过）: ${stmt} -> ${msg}`)
-							this.lastLoadWarnings.push(`回放 SQL 失败已跳过: ${msg}`)
+		let replayFailures = 0
+		try {
+			this.core.transaction((tx) => {
+				for (const entry of frame.logEntries) {
+					const seen = new Set<string>()
+					for (const op of entry.operations) {
+						if (op.kind === 'sql_batch') {
+							for (let i = 0; i < op.statements.length; i++) {
+								const stmt = op.statements[i]
+								if (!stmt) continue
+								const params = op.params?.[i]
+								const key = stmt + ' ' + JSON.stringify(params ?? null)
+								if (seen.has(key)) continue
+								seen.add(key)
+								if (params) tx.run(stmt, params)
+								else tx.run(stmt)
+							}
 						}
 					}
 				}
-			}
+			})
+		} catch (e) {
+			replayFailures++
+			const msg = e instanceof Error ? e.message : String(e)
+			pushLog('warn', 'replay', `回放失败（已整体回滚到快照）: ${msg}`)
+			this.lastLoadWarnings.push(`回放 SQL 失败已整体回滚到快照: ${msg}`)
+		}
+		if (replayFailures > 0) {
+			this.lastLoadWarnings.push(`回放 SQL 失败 ${replayFailures} 条，当前数据库已回滚到快照状态，请导出快照备份`)
 		}
 		return { ok: true, warnings: this.lastLoadWarnings, snapshotIndex: index }
 	}
@@ -229,8 +243,16 @@ export default class SqliteSyncBridge {
 				tx.run(buildCreateTableSql(table))
 				const colNames = table.columns.map((c) => c.name)
 				const insertSql = buildInsertSql(table.name, colNames)
+				const blobCols = new Set(table.columns.filter((c) => c.type.toUpperCase() === 'BLOB').map((c) => c.name))
 				for (const row of table.rows) {
-					tx.run(insertSql, colNames.map((c) => row[c] ?? null))
+					tx.run(insertSql, colNames.map((c) => {
+						const v = row[c]
+						if (v == null) return null
+						if (blobCols.has(c) && typeof v === 'string') {
+							return base64ToBytes(v)
+						}
+						return v
+					}))
 				}
 			}
 		})
@@ -241,6 +263,15 @@ function buildInsertSql(tableName: string, colNames: string[]): string {
 	const cols = colNames.map((c) => quoteIdent(c))
 	const placeholders = colNames.map(() => '?').join(', ')
 	return `INSERT INTO ${quoteIdent(tableName)} (${cols.join(', ')}) VALUES (${placeholders})`
+}
+
+function base64ToBytes(b64: string): Uint8Array {
+	const bin = atob(b64)
+	const bytes = new Uint8Array(bin.length)
+	for (let i = 0; i < bin.length; i++) {
+		bytes[i] = bin.charCodeAt(i)
+	}
+	return bytes
 }
 
 export { splitStatements }

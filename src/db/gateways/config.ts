@@ -118,8 +118,8 @@ const DEFAULT_CONFIG: CranialNerveConfig = {
 
 export interface ConfigGateway {
   read(): CranialNerveConfig
-  write(config: CranialNerveConfig): void
-  flush(): void
+  write(config: CranialNerveConfig): boolean
+  flush(): boolean
   listModels(preset: AiPreset, timeoutMs?: number): Promise<string[]>
 }
 
@@ -143,6 +143,14 @@ export default function createConfigGateway(): ConfigGateway {
       merged.prompt = migratePrompt(merged.prompt, raw as Record<string, unknown>)
       merged.tableTemplate = migrateTableTemplate(merged.tableTemplate)
       merged.chronicleTableDef = migrateChronicleTableDef(merged.chronicleTableDef, merged.chronicleTableHints)
+      if (rawObj.promptPresets !== undefined || rawObj.activePromptPresetId !== undefined) {
+        delete rawObj.promptPresets
+        delete rawObj.activePromptPresetId
+        const saveCtx = getHostContext()
+        if (typeof saveCtx.saveSettingsDebounced === 'function') {
+          saveCtx.saveSettingsDebounced()
+        }
+      }
       return merged
     },
     write(config) {
@@ -150,15 +158,19 @@ export default function createConfigGateway(): ConfigGateway {
       const ctx = getHostContext()
       if (typeof ctx.saveSettingsDebounced === 'function') {
         ctx.saveSettingsDebounced()
-      } else {
-        pushLog('warn', 'config', 'saveSettingsDebounced 不可用，配置可能无法持久化')
+        return true
       }
+      pushLog('error', 'config', 'saveSettingsDebounced 不可用，配置改动不会被持久化')
+      return false
     },
     flush() {
       const ctx = getHostContext() as unknown as Record<string, unknown>
       if (typeof ctx.saveSettings === 'function') {
         (ctx as { saveSettings: () => void }).saveSettings()
+        return true
       }
+      pushLog('error', 'config', 'saveSettings 不可用，配置改动不会被持久化')
+      return false
     },
     async listModels(preset, timeoutMs) {
       if (!preset.baseURL) {

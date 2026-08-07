@@ -56,7 +56,9 @@ export default function createChronicleRecaller(
       if (all.length === 0) {
         return []
       }
-      const index = await indexStore.ensureVectors(ctx.chatToken, all, vector, ctx.vectorConfig)
+      const index = ctx.vectorEnabled
+        ? await indexStore.ensureVectors(ctx.chatToken, all, vector, ctx.vectorConfig)
+        : { version: 0, chatToken: ctx.chatToken, entries: [] }
       const candidates = await prefilterByVector(vector, ctx, all, index)
       const keys = await filterRelevantKeys(ai, ctx, candidates)
       const recentKeys = getRecentKeys(all, ctx.recallRecentFixedInjectCount)

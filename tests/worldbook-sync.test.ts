@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { syncToWorldbook } from '../src/core/worldbook-sync'
+import { syncToWorldbook, cleanupStaleBooks } from '../src/core/worldbook-sync'
 
 function makeSession(overrides: Record<string, unknown> = {}) {
   const worldbook = {
@@ -194,5 +194,48 @@ describe('syncToWorldbook 注入位置 role 映射', () => {
     const entries = Object.values(calls[0]![1].entries)
     expect(entries.length).toBeGreaterThan(0)
     expect(entries.every((e) => e.role === 0)).toBe(true)
+  })
+})
+
+describe('cleanupStaleBooks 保留手动条目（1.2 修复：切换聊天不删其他聊天手动世界书）', () => {
+  function makeCleanupSession(entries: Record<number, { comment: string }>) {
+    const worldbook = {
+      listWorldbookNames: vi.fn(() => ['CN_Data_other', 'CN_Data_current']),
+      loadLorebook: vi.fn(async () => ({ entries })),
+      deleteWorldbook: vi.fn(async () => {}),
+      detachFromChat: vi.fn(async () => {})
+    }
+    return {
+      getChatToken: () => 'current',
+      worldbook,
+      listTables: vi.fn(() => []),
+      getTableRowsWithRowid: vi.fn(() => []),
+      getChronicleTableDef: () => ({ name: 'cn_chronicle', columns: [] })
+    }
+  }
+
+  it('含手动条目的其他聊天书不被删除', async () => {
+    const session = makeCleanupSession({ 1: { comment: 'user manual note' } })
+    await cleanupStaleBooks(session as never)
+    expect(session.worldbook.deleteWorldbook).not.toHaveBeenCalled()
+  })
+
+  it('纯自动生成的其他聊天书被清理', async () => {
+    const session = makeCleanupSession({ 1: { comment: 'CN_auto_generated' } })
+    await cleanupStaleBooks(session as never)
+    expect(session.worldbook.deleteWorldbook).toHaveBeenCalledWith('CN_Data_other')
+  })
+
+  it('加载失败的书跳过清理（保守不删）', async () => {
+    const session = makeCleanupSession({})
+    session.worldbook.loadLorebook = vi.fn(async () => { throw new Error('boom') })
+    await cleanupStaleBooks(session as never)
+    expect(session.worldbook.deleteWorldbook).not.toHaveBeenCalled()
+  })
+
+  it('当前聊天书永不清理', async () => {
+    const session = makeCleanupSession({ 1: { comment: 'CN_auto_generated' } })
+    await cleanupStaleBooks(session as never)
+    expect(session.worldbook.deleteWorldbook).not.toHaveBeenCalledWith('CN_Data_current')
   })
 })

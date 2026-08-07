@@ -257,6 +257,17 @@ export async function cleanupStaleBooks(session: CranialNerveSession): Promise<v
   for (const name of all) {
     if (name.startsWith(WORLD_BOOK_PREFIX) && name !== currentBook) {
       try {
+        const data = await wb.loadLorebook(name)
+        const hasManual = Object.values(data.entries).some((e) => e && e.comment !== 'CN_auto_generated')
+        if (hasManual) {
+          pushLog('warn', 'worldbook', `保留含手动条目的书 ${name}，避免删除用户编辑`)
+          continue
+        }
+      } catch (e) {
+        pushLog('warn', 'worldbook', `检查世界书 ${name} 手动条目失败，跳过清理: ${e instanceof Error ? e.message : String(e)}`)
+        continue
+      }
+      try {
         await wb.deleteWorldbook(name)
       } catch (e) {
         pushLog('warn', 'worldbook', `清理世界书失败: ${name} - ${e instanceof Error ? e.message : String(e)}`)

@@ -1,8 +1,15 @@
 import type SqliteCore from '@db/sqlite/core'
 import type { PersistContext } from '@db/sqlite/frame-persist'
-import { appendSqlLog } from '@db/sqlite/frame-persist'
+import { appendSqlLog, writeCheckpoint } from '@db/sqlite/frame-persist'
+import { splitStatements } from '@db/sqlite/frame-replay'
 import type { TableEditSqlV1 } from '@shared/types/ai'
 import { pushLog } from '@shared/log-buffer'
+
+const ALLOWED_SQL_START = /^\s*(INSERT\b|UPDATE\b|DELETE\b|REPLACE\b)/i
+
+function isAllowedSql(sql: string): boolean {
+  return ALLOWED_SQL_START.test(sql)
+}
 
 export interface SqlExecResult {
     ok: boolean
@@ -22,6 +29,19 @@ export default function executeTableEditSql(
     persist?: SqlExecPersist
 ): SqlExecResult {
     try {
+        for (const edit of edits) {
+            const sql = edit.sql.trim()
+            if (sql.length === 0) continue
+            for (const stmt of splitStatements(sql)) {
+                if (!isAllowedSql(stmt)) {
+                    return {
+                        ok: false,
+                        error: `包含不允许的语句类型，已拒绝执行：${stmt.slice(0, 60)}`,
+                        errorCategory: 'model'
+                    }
+                }
+            }
+        }
         const changes = core.transaction((tx) => {
             const before = tx.getRowsModified()
             for (const edit of edits) {
@@ -39,7 +59,19 @@ export default function executeTableEditSql(
                     reason: 'ai_fill'
                 }])
             } catch (e) {
-                pushLog('error', 'sql-executor', `记录 SQL log 失败（数据已执行）: ${e instanceof Error ? e.message : String(e)}`)
+                const msg = e instanceof Error ? e.message : String(e)
+                pushLog('error', 'sql-executor', `记录 SQL log 失败（数据已执行）: ${msg}`)
+                try {
+                    writeCheckpoint(persist.ctx, persist.messageId, 'manual')
+                    pushLog('warn', 'sql-executor', '落帧失败已补写 checkpoint 兜底，数据已持久化')
+                } catch (e2) {
+                    pushLog('error', 'sql-executor', `补写 checkpoint 失败: ${e2 instanceof Error ? e2.message : String(e2)}`)
+                    return {
+                        ok: false,
+                        error: 'SQL 已执行但落帧失败，数据可能未持久化，请导出快照备份',
+                        errorCategory: 'infrastructure'
+                    }
+                }
             }
         }
         return { ok: true, changes }

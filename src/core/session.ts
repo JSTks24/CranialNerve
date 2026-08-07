@@ -55,7 +55,7 @@ import createChronicleRecaller, { type ChronicleRecaller } from './chronicle'
 import createVectorIndexStore, { type VectorIndexStore } from './chronicle/vector-index-store'
 import createWriteQueue, { type WriteQueue } from './write-queue'
 import { buildBookName, cleanupStaleBooks, syncToWorldbook } from './worldbook-sync'
-import { resetFillScheduler, onGenerationEnded, onMessageSentForFill, isFillInProgress, markGenerationStopped, resetGenerationStopped, buildWorldbookContext, snapshotLastAiLength, runManualFill, runManualCatchUp, type ExecuteFillOptions, type ManualCatchUpOptions } from './table/fill-orchestrator'
+import { resetFillScheduler, onGenerationEnded, onMessageSentForFill, isFillInProgress, markGenerationStopped, resetGenerationStopped, buildWorldbookContext, snapshotLastAiLength, rollbackFillProgress, runManualFill, runManualCatchUp, type ExecuteFillOptions, type ManualCatchUpOptions } from './table/fill-orchestrator'
 import { onPromptReady } from './chronicle/recall-orchestrator'
 import { getPersonaDescription, getCharDescription, getUserName } from '@db/gateways/host-state'
 import { stripKeyLineFromMes } from '@shared/recall-payload'
@@ -118,6 +118,8 @@ export class CranialNerveSession {
   private realGenerationPending = false
   private regenerateFillPending = false
   private regenerateState: { lastAiId: number } | null = null
+  private taskAbortCtrl: AbortController = new AbortController()
+  private configWriteWarned = false
 
   constructor() {
     this.core = new SqliteCore()
@@ -168,6 +170,7 @@ export class CranialNerveSession {
           try {
             if (lastAiId != null && this.syncBridge) {
               this.syncBridge.getRepo().removeFrame(lastAiId)
+              rollbackFillProgress(this, lastAiId)
             }
             await this.reloadForChatChange()
           } catch (e) {
@@ -184,7 +187,7 @@ export class CranialNerveSession {
             pushLog('error', 'session', `onGenerationEnded(force) error: ${e instanceof Error ? e.message : String(e)}`)
           })
         } else {
-          pushLog('info', 'session', 'regenerate 但无 after-ai 场景开启 regenerateFill，跳过')
+          pushLog('warn', 'session', 'regenerate 已回退该楼数据；未开启 regenerateFill 自动重填，可通过手动追平或下次发送补填')
         }
         return
       }
@@ -426,16 +429,25 @@ export class CranialNerveSession {
     }
   }
 
+  getTaskAbortSignal(): AbortSignal | undefined {
+    return this.taskAbortCtrl.signal
+  }
+
+  private abortCurrentTask(): void {
+    this.taskAbortCtrl.abort()
+    this.taskAbortCtrl = new AbortController()
+  }
+
   async reloadForChatChange(): Promise<void> {
     const mySeq = ++this.reloadSeq
     const prevToken = this.currentChatToken
     this.lastRecalledUserSendDate = null
     this.realGenerationPending = false
+    this.abortCurrentTask()
     try {
       await this.writeQueue.waitForDrain(this.getConfig().pending.writeQueueDrainTimeoutMs)
     } catch (e) {
-      pushLog('warn', 'session', `等待写入队列超时，继续等待当前任务完成: ${e instanceof Error ? e.message : String(e)}`)
-      await this.writeQueue.waitForDrain()
+      pushLog('warn', 'session', `等待写入队列超时，强制继续重建（已中断进行中的 AI 任务）: ${e instanceof Error ? e.message : String(e)}`)
     }
     if (mySeq !== this.reloadSeq) {
       return
@@ -692,7 +704,7 @@ export class CranialNerveSession {
     if (cardTemplate) {
       try {
         this.initGameSession(cardTemplate, '__card__')
-        this.toastNotifier?.success('已加载角色卡内置模板')
+        pushLog('info', 'session', '已加载角色卡内置模板')
         return
       } catch (e) {
         cardError = true
@@ -745,7 +757,7 @@ export class CranialNerveSession {
 
   private warnOnCriticalLoadWarnings(): void {
     const warnings = this.syncBridge?.lastLoadWarnings ?? []
-    const critical = warnings.filter((w) => w.includes('无 checkpoint') || w.includes('快照重建失败') || w.includes('帧数据损坏'))
+    const critical = warnings.filter((w) => w.includes('无 checkpoint') || w.includes('快照重建失败') || w.includes('帧数据损坏') || w.includes('回放 SQL 失败'))
     if (critical.length > 0) {
       pushLog('error', 'session', `CN 数据可能丢失: ${critical.join('; ')}`)
       this.toastNotifier?.error(`CN 数据可能丢失（${critical.join('；')}）。请尽快在表格页导出快照备份。`)
@@ -857,7 +869,6 @@ export class CranialNerveSession {
 
   unbindBoundTemplate(): void {
     this.chat.writeChatMetadata('CN_TEMPLATE', undefined)
-    this.toastNotifier?.info('已解除聊天模板绑定')
   }
 
   persistAfterFill(messageId: number, operations: MutationOperation[]): void {
@@ -913,7 +924,15 @@ export class CranialNerveSession {
   }
 
   saveConfig(config: CranialNerveConfig): void {
-    this.config.write(config)
+    const ok = this.config.write(config)
+    if (ok) {
+      this.configWriteWarned = false
+      return
+    }
+    if (!this.configWriteWarned) {
+      this.configWriteWarned = true
+      this.toastNotifier?.warning('配置保存失败：宿主未提供持久化接口，改动不会被保存')
+    }
   }
 
   getActiveAiPreset(): AiPreset | null {

@@ -24,6 +24,7 @@ let fillInProgress = false
 let fillRunMode: FillRunMode | null = null
 let lastGenerationWasStopped = false
 let lastAiLenAtStart: number | null = null
+let fillChain: Promise<unknown> = Promise.resolve()
 
 export interface FillProgressState {
 	tick: number
@@ -102,6 +103,23 @@ function isAbortError(e: unknown, signal?: AbortSignal): boolean {
 	return false
 }
 
+export function combineSignals(...signals: (AbortSignal | undefined)[]): AbortSignal | undefined {
+	const valid = signals.filter((s): s is AbortSignal => !!s)
+	if (valid.length === 0) return undefined
+	if (valid.length === 1) return valid[0]
+	const ctrl = new AbortController()
+	for (const s of valid) {
+		if (s.aborted) {
+			ctrl.abort(s.reason)
+			return ctrl.signal
+		}
+	}
+	for (const s of valid) {
+		s.addEventListener('abort', () => ctrl.abort(s.reason), { once: true })
+	}
+	return ctrl.signal
+}
+
 export type FillRunMode = 'table' | 'chronicle' | 'merged'
 
 const ESTIMATED_TOKENS_PER_FLOOR = 400
@@ -124,6 +142,19 @@ export interface ExecuteFillOptions {
 }
 
 async function executeFill(session: CranialNerveSession, opts?: ExecuteFillOptions): Promise<RunResult> {
+	const run = () => executeFillNow(session, opts)
+	return await new Promise<RunResult>((resolve, reject) => {
+		fillChain = fillChain.then(async () => {
+			try {
+				resolve(await run())
+			} catch (e) {
+				reject(e)
+			}
+		})
+	})
+}
+
+async function executeFillNow(session: CranialNerveSession, opts?: ExecuteFillOptions): Promise<RunResult> {
 	if (fillInProgress) {
 		pushLog('warn', 'fill', '已有填表进行中，跳过本次触发')
 		return { ok: false, attempts: 0, error: 'fill in progress' }
@@ -363,7 +394,7 @@ async function executeFill(session: CranialNerveSession, opts?: ExecuteFillOptio
 			const result = await session.getWriteQueue().enqueue(async () => {
 				const r = await editor.run(promptCtx, {
 					maxRetries: fillCfg.maxRetries,
-					signal: opts?.signal ?? progress?.abortSignal,
+					signal: combineSignals(session.getTaskAbortSignal(), opts?.signal ?? progress?.abortSignal),
 					onProgress: opts?.onProgress ? (p, d) => opts.onProgress!(p, { ...d, currentBucket: b + 1, totalBuckets }) : undefined,
 					expectedSqlObjects: bucketAiFloors.length,
 					requireChronicleInsert: runMode === 'chronicle' || runMode === 'merged',
@@ -578,12 +609,23 @@ export async function onMessageSentForFill(session: CranialNerveSession, userMsg
 	for (let i = 0; i < upToLastAi.length; i++) {
 		if (!upToLastAi[i]!.is_user && !upToLastAi[i]!.is_system) sendAiIdx.push(i)
 	}
-	const sendTake = Math.min(sendContextDepth, sendAiIdx.length)
+	let baseLast: number | null = null
+	if (tableActive && chronicleActive) {
+		baseLast = detectMergedLastFilled(session)
+	} else {
+		baseLast = detectLastSummarizedAiFloor(session, tableActive ? 'table' : 'chronicle')
+	}
+	const unfilledAiIdx = baseLast == null ? sendAiIdx : sendAiIdx.filter((idx) => idx > baseLast)
+	if (unfilledAiIdx.length === 0) {
+		pushLog('info', 'fill', `after-send：上一轮已填，跳过 lastAiId=${lastAiId}`)
+		return
+	}
+	const sendTake = Math.min(sendContextDepth, unfilledAiIdx.length)
 	let messages: typeof chat
-	if (sendTake === 0 || sendAiIdx.length === 0) {
+	if (sendTake === 0) {
 		messages = []
 	} else {
-		const startAi = sendAiIdx[sendAiIdx.length - sendTake]!
+		const startAi = unfilledAiIdx[unfilledAiIdx.length - sendTake]!
 		let startMsg = startAi
 		if (startMsg > 0 && upToLastAi[startMsg - 1]!.is_user) startMsg = startMsg - 1
 		messages = upToLastAi.slice(startMsg)
@@ -664,6 +706,30 @@ function updateFillProgress(session: CranialNerveSession, scene: 'table' | 'chro
 	session.chat.writeChatMetadata(FILL_PROGRESS_KEY, { ...(current ?? {}), [key]: floor })
 }
 
+export function rollbackFillProgress(session: CranialNerveSession, aboveFloor: number): void {
+	try {
+		const current = readFillProgress(session)
+		if (!current) return
+		const next: FillProgress = {}
+		let changed = false
+		if (current.tableFloor != null && current.tableFloor >= aboveFloor) {
+			changed = true
+		} else if (current.tableFloor != null) {
+			next.tableFloor = current.tableFloor
+		}
+		if (current.chronicleFloor != null && current.chronicleFloor >= aboveFloor) {
+			changed = true
+		} else if (current.chronicleFloor != null) {
+			next.chronicleFloor = current.chronicleFloor
+		}
+		if (changed) {
+			session.chat.writeChatMetadata(FILL_PROGRESS_KEY, Object.keys(next).length > 0 ? next : undefined)
+		}
+	} catch {
+		pushLog('warn', 'fill', '回退填表进度失败')
+	}
+}
+
 export function detectLastSummarizedAiFloor(session: CranialNerveSession, scene: 'table' | 'chronicle' = 'table'): number | null {
 	const progress = readFillProgress(session)
 	const progressFloor = scene === 'chronicle' ? progress?.chronicleFloor : progress?.tableFloor
@@ -707,6 +773,29 @@ export function detectLastUpdatedAiFloorForTable(session: CranialNerveSession, t
 	return lastUpdated
 }
 
+function minOfNonNull(values: Array<number | null>): number | null {
+	let min: number | null = null
+	for (const v of values) {
+		if (v == null) continue
+		if (min == null || v < min) min = v
+	}
+	return min
+}
+
+export function detectMergedLastFilled(session: CranialNerveSession): number | null {
+	return minOfNonNull([
+		detectLastSummarizedAiFloor(session, 'table'),
+		detectLastSummarizedAiFloor(session, 'chronicle')
+	])
+}
+
+const CHRONICLE_CATCHUP_BATCH_CAP = 5
+
+function chronicleCatchUpBatch(user: number | undefined): number | undefined {
+	if (user == null) return CHRONICLE_CATCHUP_BATCH_CAP
+	return Math.max(1, Math.min(user, CHRONICLE_CATCHUP_BATCH_CAP))
+}
+
 export async function runManualCatchUp(session: CranialNerveSession, opts?: ManualCatchUpOptions): Promise<RunResult> {
 	const chat = session.chat.getChat()
 	const aiFloors: number[] = []
@@ -721,6 +810,10 @@ export async function runManualCatchUp(session: CranialNerveSession, opts?: Manu
 		? opts.toAiFloor
 		: aiFloors[aiFloors.length - 1]!
 	if (opts?.runMode === 'merged') {
+		const wrapLeg = (leg: 'table' | 'chronicle'): FillProgressFn | undefined =>
+			opts?.onProgress
+				? (phase, detail) => opts.onProgress!(phase, { ...detail, leg })
+				: undefined
 		const tableLast = detectLastSummarizedAiFloor(session, 'table')
 		const chronicleLast = detectLastSummarizedAiFloor(session, 'chronicle')
 		const tableFrom = opts?.fromAiFloor != null ? opts.fromAiFloor : (tableLast != null && tableLast >= 0 ? tableLast + 1 : 0)
@@ -737,11 +830,11 @@ export async function runManualCatchUp(session: CranialNerveSession, opts?: Manu
 				messages: tableSlice,
 				batchSize: opts?.batchSize,
 				extraHint: opts?.extraHint,
-				onProgress: opts?.onProgress,
+				onProgress: wrapLeg('table'),
 				suppressProgressNotifier: opts?.suppressProgressNotifier,
 				signal: opts?.signal,
 			})
-			if (!tableResult.ok) return tableResult
+			if (!tableResult.ok) return { ...tableResult, error: `表格追平失败：${tableResult.error ?? '未知错误'}` }
 		}
 		if (chronicleFrom <= toIdx) {
 			const chronicleSlice = chat.slice(chronicleFrom, toIdx + 1)
@@ -749,13 +842,13 @@ export async function runManualCatchUp(session: CranialNerveSession, opts?: Manu
 				runMode: 'chronicle',
 				fillCfgSource: 'chronicle',
 				messages: chronicleSlice,
-				batchSize: opts?.batchSize,
+				batchSize: chronicleCatchUpBatch(opts?.batchSize),
 				extraHint: opts?.extraHint,
-				onProgress: opts?.onProgress,
+				onProgress: wrapLeg('chronicle'),
 				suppressProgressNotifier: opts?.suppressProgressNotifier,
 				signal: opts?.signal,
 			})
-			if (!chronicleResult.ok) return chronicleResult
+			if (!chronicleResult.ok) return { ...chronicleResult, error: `纪要追平失败：${chronicleResult.error ?? '未知错误'}` }
 		}
 		return { ok: true, attempts: 0 }
 	}
@@ -774,7 +867,7 @@ export async function runManualCatchUp(session: CranialNerveSession, opts?: Manu
 		fillCfgSource: opts?.fillCfgSource,
 		targetTables: opts?.targetTables,
 		messages: sliceMessages,
-		batchSize: opts?.batchSize,
+		batchSize: opts?.runMode === 'chronicle' ? chronicleCatchUpBatch(opts?.batchSize) : opts?.batchSize,
 		extraHint: opts?.extraHint,
 		onProgress: opts?.onProgress,
 		suppressProgressNotifier: opts?.suppressProgressNotifier,

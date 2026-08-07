@@ -1,6 +1,7 @@
 import type { ChatGateway } from '@db/gateways/chat'
 import type { StorageFrame } from '@shared/types/storage-frame'
 import { FRAME_FIELD_PREFIX } from '@shared/constants/msg-fields'
+import { pushLog } from '@shared/log-buffer'
 
 export interface FrameRepo {
 	loadFrame(messageId: number): StorageFrame | null
@@ -16,15 +17,22 @@ export interface FrameRepo {
 export default function createFrameRepo(chat: ChatGateway): FrameRepo {
 	return {
 		loadFrame(messageId) {
+			if (messageId < 0 || messageId >= chat.getChat().length) return null
 			const raw = chat.readMessageExtra(messageId, FRAME_FIELD_PREFIX)
 			if (typeof raw !== 'string' || raw.length === 0) return null
 			try {
-				return JSON.parse(raw) as StorageFrame
+				const frame = JSON.parse(raw) as StorageFrame
+				if (!frame || frame.version !== 2) {
+					pushLog('warn', 'frame', `第 ${messageId + 1} 楼帧版本未知（${(frame as { version?: unknown })?.version ?? '?'}），已忽略`)
+					return null
+				}
+				return frame
 			} catch {
 				return null
 			}
 		},
 		saveFrame(messageId, frame) {
+			if (messageId < 0 || messageId >= chat.getChat().length) return
 			chat.writeMessageExtra(messageId, FRAME_FIELD_PREFIX, JSON.stringify(frame))
 		},
 		removeFrame(messageId) {

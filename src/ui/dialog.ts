@@ -1,5 +1,3 @@
-import toast from './toast'
-
 function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
@@ -137,7 +135,6 @@ function promptRename(
     const submit = () => {
       const v = input.value.trim()
       if (!v) {
-        toast.error('预设名称不能为空')
         input.classList.add('cn-input--error')
         input.focus()
         return

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onActivated } from 'vue'
 import { getSession } from '@core/session'
 import type { AiPreset, VectorConfig } from '@shared/types/config'
 import toast from '@ui/toast'
@@ -45,6 +45,15 @@ const seedInput = computed({
 
 const vectorEnabled = ref(session.getConfig().vectorEnabled)
 const vector = ref<VectorConfig>({ ...session.getConfig().vector })
+
+onActivated(() => {
+  if (drafting.value) return
+  presets.value = session.getConfig().aiPresets.map((p) => ({ ...p }))
+  activeId.value = session.getConfig().activeAiPresetId
+  selectedId.value = activeId.value || (presets.value[0]?.id ?? '')
+  vectorEnabled.value = session.getConfig().vectorEnabled
+  vector.value = { ...session.getConfig().vector }
+})
 
 function emptyPreset(): AiPreset {
   return {

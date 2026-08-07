@@ -17,6 +17,8 @@ const varHelpModal = readProjectFile('src/ui/components/VariableHelpModal.vue')
 const tableTypes = readProjectFile('src/shared/types/table.ts')
 const sessionSource = readProjectFile('src/core/session.ts')
 const blockEditor = readProjectFile('src/ui/components/PromptBlockEditor.vue')
+const manualFillPage = readProjectFile('src/ui/pages/ManualFill.vue')
+const fillOrchestratorSrc = readProjectFile('src/core/table/fill-orchestrator.ts')
 
 describe('UI 主题守卫（深翠框景）', () => {
   it('必备设计 token 存在', () => {
@@ -310,20 +312,54 @@ describe('模板与提示词预设弹窗改名', () => {
     expect(promptConfigPage).toContain('prompt-editor__title-group')
   })
 
-  it('角色卡来源预设不显示复制/删除按钮', () => {
-    expect(promptConfigPage).toContain(`v-if="selectedPresetId === p.id && p.source !== 'card'"`)
+  it('角色卡来源预设不显示删除按钮，模板复制功能已移除', () => {
+    expect(promptConfigPage).toContain(`v-if="p.source !== 'card'"`)
+    expect(promptConfigPage).toContain('title="删除"')
+    expect(promptConfigPage).not.toContain('duplicatePresetT')
+    expect(promptConfigPage).not.toContain('fa-copy')
   })
 
-  it('预设列表点击选中、对号浮现才切换，选中态高亮独立', () => {
+  it('预设列表点击选中、对号浮现才切换，按钮常驻透明占位', () => {
     expect(promptConfigPage).toContain('selectedPresetId')
     expect(promptConfigPage).toContain('selectedScenePresetId')
     expect(promptConfigPage).toContain('selectPresetItem')
     expect(promptConfigPage).toContain('preset-list__item--selected')
     expect(promptConfigPage).toContain('@click="selectPresetItem(p.id)"')
+    expect(promptConfigPage).toContain('preset-list__actions')
+    expect(promptConfigPage).toContain('preset-list__btn-hidden')
     expect(promptConfigPage).toContain(
-      'v-if="selectedPresetId === p.id && p.id !== ttConfig.activeId"'
+      'selectedPresetId !== p.id || p.id === ttConfig.activeId'
     )
     expect(theme).toContain('.preset-list__item--selected')
+  })
+
+  it('预设列表固定行高 46px，选中/未选中高度一致', () => {
+    expect(theme).toMatch(/\.preset-list__item \{[^}]*height:\s*46px;/)
+    expect(theme).not.toMatch(/\.preset-list__item \{[^}]*min-height/)
+    expect(theme).toContain('.preset-list__actions .cn-btn.preset-list__btn-hidden')
+  })
+
+  it('绑定模板条目布局与样式合规（name-text、无彩色外光环、soft 徽标）', () => {
+    expect(theme).toContain('.preset-list__name-text')
+    expect(promptConfigPage).toMatch(/preset-list__name-text">本聊天绑定模板<\/span>/)
+    expect(theme).not.toMatch(/\.preset-list__item--bound \{[^}]*box-shadow/)
+    expect(theme).toMatch(/\.preset-list__badge \{[^}]*background:\s*var\(--cn-primary-soft\)/)
+    expect(theme).not.toMatch(/\.preset-list__badge \{[^}]*background:\s*var\(--cn-grad-primary\)/)
+  })
+
+  it('解除绑定按钮已删除，无双 toast 文案残留', () => {
+    expect(promptConfigPage).not.toContain('unbindBoundPreset')
+    expect(promptConfigPage).not.toContain('fa-unlink')
+    expect(promptConfigPage).not.toContain('已解除聊天模板绑定')
+    expect(sessionSource).not.toContain('已解除聊天模板绑定')
+  })
+
+  it('追平范围按每侧游标计算，不再塌缩到第1层', () => {
+    expect(manualFillPage).toContain('tableFromSeq')
+    expect(manualFillPage).toContain('chronicleFromSeq')
+    expect(manualFillPage).not.toMatch(/Math\.min\(t \?\? -1, c \?\? -1\)/)
+    expect(fillOrchestratorSrc).not.toMatch(/Math\.min\(t \?\? -1, c \?\? -1\)/)
+    expect(fillOrchestratorSrc).toContain('detectMergedLastFilled')
   })
 
   it('内置模板预设可删除，不再强制恒存在', () => {

@@ -53,7 +53,6 @@ async function copyVar(name: string) {
   const text = varTag(name)
   try {
     await navigator.clipboard.writeText(text)
-    toast.success(`已复制 ${text}`)
   } catch {
     toast.error('复制失败')
   }

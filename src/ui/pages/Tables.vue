@@ -46,6 +46,7 @@ const tableTabs = computed(() =>
 )
 const editingRowid = ref<number | null>(null)
 const editSnapshot = ref<Record<string, string>>({})
+const saving = ref(false)
 const cellEditEls = new Map<string, HTMLElement>()
 let draftCounter = -1
 
@@ -121,6 +122,7 @@ function cancelEdit() {
 
 function saveEdit() {
   if (!activeTable.value || editingRowid.value == null) return
+  if (saving.value) return
   const row = activeTable.value.rows.find((r) => r.__rowid__ === editingRowid.value)
   if (!row) {
     editingRowid.value = null
@@ -144,6 +146,7 @@ function saveEdit() {
     toast.warning('至少填写一列内容，不能保存全空行')
     return
   }
+  saving.value = true
   void session.runWrite(async () => {
     try {
       if (row.__rowid__ < 0) {
@@ -168,6 +171,8 @@ function saveEdit() {
       refresh()
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err))
+    } finally {
+      saving.value = false
     }
   })
 }
@@ -319,10 +324,10 @@ watch(
                 </div>
                 <div class="table-row-card__foot">
                   <template v-if="row.__rowid__ === editingRowid">
-                    <button class="cn-btn cn-btn--sm cn-btn--primary" :disabled="fillStore.tableActive" @click="saveEdit">
+                    <button class="cn-btn cn-btn--sm cn-btn--primary" :disabled="fillStore.tableActive || saving" @click="saveEdit">
                       保存
                     </button>
-                    <button class="cn-btn cn-btn--sm" @click="cancelEdit">取消</button>
+                    <button class="cn-btn cn-btn--sm" :disabled="saving" @click="cancelEdit">取消</button>
                   </template>
                   <template v-else>
                     <button class="cn-btn cn-btn--sm" @click="startEdit(row)">

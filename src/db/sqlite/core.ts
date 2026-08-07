@@ -1,6 +1,7 @@
 import initSqlJs from 'sql.js/dist/sql-wasm.js'
 import type { BindParams, Database, QueryExecResult, SqlJsStatic, SqlValue } from 'sql.js'
 import type { ColumnDef, QueryResult } from '@shared/types/table'
+import { splitStatements } from './frame-replay'
 
 const sqlWasmUrl = new URL('assets/sql-wasm.wasm', import.meta.url).href
 
@@ -34,6 +35,9 @@ export default class SqliteCore {
     }
 
     run(sql: string, params?: BindParams): void {
+        if (params !== undefined && splitStatements(sql).length > 1) {
+            throw new Error('带参数的 SQL 不支持多语句，请逐条执行')
+        }
         const db = this.requireDb()
         db.run(sql, params ?? null)
     }
@@ -77,21 +81,20 @@ export default class SqliteCore {
         if (!first) {
             return []
         }
+        const uniqueCols = collectUniqueColumns(db, tableName)
         const columns: ColumnDef[] = []
         for (const row of first.values) {
             const name = row[1] as string
             const type = (row[2] as string) ?? ''
             const notnull = row[3] as number
+            const dflt = row[4]
             const pk = row[5] as number
-            columns.push({
-                name,
-                displayName: name,
-                type,
-                constraints: {
-                    primaryKey: pk > 0 || undefined,
-                    nullable: notnull === 0 || undefined,
-                },
-            })
+            const constraints: NonNullable<ColumnDef['constraints']> = {}
+            if (pk > 0) constraints.primaryKey = true
+            if (uniqueCols.has(name)) constraints.unique = true
+            if (notnull === 1) constraints.nullable = false
+            if (typeof dflt === 'string' && dflt !== '') constraints.defaultValue = dflt
+            columns.push({ name, displayName: name, type, constraints })
         }
         return columns
     }
@@ -136,4 +139,24 @@ export default class SqliteCore {
 
 function escapeIdentifier(name: string): string {
     return `"${name.replace(/"/g, '""')}"`
+}
+
+function collectUniqueColumns(db: Database, tableName: string): Set<string> {
+    const out = new Set<string>()
+    const idxResult = db.exec(`PRAGMA index_list(${escapeIdentifier(tableName)})`)
+    if (idxResult.length === 0) return out
+    const first = idxResult[0]
+    if (!first) return out
+    for (const row of first.values) {
+        const unique = row[2] as number
+        const idxName = row[1] as string
+        if (unique !== 1) continue
+        const info = db.exec(`PRAGMA index_info(${escapeIdentifier(idxName)})`)
+        if (info.length === 0 || !info[0]) continue
+        const cols = info[0].values.map((v) => v[2] as string)
+        if (cols.length === 1) {
+            out.add(cols[0]!)
+        }
+    }
+    return out
 }

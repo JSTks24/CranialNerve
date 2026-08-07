@@ -24,6 +24,7 @@ export interface FillProgressDetail {
   error?: string
   currentBucket?: number
   totalBuckets?: number
+  leg?: 'table' | 'chronicle'
 }
 export type FillProgressFn = (phase: FillPhase, detail?: FillProgressDetail) => void
 export interface RunOptions {
