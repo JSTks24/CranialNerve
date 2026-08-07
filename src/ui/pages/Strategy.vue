@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onActivated } from 'vue'
+import { ref, computed, watch, onActivated } from 'vue'
 import { getSession } from '@core/session'
 import type { CranialNerveConfig } from '@shared/types/config'
 import toast from '@ui/toast'
@@ -19,6 +19,7 @@ const activeTabValue = computed({
 })
 const snapshotTabs = [
 	{ key: 'every-message', label: '每条消息（推荐）' },
+	{ key: 'retain-recent', label: '保留最近N层' },
 	{ key: 'latest-only', label: '仅最新' }
 ]
 const snapshotValue = computed({
@@ -73,6 +74,39 @@ function saveField(field: 'aiCallTimeoutMs' | 'aiTimeoutRetries' | 'listModelsTi
 	toast.success('已保存')
 }
 
+const aiTimeoutText = ref('')
+watch(() => cfg.value.pending.aiCallTimeoutMs, (v) => {
+	aiTimeoutText.value = v === 0 ? '∞' : String(v)
+}, { immediate: true })
+function onAiTimeoutInput(e: Event) {
+	const input = e.target as HTMLInputElement
+	const val = input.value
+	if (val === '') {
+		aiTimeoutText.value = ''
+		return
+	}
+	if (val === '∞') {
+		const display = cfg.value.pending.aiCallTimeoutMs === 0 ? '∞' : String(cfg.value.pending.aiCallTimeoutMs)
+		aiTimeoutText.value = display
+		input.value = display
+		return
+	}
+	if (/^\d+$/.test(val)) {
+		cfg.value.pending.aiCallTimeoutMs = Math.trunc(Number(val))
+	}
+	const display = cfg.value.pending.aiCallTimeoutMs === 0 ? '∞' : String(cfg.value.pending.aiCallTimeoutMs)
+	aiTimeoutText.value = display
+	input.value = display
+}
+
+function onBlurAiTimeout() {
+	if (aiTimeoutText.value === '') {
+		cfg.value.pending.aiCallTimeoutMs = 0
+	}
+	saveField('aiCallTimeoutMs', 0, 600000, 0)
+	aiTimeoutText.value = cfg.value.pending.aiCallTimeoutMs === 0 ? '∞' : String(cfg.value.pending.aiCallTimeoutMs)
+}
+
 function saveBoolean(field: 'summarizeOnManualAbort') {
 	session.saveConfig(cfg.value)
 	toast.success('已保存')
@@ -102,15 +136,22 @@ function saveTableField(field: 'contextDepth' | 'updateFrequency' | 'batchSize' 
 	toast.success('已保存')
 }
 
-function saveChronicleField(field: 'contextDepth' | 'updateFrequency' | 'batchSize' | 'skipFloors' | 'maxRetries', min: number, max: number, fallback: number) {
+function saveChronicleField(field: 'contextDepth' | 'updateFrequency' | 'batchSize' | 'skipFloors' | 'maxRetries' | 'chronicleSendLatestRows', min: number, max: number, fallback: number) {
 	cfg.value.chronicleFill[field] = clampInt(cfg.value.chronicleFill[field] as number, min, max, fallback)
 	saveCfg()
 	toast.success('已保存')
 }
 
-function saveRecallField(field: 'maxRecallItems' | 'recallContextDepth' | 'retainFloors', min: number, max: number, fallback: number) {
+function saveRecallField(field: 'maxRecallItems' | 'recallContextDepth' | 'retainFloors' | 'checkpointInterval' | 'recallRecentFixedInjectCount', min: number, max: number, fallback: number) {
 	const c = cfg.value as unknown as Record<string, unknown>
 	c[field] = clampInt(c[field] as number, min, max, fallback)
+	saveCfg()
+	toast.success('已保存')
+}
+
+function saveRecallFloat(field: 'recallMinScore', min: number, max: number, fallback: number) {
+	const raw = cfg.value[field] as number
+	cfg.value[field] = Number.isFinite(raw) ? Math.min(max, Math.max(min, raw)) : fallback
 	saveCfg()
 	toast.success('已保存')
 }
@@ -201,7 +242,7 @@ onActivated(() => {
 							</div>
 							<input class="cn-input cn-input--nospin strategy-num" type="number" min="1" max="30" step="1"
 								v-model.number="cfg.tableFill.batchSize"
-								@blur="saveTableField('batchSize', 1, 30, 3)" />
+								@blur="saveTableField('batchSize', 1, 30, 10)" />
 						</div>
 						<div class="strategy-row">
 							<div class="strategy-row__text">
@@ -325,7 +366,7 @@ onActivated(() => {
 							</div>
 							<input class="cn-input cn-input--nospin strategy-num" type="number" min="1" max="30" step="1"
 								v-model.number="cfg.chronicleFill.batchSize"
-								@blur="saveChronicleField('batchSize', 1, 30, 3)" />
+								@blur="saveChronicleField('batchSize', 1, 30, 10)" />
 						</div>
 						<div class="strategy-row">
 							<div class="strategy-row__text">
@@ -344,6 +385,15 @@ onActivated(() => {
 							<input class="cn-input cn-input--nospin strategy-num" type="number" min="0" max="10" step="1"
 								v-model.number="cfg.chronicleFill.maxRetries"
 								@blur="saveChronicleField('maxRetries', 0, 10, 3)" />
+						</div>
+						<div class="strategy-row">
+							<div class="strategy-row__text">
+								<span class="strategy-row__label">发送最新行数</span>
+								<span class="strategy-row__desc">纪要生成提示词里附带的最近几条纪要（AI 参考既有纪要风格）。0=不带。</span>
+							</div>
+							<input class="cn-input cn-input--nospin strategy-num" type="number" min="0" max="50" step="1"
+								v-model.number="cfg.chronicleFill.chronicleSendLatestRows"
+								@blur="saveChronicleField('chronicleSendLatestRows', 0, 50, 10)" />
 						</div>
 					</div>
 				</section>
@@ -368,6 +418,24 @@ onActivated(() => {
 							<input class="cn-input cn-input--nospin strategy-num" type="number" min="1" max="20" step="1"
 								v-model.number="cfg.recallContextDepth"
 								@blur="saveRecallField('recallContextDepth', 1, 20, 5)" />
+						</div>
+						<div class="strategy-row">
+							<div class="strategy-row__text">
+								<span class="strategy-row__label">固定注入条数</span>
+								<span class="strategy-row__desc">每次发消息固定注入最近 N 条纪要进 AI 上下文（不经过筛）。0=不固定注入。</span>
+							</div>
+							<input class="cn-input cn-input--nospin strategy-num" type="number" min="0" max="20" step="1"
+								v-model.number="cfg.recallRecentFixedInjectCount"
+								@blur="saveRecallField('recallRecentFixedInjectCount', 0, 20, 5)" />
+						</div>
+						<div class="strategy-row">
+							<div class="strategy-row__text">
+								<span class="strategy-row__label">最低相关分</span>
+								<span class="strategy-row__desc">向量召回得分低于该值的纪要不进候选。范围 0-1，0=不限制。</span>
+							</div>
+							<input class="cn-input cn-input--nospin strategy-num" type="number" min="0" max="1" step="0.05"
+								v-model.number="cfg.recallMinScore"
+								@blur="saveRecallFloat('recallMinScore', 0, 1, 0.45)" />
 						</div>
 					</div>
 				</section>
@@ -406,7 +474,7 @@ onActivated(() => {
 						<div class="strategy-row">
 							<div class="strategy-row__text">
 								<span class="strategy-row__label">快照策略</span>
-								<span class="strategy-row__desc">每条消息都存可完整回溯，仅最新更省空间但丢历史。</span>
+								<span class="strategy-row__desc">每条消息都存可完整回溯；保留最近N层省空间且保基线；仅最新只留一份全量。</span>
 							</div>
 							<CNTabs level="l2" :items="snapshotTabs" v-model="snapshotValue" />
 						</div>
@@ -414,10 +482,23 @@ onActivated(() => {
 							<i class="fa-solid fa-triangle-exclamation"></i>
 							<span>仅最新模式下，删除最后一条 AI 消息会导致全部表数据丢失！</span>
 						</div>
-						<div class="strategy-row">
+						<div v-if="cfg.snapshotStrategy === 'retain-recent'" class="strategy-warn">
+							<i class="fa-solid fa-circle-info"></i>
+							<span>保留最近N层：超出保留数的旧楼层快照会被丢弃，但始终保留一个基线快照供回放。</span>
+						</div>
+						<div v-if="cfg.snapshotStrategy !== 'latest-only'" class="strategy-row">
+							<div class="strategy-row__text">
+								<span class="strategy-row__label">定期全量间隔</span>
+								<span class="strategy-row__desc">每 N 个 AI 楼层写一个全量快照基线，避免回放过长。0=只在首次写。默认 20。</span>
+							</div>
+							<input class="cn-input cn-input--nospin strategy-num" type="number" min="0" max="9999" step="1"
+								v-model.number="cfg.checkpointInterval"
+								@blur="saveRecallField('checkpointInterval', 0, 9999, 20)" />
+						</div>
+						<div v-if="cfg.snapshotStrategy === 'retain-recent'" class="strategy-row">
 							<div class="strategy-row__text">
 								<span class="strategy-row__label">保留楼层</span>
-								<span class="strategy-row__desc">只保留最近 N 个 AI 楼层的数据库快照。0=全部保留不清理。</span>
+								<span class="strategy-row__desc">只保留最近 N 个 AI 楼层的快照，超出丢弃。0=全部保留不清理。</span>
 							</div>
 							<input class="cn-input cn-input--nospin strategy-num" type="number" min="0" max="9999" step="1"
 								v-model.number="cfg.retainFloors"
@@ -434,11 +515,12 @@ onActivated(() => {
 						<div class="strategy-row">
 							<div class="strategy-row__text">
 								<span class="strategy-row__label">AI 调用超时（毫秒）</span>
-								<span class="strategy-row__desc">单次 AI 请求最长等待时间。默认 60000（60 秒）。</span>
+								<span class="strategy-row__desc">单次 AI 请求最长等待时间。0=永不超时。默认 0。</span>
 							</div>
-							<input class="cn-input cn-input--nospin strategy-num" type="number" min="1000" max="600000" step="1000"
-								v-model.number="cfg.pending.aiCallTimeoutMs"
-								@blur="saveField('aiCallTimeoutMs', 1000, 600000, 60000)" @change="saveField('aiCallTimeoutMs', 1000, 600000, 60000)" />
+							<input class="cn-input cn-input--nospin strategy-num" type="text" inputmode="numeric"
+								:value="aiTimeoutText"
+								@input="onAiTimeoutInput"
+								@blur="onBlurAiTimeout" />
 						</div>
 						<div class="strategy-row">
 							<div class="strategy-row__text">

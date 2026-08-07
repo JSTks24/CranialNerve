@@ -27,10 +27,15 @@ import type {
 } from '@db/gateways'
 import type { ConfigGateway } from '@db/gateways/config'
 import SqliteSyncBridge from '@db/sqlite/sync-bridge'
+import { persistFill, createPersistContext } from '@db/sqlite/frame-persist'
+import { buildSnapshotFromCore } from '@db/sqlite/snapshot-builder'
+import type { MutationOperation } from '@shared/types/storage-frame'
 import NameMapper from '@shared/namemapper'
 import { buildCreateTableSql, quoteIdent } from '@shared/template-builder'
 import { CHRONICLE_TABLE_NAME, CHRONICLE_COLUMNS } from '@shared/constants/chronicle'
 import { validateTimeRegistration, clearTimeRegistration } from './time'
+import { analyzeMigration as analyzeTemplateMigration, migrateCommonData as migrateTemplateData, type MigrationDiff } from './template-migrate'
+import { clearChatData } from './chat-reset'
 import { EVENT_CHAT_CHANGED } from '@shared/constants/events'
 import type { CardTemplate } from '@shared/types/card'
 import type { QueryResult, TableDef } from '@shared/types/table'
@@ -112,6 +117,7 @@ export class CranialNerveSession {
   private lastRecalledUserSendDate: string | null = null
   private realGenerationPending = false
   private regenerateFillPending = false
+  private regenerateState: { lastAiId: number } | null = null
 
   constructor() {
     this.core = new SqliteCore()
@@ -151,11 +157,23 @@ export class CranialNerveSession {
   private bindCoreEvents(): void {
     if (this.eventsBound) return
     this.eventsBound = true
-    this.event.makeLast(EVENT_GENERATION_ENDED, () => {
+    this.event.makeLast(EVENT_GENERATION_ENDED, async () => {
       pushLog('info', 'session', `GENERATION_ENDED 触发，regenerateFillPending=${this.regenerateFillPending} realGenerationPending=${this.realGenerationPending}`)
       if (this.regenerateFillPending) {
         this.regenerateFillPending = false
         this.realGenerationPending = false
+        if (this.regenerateState) {
+          const lastAiId = this.regenerateState.lastAiId
+          this.regenerateState = null
+          try {
+            if (lastAiId != null && this.syncBridge) {
+              this.syncBridge.getRepo().removeFrame(lastAiId)
+            }
+            await this.reloadForChatChange()
+          } catch (e) {
+            pushLog('error', 'session', `regenerate 回退失败: ${e instanceof Error ? e.message : String(e)}`)
+          }
+        }
         const cfg = this.getConfig()
         const tableFreq = Math.max(0, cfg.tableFill.updateFrequency ?? 1)
         const chronicleFreq = Math.max(0, cfg.chronicleFill.updateFrequency ?? 1)
@@ -187,16 +205,13 @@ export class CranialNerveSession {
       this.realGenerationPending = true
       const isRegenerate = type === 'regenerate' || type === 'swipe'
       if (isRegenerate) {
-        pushLog('info', 'session', 'regenerate/swipe：清旧帧、回退数据、不召回，生成后按模式决定填表')
+        pushLog('info', 'session', 'regenerate/swipe：延迟删除旧帧，生成成功后回退并填表，中止则保留数据')
         const lastAiId = this.getLastAiMessageId()
-        if (lastAiId != null && this.syncBridge) {
-          this.syncBridge.getRepo().removeFrame(lastAiId)
-        }
-        return this.reloadForChatChange().then(() => {
+        if (lastAiId != null) {
+          this.regenerateState = { lastAiId }
           this.regenerateFillPending = true
-        }).catch((e) => {
-          pushLog('error', 'session', `regenerate 回退失败: ${e instanceof Error ? e.message : String(e)}`)
-        })
+        }
+        return undefined
       }
       return undefined
     })
@@ -237,7 +252,10 @@ export class CranialNerveSession {
       resetGenerationStopped()
       snapshotLastAiLength(this)
     })
-    this.event.on(EVENT_GENERATION_STOPPED, () => markGenerationStopped())
+    this.event.on(EVENT_GENERATION_STOPPED, () => {
+      markGenerationStopped()
+      this.regenerateState = null
+    })
     this.event.on(EVENT_MESSAGE_EDITED, (...args: unknown[]) => {
       const msgId = args[0]
       if (typeof msgId !== 'number') {
@@ -416,7 +434,8 @@ export class CranialNerveSession {
     try {
       await this.writeQueue.waitForDrain(this.getConfig().pending.writeQueueDrainTimeoutMs)
     } catch (e) {
-      pushLog('error', 'session', `等待写入队列超时，强制继续 reload: ${e instanceof Error ? e.message : String(e)}`)
+      pushLog('warn', 'session', `等待写入队列超时，继续等待当前任务完成: ${e instanceof Error ? e.message : String(e)}`)
+      await this.writeQueue.waitForDrain()
     }
     if (mySeq !== this.reloadSeq) {
       return
@@ -452,6 +471,7 @@ export class CranialNerveSession {
     }
     this.core.run(buildCreateTableSql(this.getChronicleTableDef()))
     this.loadFromChat()
+    this.warnOnCriticalLoadWarnings()
     if (mySeq !== this.reloadSeq) {
       return
     }
@@ -571,7 +591,22 @@ export class CranialNerveSession {
     return template
   }
 
-  async reinitWithTemplate(template: CardTemplate, id?: string): Promise<void> {
+  private hasActualTableData(): boolean {
+    const names = this.core.listTables().filter((n) => !n.startsWith('sqlite_') && n !== CHRONICLE_TABLE_NAME)
+    return names.some((n) => {
+      const r = this.core.exec(`SELECT COUNT(*) AS c FROM ${quoteIdent(n)}`)
+      return (r[0]?.rows[0]?.c as number) > 0
+    })
+  }
+
+  async reinitWithTemplate(template: CardTemplate, id?: string, opts?: { migrate?: boolean }): Promise<void> {
+    const hasData = this.hasActualTableData()
+    const oldSnapshot = hasData ? buildSnapshotFromCore(this.core) : null
+    const oldTemplate = this.getBoundTemplate() ?? this.template
+    const migrate = opts?.migrate !== false
+    if (hasData && migrate && oldTemplate) {
+      await this.backupBeforeMigration(oldTemplate, oldSnapshot!)
+    }
     this.template = template
     this.currentTemplateId = id ?? null
     this.nameMapper = new NameMapper(template.tables)
@@ -582,20 +617,57 @@ export class CranialNerveSession {
       this.core.run(buildCreateTableSql(table))
     }
     this.core.run(buildCreateTableSql(this.getChronicleTableDef()))
+    if (hasData && migrate) {
+      migrateTemplateData(this.core, oldSnapshot!, template)
+    }
     const chat = this.chat.getChat()
     const targetId = chat.length - 1
-    if (this.syncBridge && targetId >= 0) {
-      this.syncBridge.removeAllSnapshots()
-      this.syncBridge.writeCheckpoint(targetId, 'manual', this.currentTemplateId ?? undefined)
+    if (hasData) {
+      this.writeBoundTemplate(template)
+      if (this.syncBridge && targetId >= 0) {
+        this.syncBridge.removeAllSnapshots()
+        this.syncBridge.writeCheckpoint(targetId, 'manual', this.currentTemplateId ?? undefined)
+      }
     }
     try {
       await syncToWorldbook(this)
     } catch (e) {
       pushLog('error', 'session', `reinitWithTemplate 同步世界书失败: ${e instanceof Error ? e.message : String(e)}`)
     }
+    resetFillScheduler()
+  }
+
+  analyzeMigration(newTemplate: CardTemplate): MigrationDiff {
+    const oldTemplate = this.getBoundTemplate() ?? this.template
+    const oldSnapshot = buildSnapshotFromCore(this.core)
+    return analyzeTemplateMigration(oldTemplate, newTemplate, oldSnapshot)
+  }
+
+  private async backupBeforeMigration(oldTemplate: CardTemplate, oldSnapshot: import('@shared/types/table').DatabaseSnapshot): Promise<void> {
+    try {
+      const fs = createFileStorageGateway()
+      const token = this.getChatToken()
+      const name = `CranialNerve/migration-backup-${token}-${Date.now()}.json`
+      const content = JSON.stringify({ createdAt: Date.now(), template: oldTemplate, snapshot: oldSnapshot })
+      await fs.save(name, content)
+      pushLog('info', 'session', `迁移前备份已保存: ${name}`)
+      this.toastNotifier?.info(`迁移前备份已保存: ${name}`)
+    } catch (e) {
+      pushLog('warn', 'session', `迁移前备份失败: ${e instanceof Error ? e.message : String(e)}`)
+      this.toastNotifier?.warning(`迁移前备份失败: ${e instanceof Error ? e.message : String(e)}`)
+    }
   }
 
   private initSessionTemplate(): void {
+    const bound = this.readBoundTemplate()
+    if (bound) {
+      try {
+        this.initGameSession(bound, '__bound__')
+        return
+      } catch (e) {
+        pushLog('warn', 'session', `绑定模板加载失败，降级: ${e instanceof Error ? e.message : String(e)}`)
+      }
+    }
     const templateId = this.readFrameTemplateId()
     if (templateId && templateId !== '__card__') {
       const cfg = this.getConfig()
@@ -671,6 +743,15 @@ export class CranialNerveSession {
     return true
   }
 
+  private warnOnCriticalLoadWarnings(): void {
+    const warnings = this.syncBridge?.lastLoadWarnings ?? []
+    const critical = warnings.filter((w) => w.includes('无 checkpoint') || w.includes('快照重建失败') || w.includes('帧数据损坏'))
+    if (critical.length > 0) {
+      pushLog('error', 'session', `CN 数据可能丢失: ${critical.join('; ')}`)
+      this.toastNotifier?.error(`CN 数据可能丢失（${critical.join('；')}）。请尽快在表格页导出快照备份。`)
+    }
+  }
+
   getLastLoadWarnings(): string[] {
     return this.syncBridge?.lastLoadWarnings ?? []
   }
@@ -712,8 +793,13 @@ export class CranialNerveSession {
     } catch (e) {
       return { ok: false, error: e instanceof Error ? e.message : String(e) }
     }
+    this.writeBoundTemplate(file.templateSnapshot)
+    this.template = file.templateSnapshot
+    this.currentTemplateId = '__bound__'
+    this.nameMapper = new NameMapper(file.templateSnapshot.tables)
     const targetId = this.getLastAiMessageId() ?? 0
-    this.syncBridge.writeCheckpoint(targetId, 'import')
+    this.syncBridge.writeCheckpoint(targetId, 'import', this.currentTemplateId ?? undefined)
+    this.toastNotifier?.info('表格数据与模板已随快照导入')
     return { ok: true }
   }
 
@@ -727,6 +813,12 @@ export class CranialNerveSession {
       pushLog('warn', 'session', `手动恢复快照失败: ${result.warnings.join('; ')}`)
       return false
     }
+    const chat = this.chat.getChat()
+    const lastMsgId = chat.length - 1
+    if (lastMsgId >= 0) {
+      this.syncBridge.writeCheckpoint(lastMsgId, 'manual', this.currentTemplateId ?? undefined)
+    }
+    this.toastNotifier?.info(`已恢复到第 ${index + 1} 楼状态并保存`)
     return true
   }
 
@@ -735,13 +827,52 @@ export class CranialNerveSession {
       throw new Error('session not initialized')
     }
     const cfg = this.config.read()
-    const tplId = this.currentTemplateId ?? undefined
-    if (cfg.snapshotStrategy === 'latest-only') {
-      this.syncBridge.removeAllSnapshots()
-      this.syncBridge.writeCheckpoint(messageId, 'manual', tplId)
-    } else {
-      this.syncBridge.save(messageId, tplId)
-    }
+    this.ensureBoundTemplate()
+    this.syncBridge.persistManual(messageId, {
+      strategy: cfg.snapshotStrategy,
+      retainFloors: cfg.retainFloors,
+      templateId: this.currentTemplateId ?? undefined
+    })
+  }
+
+  getBoundTemplate(): CardTemplate | null {
+    return this.readBoundTemplate()
+  }
+
+  private readBoundTemplate(): CardTemplate | null {
+    const raw = this.chat.readChatMetadata('CN_TEMPLATE')
+    if (!raw || typeof raw !== 'object') return null
+    return raw as CardTemplate
+  }
+
+  private writeBoundTemplate(template: CardTemplate): void {
+    this.chat.writeChatMetadata('CN_TEMPLATE', template)
+  }
+
+  ensureBoundTemplate(): void {
+    if (!this.template) return
+    if (this.readBoundTemplate() != null) return
+    this.writeBoundTemplate(this.template)
+  }
+
+  unbindBoundTemplate(): void {
+    this.chat.writeChatMetadata('CN_TEMPLATE', undefined)
+    this.toastNotifier?.info('已解除聊天模板绑定')
+  }
+
+  persistAfterFill(messageId: number, operations: MutationOperation[]): void {
+    if (!this.syncBridge) return
+    const repo = this.getSyncBridgeRepo()
+    if (!repo) return
+    const cfg = this.config.read()
+    this.ensureBoundTemplate()
+    const ctx = createPersistContext(repo, this.core)
+    persistFill(ctx, messageId, operations, {
+      strategy: cfg.snapshotStrategy,
+      interval: cfg.checkpointInterval,
+      retainFloors: cfg.retainFloors,
+      templateId: this.currentTemplateId ?? undefined
+    })
   }
 
   private getLastAiMessageId(): number | null {
@@ -771,10 +902,6 @@ export class CranialNerveSession {
     const targetId = this.getLastAiMessageId()
     if (targetId == null) return
     this.syncBridge.appendManualSqlLog(targetId, statements, params)
-  }
-
-  cleanupOldSnapshots(retainFloors: number): void {
-    this.syncBridge?.cleanupOldSnapshots(retainFloors)
   }
 
   getConfig(): CranialNerveConfig {
@@ -934,6 +1061,7 @@ export class CranialNerveSession {
     await this.runWrite(async () => {
       const hasChronicle = this.core.listTables().includes(CHRONICLE_TABLE_NAME)
       const oldRows = hasChronicle ? (this.getTableRowsWithRowid(CHRONICLE_TABLE_NAME)[0]?.rows ?? []) : []
+      let skippedRows = 0
       this.core.transaction(() => {
         this.core.run(`DROP TABLE IF EXISTS ${quoteIdent(CHRONICLE_TABLE_NAME)}`)
         this.core.run(buildCreateTableSql(def))
@@ -949,11 +1077,15 @@ export class CranialNerveSession {
             try {
               this.core.run(sql, values)
             } catch (e) {
+              skippedRows++
               pushLog('warn', 'session', `applyChronicleTableDef 跳过冲突行: ${e instanceof Error ? e.message : String(e)}`)
             }
           }
         }
       })
+      if (skippedRows > 0) {
+        this.toastNotifier?.warning(`纪要表结构变更，${skippedRows} 行数据不满足新约束被跳过`)
+      }
       const cfg = this.getConfig()
       cfg.chronicleTableDef = def
       this.saveConfig(cfg)
@@ -969,6 +1101,13 @@ export class CranialNerveSession {
         pushLog('error', 'session', `applyChronicleTableDef 同步失败: ${e instanceof Error ? e.message : String(e)}`)
       }
     })
+  }
+
+  async resetChatData(): Promise<void> {
+    await this.runWrite(() => clearChatData(this))
+    this.regenerateFillPending = false
+    this.regenerateState = null
+    await this.reloadForChatChange()
   }
 
   setProgressNotifier(fn: ProgressStarter): void {

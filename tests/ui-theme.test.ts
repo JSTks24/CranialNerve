@@ -223,14 +223,15 @@ describe('UI 主题守卫（深翠框景）', () => {
     expect(theme).not.toContain('.chronicle-field__hint')
   })
 
-  it('手动填表/纪要 contextDepth 文案改为处理最近N条对话', () => {
+  it('手动填表/纪要 contextDepth 文案改为处理最近N个AI楼层', () => {
     const manualFillPage = readProjectFile('src/ui/pages/ManualFill.vue')
     const chroniclePage = readProjectFile('src/ui/pages/Chronicle.vue')
     const cases: ReadonlyArray<readonly [string, string]> = [['ManualFill', manualFillPage], ['Chronicle', chroniclePage]]
     for (const [name, src] of cases) {
-      expect(src, `${name} 应含新文案`).toContain('处理最近 N 条对话')
-      expect(src, `${name} 应含新 hint`).toContain('处理最近多少条消息')
+      expect(src, `${name} 应含新文案`).toContain('处理最近 N 个 AI 楼层')
+      expect(src, `${name} 应含新 hint`).toContain('处理最近多少个 AI 楼层')
       expect(src, `${name} 不应含旧文案`).not.toContain('参考最近 N 轮对话')
+      expect(src, `${name} 不应含条对话文案`).not.toContain('处理最近 N 条对话')
     }
   })
 
@@ -244,12 +245,13 @@ describe('UI 主题守卫（深翠框景）', () => {
     expect(theme).toContain('.debug-toolbar__debug')
   })
 
-  it('batchSize 标签改为每桶 N 个 AI 楼层', () => {
+  it('batchSize 标签改为每批处理 N 个 AI 楼层', () => {
     const manualFillPage = readProjectFile('src/ui/pages/ManualFill.vue')
     const chroniclePage = readProjectFile('src/ui/pages/Chronicle.vue')
+    expect(manualFillPage).toContain('每批处理 N 个 AI 楼层')
+    expect(chroniclePage).toContain('每批处理 N 个 AI 楼层')
     const cases: ReadonlyArray<readonly [string, string]> = [['ManualFill', manualFillPage], ['Chronicle', chroniclePage]]
     for (const [name, src] of cases) {
-      expect(src, `${name} 应含新 batchSize 标签`).toContain('每桶 N 个 AI 楼层')
       expect(src, `${name} 不应含旧 batchSize 标签`).not.toContain('一次处理 N 条消息')
     }
   })
@@ -264,6 +266,29 @@ describe('UI 主题守卫（深翠框景）', () => {
     expect(chroniclePage).toContain('chronicleBusy')
     expect(chroniclePage).toContain('fa-spinner fa-spin')
     expect(readProjectFile('src/ui/stores/fill-status.ts')).toContain('subscribeFillState')
+  })
+
+  it('手动填表更新状态用词改为更新且含每表更新列，纪要去掉同时更新表格', () => {
+    const manualFillPage = readProjectFile('src/ui/pages/ManualFill.vue')
+    const chroniclePage = readProjectFile('src/ui/pages/Chronicle.vue')
+    expect(manualFillPage).toContain('已更新')
+    expect(manualFillPage).toContain('未更新')
+    expect(manualFillPage).toContain('待更新')
+    expect(manualFillPage).toContain('更新至')
+    expect(manualFillPage).not.toContain('已总结')
+    expect(manualFillPage).not.toContain('未总结')
+    expect(manualFillPage).not.toContain('待总结')
+    expect(chroniclePage).not.toContain('同时更新表格')
+    expect(chroniclePage).not.toContain('includeTables')
+  })
+
+  it('AI 调用超时 0=永不超时，默认 0', () => {
+    const strategyPage = readProjectFile('src/ui/pages/Strategy.vue')
+    expect(strategyPage).toContain('0=永不超时')
+    expect(strategyPage).toContain('aiTimeoutText')
+    expect(strategyPage).toContain('∞')
+    expect(strategyPage).not.toContain('0=永不超时（显示∞）')
+    expect(strategyPage).not.toContain('默认 60000')
   })
 })
 
@@ -285,8 +310,8 @@ describe('模板与提示词预设弹窗改名', () => {
     expect(promptConfigPage).toContain('prompt-editor__title-group')
   })
 
-  it('改名入口隐藏于角色卡来源预设', () => {
-    expect(promptConfigPage).toContain(`v-if="p.source !== 'card'"`)
+  it('角色卡来源预设不显示复制/删除按钮', () => {
+    expect(promptConfigPage).toContain(`v-if="selectedPresetId === p.id && p.source !== 'card'"`)
   })
 
   it('预设列表点击选中、对号浮现才切换，选中态高亮独立', () => {

@@ -5,6 +5,7 @@ import {
   EVENT_GENERATION_AFTER_COMMANDS,
   EVENT_GENERATION_ENDED,
   EVENT_GENERATION_STARTED,
+  EVENT_GENERATION_STOPPED,
 } from '../src/shared/constants/events'
 
 function makeEventSource() {
@@ -123,7 +124,7 @@ describe('regenerate 事件时序（模拟酒馆 Generate）', () => {
     eventSource.emit(EVENT_GENERATION_STARTED, 'regenerate')
     eventSource.emit(EVENT_GENERATION_AFTER_COMMANDS, 'regenerate', {}, false)
 
-    expect(removeFrame).toHaveBeenCalledWith(1)
+    expect(removeFrame).not.toHaveBeenCalled()
 
     await vi.waitFor(() => {
       expect(stub.regenerateFillPending).toBe(true)
@@ -134,8 +135,42 @@ describe('regenerate 事件时序（模拟酒馆 Generate）', () => {
     eventSource.emit(EVENT_GENERATION_ENDED, chat.length)
 
     await vi.waitFor(() => {
+      expect(removeFrame).toHaveBeenCalledWith(1)
+    })
+
+    await vi.waitFor(() => {
       expect(getAiPresetForScene).toHaveBeenCalled()
     })
+  })
+
+  it('regenerate 中止（STOPPED）不删帧，数据保留', async () => {
+    const chat = [
+      { is_user: true, is_system: false, mes: 'hi', extra: {} },
+      { is_user: false, is_system: false, mes: 'old reply', extra: {} },
+    ]
+    const eventSource = makeEventSource()
+    setupHost({ chat, eventSource, frequency: 1 })
+
+    const session = new CranialNerveSession()
+    const removeFrame = vi.fn()
+    const getAiPresetForScene = vi.fn(() => null)
+    const stub = stubSession(session, removeFrame)
+    stub.getAiPresetForScene = getAiPresetForScene
+
+    eventSource.emit(EVENT_GENERATION_STARTED, 'regenerate')
+    eventSource.emit(EVENT_GENERATION_AFTER_COMMANDS, 'regenerate', {}, false)
+
+    await vi.waitFor(() => {
+      expect(stub.regenerateFillPending).toBe(true)
+    })
+
+    eventSource.emit(EVENT_GENERATION_STOPPED)
+    ;(chat[1] as { mes: string }).mes = 'partial content'
+    eventSource.emit(EVENT_GENERATION_ENDED, chat.length)
+
+    await new Promise((resolve) => setTimeout(resolve, 10))
+    expect(removeFrame).not.toHaveBeenCalled()
+    expect(getAiPresetForScene).not.toHaveBeenCalled()
   })
 
   it('非 regenerate 正常生成 + frequency 未达不总结', async () => {

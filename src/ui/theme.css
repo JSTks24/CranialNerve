@@ -178,14 +178,14 @@
   font-size: 13px;
 }
 #cn_app .cn-btn--text {
-  border-color: transparent;
-  background: transparent;
-  color: var(--cn-text-2);
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--cn-text-2) !important;
 }
 #cn_app .cn-btn--text:hover:not(:disabled) {
-  background: var(--cn-primary-soft);
-  color: var(--cn-primary);
-  border-color: transparent;
+  background: var(--cn-primary-soft) !important;
+  color: var(--cn-primary) !important;
+  border-color: transparent !important;
 }
 #cn_app .cn-btn--soft {
   background: var(--cn-primary-soft) !important;
@@ -1026,6 +1026,7 @@
   justify-content: space-between;
   gap: 6px;
   padding: 9px 12px;
+  min-height: 44px;
   border: 1px solid var(--cn-border);
   border-radius: var(--cn-radius);
   background: var(--cn-surface);
@@ -1080,6 +1081,23 @@
   flex: 0 0 auto;
   font-size: 11px;
   color: var(--cn-text-3);
+}
+
+#cn_app .preset-list__item--bound {
+  border-color: var(--cn-primary);
+  box-shadow: 0 0 0 3px rgba(18, 130, 82, 0.16);
+  background: var(--cn-surface);
+}
+
+#cn_app .preset-list__badge {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--cn-grad-primary);
+  border-radius: var(--cn-radius-pill);
+  padding: 1px 8px;
+  box-shadow: var(--cn-shadow-pill);
 }
 
 #cn_app .prompt-editor__desc {
@@ -1629,15 +1647,15 @@
 }
 
 #cn_app .cn-btn--danger {
-  background: var(--cn-danger);
-  border-color: var(--cn-danger);
-  color: #fff;
+  background: var(--cn-danger) !important;
+  border-color: var(--cn-danger) !important;
+  color: #fff !important;
 }
 
 #cn_app .cn-btn--danger:hover:not(:disabled) {
-  background: #c13a3a;
-  border-color: #c13a3a;
-  color: #fff;
+  background: #c13a3a !important;
+  border-color: #c13a3a !important;
+  color: #fff !important;
 }
 
 #cn_app .cn-dialog-mask {
@@ -1790,39 +1808,39 @@
   gap: 6px;
   height: 32px;
   padding: 0 15px;
-  border: 1px solid var(--cn-primary);
+  border: 1px solid var(--cn-primary) !important;
   border-radius: var(--cn-radius-sm);
-  background: transparent;
-  color: var(--cn-primary-hover);
+  background: transparent !important;
+  color: var(--cn-primary-hover) !important;
   font-size: 14px;
   cursor: pointer;
   transition: background var(--cn-dur-fast) var(--cn-ease);
 }
 
 #cn_app .cn-dialog__foot .cn-btn:hover {
-  background: var(--cn-primary-soft);
+  background: var(--cn-primary-soft) !important;
 }
 
 #cn_app .cn-dialog__foot .cn-btn--primary {
-  background: var(--cn-primary);
-  border-color: var(--cn-primary);
-  color: #fff;
+  background: var(--cn-primary) !important;
+  border-color: var(--cn-primary) !important;
+  color: #fff !important;
 }
 
 #cn_app .cn-dialog__foot .cn-btn--primary:hover {
-  background: var(--cn-primary-hover);
-  border-color: var(--cn-primary-hover);
+  background: var(--cn-primary-hover) !important;
+  border-color: var(--cn-primary-hover) !important;
 }
 
 #cn_app .cn-dialog__foot .cn-btn--danger {
-  background: var(--cn-danger);
-  border-color: var(--cn-danger);
-  color: #fff;
+  background: var(--cn-danger) !important;
+  border-color: var(--cn-danger) !important;
+  color: #fff !important;
 }
 
 #cn_app .cn-dialog__foot .cn-btn--danger:hover {
-  background: #c13a3a;
-  border-color: #c13a3a;
+  background: #c13a3a !important;
+  border-color: #c13a3a !important;
 }
 
 .cn-has-recall .mes_text > :not(.cn-recall-host):not(#curEditTextarea) {

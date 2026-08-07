@@ -29,7 +29,7 @@ export interface VectorConfig {
   rerankModel: string
 }
 
-export type SnapshotStrategy = 'every-message' | 'latest-only'
+export type SnapshotStrategy = 'every-message' | 'latest-only' | 'retain-recent'
 
 export type PromptRole = 'system' | 'user' | 'assistant'
 
@@ -86,7 +86,6 @@ export interface TableFillConfig {
   manualUpdateContextDepth: number | null
   manualUpdateBatchSize: number | null
   manualSelectedTables: string[]
-  hasManualSelection: boolean
   manualIncludeChronicle: boolean
 }
 
@@ -101,7 +100,6 @@ export interface ChronicleFillConfig {
   chronicleSendLatestRows: number
   manualUpdateContextDepth: number | null
   manualUpdateBatchSize: number | null
-  manualIncludeTables: boolean
 }
 
 export interface PendingConfig {
@@ -131,6 +129,7 @@ export interface CranialNerveConfig {
   recallPresetId: string
   recallContextDepth: number
   retainFloors: number
+  checkpointInterval: number
   tableTemplate: TableTemplateConfig
   pending: PendingConfig
   chronicleTableHints?: ChronicleTableHints

@@ -37,7 +37,7 @@ describe('shujuku DDL 解析', () => {
     expect(back.tables[0]?.columns[0]?.displayName).toBe('状态')
   })
 
-  it('DEFAULT 字符串字面量保留引号（修复 near "(" 语法错误）', () => {
+  it('DEFAULT 字符串字面量保留引号', () => {
     const shujuku = {
       mate: { type: 'chatSheets', version: 2 },
       sheet_0: {

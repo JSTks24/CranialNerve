@@ -2,7 +2,7 @@ import type { DatabaseSnapshot } from './table'
 
 export type StorageFrameVersion = 2
 
-export type CheckpointReason = 'init' | 'migration' | 'import' | 'compaction' | 'manual'
+export type CheckpointReason = 'init' | 'migration' | 'import' | 'compaction' | 'manual' | 'periodic'
 
 export interface FullCheckpoint {
   kind: 'full'

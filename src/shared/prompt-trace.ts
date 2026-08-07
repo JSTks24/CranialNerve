@@ -12,9 +12,10 @@ export interface PromptTraceEntry {
 	model: string
 	segments: PromptTraceSegment[]
 	segmentCount: number
+	response?: string
 }
 
-const MAX_TRACES = 20
+export const MAX_TRACES = 100
 let nextTraceId = 1
 const traces: PromptTraceEntry[] = []
 const subscribers: Array<(entry: PromptTraceEntry) => void> = []
@@ -43,6 +44,14 @@ export function pushPromptTrace(input: {
 		} catch {}
 	}
 	return entry.id
+}
+
+export function appendTraceResponse(traceId: number, response: string): void {
+	if (!isDebugMode()) return
+	const entry = traces.find((t) => t.id === traceId)
+	if (entry) {
+		entry.response = response
+	}
 }
 
 export function getAllPromptTraces(): PromptTraceEntry[] {

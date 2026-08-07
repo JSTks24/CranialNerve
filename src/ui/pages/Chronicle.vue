@@ -8,6 +8,7 @@ import { useFillStatusStore } from '@ui/stores/fill-status'
 import confirm from '@ui/dialog'
 import CNTabs from '@ui/components/CNTabs.vue'
 import { detectLastSummarizedAiFloor } from '@core/table/fill-orchestrator'
+import { validateRowRequired } from '@shared/table-validation'
 import type { FillProgressFn } from '@core/table/retry-loop'
 
 interface RowData {
@@ -41,6 +42,7 @@ const fields = computed(() =>
   chronicleDef.value.columns.map((c) => ({
     key: c.name,
     label: c.displayName || c.name,
+    constraints: c.constraints,
     full: c.name === CHRONICLE_COLUMNS.summary || c.name === CHRONICLE_COLUMNS.importantWord,
     isImportantWord: c.name === CHRONICLE_COLUMNS.importantWord
   }))
@@ -110,11 +112,10 @@ function saveEdit() {
     const el = cellEditEls.get(f.key)
     collected[f.key] = el ? el.innerText : String(row[f.key] ?? '')
   }
-  for (const f of fields.value) {
-    if (!collected[f.key].trim()) {
-      toast.error(`「${f.label}」不能为空`)
-      return
-    }
+  const requiredError = validateRowRequired(chronicleDef.value.columns, collected)
+  if (requiredError) {
+    toast.error(requiredError)
+    return
   }
   void session.runWrite(async () => {
     try {
@@ -215,7 +216,10 @@ const manualDepthInput = defaultInput(manualDepth, session.getConfig().chronicle
 const manualBatchInput = defaultInput(manualBatch, session.getConfig().chronicleFill.batchSize)
 
 const aiFloorCount = computed(() => session.chat.getChat().filter((m) => !m.is_user && !m.is_system).length)
-const lastSummarized = computed(() => detectLastSummarizedAiFloor(session, 'chronicle'))
+const lastSummarized = computed(() => {
+  void fillStore.progressTick
+  return detectLastSummarizedAiFloor(session, 'chronicle')
+})
 const summarizedAiCount = computed(() => {
   const last = lastSummarized.value
   if (last == null) return 0
@@ -223,15 +227,16 @@ const summarizedAiCount = computed(() => {
 })
 const unrecordedCount = computed(() => Math.max(0, aiFloorCount.value - summarizedAiCount.value))
 const expectedRange = computed(() => {
+  void fillStore.progressTick
   const chat = session.chat.getChat()
   const depth = manualDepth.value ?? session.getConfig().chronicleFill.contextDepth
-  if (depth <= 0 || chat.length === 0) return '全部消息'
-  const start = Math.max(0, chat.length - depth)
-  const end = chat.length - 1
-  const aiBefore = chat.slice(0, start).filter((m) => !m.is_user && !m.is_system).length
-  const aiInSlice = chat.slice(start, end + 1).filter((m) => !m.is_user && !m.is_system).length
-  const aiLabel = aiInSlice > 0 ? `（AI第 ${aiBefore + 1}~${aiBefore + aiInSlice} 层）` : ''
-  return `第 ${start}~${end} 层${aiLabel}`
+  const aiFloors: number[] = []
+  for (let i = 0; i < chat.length; i++) {
+    if (!chat[i]!.is_user && !chat[i]!.is_system) aiFloors.push(i)
+  }
+  if (aiFloors.length === 0) return '无 AI 楼层'
+  const takeCount = depth > 0 ? Math.min(depth, aiFloors.length) : aiFloors.length
+  return `AI第 ${aiFloors.length - takeCount + 1}~${aiFloors.length} 层（共 ${takeCount} 个 AI 楼层）`
 })
 
 function saveManualDepth() {
@@ -248,15 +253,6 @@ function saveManualBatch() {
   manualBatch.value = c.chronicleFill.manualUpdateBatchSize
   session.saveConfig(c)
 }
-
-const includeTables = computed({
-  get: () => session.getConfig().chronicleFill.manualIncludeTables,
-  set: (v: boolean) => {
-    const c = session.getConfig()
-    c.chronicleFill.manualIncludeTables = v
-    session.saveConfig(c)
-  }
-})
 
 function aiFloorSeqOf(msgIndex: number): number {
   const chat = session.chat.getChat()
@@ -276,15 +272,7 @@ function computeChronicleCatchUpRange() {
     if (m && !m.is_user && !m.is_system) aiFloors.push(i)
   }
   if (aiFloors.length === 0) return null
-  let baseLast: number | null
-  if (includeTables.value) {
-    const t = detectLastSummarizedAiFloor(session, 'table')
-    const c = detectLastSummarizedAiFloor(session, 'chronicle')
-    baseLast = (t == null && c == null) ? null : Math.max(t ?? -1, c ?? -1)
-    if (baseLast != null && baseLast < 0) baseLast = null
-  } else {
-    baseLast = detectLastSummarizedAiFloor(session, 'chronicle')
-  }
+  const baseLast = detectLastSummarizedAiFloor(session, 'chronicle')
   const fromIdx = baseLast != null ? baseLast + 1 : 0
   const toIdx = aiFloors[aiFloors.length - 1]!
   if (fromIdx > toIdx) return null
@@ -322,7 +310,6 @@ async function runChronicleFill() {
       contextDepth: manualDepth.value ?? undefined,
       batchSize: manualBatch.value ?? undefined,
       extraHint: extraHint.value.trim() || undefined,
-      runMode: includeTables.value ? 'merged' : undefined,
       fillCfgSource: 'chronicle',
       onProgress: makeProgressUpdater(prog, '生成纪要 · '),
       signal: prog.abortSignal,
@@ -343,18 +330,16 @@ async function runChronicleCatchUp() {
     toast.info('当前已同步，无需追平')
     return
   }
-  const merged = includeTables.value
-  const rangeText = `将从第 ${range.fromSeq} 层追平至第 ${range.toSeq} 层（共 ${range.aiCount} 个 AI 楼层，约 ${range.totalBuckets} 批）${merged ? '，同时更新表格与纪要' : ''}`
+  const rangeText = `将从第 ${range.fromSeq} 层追平至第 ${range.toSeq} 层（共 ${range.aiCount} 个 AI 楼层，约 ${range.totalBuckets} 批）`
   const confirmed = await confirm('追平未总结楼层', rangeText, '确认追平')
   if (!confirmed) return
   busy.value = true
-  const prefix = `追平 第${range.fromSeq}->${range.toSeq}层 · `
+  const prefix = `追平 第${range.fromSeq}→${range.toSeq}层 · `
   const prog = toast.progress(`${prefix}调用AI…`)
   try {
     const result = await session.runManualChronicleCatchUp({
       batchSize: manualBatch.value ?? undefined,
       extraHint: extraHint.value.trim() || undefined,
-      runMode: merged ? 'merged' : undefined,
       fillCfgSource: 'chronicle',
       onProgress: makeProgressUpdater(prog, prefix),
       signal: prog.abortSignal,
@@ -424,14 +409,14 @@ onActivated(() => {
             <div class="mf-card__body">
               <div class="mf-grid-2">
                 <div class="mf-field">
-                  <label class="mf-field__label">处理最近 N 条对话</label>
+                  <label class="mf-field__label">处理最近 N 个 AI 楼层</label>
                   <input class="cn-input cn-input--nospin" type="number" min="0" max="50" step="1" v-model="manualDepthInput" @change="saveManualDepth" />
-                  <p class="mf-field__hint">处理最近多少条消息。</p>
+                  <p class="mf-field__hint">处理最近多少个 AI 楼层。</p>
                 </div>
                 <div class="mf-field">
-                  <label class="mf-field__label">每桶 N 个 AI 楼层</label>
+                  <label class="mf-field__label">每批处理 N 个 AI 楼层</label>
                   <input class="cn-input cn-input--nospin" type="number" min="1" max="50" step="1" v-model="manualBatchInput" @change="saveManualBatch" />
-                  <p class="mf-field__hint">每批合并多少个 AI 楼层生成一次纪要。</p>
+                  <p class="mf-field__hint">每批处理多少个 AI 楼层。</p>
                 </div>
               </div>
               <div class="mf-field">
@@ -439,13 +424,6 @@ onActivated(() => {
                 <textarea class="cn-input cn-textarea" v-model="extraHint" placeholder="给 AI 的额外纪要生成要求"></textarea>
               </div>
               <p class="mf-field__hint">预计处理范围：{{ expectedRange }}</p>
-              <div class="mf-field">
-                <label class="mf-field__label">同时更新表格</label>
-                <label class="cn-switch">
-                  <input type="checkbox" v-model="includeTables" />
-                  <span class="cn-switch__track"></span>
-                </label>
-              </div>
               <div class="mf-actions">
                 <button class="mf-btn mf-btn--primary" type="button" :disabled="chronicleBusy" @click="runChronicleFill">
                   <i class="fa-solid" :class="chronicleBusy ? 'fa-spinner fa-spin' : 'fa-pen-to-square'"></i> {{ chronicleBusy ? '生成中...' : '执行手动填纪要' }}
@@ -467,7 +445,7 @@ onActivated(() => {
             <i class="fa-solid fa-rotate"></i>
             刷新
           </button>
-          <button class="cn-btn cn-btn--sm" @click="addRow">
+          <button class="cn-btn cn-btn--sm" :disabled="chronicleBusy" @click="addRow">
             <i class="fa-solid fa-plus"></i>
             添加条目
           </button>
@@ -493,7 +471,7 @@ onActivated(() => {
                 <span class="chronicle-item__key">{{ keyColName ? (row[keyColName] ?? '') : '' }}</span>
                 <template v-if="row.__rowid__ === editingRowid">
                   <div class="cn-space">
-                    <button class="cn-btn cn-btn--sm cn-btn--primary" @click="saveEdit">保存</button>
+                    <button class="cn-btn cn-btn--sm cn-btn--primary" :disabled="chronicleBusy" @click="saveEdit">保存</button>
                     <button class="cn-btn cn-btn--sm" @click="cancelEdit">取消</button>
                   </div>
                 </template>
@@ -503,7 +481,7 @@ onActivated(() => {
                       <i class="fa-solid fa-pen"></i>
                       修改
                     </button>
-                    <button class="cn-btn cn-btn--sm cn-btn--text" title="删除" @click="deleteRow(row)">
+                    <button class="cn-btn cn-btn--sm cn-btn--text" title="删除" :disabled="chronicleBusy" @click="deleteRow(row)">
                       <i class="fa-solid fa-trash"></i>
                     </button>
                   </div>

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
-import TableEditor, { type PromptContext } from '../src/core/table/retry-loop'
+import TableEditor, { parseTableEditSql, type PromptContext } from '../src/core/table/retry-loop'
 import { SQL_EDIT_FORMAT } from '../src/shared/constants/sql-json'
 
 vi.mock('../src/core/table/sql-executor', () => ({
@@ -15,19 +15,247 @@ function makeCtx(): PromptContext {
   }
 }
 
-function validRaw(): string {
-  return JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO t VALUES (1)' })
+function validRaw(sql = 'INSERT INTO t VALUES (1)'): string {
+  return JSON.stringify({ format: SQL_EDIT_FORMAT, sql })
 }
 
-describe('TableEditor.run onProgress 阶段事件', () => {
+function editorWith(ai: { chatCompletion: () => Promise<string> }): TableEditor {
+  return new TableEditor({} as never, ai as never)
+}
+
+describe('parseTableEditSql 多对象解析与数量校验', () => {
+  it('单个对象正常解析', () => {
+    const r = parseTableEditSql(validRaw())
+    expect(r).toEqual({ ok: true, objects: [{ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO t VALUES (1)' }] })
+  })
+
+  it('多个对象按序独立返回，不合并', () => {
+    const raw = [
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO hero VALUES (1)' }),
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: "INSERT INTO cn_chronicle VALUES ('CN0001')" })
+    ].join('\n')
+    const r = parseTableEditSql(raw, 2)
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.objects).toHaveLength(2)
+    expect(r.objects[0]!.sql).toBe('INSERT INTO hero VALUES (1)')
+    expect(r.objects[1]!.sql).toBe("INSERT INTO cn_chronicle VALUES ('CN0001')")
+  })
+
+  it('空 sql 对象保留位置', () => {
+    const raw = [
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO a VALUES (1)' }),
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: '' }),
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO c VALUES (2)' })
+    ].join('\n')
+    const r = parseTableEditSql(raw, 3)
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.objects.map((o) => o.sql)).toEqual(['INSERT INTO a VALUES (1)', '', 'INSERT INTO c VALUES (2)'])
+  })
+
+  it('数量不足判失败并注明期望与实际', () => {
+    const raw = [
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO a VALUES (1)' }),
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO b VALUES (2)' })
+    ].join('\n')
+    const r = parseTableEditSql(raw, 3)
+    expect(r.ok).toBe(false)
+    if (r.ok) return
+    expect(r.reason).toContain('3 个')
+    expect(r.reason).toContain('2 个')
+  })
+
+  it('数量超出同样判失败', () => {
+    const raw = [
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO a VALUES (1)' }),
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO b VALUES (2)' }),
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO c VALUES (3)' }),
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO d VALUES (4)' })
+    ].join('\n')
+    expect(parseTableEditSql(raw, 3).ok).toBe(false)
+  })
+
+  it('format 不符的对象判失败', () => {
+    const raw = JSON.stringify({ format: 'wrong_format', sql: 'INSERT INTO a VALUES (1)' })
+    const r = parseTableEditSql(raw)
+    expect(r.ok).toBe(false)
+  })
+
+  it('不传 expectedCount 时跳过数量校验', () => {
+    const raw = JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO a VALUES (1)' })
+    expect(parseTableEditSql(raw).ok).toBe(true)
+  })
+
+  it('items 数组形态按序解析（JSON 限定模式）', () => {
+    const raw = JSON.stringify({
+      format: SQL_EDIT_FORMAT,
+      items: [{ sql: 'INSERT INTO a VALUES (1)' }, { sql: "INSERT INTO cn_chronicle VALUES ('CN0001')" }],
+    })
+    const r = parseTableEditSql(raw, 2)
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.objects.map((o) => o.sql)).toEqual(['INSERT INTO a VALUES (1)', "INSERT INTO cn_chronicle VALUES ('CN0001')"])
+  })
+
+  it('items 数组带 thought 与 json fence 时正常解析', () => {
+    const raw = `<thought>分析剧情变化</thought>\n\`\`\`json\n${JSON.stringify({
+      format: SQL_EDIT_FORMAT,
+      items: [{ sql: 'INSERT INTO a VALUES (1)' }, { sql: '' }],
+    })}\n\`\`\``
+    const r = parseTableEditSql(raw, 2)
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.objects.map((o) => o.sql)).toEqual(['INSERT INTO a VALUES (1)', ''])
+  })
+
+  it('items 与多顶层对象两种形态兼容', () => {
+    const raw = [
+      JSON.stringify({ format: SQL_EDIT_FORMAT, items: [{ sql: 'INSERT INTO a VALUES (1)' }, { sql: 'INSERT INTO b VALUES (2)' }] }),
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO c VALUES (3)' }),
+    ].join('\n')
+    const r = parseTableEditSql(raw, 3)
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.objects.map((o) => o.sql)).toEqual(['INSERT INTO a VALUES (1)', 'INSERT INTO b VALUES (2)', 'INSERT INTO c VALUES (3)'])
+  })
+
+  it('items 数量不足判失败', () => {
+    const raw = JSON.stringify({
+      format: SQL_EDIT_FORMAT,
+      items: [{ sql: 'INSERT INTO a VALUES (1)' }, { sql: 'INSERT INTO b VALUES (2)' }],
+    })
+    const r = parseTableEditSql(raw, 3)
+    expect(r.ok).toBe(false)
+    if (r.ok) return
+    expect(r.reason).toContain('3 个')
+  })
+
+  it('items 元素含非字符串 sql 判失败', () => {
+    const raw = JSON.stringify({
+      format: SQL_EDIT_FORMAT,
+      items: [{ sql: 'INSERT INTO a VALUES (1)' }, { sql: 123 }],
+    })
+    expect(parseTableEditSql(raw).ok).toBe(false)
+  })
+})
+
+describe('TableEditor.run 多对象与强校验', () => {
   beforeEach(() => vi.useFakeTimers())
   afterEach(() => vi.useRealTimers())
 
+  it('多对象成功路径 sqls 按序返回', async () => {
+    const raw = [
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO hero VALUES (1)' }),
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: "INSERT INTO cn_chronicle VALUES ('CN0001')" })
+    ].join('\n')
+    const ai = { chatCompletion: vi.fn(async () => raw) }
+    const result = await editorWith(ai).run(makeCtx(), { maxRetries: 1, expectedSqlObjects: 2 })
+    expect(result.ok).toBe(true)
+    expect(result.sqls).toEqual(['INSERT INTO hero VALUES (1)', "INSERT INTO cn_chronicle VALUES ('CN0001')"])
+  })
+
+  it('空 sql 对象保留位置且 executor 收到全部 edits', async () => {
+    const sqlExecutor = (await import('../src/core/table/sql-executor')).default as unknown as {
+      mockClear: () => void
+      mock: { calls: unknown[][] }
+    }
+    sqlExecutor.mockClear()
+    const raw = [
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO a VALUES (1)' }),
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: '' }),
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO c VALUES (2)' })
+    ].join('\n')
+    const ai = { chatCompletion: vi.fn(async () => raw) }
+    const result = await editorWith(ai).run(makeCtx(), { maxRetries: 1, expectedSqlObjects: 3 })
+    expect(result.ok).toBe(true)
+    expect(result.sqls).toEqual(['INSERT INTO a VALUES (1)', '', 'INSERT INTO c VALUES (2)'])
+    const edits = sqlExecutor.mock.calls[0]?.[1] as Array<{ sql: string }>
+    expect(edits).toHaveLength(3)
+    expect(edits.map((e) => e.sql)).toEqual(['INSERT INTO a VALUES (1)', '', 'INSERT INTO c VALUES (2)'])
+  })
+
+  it('数量不足判解析失败并重试至 maxRetries', async () => {
+    const ai = { chatCompletion: vi.fn(async () => validRaw()) }
+    const promise = editorWith(ai).run(makeCtx(), { maxRetries: 2, expectedSqlObjects: 3 })
+    await vi.runAllTimersAsync()
+    const result = await promise
+    expect(result.ok).toBe(false)
+    expect(result.errorCategory).toBe('model')
+    expect(ai.chatCompletion).toHaveBeenCalledTimes(2)
+    expect(result.error).toContain('3 个 JSON 对象')
+  })
+
+  it('table 模式空 sql 通过校验', async () => {
+    const raw = [
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: '' }),
+      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO t VALUES (1)' })
+    ].join('\n')
+    const ai = { chatCompletion: vi.fn(async () => raw) }
+    const result = await editorWith(ai).run(makeCtx(), { maxRetries: 1, expectedSqlObjects: 2 })
+    expect(result.ok).toBe(true)
+    expect(result.sqls).toEqual(['', 'INSERT INTO t VALUES (1)'])
+  })
+
+  it('requireChronicleInsert 缺 INSERT 时失败重试', async () => {
+    const ai = {
+      chatCompletion: vi.fn(async () => JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO t VALUES (1)' }))
+    }
+    const promise = editorWith(ai).run(makeCtx(), { maxRetries: 2, expectedSqlObjects: 1, requireChronicleInsert: true })
+    await vi.runAllTimersAsync()
+    const result = await promise
+    expect(result.ok).toBe(false)
+    expect(ai.chatCompletion).toHaveBeenCalledTimes(2)
+    expect(result.error).toContain('cn_chronicle')
+  })
+
+  it('requireChronicleInsert 含 INSERT 时通过', async () => {
+    const ai = {
+      chatCompletion: vi.fn(async () => JSON.stringify({ format: SQL_EDIT_FORMAT, sql: "INSERT INTO cn_chronicle (key, chronicle_text) VALUES ('CN0001', '剧情')" }))
+    }
+    const result = await editorWith(ai).run(makeCtx(), { maxRetries: 1, expectedSqlObjects: 1, requireChronicleInsert: true })
+    expect(result.ok).toBe(true)
+  })
+
+  it('items 形态 + requireChronicleInsert 强校验生效', async () => {
+    const ai = {
+      chatCompletion: vi.fn(async () => JSON.stringify({
+        format: SQL_EDIT_FORMAT,
+        items: [
+          { sql: "INSERT INTO cn_chronicle (key, chronicle_text) VALUES ('CN0001', '剧情1')" },
+          { sql: "INSERT INTO cn_chronicle (key, chronicle_text) VALUES ('CN0002', '剧情2')" },
+        ],
+      }))
+    }
+    const result = await editorWith(ai).run(makeCtx(), { maxRetries: 1, expectedSqlObjects: 2, requireChronicleInsert: true })
+    expect(result.ok).toBe(true)
+    expect(result.sqls).toEqual([
+      "INSERT INTO cn_chronicle (key, chronicle_text) VALUES ('CN0001', '剧情1')",
+      "INSERT INTO cn_chronicle (key, chronicle_text) VALUES ('CN0002', '剧情2')",
+    ])
+  })
+
+  it('items 形态缺纪要 INSERT 时失败重试', async () => {
+    const ai = {
+      chatCompletion: vi.fn(async () => JSON.stringify({
+        format: SQL_EDIT_FORMAT,
+        items: [
+          { sql: "INSERT INTO cn_chronicle (key, chronicle_text) VALUES ('CN0001', '剧情1')" },
+          { sql: 'INSERT INTO t VALUES (1)' },
+        ],
+      }))
+    }
+    const promise = editorWith(ai).run(makeCtx(), { maxRetries: 2, expectedSqlObjects: 2, requireChronicleInsert: true })
+    await vi.runAllTimersAsync()
+    const result = await promise
+    expect(result.ok).toBe(false)
+    expect(ai.chatCompletion).toHaveBeenCalledTimes(2)
+  })
+
   it('成功路径发射 calling_ai/parsing/saving/complete', async () => {
     const ai = { chatCompletion: vi.fn(async () => validRaw()) }
-    const editor = new TableEditor({} as never, ai as never)
     const phases: string[] = []
-    const result = await editor.run(makeCtx(), { maxRetries: 2, onProgress: (p) => phases.push(p) })
+    const result = await editorWith(ai).run(makeCtx(), { maxRetries: 2, onProgress: (p) => phases.push(p) })
     expect(result.ok).toBe(true)
     expect(phases).toEqual(['calling_ai', 'parsing', 'saving', 'complete'])
   })
@@ -36,23 +264,9 @@ describe('TableEditor.run onProgress 阶段事件', () => {
     const ai = {
       chatCompletion: vi.fn(async () => `<thought>分析剧情变化，需要更新主角信息</thought>\n${validRaw()}`)
     }
-    const editor = new TableEditor({} as never, ai as never)
-    const result = await editor.run(makeCtx(), { maxRetries: 1 })
+    const result = await editorWith(ai).run(makeCtx(), { maxRetries: 1 })
     expect(result.ok).toBe(true)
-    expect(result.lastSql).toBe('INSERT INTO t VALUES (1)')
-  })
-
-  it('AI 输出多个 JSON 时代码层面合并 sql（合并运行兜底）', async () => {
-    const raw = [
-      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO hero VALUES (1)' }),
-      JSON.stringify({ format: SQL_EDIT_FORMAT, sql: "INSERT INTO cn_chronicle VALUES ('CN0001')" })
-    ].join('\n')
-    const ai = { chatCompletion: vi.fn(async () => raw) }
-    const editor = new TableEditor({} as never, ai as never)
-    const result = await editor.run(makeCtx(), { maxRetries: 1 })
-    expect(result.ok).toBe(true)
-    expect(result.lastSql).toContain('INSERT INTO hero VALUES (1)')
-    expect(result.lastSql).toContain("INSERT INTO cn_chronicle VALUES ('CN0001')")
+    expect(result.sqls?.[0]).toBe('INSERT INTO t VALUES (1)')
   })
 
   it('失败重试时发射 retry，最终 error', async () => {
@@ -62,9 +276,8 @@ describe('TableEditor.run onProgress 阶段事件', () => {
     sqlExecutor.mockImplementationOnce(() => ({ ok: false, error: 'err' }))
     sqlExecutor.mockImplementationOnce(() => ({ ok: false, error: 'err' }))
     const ai = { chatCompletion: vi.fn(async () => validRaw()) }
-    const editor = new TableEditor({} as never, ai as never)
     const phases: string[] = []
-    const promise = editor.run(makeCtx(), { maxRetries: 2, onProgress: (p) => phases.push(p) })
+    const promise = editorWith(ai).run(makeCtx(), { maxRetries: 2, onProgress: (p) => phases.push(p) })
     await vi.runAllTimersAsync()
     const result = await promise
     expect(result.ok).toBe(false)
@@ -74,9 +287,8 @@ describe('TableEditor.run onProgress 阶段事件', () => {
 
   it('AI 返回无效格式时不调 saving，最终 error', async () => {
     const ai = { chatCompletion: vi.fn(async () => 'not json') }
-    const editor = new TableEditor({} as never, ai as never)
     const phases: string[] = []
-    const promise = editor.run(makeCtx(), { maxRetries: 1, onProgress: (p) => phases.push(p) })
+    const promise = editorWith(ai).run(makeCtx(), { maxRetries: 1, onProgress: (p) => phases.push(p) })
     await vi.runAllTimersAsync()
     const result = await promise
     expect(result.ok).toBe(false)
@@ -88,9 +300,8 @@ describe('TableEditor.run onProgress 阶段事件', () => {
 
   it('detail 携带 attempt 与 maxRetries', async () => {
     const ai = { chatCompletion: vi.fn(async () => validRaw()) }
-    const editor = new TableEditor({} as never, ai as never)
     let detail: { attempt?: number; maxRetries?: number } | undefined
-    await editor.run(makeCtx(), { maxRetries: 3, onProgress: (_p, d) => { detail = d } })
+    await editorWith(ai).run(makeCtx(), { maxRetries: 3, onProgress: (_p, d) => { detail = d } })
     expect(detail?.maxRetries).toBe(3)
     expect(detail?.attempt).toBe(1)
   })
@@ -106,8 +317,7 @@ describe('TableEditor.run 错误分类', () => {
         throw new Error('network timeout')
       })
     }
-    const editor = new TableEditor({} as never, ai as never)
-    const result = await editor.run(makeCtx(), { maxRetries: 3 })
+    const result = await editorWith(ai).run(makeCtx(), { maxRetries: 3 })
     expect(result.ok).toBe(false)
     expect(result.errorCategory).toBe('infrastructure')
     expect(result.attempts).toBe(1)
@@ -124,8 +334,7 @@ describe('TableEditor.run 错误分类', () => {
       errorCategory: 'model'
     }))
     const ai = { chatCompletion: vi.fn(async () => validRaw()) }
-    const editor = new TableEditor({} as never, ai as never)
-    const promise = editor.run(makeCtx(), { maxRetries: 2 })
+    const promise = editorWith(ai).run(makeCtx(), { maxRetries: 2 })
     await vi.runAllTimersAsync()
     const result = await promise
     expect(result.ok).toBe(false)
@@ -136,8 +345,7 @@ describe('TableEditor.run 错误分类', () => {
 
   it('解析失败(model)重试', async () => {
     const ai = { chatCompletion: vi.fn(async () => 'not json') }
-    const editor = new TableEditor({} as never, ai as never)
-    const promise = editor.run(makeCtx(), { maxRetries: 2 })
+    const promise = editorWith(ai).run(makeCtx(), { maxRetries: 2 })
     await vi.runAllTimersAsync()
     const result = await promise
     expect(result.ok).toBe(false)

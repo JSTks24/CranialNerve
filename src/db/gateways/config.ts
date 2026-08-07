@@ -77,7 +77,6 @@ const DEFAULT_CONFIG: CranialNerveConfig = {
     manualUpdateContextDepth: null,
     manualUpdateBatchSize: null,
     manualSelectedTables: [],
-    hasManualSelection: false,
     manualIncludeChronicle: false
   },
   chronicleFill: {
@@ -90,8 +89,7 @@ const DEFAULT_CONFIG: CranialNerveConfig = {
     maxRetries: 3,
     chronicleSendLatestRows: 10,
     manualUpdateContextDepth: null,
-    manualUpdateBatchSize: null,
-    manualIncludeTables: false
+    manualUpdateBatchSize: null
   },
   maxRecallItems: 25,
   recallEnabled: true,
@@ -102,8 +100,9 @@ const DEFAULT_CONFIG: CranialNerveConfig = {
   recallPresetId: '',
   recallContextDepth: 5,
   retainFloors: 100,
+  checkpointInterval: 20,
   pending: {
-    aiCallTimeoutMs: 60000,
+    aiCallTimeoutMs: 0,
     aiTimeoutRetries: 1,
     listModelsTimeoutMs: 10000,
     writeQueueDrainTimeoutMs: 8000,

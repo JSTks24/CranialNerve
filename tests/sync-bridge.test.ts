@@ -54,6 +54,10 @@ function makeChatGateway(frames: Record<number, string>): { gateway: ChatGateway
   return { gateway, chat }
 }
 
+function makeFrameNoCheckpoint(): StorageFrame {
+  return { version: 2, logEntries: [] }
+}
+
 describe('sync-bridge load 真实 replay（含 applySnapshot）', () => {
   it('末层 frame 存在时 load 灌入末层 checkpoint', async () => {
     const core = new SqliteCore()
@@ -109,7 +113,7 @@ describe('sync-bridge load 真实 replay（含 applySnapshot）', () => {
     core.dispose()
   })
 
-  it('同帧相同 SQL 双 reason（merged）回放只执行一次', async () => {
+  it('同帧相同 SQL 双 reason 同帧去重只执行一次', async () => {
     const core = new SqliteCore()
     await core.init()
     const frame: StorageFrame = {
@@ -133,6 +137,84 @@ describe('sync-bridge load 真实 replay（含 applySnapshot）', () => {
     expect(rows[0]!.rows).toHaveLength(2)
     expect(rows[0]!.rows[0]!.c).toBe('A')
     expect(rows[0]!.rows[1]!.c).toBe('C')
+    core.dispose()
+  })
+
+  it('多楼层各自帧回放全部执行（逐层落帧场景）', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    const frame1: StorageFrame = {
+      version: 2,
+      logEntries: [{
+        seq: 1,
+        createdAt: 0,
+        operations: [{ kind: 'sql_batch', statements: ["INSERT INTO t VALUES ('B')"], reason: 'ai_fill_table' }],
+      }],
+      checkpoint: { kind: 'full', createdAt: 0, reason: 'init', data: makeSnapshot('A') },
+    }
+    const frame2: StorageFrame = {
+      version: 2,
+      logEntries: [{
+        seq: 1,
+        createdAt: 0,
+        operations: [{ kind: 'sql_batch', statements: ["INSERT INTO t VALUES ('C')"], reason: 'ai_fill_table' }],
+      }],
+    }
+    const { gateway } = makeChatGateway({ 1: JSON.stringify(frame1), 2: JSON.stringify(frame2) })
+    const bridge = new SqliteSyncBridge(core, gateway)
+    const result = bridge.load()
+    expect(result.ok).toBe(true)
+    const rows = core.exec('SELECT * FROM t ORDER BY c')
+    expect(rows[0]!.rows).toHaveLength(3)
+    expect(rows[0]!.rows.map((r) => r.c)).toEqual(['A', 'B', 'C'])
+    core.dispose()
+  })
+
+  it('同帧不同 SQL 双 op 回放全部执行', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    const frame: StorageFrame = {
+      version: 2,
+      logEntries: [{
+        seq: 1,
+        createdAt: 0,
+        operations: [
+          { kind: 'sql_batch', statements: ["INSERT INTO t VALUES ('B')"], reason: 'ai_fill_table' },
+          { kind: 'sql_batch', statements: ["INSERT INTO t VALUES ('C')"], reason: 'ai_fill_chronicle' },
+        ],
+      }],
+      checkpoint: { kind: 'full', createdAt: 0, reason: 'init', data: makeSnapshot('A') },
+    }
+    const { gateway } = makeChatGateway({ 1: JSON.stringify(frame) })
+    const bridge = new SqliteSyncBridge(core, gateway)
+    const result = bridge.load()
+    expect(result.ok).toBe(true)
+    const rows = core.exec('SELECT * FROM t ORDER BY c')
+    expect(rows[0]!.rows).toHaveLength(3)
+    expect(rows[0]!.rows.map((r) => r.c)).toEqual(['A', 'B', 'C'])
+    core.dispose()
+  })
+
+  it('有帧无 checkpoint 时 load 返回 ok:false 且警告含「无 checkpoint」', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    const { gateway } = makeChatGateway({ 2: JSON.stringify(makeFrameNoCheckpoint()) })
+    const bridge = new SqliteSyncBridge(core, gateway)
+    const result = bridge.load()
+    expect(result.ok).toBe(false)
+    expect(result.warnings.join('; ')).toContain('无 checkpoint')
+    core.dispose()
+  })
+
+  it('帧 JSON 损坏时 load 警告含「帧数据损坏」', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    const { gateway, chat } = makeChatGateway({})
+    chat[1]!.extra = { [FRAME_FIELD_PREFIX]: '{broken json' }
+    const bridge = new SqliteSyncBridge(core, gateway)
+    const result = bridge.load()
+    expect(result.warnings.join('; ')).toContain('帧数据损坏')
+    expect(result.warnings.join('; ')).toContain('第 2 楼')
     core.dispose()
   })
 })

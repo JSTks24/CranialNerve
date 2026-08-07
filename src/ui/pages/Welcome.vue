@@ -3,6 +3,7 @@ import { ref, computed, onActivated } from 'vue'
 import { useRouter } from 'vue-router'
 import { getSession } from '@core/session'
 import { detectLastSummarizedAiFloor } from '@core/table/fill-orchestrator'
+import { applyDefaults } from '@shared/config-defaults'
 import toast from '@ui/toast'
 import { pushLog } from '@shared/log-buffer'
 
@@ -106,37 +107,7 @@ function checkSnapshotRollback() {
 
 function resetDefaults() {
 	const c = session.getConfig()
-	c.tableFill.autoFillTrigger = 'after-ai'
-	c.tableFill.contextDepth = 3
-	c.tableFill.updateFrequency = 1
-	c.tableFill.batchSize = 3
-	c.tableFill.skipFloors = 0
-	c.tableFill.maxRetries = 3
-	c.tableFill.manualUpdateContextDepth = null
-	c.tableFill.manualUpdateBatchSize = null
-	c.tableFill.manualSelectedTables = []
-	c.tableFill.hasManualSelection = false
-	c.chronicleFill.autoFillTrigger = 'after-ai'
-	c.chronicleFill.regenerateFill = true
-	c.chronicleFill.contextDepth = 3
-	c.chronicleFill.updateFrequency = 1
-	c.chronicleFill.batchSize = 3
-	c.chronicleFill.skipFloors = 0
-	c.chronicleFill.maxRetries = 3
-	c.chronicleFill.chronicleSendLatestRows = 10
-	c.chronicleFill.manualUpdateContextDepth = null
-	c.chronicleFill.manualUpdateBatchSize = null
-	c.recallEnabled = true
-	c.maxRecallItems = 25
-	c.recallContextDepth = 5
-	c.snapshotStrategy = 'every-message'
-	c.retainFloors = 100
-	c.tableFillPresetId = ''
-	c.chronicleGenPresetId = ''
-	c.recallPresetId = ''
-	c.prompt = session.getConfig().prompt
-	c.vector = { embeddingEndpoint: '', embeddingApiKey: '', embeddingModel: '', rerankEndpoint: '', rerankApiKey: '', rerankModel: '' }
-	c.vectorEnabled = false
+	applyDefaults(c)
 	session.saveConfig(c)
 	toast.success('已恢复默认设置')
 	refresh()

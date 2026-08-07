@@ -104,7 +104,11 @@ export async function onPromptReady(
 		session.chat.writeMessageExtra(lastUserIdx, 'display_text', userMessage)
 		pushLog('info', 'recall', `写入mes keys="${keys}" extra已写入`)
 		session.renderRecallCard(lastUserIdx)
-		void session.chat.saveChat()
+		try {
+			await session.chat.saveChat()
+		} catch (e) {
+			pushLog('warn', 'recall', `召回后保存失败: ${e instanceof Error ? e.message : String(e)}`)
+		}
 		progress?.done()
 		return true
 	} catch (e) {

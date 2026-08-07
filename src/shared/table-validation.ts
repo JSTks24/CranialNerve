@@ -27,6 +27,28 @@ export function validateTableDef(table: TableDef, allTables: TableDef[]): string
   return null
 }
 
+export interface RowRequiredColumn {
+  name: string
+  displayName?: string
+  constraints?: { nullable?: boolean; primaryKey?: boolean }
+}
+
+export function validateRowRequired(
+  columns: RowRequiredColumn[],
+  values: Record<string, unknown>
+): string | null {
+  for (const col of columns) {
+    const isNotNull = col.constraints?.nullable === false || col.constraints?.primaryKey === true
+    if (isNotNull) {
+      const val = String(values[col.name] ?? '').trim()
+      if (!val) {
+        return `列「${col.displayName || col.name}」不能为空`
+      }
+    }
+  }
+  return null
+}
+
 export function validateChronicleDef(def: TableDef): string | null {
   const nameSet = new Set<string>()
   for (const col of def.columns) {

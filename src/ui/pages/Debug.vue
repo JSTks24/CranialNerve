@@ -1,10 +1,20 @@
 <script setup lang="ts">
-import { computed, onActivated } from 'vue'
+import { computed, ref, watch, nextTick, onActivated } from 'vue'
 import { useDebugStore } from '@ui/stores/debug'
 import CNTabs from '@ui/components/CNTabs.vue'
+import { MAX_TRACES } from '@shared/prompt-trace'
 import type { PromptTraceEntry } from '@shared/prompt-trace'
+import confirm from '@ui/dialog'
 
 const store = useDebugStore()
+const logListEl = ref<HTMLElement | null>(null)
+
+watch(() => store.visibleLogs.length, async () => {
+	if (!store.autoScroll) return
+	await nextTick()
+	const el = logListEl.value
+	if (el) el.scrollTop = el.scrollHeight
+})
 
 const debugTabs = computed(() => [
 	{ key: 'logs', label: '运行日志', icon: 'fa-list', badge: store.filteredCount || undefined },
@@ -32,6 +42,17 @@ function recoverSnapshot() {
 	const idx = Number.parseInt(pick.value, 10)
 	if (!Number.isFinite(idx)) return
 	store.recoverSnapshotAt(idx)
+}
+
+async function resetChatData() {
+	const ok = await confirm(
+		'彻底清空当前聊天数据',
+		'将永久删除本聊天的全部 CN 数据：绑定模板、快照帧与旧格式残留、召回数据、世界书、纪要向量索引与填充进度，聊天将以全新状态重新开始，此操作不可恢复。',
+		'彻底清空',
+		true
+	)
+	if (!ok) return
+	await store.resetChatData()
 }
 
 async function copyText(text: string) {
@@ -90,7 +111,6 @@ onActivated(() => {
 						<span class="cn-switch__knob"></span>
 					</span>
 					<span class="cn-switch__text">
-						<i class="fa-solid fa-bug"></i>
 						调试模式
 					</span>
 				</label>
@@ -102,7 +122,7 @@ onActivated(() => {
 				<span v-if="store.pendingCount">暂停期间新增 {{ store.pendingCount }} 条</span>
 			</div>
 
-			<div class="debug-log-list">
+			<div class="debug-log-list" ref="logListEl">
 				<div v-if="store.visibleLogs.length === 0" class="cn-empty">暂无日志</div>
 				<div
 					v-for="log in store.visibleLogs"
@@ -110,9 +130,9 @@ onActivated(() => {
 					class="debug-log-row"
 					:class="[
 						`debug-log-row--${log.level}`,
-						{ 'debug-log-row--clickable': log.traceId, 'debug-log-row--expanded': log.traceId && store.expandedLogId === log.id }
+						{ 'debug-log-row--clickable': log.traceId, 'debug-log-row--expanded': log.traceId && store.expandedTraceId === log.traceId }
 					]"
-					@click="log.traceId && store.toggleLogExpand(log.id)"
+					@click="log.traceId && store.toggleLogExpand(log.traceId)"
 				>
 					<span class="debug-log-row__time">{{ formatTime(log.timestamp) }}</span>
 					<span class="debug-log-row__level" :class="`debug-log-row__level--${log.level}`">{{ log.level === 'error' ? 'ERROR' : log.level === 'warn' ? 'WARN' : log.level === 'info' ? 'INFO' : 'DEBUG' }}</span>
@@ -121,11 +141,11 @@ onActivated(() => {
 					<button
 						v-if="log.traceId"
 						class="cn-btn cn-btn--sm cn-btn--text debug-log-row__trace"
-						@click.stop="log.traceId && store.toggleLogExpand(log.id)"
+						@click.stop="log.traceId && store.toggleLogExpand(log.traceId)"
 					>
-						<i class="fa-solid" :class="store.expandedLogId === log.id ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+						<i class="fa-solid" :class="store.expandedTraceId === log.traceId ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
 					</button>
-					<div v-if="log.traceId && store.expandedLogId === log.id" class="debug-log-expand">
+					<div v-if="log.traceId && store.expandedTraceId === log.traceId" class="debug-log-expand">
 						<template v-if="store.expandedTrace">
 							<div class="debug-log-expand__head">
 								<span>{{ store.expandedTrace.scene }} · {{ store.expandedTrace.model }}</span>
@@ -150,8 +170,18 @@ onActivated(() => {
 								</div>
 								<pre class="debug-trace-seg__pre">{{ seg.content }}</pre>
 							</div>
+							<div v-if="store.expandedTrace.response != null" class="debug-trace-seg debug-trace-seg--assistant">
+								<div class="debug-trace-seg__head">
+									<span class="debug-trace-seg__role">回复</span>
+									<span class="debug-trace-seg__len">{{ store.expandedTrace.response.length }}字</span>
+									<button class="cn-btn cn-btn--sm cn-btn--text" @click.stop="copySegment(store.expandedTrace.response!)">
+										<i class="fa-solid fa-copy"></i>
+									</button>
+								</div>
+								<pre class="debug-trace-seg__pre">{{ store.expandedTrace.response }}</pre>
+							</div>
 						</template>
-						<div v-else class="debug-log-expand__empty">该提示词已超出保留范围（最近 20 条），无法查看</div>
+						<div v-else class="debug-log-expand__empty">该提示词已超出保留范围（最近 {{ MAX_TRACES }} 条），无法查看</div>
 					</div>
 				</div>
 			</div>
@@ -239,6 +269,10 @@ onActivated(() => {
 								<button class="cn-btn" @click="recoverSnapshot">
 									<i class="fa-solid fa-clock-rotate-left"></i>
 									恢复到此快照
+								</button>
+								<button class="cn-btn cn-btn--danger" @click="resetChatData">
+									<i class="fa-solid fa-broom"></i>
+									彻底清空
 								</button>
 							</div>
 						</template>

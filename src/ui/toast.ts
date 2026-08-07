@@ -36,6 +36,7 @@ function injectStyle(): void {
 .cn-toast__close{width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;margin-left:auto;border:0;border-radius:4px;background:transparent;color:#8ca196;font-size:13px;cursor:pointer;flex-shrink:0;transition:background 0.15s,color 0.15s}
 .cn-toast__close:hover{background:#f2f7f4;color:#1e2c24}
 .cn-toast--progress .cn-toast__bd i{color:#128252}
+.cn-toast--progress .cn-toast__bd span{font-family:'Consolas','Courier New',monospace;font-size:13px}
 .cn-toast--progress{border-left:4px solid #128252}
 `
   document.head.appendChild(s)

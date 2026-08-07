@@ -4,8 +4,10 @@ import type { AiClientConfig, AiGateway, AiCallOptions, ChatCompletionParams } f
 import type { TableEditSqlV1 } from '@shared/types/ai'
 import type { PromptSegment } from '@shared/types/config'
 import { SQL_EDIT_FORMAT } from '@shared/constants/sql-json'
+import { CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
 import executeTableEditSql from './sql-executor'
 import { buildFeedbackMessages } from './prompt-feedback'
+import { sqlMentionsTable } from './sql-mentions'
 
 export interface PromptContext {
   segments: PromptSegment[]
@@ -28,6 +30,8 @@ export interface RunOptions {
   maxRetries: number
   signal?: AbortSignal
   onProgress?: FillProgressFn
+  expectedSqlObjects?: number
+  requireChronicleInsert?: boolean
 }
 
 export interface RunPersist {
@@ -39,9 +43,13 @@ export interface RunResult {
   ok: boolean
   attempts: number
   error?: string
-  lastSql?: string
+  sqls?: string[]
   errorCategory?: 'model' | 'infrastructure'
 }
+
+export type ParseEditResult =
+  | { ok: true; objects: TableEditSqlV1[] }
+  | { ok: false; reason: string }
 
 export default class TableEditor {
   private readonly core: SqliteCore
@@ -84,20 +92,31 @@ export default class TableEditor {
       }
       lastRaw = raw
       options.onProgress?.('parsing', { attempt, maxRetries: options.maxRetries })
-      const current = parseTableEditSql(raw)
+      const parsed = parseTableEditSql(raw, options.expectedSqlObjects)
 
-      if (current) {
+      if (parsed.ok) {
+        if (options.requireChronicleInsert) {
+          const missing = parsed.objects.some((o) => !sqlMentionsTable(o.sql, CHRONICLE_TABLE_NAME))
+          if (missing) {
+            lastError = `每一轮必须输出一条对 ${CHRONICLE_TABLE_NAME} 表的 INSERT`
+            lastCategory = 'model'
+            if (attempt < options.maxRetries) {
+              await new Promise((resolve) => setTimeout(resolve, 5000))
+            }
+            continue
+          }
+        }
         options.onProgress?.('saving', { attempt, maxRetries: options.maxRetries })
         const persistArg = persist ? { ctx: persist.ctx, messageId: persist.messageId } : undefined
-        const result = executeTableEditSql(this.core, current, persistArg)
+        const result = executeTableEditSql(this.core, parsed.objects, persistArg)
         if (result.ok) {
           options.onProgress?.('complete', { attempt, maxRetries: options.maxRetries })
-          return { ok: true, attempts: attempt, lastSql: current.sql }
+          return { ok: true, attempts: attempt, sqls: parsed.objects.map((o) => o.sql) }
         }
         lastError = result.error ?? 'unknown sql error'
         lastCategory = result.errorCategory ?? 'model'
       } else {
-        lastError = `AI 输出 format 不是 ${SQL_EDIT_FORMAT}`
+        lastError = parsed.reason
         lastCategory = 'model'
       }
 
@@ -111,35 +130,45 @@ export default class TableEditor {
   }
 }
 
-function parseTableEditSql(raw: string): TableEditSqlV1 | null {
+export function parseTableEditSql(raw: string, expectedCount?: number): ParseEditResult {
   const stripped = raw.replace(/<thought>[\s\S]*?<\/thought>/gi, '')
   const jsonStrs = extractJsons(stripped)
   if (jsonStrs.length === 0) {
-    return null
+    return { ok: false, reason: '未找到 JSON 对象' }
   }
-  const sqls: string[] = []
+  const objects: TableEditSqlV1[] = []
+  let invalid = false
   for (const jsonStr of jsonStrs) {
     try {
-      const parsed = JSON.parse(jsonStr) as TableEditSqlV1
-      if (parsed.format !== SQL_EDIT_FORMAT || typeof parsed.sql !== 'string') {
+      const parsed = JSON.parse(jsonStr) as { format?: unknown; sql?: unknown; items?: Array<{ sql?: unknown }> }
+      if (parsed.format !== SQL_EDIT_FORMAT) {
+        invalid = true
         continue
       }
-      const s = parsed.sql.trim()
-      if (s.length > 0) {
-        sqls.push(s)
+      if (Array.isArray(parsed.items)) {
+        for (const item of parsed.items) {
+          if (item && typeof item.sql === 'string') {
+            objects.push({ format: SQL_EDIT_FORMAT, sql: item.sql.trim() })
+          } else {
+            invalid = true
+          }
+        }
+      } else if (typeof parsed.sql === 'string') {
+        objects.push({ format: SQL_EDIT_FORMAT, sql: parsed.sql.trim() })
+      } else {
+        invalid = true
       }
     } catch {
-      continue
+      invalid = true
     }
   }
-  if (sqls.length === 0) {
-    return null
+  if (invalid) {
+    return { ok: false, reason: `存在无效的 JSON 对象或 format 不是 ${SQL_EDIT_FORMAT}` }
   }
-  if (sqls.length === 1) {
-    return { format: SQL_EDIT_FORMAT, sql: sqls[0]! }
+  if (expectedCount != null && objects.length !== expectedCount) {
+    return { ok: false, reason: `需要 ${expectedCount} 个 JSON 对象（每轮正文一个），实际解析到 ${objects.length} 个` }
   }
-  const normalized = sqls.map((s) => (s.endsWith(';') ? s : s + ';'))
-  return { format: SQL_EDIT_FORMAT, sql: normalized.join('\n') }
+  return { ok: true, objects }
 }
 
 function extractJsons(raw: string): string[] {

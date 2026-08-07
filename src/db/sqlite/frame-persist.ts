@@ -9,6 +9,7 @@ import type {
 	FullCheckpoint
 } from '@shared/types/storage-frame'
 import { buildSnapshotFromCore } from './snapshot-builder'
+import type { SnapshotStrategy } from '@shared/types/config'
 
 export interface PersistContext {
 	repo: FrameRepo
@@ -112,16 +113,89 @@ export function ensureInitCheckpoint(
 	writeCheckpoint(ctx, messageId, 'init', templateId)
 }
 
-export function compactAtBoundary(
+export interface PersistFillOpts {
+	strategy: SnapshotStrategy
+	interval: number
+	retainFloors: number
+	templateId?: string
+}
+
+export function persistFill(
+	ctx: PersistContext,
+	messageId: number,
+	operations: MutationOperation[],
+	opts: PersistFillOpts
+): void {
+	if (opts.strategy === 'latest-only') {
+		ctx.repo.removeAllFrames()
+		writeCheckpoint(ctx, messageId, 'manual', opts.templateId)
+		return
+	}
+	const hasAny = ctx.repo.findLatestFrameMessageId() != null
+	if (!hasAny) {
+		writeCheckpoint(ctx, messageId, 'init', opts.templateId)
+		const reasons = collectAiFillReasons(operations)
+		if (reasons.length > 0) {
+			const frame = ctx.repo.loadFrame(messageId)
+			if (frame) {
+				const merged = [...new Set([...(frame.summarizedReasons ?? []), ...reasons])]
+				frame.summarizedReasons = merged
+				ctx.repo.saveFrame(messageId, frame)
+			}
+		}
+		return
+	}
+	if (operations.length > 0) {
+		appendSqlLog(ctx, messageId, operations)
+	}
+	maybePeriodicCheckpoint(ctx, messageId, opts.interval, opts.templateId)
+	if (opts.strategy === 'retain-recent') {
+		retainRecentFrames(ctx, opts.retainFloors)
+	}
+}
+
+function maybePeriodicCheckpoint(
+	ctx: PersistContext,
+	messageId: number,
+	interval: number,
+	templateId?: string
+): void {
+	if (interval <= 0) return
+	const ids = ctx.repo.listFrameMessageIds()
+	let lastCpId: number | null = null
+	for (const id of ids) {
+		if (id > messageId) continue
+		const f = ctx.repo.loadFrame(id)
+		if (f?.checkpoint) {
+			lastCpId = id
+			break
+		}
+	}
+	if (lastCpId == null) return
+	if (lastCpId === messageId) return
+	if (messageId - lastCpId >= interval) {
+		writeCheckpoint(ctx, messageId, 'periodic', templateId)
+	}
+}
+
+export function retainRecentFrames(
 	ctx: PersistContext,
 	retainFloors: number
 ): void {
 	if (retainFloors <= 0) return
 	const ids = ctx.repo.listFrameMessageIds()
 	if (ids.length <= retainFloors) return
-	const boundaryId = ids[retainFloors - 1]
-	if (boundaryId == null) return
-	writeCheckpoint(ctx, boundaryId, 'compaction')
+	let hasCpInKeep = false
+	for (let i = 0; i < retainFloors; i++) {
+		const id = ids[i]
+		if (id == null) continue
+		const f = ctx.repo.loadFrame(id)
+		if (f?.checkpoint) {
+			hasCpInKeep = true
+			break
+		}
+	}
+	if (!hasCpInKeep) return
 	for (let i = retainFloors; i < ids.length; i++) {
 		const id = ids[i]
 		if (id != null) ctx.repo.removeFrame(id)

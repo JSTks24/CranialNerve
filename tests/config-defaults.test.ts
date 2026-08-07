@@ -28,6 +28,12 @@ describe('config 默认值 null 语义', () => {
     expect(cfg.tableFill.regenerateFill).toBe(true)
   })
 
+  it('aiCallTimeoutMs 默认 0（永不超时）', () => {
+    stubEmptyHost()
+    const cfg = createConfigGateway().read()
+    expect(cfg.pending.aiCallTimeoutMs).toBe(0)
+  })
+
   it('seed 默认 null（emptyPreset 经 gateway 读取为 null）', () => {
     ;(globalThis as unknown as { window: unknown }).window = {
       SillyTavern: {

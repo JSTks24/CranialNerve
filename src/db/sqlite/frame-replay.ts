@@ -5,7 +5,7 @@ import { pushLog } from '@shared/log-buffer'
 
 export interface ReplayResult {
 	snapshot: DatabaseSnapshot | null
-	operations: MutationOperation[]
+	operations: MutationOperation[][]
 	warnings: string[]
 	snapshotIndex: number | null
 }
@@ -34,15 +34,13 @@ export function replayFrames(repo: FrameRepo): ReplayResult {
 		return { snapshot: null, operations: [], warnings, snapshotIndex: latestFrameId }
 	}
 
-	const operations: MutationOperation[] = []
+	const operations: MutationOperation[][] = []
 	if (checkpointMessageId != null) {
 		for (let i = checkpointMessageId; i <= latestFrameId; i++) {
 			const frame = repo.loadFrame(i)
 			if (!frame) continue
 			for (const entry of frame.logEntries) {
-				for (const op of entry.operations) {
-					operations.push(op)
-				}
+				operations.push(entry.operations)
 			}
 		}
 	}

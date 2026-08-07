@@ -27,7 +27,7 @@ describe('buildCreateTableSql', () => {
     expect(sql).toContain('DEFAULT 0')
   })
 
-  it('defaultValue 字符串字面量含括号被加单引号（修复 near "(" 语法错误）', () => {
+  it('defaultValue 字符串字面量含括号被加单引号', () => {
     const sql = buildCreateTableSql({
       name: 't',
       columns: [col({ name: 'c', constraints: { defaultValue: 'foo(bar)' } })]

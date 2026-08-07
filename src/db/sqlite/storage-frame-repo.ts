@@ -10,6 +10,7 @@ export interface FrameRepo {
 	findLatestFrameMessageId(): number | null
 	listFrameMessageIds(): number[]
 	countFrames(): number
+	findCorruptFrameIds(): number[]
 }
 
 export default function createFrameRepo(chat: ChatGateway): FrameRepo {
@@ -64,6 +65,26 @@ export default function createFrameRepo(chat: ChatGateway): FrameRepo {
 		},
 		countFrames() {
 			return this.listFrameMessageIds().length
+		},
+		findCorruptFrameIds() {
+			const messages = chat.getChat()
+			const out: number[] = []
+			for (let i = 0; i < messages.length; i++) {
+				const extra = messages[i]?.extra
+				if (!extra || typeof extra !== 'object') continue
+				for (const key of Object.keys(extra)) {
+					if (!key.startsWith(FRAME_FIELD_PREFIX)) continue
+					const raw = extra[key]
+					if (typeof raw !== 'string' || raw.length === 0) continue
+					try {
+						JSON.parse(raw)
+					} catch {
+						out.push(i)
+						break
+					}
+				}
+			}
+			return out
 		}
 	}
 }

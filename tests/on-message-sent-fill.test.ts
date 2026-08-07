@@ -22,7 +22,7 @@ function makeConfig(): CranialNerveConfig {
       manualUpdateContextDepth: null,
       manualUpdateBatchSize: null,
       manualSelectedTables: [],
-      hasManualSelection: false,
+
       manualIncludeChronicle: false,
     },
     chronicleFill: {
@@ -36,7 +36,7 @@ function makeConfig(): CranialNerveConfig {
       chronicleSendLatestRows: 10,
       manualUpdateContextDepth: null,
       manualUpdateBatchSize: null,
-      manualIncludeTables: false,
+
     },
     maxRecallItems: 25,
     recallEnabled: true,
@@ -47,6 +47,7 @@ function makeConfig(): CranialNerveConfig {
     recallPresetId: '',
     recallContextDepth: 5,
     retainFloors: 100,
+    checkpointInterval: 20,
     pending: { aiCallTimeoutMs: 60000, aiTimeoutRetries: 1, listModelsTimeoutMs: 10000, writeQueueDrainTimeoutMs: 8000, summarizeOnManualAbort: false, minSummaryLength: 0 },
     tableTemplate: { presets: [], activeId: '', defaultId: '' },
   }

@@ -7,6 +7,8 @@ import type { PromptTraceEntry } from '@shared/prompt-trace'
 import { getSession } from '@core/session'
 import { buildBookName } from '@core/worldbook-sync'
 import { cleanupStaleBooks, syncToWorldbook } from '@core/worldbook-sync'
+import { isFillInProgress } from '@core/table/fill-orchestrator'
+import toast from '@ui/toast'
 
 export type LogLevelFilter = LogLevel | 'all'
 
@@ -23,7 +25,7 @@ export const useDebugStore = defineStore('cn-debug', () => {
 	const chatActive = ref(false)
 	const pendingEntries = ref<LogEntry[]>([])
 	const debugMode = ref(false)
-	const expandedLogId = ref<number | null>(null)
+	const expandedTraceId = ref<number | null>(null)
 	const activePanel = ref<DebugPanel>('logs')
 	let unsubscribe: (() => void) | null = null
 
@@ -52,47 +54,19 @@ export const useDebugStore = defineStore('cn-debug', () => {
 	})
 
 	const expandedTrace = computed<PromptTraceEntry | null>(() => {
-		const id = expandedLogId.value
-		if (id == null) return null
-		return getAllPromptTraces().find((t) => t.id === id) ?? null
+		const traceId = expandedTraceId.value
+		if (traceId == null) return null
+		return getAllPromptTraces().find((t) => t.id === traceId) ?? null
 	})
 
-	const worldbookStatus = computed(() => {
-		const wb = session.worldbook
-		const cnName = buildBookName(session.getChatToken())
-		const all = wb.listWorldbookNames()
-		const cnExists = all.includes(cnName)
-		const staleCount = all.filter((n) => n.startsWith('CN_Data_') && n !== cnName).length
-		return { cnName, cnExists, staleCount, totalBooks: all.length }
-	})
-
-	const tableStatus = computed(() => {
-		const tables = session.listTables()
-		let chronicleCount = 0
-		try {
-			const chronicleRows = session.getTableRowsWithRowid('cn_chronicle')
-			chronicleCount = chronicleRows[0]?.rows?.length ?? 0
-		} catch {
-			chronicleCount = 0
-		}
-		return {
-			tableCount: tables.filter((n) => n !== 'cn_chronicle').length,
-			chronicleCount,
-		}
-	})
-
-	const snapshotStatus = computed(() => {
-		const diag = session.getLoadDiagnostic()
-		return {
-			snapshotIndex: diag.snapshotIndex,
-			snapshotCount: diag.snapshotCount,
-			lastAiIndex: diag.lastAiIndex,
-			indices: session.listSnapshotIndices(),
-		}
-	})
+	const worldbookStatus = ref({ cnName: '', cnExists: false, staleCount: 0, totalBooks: 0 })
+	const tableStatus = ref({ tableCount: 0, chronicleCount: 0 })
+	const snapshotStatus = ref({ snapshotIndex: null as number | null, snapshotCount: 0, lastAiIndex: null as number | null, indices: [] as number[] })
+	const configStatus = ref({ hasAI: false, recallEnabled: false, chronicleGenEnabled: false, autoFill: false, vectorEnabled: false })
 
 	function recoverSnapshotAt(index: number): boolean {
 		const ok = session.recoverSnapshotAt(index)
+		refresh()
 		if (ok) {
 			pushLog('warn', 'debug', `已手动恢复到第 ${index + 1} 楼快照`)
 		} else {
@@ -101,20 +75,45 @@ export const useDebugStore = defineStore('cn-debug', () => {
 		return ok
 	}
 
-	const configStatus = computed(() => {
+	function refresh() {
+		logs.value = getAllLogs()
+		chatActive.value = session.isChatActive()
+		const wb = session.worldbook
+		const cnName = buildBookName(session.getChatToken())
+		const all = wb.listWorldbookNames()
+		worldbookStatus.value = {
+			cnName,
+			cnExists: all.includes(cnName),
+			staleCount: all.filter((n) => n.startsWith('CN_Data_') && n !== cnName).length,
+			totalBooks: all.length,
+		}
+		const tables = session.listTables()
+		let chronicleCount = 0
+		try {
+			const chronicleRows = session.getTableRowsWithRowid('cn_chronicle')
+			chronicleCount = chronicleRows[0]?.rows?.length ?? 0
+		} catch {
+			chronicleCount = 0
+		}
+		tableStatus.value = {
+			tableCount: tables.filter((n) => n !== 'cn_chronicle').length,
+			chronicleCount,
+		}
+		const diag = session.getLoadDiagnostic()
+		snapshotStatus.value = {
+			snapshotIndex: diag.snapshotIndex,
+			snapshotCount: diag.snapshotCount,
+			lastAiIndex: diag.lastAiIndex,
+			indices: session.listSnapshotIndices(),
+		}
 		const cfg = session.getConfig()
-		return {
+		configStatus.value = {
 			hasAI: cfg.aiPresets.length > 0 && !!cfg.activeAiPresetId,
 			recallEnabled: cfg.recallEnabled,
 			chronicleGenEnabled: cfg.chronicleFill.autoFillTrigger !== 'off',
 			autoFill: cfg.tableFill.autoFillTrigger !== 'off',
 			vectorEnabled: cfg.vectorEnabled,
 		}
-	})
-
-	function refresh() {
-		logs.value = getAllLogs()
-		chatActive.value = session.isChatActive()
 	}
 
 	function setPaused(value: boolean) {
@@ -165,17 +164,35 @@ export const useDebugStore = defineStore('cn-debug', () => {
 		}
 	}
 
+	async function resetChatData() {
+		if (isFillInProgress()) {
+			toast.warning('填表/纪要生成进行中，暂不能清空')
+			return
+		}
+		try {
+			await session.resetChatData()
+			pushLog('warn', 'debug', '已彻底清空当前聊天数据')
+			toast.info('已彻底清空当前聊天数据，CN 已重新初始化')
+			refresh()
+		} catch (e) {
+			pushLog('error', 'debug', `彻底清空失败: ${e instanceof Error ? e.message : String(e)}`)
+			toast.error(`彻底清空失败: ${e instanceof Error ? e.message : String(e)}`)
+		}
+	}
+
 	function toggleDebugMode() {
 		debugMode.value = !debugMode.value
 		setDebugMode(debugMode.value)
+		levelFilter.value = debugMode.value ? 'debug' : 'warn'
 	}
 
-	function toggleLogExpand(id: number) {
-		expandedLogId.value = expandedLogId.value === id ? null : id
+	function toggleLogExpand(traceId: number) {
+		expandedTraceId.value = expandedTraceId.value === traceId ? null : traceId
 	}
 
 	onMounted(() => {
 		debugMode.value = isDebugMode()
+		levelFilter.value = debugMode.value ? 'debug' : 'warn'
 		refresh()
 		unsubscribe = subscribe((entry) => {
 			if (paused.value) {
@@ -211,7 +228,7 @@ export const useDebugStore = defineStore('cn-debug', () => {
 		recoverSnapshotAt,
 		configStatus,
 		debugMode,
-		expandedLogId,
+		expandedTraceId,
 		expandedTrace,
 		activePanel,
 		refresh,
@@ -220,6 +237,7 @@ export const useDebugStore = defineStore('cn-debug', () => {
 		exportLogs,
 		forceCleanupBooks,
 		forceSyncBooks,
+		resetChatData,
 		toggleDebugMode,
 		toggleLogExpand,
 	}

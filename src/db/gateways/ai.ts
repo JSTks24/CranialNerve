@@ -1,6 +1,6 @@
 import { getRequestHeaders } from './host-context'
-import { pushLog } from '@shared/log-buffer'
-import { pushPromptTrace } from '@shared/prompt-trace'
+import { pushLog, isDebugMode } from '@shared/log-buffer'
+import { pushPromptTrace, appendTraceResponse } from '@shared/prompt-trace'
 
 export interface AiChatMessage {
     role: 'system' | 'user' | 'assistant'
@@ -49,11 +49,14 @@ export default function createAiGateway(): AiGateway {
     return {
         async chatCompletion(messages, clientConfig, params, signal, callOptions) {
             const scene = callOptions?.scene ?? 'ai'
-            const traceId = pushPromptTrace({
-                scene,
-                model: params.model,
-                segments: messages.map((m) => ({ role: m.role, content: m.content })),
-            })
+            let traceId = 0
+            if (isDebugMode()) {
+                traceId = pushPromptTrace({
+                    scene,
+                    model: params.model,
+                    segments: messages.map((m) => ({ role: m.role, content: m.content })),
+                })
+            }
             pushLog('debug', 'ai', `-> ${scene} 已发送 ${messages.length} 段提示词`, traceId)
             const timeoutMs = callOptions?.timeoutMs ?? 0
             const timeoutRetries = Math.max(0, callOptions?.timeoutRetries ?? 0)
@@ -61,7 +64,12 @@ export default function createAiGateway(): AiGateway {
             let lastError: unknown = null
             for (let attempt = 0; attempt < maxAttempts; attempt++) {
                 try {
-                    return await doChatCompletion(messages, clientConfig, params, signal, timeoutMs)
+                    const raw = await doChatCompletion(messages, clientConfig, params, signal, timeoutMs)
+                    if (traceId) {
+                        appendTraceResponse(traceId, raw)
+                        pushLog('debug', 'ai', `<- ${scene} 收到回复 ${raw.length} 字`, traceId)
+                    }
+                    return raw
                 } catch (e) {
                     lastError = e
                     if (signal?.aborted) throw e

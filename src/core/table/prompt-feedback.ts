@@ -15,7 +15,8 @@ export function buildFeedbackMessages(
 2. 确认表名、列名与 DDL 完全一致（英文物理名）
 3. UPDATE/DELETE 必须带 WHERE 条件
 4. 字符串值用单引号包裹，内部单引号用两个单引号转义
-5. 只输出 {"format":"...","sql":"..."} 格式的 JSON，不要输出其他内容${SQL_ERROR_MARKER_CLOSE}`
+5. 输出单个 JSON 对象 {"format":"...","items":[{"sql":"..."},...]}，items 数组长度为<正文数据>轮数（每轮一个元素、按楼层顺序），禁止合并多轮
+6. table 模式某轮无变更时该元素 sql 留空字符串 ""；chronicle 模式每个元素 sql 必须包含对纪要表的 INSERT；不要输出其他内容${SQL_ERROR_MARKER_CLOSE}`
     return [
         ...baseMessages,
         { role: 'assistant', content: lastRaw },

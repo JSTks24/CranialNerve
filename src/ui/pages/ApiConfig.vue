@@ -139,8 +139,13 @@ function deletePreset() {
     toast.warning('至少保留一个预设')
     return
   }
-  presets.value = presets.value.filter((p) => p.id !== selectedId.value)
-  if (selectedId.value === activeId.value) activeId.value = presets.value[0]?.id ?? ''
+  const deletedId = selectedId.value
+  const c = session.getConfig()
+  if (c.tableFillPresetId === deletedId) c.tableFillPresetId = ''
+  if (c.chronicleGenPresetId === deletedId) c.chronicleGenPresetId = ''
+  if (c.recallPresetId === deletedId) c.recallPresetId = ''
+  presets.value = presets.value.filter((p) => p.id !== deletedId)
+  if (deletedId === activeId.value) activeId.value = presets.value[0]?.id ?? ''
   selectedId.value = presets.value[0]?.id ?? ''
   flushPresets()
   toast.success('已删除')

@@ -18,20 +18,24 @@ export interface SqlExecPersist {
 
 export default function executeTableEditSql(
     core: SqliteCore,
-    edit: TableEditSqlV1,
+    edits: TableEditSqlV1[],
     persist?: SqlExecPersist
 ): SqlExecResult {
     try {
         const changes = core.transaction((tx) => {
             const before = tx.getRowsModified()
-            tx.run(edit.sql)
+            for (const edit of edits) {
+                const sql = edit.sql.trim()
+                if (sql.length === 0) continue
+                tx.run(sql)
+            }
             return tx.getRowsModified() - before
         })
         if (persist) {
             try {
                 appendSqlLog(persist.ctx, persist.messageId, [{
                     kind: 'sql_batch',
-                    statements: [edit.sql],
+                    statements: edits.map((e) => e.sql).filter((s) => s.trim().length > 0),
                     reason: 'ai_fill'
                 }])
             } catch (e) {

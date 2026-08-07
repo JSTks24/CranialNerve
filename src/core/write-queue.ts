@@ -4,12 +4,17 @@ export interface WriteQueue {
 	waitForDrain(timeoutMs?: number): Promise<void>
 }
 
+const MAX_PENDING = 100
+
 export default function createWriteQueue(): WriteQueue {
 	let tail: Promise<void> = Promise.resolve()
 	let pendingCount = 0
 
 	return {
 		enqueue(task) {
+			if (pendingCount >= MAX_PENDING) {
+				return Promise.reject(new Error('write queue overflow'))
+			}
 			pendingCount++
 			const run = tail.then(async () => {
 				await Promise.resolve()

@@ -2,7 +2,7 @@
 import { ref, computed, onActivated } from 'vue'
 import { getSession } from '@core/session'
 import { CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
-import { detectLastSummarizedAiFloor } from '@core/table/fill-orchestrator'
+import { detectLastSummarizedAiFloor, detectLastUpdatedAiFloorForTable } from '@core/table/fill-orchestrator'
 import type { FillProgressFn } from '@core/table/retry-loop'
 import type { CranialNerveConfig } from '@shared/types/config'
 import confirm from '@ui/dialog'
@@ -12,11 +12,16 @@ import { useFillStatusStore } from '@ui/stores/fill-status'
 const session = getSession()
 const cfg = ref<CranialNerveConfig>(session.getConfig())
 
+const refreshTick = ref(0)
 const availableTables = computed(() => {
+  void refreshTick.value
+  void fillStore.progressTick
   const names = session.listTables().filter((n) => !n.startsWith('sqlite_') && n !== CHRONICLE_TABLE_NAME)
   return names.map((n) => {
     const def = session.getTableDef(n)
-    return { name: n, displayName: def?.displayName || n }
+    const lastMsg = detectLastUpdatedAiFloorForTable(session, n)
+    const aiSeq = lastMsg != null ? aiFloorSeqOf(lastMsg) : 0
+    return { name: n, displayName: def?.displayName || n, lastMsg, aiSeq }
   })
 })
 const selectedTables = ref<string[]>([...(cfg.value.tableFill.manualSelectedTables || [])])
@@ -42,7 +47,10 @@ function clampInt(raw: number, min: number, max: number, fallback: number): numb
 }
 
 const aiFloorCount = computed(() => session.chat.getChat().filter((m) => !m.is_user && !m.is_system).length)
-const lastSummarized = computed(() => detectLastSummarizedAiFloor(session))
+const lastSummarized = computed(() => {
+  void fillStore.progressTick
+  return detectLastSummarizedAiFloor(session)
+})
 const summarizedAiCount = computed(() => {
   const last = lastSummarized.value
   if (last == null) return 0
@@ -50,15 +58,16 @@ const summarizedAiCount = computed(() => {
 })
 const unrecordedCount = computed(() => Math.max(0, aiFloorCount.value - summarizedAiCount.value))
 const expectedRange = computed(() => {
+  void fillStore.progressTick
   const chat = session.chat.getChat()
   const depth = manualDepth.value ?? cfg.value.tableFill.contextDepth
-  if (depth <= 0 || chat.length === 0) return '全部消息'
-  const start = Math.max(0, chat.length - depth)
-  const end = chat.length - 1
-  const aiBefore = chat.slice(0, start).filter((m) => !m.is_user && !m.is_system).length
-  const aiInSlice = chat.slice(start, end + 1).filter((m) => !m.is_user && !m.is_system).length
-  const aiLabel = aiInSlice > 0 ? `（AI第 ${aiBefore + 1}~${aiBefore + aiInSlice} 层）` : ''
-  return `第 ${start}~${end} 层${aiLabel}`
+  const aiFloors: number[] = []
+  for (let i = 0; i < chat.length; i++) {
+    if (!chat[i]!.is_user && !chat[i]!.is_system) aiFloors.push(i)
+  }
+  if (aiFloors.length === 0) return '无 AI 楼层'
+  const takeCount = depth > 0 ? Math.min(depth, aiFloors.length) : aiFloors.length
+  return `AI第 ${aiFloors.length - takeCount + 1}~${aiFloors.length} 层（共 ${takeCount} 个 AI 楼层）`
 })
 
 function selectAllTables() {
@@ -71,7 +80,6 @@ function selectNoTables() {
 }
 function saveSelection() {
   cfg.value.tableFill.manualSelectedTables = [...selectedTables.value]
-  cfg.value.tableFill.hasManualSelection = true
   session.saveConfig(cfg.value)
 }
 function saveManualDepth() {
@@ -114,7 +122,7 @@ function computeCatchUpRange() {
   if (includeChronicle.value) {
     const t = detectLastSummarizedAiFloor(session, 'table')
     const c = detectLastSummarizedAiFloor(session, 'chronicle')
-    baseLast = (t == null && c == null) ? null : Math.max(t ?? -1, c ?? -1)
+    baseLast = (t == null && c == null) ? null : Math.min(t ?? -1, c ?? -1)
     if (baseLast != null && baseLast < 0) baseLast = null
   } else {
     baseLast = detectLastSummarizedAiFloor(session, 'table')
@@ -162,7 +170,10 @@ async function runRefill() {
       onProgress: makeProgressUpdater(prog, '手动填表 · '),
       signal: prog.abortSignal,
     })
-    if (result.ok) prog.done()
+    if (result.ok) {
+      prog.done()
+      refreshTick.value++
+    }
     else prog.fail(result.error ?? '重填失败')
   } catch (e) {
     prog.fail(e instanceof Error ? e.message : String(e))
@@ -180,10 +191,10 @@ async function runCatchUp() {
   }
   const merged = includeChronicle.value
   const rangeText = `将从第 ${range.fromSeq} 层追平至第 ${range.toSeq} 层（共 ${range.aiCount} 个 AI 楼层，约 ${range.totalBuckets} 批）${merged ? '，同时更新表格与纪要' : ''}`
-  const confirmed = await confirm('追平未总结楼层', rangeText, '确认追平')
+  const confirmed = await confirm('追平未更新楼层', rangeText, '确认追平')
   if (!confirmed) return
   busy.value = true
-  const prefix = `追平 第${range.fromSeq}->${range.toSeq}层 · `
+  const prefix = `追平 第${range.fromSeq}→${range.toSeq}层 · `
   const prog = toast.progress(`${prefix}调用AI…`)
   try {
     const result = await session.runManualCatchUp({
@@ -222,7 +233,7 @@ onActivated(() => {
           <span>更新状态</span>
         </div>
         <span class="mf-badge" :class="unrecordedCount > 0 ? 'mf-badge--warn' : 'mf-badge--ok'">
-          {{ unrecordedCount > 0 ? `${unrecordedCount} 层待总结` : '已同步' }}
+          {{ unrecordedCount > 0 ? `${unrecordedCount} 层待更新` : '已同步' }}
         </span>
       </header>
       <div class="mf-card__body">
@@ -233,33 +244,35 @@ onActivated(() => {
           </div>
           <div class="mf-stat">
             <div class="mf-stat__num">{{ summarizedAiCount }}</div>
-            <div class="mf-stat__label">已总结</div>
+            <div class="mf-stat__label">已更新</div>
           </div>
           <div class="mf-stat">
             <div class="mf-stat__num">{{ unrecordedCount }}</div>
-            <div class="mf-stat__label">未总结</div>
+            <div class="mf-stat__label">未更新</div>
           </div>
         </div>
 
-        <p class="mf-field__hint">checkpoint：{{ lastSummarized != null ? `已总结至消息 ${lastSummarized}` : '无' }}</p>
+        <p class="mf-field__hint">checkpoint：{{ lastSummarized != null ? `已更新至消息 ${lastSummarized}` : '无' }}</p>
 
         <div class="mf-table-wrap">
           <table class="mf-table">
             <thead>
               <tr>
                 <th>表格</th>
+                <th>更新至</th>
                 <th>纳入</th>
               </tr>
             </thead>
             <tbody>
               <tr v-if="availableTables.length === 0">
-                <td colspan="2" class="mf-table__empty">暂无可用表格</td>
+                <td colspan="3" class="mf-table__empty">暂无可用表格</td>
               </tr>
               <tr v-for="t in availableTables" :key="t.name">
                 <td class="mf-table__name">
                   <span class="mf-table__display">{{ t.displayName }}</span>
                   <span class="mf-table__raw">{{ t.name }}</span>
                 </td>
+                <td class="mf-table__update">{{ t.lastMsg != null ? `AI第${t.aiSeq}层` : '未更新' }}</td>
                 <td>
                   <label class="mf-check">
                     <input type="checkbox" :value="t.name" v-model="selectedTables" @change="saveSelection" />
@@ -288,16 +301,16 @@ onActivated(() => {
       <div class="mf-card__body">
         <div class="mf-grid-2">
           <div class="mf-field">
-            <label class="mf-field__label">处理最近 N 条对话</label>
+            <label class="mf-field__label">处理最近 N 个 AI 楼层</label>
             <input class="cn-input cn-input--nospin" type="number" min="0" max="50" step="1"
               v-model="manualDepthInput" @change="saveManualDepth" />
-            <p class="mf-field__hint">处理最近多少条消息。</p>
+            <p class="mf-field__hint">处理最近多少个 AI 楼层。</p>
           </div>
           <div class="mf-field">
-            <label class="mf-field__label">每桶 N 个 AI 楼层</label>
+            <label class="mf-field__label">每批处理 N 个 AI 楼层</label>
             <input class="cn-input cn-input--nospin" type="number" min="1" max="50" step="1"
               v-model="manualBatchInput" @change="saveManualBatch" />
-            <p class="mf-field__hint">每批合并多少个 AI 楼层填一次表。</p>
+            <p class="mf-field__hint">每批处理多少个 AI 楼层。</p>
           </div>
         </div>
 
@@ -321,7 +334,7 @@ onActivated(() => {
             <i class="fa-solid" :class="tableBusy ? 'fa-spinner fa-spin' : 'fa-pen-to-square'"></i> {{ tableBusy ? '填表中...' : '执行手动填表' }}
           </button>
           <button class="mf-btn mf-btn--secondary" type="button" :disabled="tableBusy" @click="runCatchUp">
-            <i class="fa-solid" :class="tableBusy ? 'fa-spinner fa-spin' : 'fa-wand-magic-sparkles'"></i> {{ tableBusy ? '追平中...' : '追平未总结楼层' }}
+            <i class="fa-solid" :class="tableBusy ? 'fa-spinner fa-spin' : 'fa-wand-magic-sparkles'"></i> {{ tableBusy ? '追平中...' : '追平未更新楼层' }}
           </button>
         </div>
       </div>

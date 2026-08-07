@@ -52,7 +52,7 @@ function makeConfig(opts: MockSessionOpts): CranialNerveConfig {
       manualUpdateContextDepth: null,
       manualUpdateBatchSize: null,
       manualSelectedTables: [],
-      hasManualSelection: false,
+
       manualIncludeChronicle: false,
     },
     chronicleFill: {
@@ -66,7 +66,7 @@ function makeConfig(opts: MockSessionOpts): CranialNerveConfig {
       chronicleSendLatestRows: 10,
       manualUpdateContextDepth: null,
       manualUpdateBatchSize: null,
-      manualIncludeTables: false,
+
     },
     maxRecallItems: 25,
     recallEnabled: true,
@@ -77,6 +77,7 @@ function makeConfig(opts: MockSessionOpts): CranialNerveConfig {
     recallPresetId: '',
     recallContextDepth: 5,
     retainFloors: 100,
+    checkpointInterval: 20,
     pending: {
       aiCallTimeoutMs: 60000,
       aiTimeoutRetries: 1,

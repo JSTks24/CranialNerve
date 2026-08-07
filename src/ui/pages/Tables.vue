@@ -3,8 +3,10 @@ import { ref, computed, watch, onMounted, onActivated } from 'vue'
 import { getSession } from '@core/session'
 import { CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
 import { syncToWorldbook } from '@core/worldbook-sync'
+import { validateRowRequired } from '@shared/table-validation'
 import toast from '@ui/toast'
 import confirm from '@ui/dialog'
+import { useFillStatusStore } from '@ui/stores/fill-status'
 import ManualFill from './ManualFill.vue'
 import { useRoute } from 'vue-router'
 import CNTabs from '@ui/components/CNTabs.vue'
@@ -24,6 +26,7 @@ interface TableInfo {
 
 const session = getSession()
 const route = useRoute()
+const fillStore = useFillStatusStore()
 const tables = ref<TableInfo[]>([])
 const chatActive = ref(false)
 const activeName = ref<string>('')
@@ -129,16 +132,10 @@ function saveEdit() {
     collected[c] = el ? el.innerText : String(row[c] ?? '')
   }
   const def = session.getTableDef(activeTable.value.name)
-  for (const col of def?.columns ?? []) {
-    const isNotNull =
-      col.constraints?.nullable === false || col.constraints?.primaryKey === true
-    if (isNotNull) {
-      const val = String(collected[col.name] ?? '').trim()
-      if (!val) {
-        toast.warning(`列「${col.displayName || col.name}」不能为空`)
-        return
-      }
-    }
+  const requiredError = validateRowRequired(def?.columns ?? [], collected)
+  if (requiredError) {
+    toast.warning(requiredError)
+    return
   }
   const hasContent = activeTable.value.columns.some(
     (c) => String(collected[c] ?? '').trim().length > 0
@@ -322,7 +319,7 @@ watch(
                 </div>
                 <div class="table-row-card__foot">
                   <template v-if="row.__rowid__ === editingRowid">
-                    <button class="cn-btn cn-btn--sm cn-btn--primary" @click="saveEdit">
+                    <button class="cn-btn cn-btn--sm cn-btn--primary" :disabled="fillStore.tableActive" @click="saveEdit">
                       保存
                     </button>
                     <button class="cn-btn cn-btn--sm" @click="cancelEdit">取消</button>
@@ -335,6 +332,7 @@ watch(
                     <button
                       class="cn-btn cn-btn--sm cn-btn--text"
                       title="删除"
+                      :disabled="fillStore.tableActive"
                       @click="deleteRow(row)"
                     >
                       <i class="fa-solid fa-trash"></i>
@@ -347,7 +345,7 @@ watch(
             <span class="table-body__meta">
               {{ activeTable?.columns.length ?? 0 }} 列 · {{ activeTable?.rows.length ?? 0 }} 条
             </span>
-            <button class="cn-btn cn-btn--sm" @click="addRow">
+            <button class="cn-btn cn-btn--sm" :disabled="fillStore.tableActive" @click="addRow">
               <i class="fa-solid fa-plus"></i>
               添加条目
             </button>

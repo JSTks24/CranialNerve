@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { validateTableDef, validateChronicleDef } from '../src/shared/table-validation'
+import { validateTableDef, validateChronicleDef, validateRowRequired } from '../src/shared/table-validation'
 import type { TableDef, ColumnDef } from '../src/shared/types/table'
 
 function makeTable(overrides: Partial<TableDef> = {}): TableDef {
@@ -128,5 +128,31 @@ describe('validateChronicleDef', () => {
     const def = fullChronicle()
     def.columns.push(chronicleCol('key', '重复'))
     expect(validateChronicleDef(def)).toContain('列英文名重复')
+  })
+})
+
+describe('validateRowRequired（只校验必填列）', () => {
+  const cols = [
+    { name: 'key', displayName: '编码', constraints: { primaryKey: true } },
+    { name: 'time_start', displayName: '开始时间', constraints: { nullable: false } },
+    { name: 'time_end', displayName: '结束时间' },
+    { name: 'important_word', displayName: '重要词' },
+  ]
+
+  it('可空列为空时通过', () => {
+    expect(validateRowRequired(cols, { key: 'CN0001', time_start: '2026-01-01', time_end: '', important_word: '' })).toBeNull()
+  })
+
+  it('必填列为空时拒绝', () => {
+    expect(validateRowRequired(cols, { key: '', time_start: '2026-01-01' })).toContain('编码')
+    expect(validateRowRequired(cols, { key: 'CN0001', time_start: '' })).toContain('开始时间')
+  })
+
+  it('空白字符串视为空', () => {
+    expect(validateRowRequired(cols, { key: '  ', time_start: 'x' })).toContain('编码')
+  })
+
+  it('无约束列不校验', () => {
+    expect(validateRowRequired([{ name: 'a', displayName: 'A' }], { a: '' })).toBeNull()
   })
 })

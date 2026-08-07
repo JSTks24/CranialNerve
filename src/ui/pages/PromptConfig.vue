@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onActivated } from 'vue'
+import { ref, computed, onActivated, onMounted, onBeforeUnmount } from 'vue'
 import { useConfigStore } from '@ui/stores/config'
 import { getSession } from '@core/session'
 import type { PromptRole, PromptSceneKey, PromptSegment, ScenePreset } from '@shared/types/config'
@@ -25,6 +25,7 @@ import {
 import { interpolate } from '@shared/prompts/interpolate'
 import toast from '@ui/toast'
 import confirm, { promptRename } from '@ui/dialog'
+import { threeWayConfirm } from '@ui/three-way-dialog'
 import PromptBlockEditor from '@ui/components/PromptBlockEditor.vue'
 import CNTabs from '@ui/components/CNTabs.vue'
 import VariableHelpModal from '@ui/components/VariableHelpModal.vue'
@@ -493,6 +494,33 @@ function freshColumn(): ColumnDef {
 const ttConfig = computed(() => store.config.tableTemplate)
 const selectedPresetId = ref<string | null>(null)
 
+const boundTemplate = computed<CardTemplate | null>(() => session.getBoundTemplate())
+
+function templateFingerprint(t: CardTemplate): string {
+  const sorted = t.tables
+    .filter((tb) => tb.enabled !== false)
+    .map((tb) => ({
+      name: tb.name,
+      columns: tb.columns.map((c) => ({ name: c.name, type: c.type }))
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name))
+  return JSON.stringify(sorted)
+}
+
+const boundMatchPresetId = computed<string | null>(() => {
+  const bound = boundTemplate.value
+  if (!bound) return null
+  const currentId = session.getCurrentTemplateId()
+  if (currentId && currentId !== '__bound__' && ttConfig.value.presets.some((p) => p.id === currentId)) {
+    return currentId
+  }
+  const fp = templateFingerprint(bound)
+  const matches = ttConfig.value.presets.filter((p) => templateFingerprint(p.template) === fp)
+  return matches.length === 1 ? matches[0]!.id : null
+})
+
+const showBoundTempItem = computed(() => !!boundTemplate.value && !boundMatchPresetId.value)
+
 const activeTemplatePreset = computed(
   () =>
     ttConfig.value.presets.find((p) => p.id === selectedPresetId.value) ??
@@ -593,11 +621,10 @@ function handleNewPresetT(mode: 'blank' | 'default') {
       source: 'user' as const
     }
     ttConfig.value.presets.push(p)
-    ttConfig.value.activeId = p.id
     selectedPresetId.value = p.id
     selectedTableIdx.value = -1
     store.save()
-    toast.success('已新建模板预设')
+    toast.success('已新建模板预设，点击「设为当前」应用')
     return
   }
   const p = createUserTemplatePreset(session.getDefaultTemplate())
@@ -606,20 +633,20 @@ function handleNewPresetT(mode: 'blank' | 'default') {
     return
   }
   ttConfig.value.presets.push(p)
-  ttConfig.value.activeId = p.id
   selectedPresetId.value = p.id
   selectedTableIdx.value = -1
   store.save()
-  toast.success('已从默认模板创建')
+  toast.success('已从默认模板创建，点击「设为当前」应用')
 }
 
 function syncCardTemplate() {
   const CARD_PRESET_ID = '__card__'
   const existingIdx = ttConfig.value.presets.findIndex((p) => p.id === CARD_PRESET_ID)
-  if (existingIdx >= 0) {
-    ttConfig.value.presets.splice(existingIdx, 1)
-  }
-  if (session.getCurrentTemplateId() !== '__card__') {
+  const currentId = session.getCurrentTemplateId()
+  if (currentId !== '__card__') {
+    if (existingIdx >= 0) {
+      ttConfig.value.presets.splice(existingIdx, 1)
+    }
     if (ttConfig.value.activeId === CARD_PRESET_ID) {
       ttConfig.value.activeId = ttConfig.value.presets[0]?.id ?? ''
     }
@@ -637,16 +664,40 @@ function syncCardTemplate() {
     template: JSON.parse(JSON.stringify(fromCard)),
     source: 'card' as const
   }
-  ttConfig.value.presets.unshift(cardPreset)
-  if (!ttConfig.value.defaultId) {
-    ttConfig.value.defaultId = CARD_PRESET_ID
+  if (existingIdx < 0) {
+    ttConfig.value.presets.unshift(cardPreset)
+    if (!ttConfig.value.defaultId) {
+      ttConfig.value.defaultId = CARD_PRESET_ID
+    }
+    store.save()
+    return
   }
-  store.save()
+  const existing = ttConfig.value.presets[existingIdx]!
+  if (JSON.stringify(existing.template) === JSON.stringify(cardPreset.template)) return
+  void confirm(
+    '角色卡模板已变更',
+    '角色卡内容已变化，是否同步到「当前角色卡」预设？你对它做过的手动编辑将被覆盖。',
+    '同步',
+    true
+  ).then((ok) => {
+    if (!ok) return
+    ttConfig.value.presets.splice(existingIdx, 1, cardPreset)
+    store.save()
+    toast.success('已同步角色卡模板')
+  })
 }
 
 function selectPresetItem(id: string) {
   selectedView.value = 'preset'
   selectedPresetId.value = id
+}
+
+function buildMigrationDetail(migration: import('@core/template-migrate').MigrationDiff): string {
+  const lines: string[] = []
+  for (const t of migration.removedTables) lines.push(`• 表「${t}」将被删除（数据丢失）`)
+  for (const t of migration.incompatible) lines.push(`• 表「${t.table}」列 ${t.cols.join('、')} 将丢失`)
+  for (const t of migration.migratedTables) lines.push(`• 表「${t.table}」保留 ${t.commonCols.length} 列、${t.rowCount} 行`)
+  return lines.join('\n')
 }
 
 async function selectPresetT(id: string) {
@@ -670,13 +721,33 @@ async function selectPresetT(id: string) {
     .filter((n) => n !== 'cn_chronicle' && !n.startsWith('sqlite_'))
   const hasData = tables.some((t) => (session.getTableRowsWithRowid(t)[0]?.rows?.length ?? 0) > 0)
   if (hasData) {
-    const ok = await confirm(
-      '⚠️ 数据丢失风险',
-      `当前已有数据。切换模板将删除所有表及其数据，且不可撤销。\n\n确定要切换吗？`,
-      '删除数据并切换',
+    const migration = session.analyzeMigration(target.template)
+    const applySwitch = async (migrate: boolean) => {
+      try {
+        await session.reinitWithTemplate(target.template, target.id, { migrate })
+        ttConfig.value.activeId = id
+        selectedTableIdx.value = -1
+        store.save()
+        toast.success(migrate ? '已切换到模板：' + target.name + '，数据已迁移（历史快照已清空）' : '已切换到模板：' + target.name + '，数据已清空（历史快照已清空）')
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : String(err))
+      }
+    }
+    if (migration.compatible) {
+      await applySwitch(true)
+      return
+    }
+    const detail = buildMigrationDetail(migration)
+    const choice = await threeWayConfirm(
+      '数据迁移',
+      `新模板与当前数据不完全兼容：\n${detail}\n\n迁移会保留能对上的列数据，对不上的列将丢失。切换不可撤销，所有楼层的表格数据需要重新填表。`,
+      '迁移能迁移的',
+      '全部清空',
       true
     )
-    if (!ok) return
+    if (choice === 'cancel') return
+    await applySwitch(choice === 'primary')
+    return
   }
 
   try {
@@ -688,6 +759,11 @@ async function selectPresetT(id: string) {
   } catch (err) {
     toast.error(err instanceof Error ? err.message : String(err))
   }
+}
+
+function unbindBoundPreset() {
+  session.unbindBoundTemplate()
+  toast.success('已解除聊天模板绑定')
 }
 
 async function deletePresetT(id: string) {
@@ -708,6 +784,11 @@ async function deletePresetT(id: string) {
     true
   )
   if (!ok) return
+  const bound = session.getBoundTemplate()
+  if (bound && templateFingerprint(bound) === templateFingerprint(target.template)) {
+    session.unbindBoundTemplate()
+    toast.warning('该预设正在被当前聊天绑定使用，已一并解除绑定')
+  }
   ttConfig.value.presets = ttConfig.value.presets.filter((p) => p.id !== id)
   if (ttConfig.value.activeId === id) ttConfig.value.activeId = ttConfig.value.presets[0]!.id
   if (ttConfig.value.defaultId === id) ttConfig.value.defaultId = ttConfig.value.presets[0]!.id
@@ -715,6 +796,22 @@ async function deletePresetT(id: string) {
   selectedTableIdx.value = -1
   store.save()
   toast.success('已删除')
+}
+
+function duplicatePresetT(id: string) {
+  const p = ttConfig.value.presets.find((x) => x.id === id)
+  if (!p) return
+  const copy = {
+    id: newId('tpl'),
+    name: p.name + '（副本）',
+    template: JSON.parse(JSON.stringify(p.template)),
+    source: 'user' as const
+  }
+  ttConfig.value.presets.push(copy)
+  selectedPresetId.value = copy.id
+  selectedTableIdx.value = -1
+  store.save()
+  toast.success('已复制模板，点击「设为当前」应用')
 }
 
 function setDefaultPresetT(id: string) {
@@ -842,10 +939,9 @@ function importTemplate(e: Event) {
         source: 'user' as const
       }
       ttConfig.value.presets.push(preset)
-      ttConfig.value.activeId = preset.id
       selectedTableIdx.value = -1
       store.save()
-      toast.success('已导入')
+      toast.success('已导入，点击「设为当前」应用')
     } catch (err) {
       toast.error(err instanceof Error ? err.message : '导入失败')
     }
@@ -886,6 +982,16 @@ onActivated(() => {
   syncCardTemplate()
   syncChronicleTableDef()
 })
+
+function onDocClick(e: MouseEvent) {
+  const target = e.target
+  if (target instanceof Element && target.closest('.preset-list')) return
+  selectedScenePresetId.value = null
+  selectedPresetId.value = null
+  selectedTableIdx.value = -1
+}
+onMounted(() => document.addEventListener('click', onDocClick))
+onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
 </script>
 
 <template>
@@ -908,6 +1014,24 @@ onActivated(() => {
           <div class="cn-card__body">
             <ul class="preset-list">
               <li
+                v-if="showBoundTempItem"
+                class="preset-list__item preset-list__item--bound"
+              >
+                <span class="preset-list__name">
+                  <i class="fa-solid fa-link preset-list__card" title="本聊天绑定模板"></i>
+                  本聊天绑定模板
+                </span>
+                <span class="preset-list__badge">使用中</span>
+                <span class="preset-list__count">{{ boundTemplate?.tables.length ?? 0 }}表</span>
+                <button
+                  class="cn-btn cn-btn--sm cn-btn--text"
+                  title="解除绑定"
+                  @click="unbindBoundPreset"
+                >
+                  <i class="fa-solid fa-unlink"></i>
+                </button>
+              </li>
+              <li
                 v-for="p in ttConfig.presets"
                 :key="p.id"
                 class="preset-list__item"
@@ -915,7 +1039,8 @@ onActivated(() => {
                   'preset-list__item--active':
                     p.id === ttConfig.activeId && selectedView === 'preset',
                   'preset-list__item--selected':
-                    selectedPresetId === p.id && p.id !== ttConfig.activeId
+                    selectedPresetId === p.id && p.id !== ttConfig.activeId,
+                  'preset-list__item--bound': p.id === boundMatchPresetId
                 }"
                 @click="selectPresetItem(p.id)"
               >
@@ -933,6 +1058,7 @@ onActivated(() => {
                   ></i>
                 </span>
                 <span class="preset-list__count">{{ p.template.tables.length }}表</span>
+                <span v-if="p.id === boundMatchPresetId" class="preset-list__badge">使用中</span>
                 <button
                   v-if="selectedPresetId === p.id && p.id !== ttConfig.activeId"
                   class="cn-btn cn-btn--sm cn-btn--text"
@@ -942,7 +1068,7 @@ onActivated(() => {
                   <i class="fa-solid fa-check"></i>
                 </button>
                 <button
-                  v-if="p.id !== ttConfig.defaultId"
+                  v-if="selectedPresetId === p.id && p.id !== ttConfig.defaultId"
                   class="cn-btn cn-btn--sm cn-btn--text"
                   title="设为默认"
                   @click.stop="setDefaultPresetT(p.id)"
@@ -950,7 +1076,15 @@ onActivated(() => {
                   <i class="fa-solid fa-star"></i>
                 </button>
                 <button
-                  v-if="p.source !== 'card'"
+                  v-if="selectedPresetId === p.id && p.source !== 'card'"
+                  class="cn-btn cn-btn--sm cn-btn--text"
+                  title="复制"
+                  @click.stop="duplicatePresetT(p.id)"
+                >
+                  <i class="fa-solid fa-copy"></i>
+                </button>
+                <button
+                  v-if="selectedPresetId === p.id && p.source !== 'card'"
                   class="cn-btn cn-btn--sm cn-btn--text"
                   title="删除"
                   @click.stop="deletePresetT(p.id)"
@@ -1507,7 +1641,7 @@ onActivated(() => {
                     <i class="fa-solid fa-check"></i>
                   </button>
                   <button
-                    v-if="p.id !== sceneConfig.defaultId"
+                    v-if="selectedScenePresetId === p.id && p.id !== sceneConfig.defaultId"
                     class="cn-btn cn-btn--sm cn-btn--text"
                     title="设为默认"
                     @click.stop="setDefaultPreset(p.id)"
@@ -1515,6 +1649,7 @@ onActivated(() => {
                     <i class="fa-solid fa-star"></i>
                   </button>
                   <button
+                    v-if="selectedScenePresetId === p.id"
                     class="cn-btn cn-btn--sm cn-btn--text"
                     title="删除"
                     @click.stop="deletePreset(p.id)"

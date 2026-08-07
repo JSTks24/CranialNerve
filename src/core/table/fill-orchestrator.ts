@@ -13,10 +13,10 @@ import { getHostContext } from '@db/gateways/host-context'
 import { getPersonaDescription, getCharDescription, getUserName } from '@db/gateways/host-state'
 import type { TableDef } from '@shared/types/table'
 import type { PromptSegment } from '@shared/types/config'
-import { createPersistContext, ensureInitCheckpoint, appendSqlLog } from '@db/sqlite/frame-persist'
 import { buildSnapshotFromCore } from '@db/sqlite/snapshot-builder'
 import { quoteIdent } from '@shared/template-builder'
 import type { MutationOperation, SqlBatchOperation } from '@shared/types/storage-frame'
+import { sqlMentionsTable } from './sql-mentions'
 
 let tableCountSinceLastFill = 0
 let chronicleCountSinceLastFill = 0
@@ -25,9 +25,20 @@ let fillRunMode: FillRunMode | null = null
 let lastGenerationWasStopped = false
 let lastAiLenAtStart: number | null = null
 
-const fillStateSubscribers: Array<(busy: boolean, runMode: FillRunMode | null) => void> = []
+export interface FillProgressState {
+	tick: number
+	currentBucket: number
+	totalBuckets: number
+	tableFloor: number | null
+	chronicleFloor: number | null
+	tokenWarn: { estimatedTokens: number; maxTokens: number } | null
+}
 
-export function subscribeFillState(cb: (busy: boolean, runMode: FillRunMode | null) => void): () => void {
+let fillProgressState: FillProgressState | null = null
+
+const fillStateSubscribers: Array<(busy: boolean, runMode: FillRunMode | null, progress: FillProgressState | null) => void> = []
+
+export function subscribeFillState(cb: (busy: boolean, runMode: FillRunMode | null, progress: FillProgressState | null) => void): () => void {
 	fillStateSubscribers.push(cb)
 	return () => {
 		const idx = fillStateSubscribers.indexOf(cb)
@@ -35,14 +46,18 @@ export function subscribeFillState(cb: (busy: boolean, runMode: FillRunMode | nu
 	}
 }
 
-export function getFillState(): { busy: boolean, runMode: FillRunMode | null } {
-	return { busy: fillInProgress, runMode: fillRunMode }
+export function getFillState(): { busy: boolean, runMode: FillRunMode | null, progress: FillProgressState | null } {
+	return { busy: fillInProgress, runMode: fillRunMode, progress: fillProgressState }
 }
 
 function notifyFillState(): void {
 	for (const fn of fillStateSubscribers) {
-		try { fn(fillInProgress, fillRunMode) } catch {}
+		try { fn(fillInProgress, fillRunMode, fillProgressState) } catch {}
 	}
+}
+
+function fillProgressStateTick(): number {
+	return fillProgressState?.tick ?? 0
 }
 
 function getLastAiLength(session: CranialNerveSession): number | null {
@@ -89,6 +104,8 @@ function isAbortError(e: unknown, signal?: AbortSignal): boolean {
 
 export type FillRunMode = 'table' | 'chronicle' | 'merged'
 
+const ESTIMATED_TOKENS_PER_FLOOR = 400
+
 export interface ExecuteFillOptions {
 	runMode?: FillRunMode
 	fillCfgSource?: 'table' | 'chronicle'
@@ -97,7 +114,6 @@ export interface ExecuteFillOptions {
 	skipFloors?: number
 	batchSize?: number
 	extraHint?: string
-	persistMessageId?: number
 	conversationText?: string
 	clearBeforeFill?: boolean
 	clearTables?: string[]
@@ -143,7 +159,7 @@ async function executeFill(session: CranialNerveSession, opts?: ExecuteFillOptio
 		: (fillCfg.contextDepth > 0 ? fillCfg.contextDepth : 10)
 
 	const skipFloors = Math.max(0, opts?.skipFloors != null ? opts.skipFloors : (fillCfg.skipFloors || 0))
-	const allAiMessages = chatMessages.filter((m) => !m.is_user)
+	const allAiMessages = chatMessages.filter((m) => !m.is_user && !m.is_system)
 
 	let effectiveMessages = chatMessages
 	if (skipFloors > 0 && allAiMessages.length > skipFloors) {
@@ -158,9 +174,25 @@ async function executeFill(session: CranialNerveSession, opts?: ExecuteFillOptio
 
 	const batchSize = Math.max(1, opts?.batchSize != null ? opts.batchSize : (fillCfg.batchSize || 10))
 	const userName = getUserName()
-	const messagesToProcess = opts?.messages != null
-		? opts.messages
-		: effectiveMessages.slice(-Math.min(contextDepth, effectiveMessages.length))
+	let messagesToProcess: typeof chatMessages
+	if (opts?.messages != null) {
+		messagesToProcess = opts.messages
+	} else {
+		const effAiIdx: number[] = []
+		for (let i = 0; i < effectiveMessages.length; i++) {
+			if (!effectiveMessages[i]!.is_user && !effectiveMessages[i]!.is_system) effAiIdx.push(i)
+		}
+		const takeCount = contextDepth > 0 ? Math.min(contextDepth, effAiIdx.length) : effAiIdx.length
+		if (takeCount === 0 || effAiIdx.length === 0) {
+			messagesToProcess = []
+		} else {
+			const startAi = effAiIdx[effAiIdx.length - takeCount]!
+			const lastAi = effAiIdx[effAiIdx.length - 1]!
+			let startMsg = startAi
+			if (startMsg > 0 && effectiveMessages[startMsg - 1]!.is_user) startMsg = startMsg - 1
+			messagesToProcess = effectiveMessages.slice(startMsg, lastAi + 1)
+		}
+	}
 	const aiIndices: number[] = []
 	for (let i = 0; i < messagesToProcess.length; i++) {
 		if (!messagesToProcess[i]!.is_user && !messagesToProcess[i]!.is_system) aiIndices.push(i)
@@ -192,8 +224,6 @@ async function executeFill(session: CranialNerveSession, opts?: ExecuteFillOptio
 	const charDescription = getCharDescription()
 
 	const editor = session.getTableEditor()
-	const repo = session.getSyncBridgeRepo()
-	const persistCtx = repo ? createPersistContext(repo, session.core) : null
 
 	const clearBeforeFill = opts?.clearBeforeFill === true
 	const clearTables = opts?.clearTables ?? []
@@ -211,6 +241,7 @@ async function executeFill(session: CranialNerveSession, opts?: ExecuteFillOptio
 
 	fillInProgress = true
 	fillRunMode = runMode
+	fillProgressState = null
 	notifyFillState()
 	let lastResult: RunResult = { ok: false, attempts: 0, error: 'no bucket run' }
 	let deleteStatements: string[] = []
@@ -302,41 +333,104 @@ async function executeFill(session: CranialNerveSession, opts?: ExecuteFillOptio
 				}
 			}
 			const batchLastMsg = batch[batch.length - 1]!
-			const targetMsgId = opts?.persistMessageId != null ? opts.persistMessageId : chatMessages.indexOf(batchLastMsg)
-			if (persistCtx && targetMsgId >= 0 && !clearBeforeFill) {
-				ensureInitCheckpoint(persistCtx, targetMsgId, session.getCurrentTemplateId() ?? undefined)
+			const bucketFloor = chatMessages.indexOf(batchLastMsg)
+			const bucketAiFloors: number[] = []
+			for (let i = 0; i < batch.length; i++) {
+				const m = batch[i]
+				if (m && !m.is_user && !m.is_system) {
+					const gi = chatMessages.indexOf(m)
+					if (gi >= 0) bucketAiFloors.push(gi)
+				}
 			}
-			pushLog('info', 'fill', `填表 bucket ${b + 1}/${totalBuckets}（消息 ${targetMsgId}，模式 ${runMode}）`)
-			const result = await session.getWriteQueue().enqueue(() =>
-				editor.run(promptCtx, { maxRetries: fillCfg.maxRetries, signal: opts?.signal ?? progress?.abortSignal, onProgress: opts?.onProgress ? (p, d) => opts.onProgress!(p, { ...d, currentBucket: b + 1, totalBuckets }) : undefined })
-			)
+			const chatRefAtBucket = session.chat.getChat()
+			const bucketOps: MutationOperation[] = []
+			pushLog('info', 'fill', `填表 bucket ${b + 1}/${totalBuckets}（末楼 ${bucketFloor}，模式 ${runMode}）`)
+			const estimatedOutputTokens = bucketAiFloors.length * ESTIMATED_TOKENS_PER_FLOOR
+			const tokenWarn = preset.maxTokens != null && estimatedOutputTokens > preset.maxTokens
+				? { estimatedTokens: estimatedOutputTokens, maxTokens: preset.maxTokens }
+				: null
+			if (tokenWarn) {
+				fillProgressState = {
+					tick: fillProgressStateTick() + 1,
+					currentBucket: b + 1,
+					totalBuckets,
+					tableFloor: readFillProgress(session)?.tableFloor ?? null,
+					chronicleFloor: readFillProgress(session)?.chronicleFloor ?? null,
+					tokenWarn,
+				}
+				notifyFillState()
+			}
+			const result = await session.getWriteQueue().enqueue(async () => {
+				const r = await editor.run(promptCtx, {
+					maxRetries: fillCfg.maxRetries,
+					signal: opts?.signal ?? progress?.abortSignal,
+					onProgress: opts?.onProgress ? (p, d) => opts.onProgress!(p, { ...d, currentBucket: b + 1, totalBuckets }) : undefined,
+					expectedSqlObjects: bucketAiFloors.length,
+					requireChronicleInsert: runMode === 'chronicle' || runMode === 'merged',
+				})
+				if (!r.ok) return r
+				if (b === 0 && deleteStatements.length > 0) {
+					const deleteOp: MutationOperation = { kind: 'sql_batch', statements: deleteStatements, reason: 'manual_refill' }
+					bucketOps.push(deleteOp)
+					if (session.chat.getChat() === chatRefAtBucket) {
+						session.persistAfterFill(bucketFloor, [deleteOp])
+					}
+				}
+				if (r.sqls) {
+					for (let k = 0; k < r.sqls.length; k++) {
+						const sql = r.sqls[k]!
+						if (!sql.trim()) continue
+						const floorId = bucketAiFloors[k]
+						if (floorId == null || floorId < 0) continue
+						const ops: MutationOperation[] = []
+						for (const reason of reasonsForSql(runMode, sql, targetTables)) {
+							ops.push({ kind: 'sql_batch', statements: [sql], reason })
+						}
+						if (ops.length === 0) continue
+						bucketOps.push(...ops)
+						if (session.chat.getChat() === chatRefAtBucket) {
+							session.persistAfterFill(floorId, ops)
+						} else {
+							pushLog('warn', 'fill', `聊天已切换，丢弃 bucket ${b + 1} 的落帧`)
+						}
+					}
+				}
+				return r
+			})
 			lastResult = result
 			if (!result.ok) {
 				if (opts?.signal?.aborted || progress?.abortSignal?.aborted) {
 					pushLog('info', 'fill', '填表被用户终止')
 					return { ok: false, attempts: lastResult.attempts, error: 'aborted' }
 				}
-				if (refillSnapshot) session.applySnapshot(refillSnapshot)
+				if (refillSnapshot) {
+					session.applySnapshot(refillSnapshot)
+					progress?.fail(`${result.error ?? '填表失败'}（已回滚到填表前，期间手动编辑丢失）`)
+					return result
+				}
 				progress?.fail(result.error ?? '填表失败')
 				return result
 			}
-			if (persistCtx && targetMsgId >= 0) {
-				const ops: MutationOperation[] = []
-				if (b === 0 && deleteStatements.length > 0) {
-					ops.push({ kind: 'sql_batch', statements: deleteStatements, reason: 'manual_refill' })
-				}
-				if (result.lastSql) {
-					for (const r of reasonsForSql(runMode, result.lastSql, targetTables)) {
-						ops.push({ kind: 'sql_batch', statements: [result.lastSql], reason: r })
-					}
-				}
-				if (ops.length > 0) {
-					appendSqlLog(persistCtx, targetMsgId, ops)
+			const scenes = new Set<'table' | 'chronicle'>()
+			if (runMode === 'table') scenes.add('table')
+			else if (runMode === 'chronicle') scenes.add('chronicle')
+			else {
+				for (const op of bucketOps) {
+					if (op.kind !== 'sql_batch') continue
+					if (op.reason === 'ai_fill_table') scenes.add('table')
+					if (op.reason === 'ai_fill_chronicle') scenes.add('chronicle')
 				}
 			}
-			if (targetMsgId >= 0) {
-				session.cleanupOldSnapshots(config.retainFloors)
+			for (const s of scenes) updateFillProgress(session, s, bucketFloor)
+			fillProgressState = {
+				tick: fillProgressStateTick() + 1,
+				currentBucket: b + 1,
+				totalBuckets,
+				tableFloor: readFillProgress(session)?.tableFloor ?? null,
+				chronicleFloor: readFillProgress(session)?.chronicleFloor ?? null,
+				tokenWarn,
 			}
+			notifyFillState()
 		}
 
 		if (runMode === 'table' || runMode === 'merged') tableCountSinceLastFill = 0
@@ -345,6 +439,13 @@ async function executeFill(session: CranialNerveSession, opts?: ExecuteFillOptio
 			await syncToWorldbook(session)
 		} catch (e) {
 			pushLog('error', 'worldbook', `世界书同步失败: ${e instanceof Error ? e.message : String(e)}`)
+		}
+		if (lastResult?.ok) {
+			try {
+				await session.chat.saveChat()
+			} catch (e) {
+				pushLog('error', 'fill', `填表后保存失败: ${e instanceof Error ? e.message : String(e)}`)
+			}
 		}
 		progress?.done()
 		return lastResult
@@ -357,12 +458,14 @@ async function executeFill(session: CranialNerveSession, opts?: ExecuteFillOptio
 			pushLog('info', 'fill', '填表被用户终止')
 			return { ok: false, attempts: 0, error: 'aborted' }
 		}
-		progress?.fail(e instanceof Error ? e.message : String(e))
-		pushLog('error', 'fill', `填表异常: ${e instanceof Error ? e.message : String(e)}`)
-		return { ok: false, attempts: 0, error: e instanceof Error ? e.message : String(e) }
+		const errMsg = e instanceof Error ? e.message : String(e)
+		progress?.fail(refillSnapshot ? `${errMsg}（已回滚到填表前，期间手动编辑丢失）` : errMsg)
+		pushLog('error', 'fill', `填表异常: ${errMsg}`)
+		return { ok: false, attempts: 0, error: errMsg }
 	} finally {
 		fillInProgress = false
 		fillRunMode = null
+		fillProgressState = null
 		notifyFillState()
 	}
 }
@@ -470,26 +573,40 @@ export async function onMessageSentForFill(session: CranialNerveSession, userMsg
 	}
 	const fillCfg = tableActive ? config.tableFill : config.chronicleFill
 	const sendContextDepth = fillCfg.contextDepth > 0 ? fillCfg.contextDepth : 10
-	const messages = chat.slice(0, lastAiId + 1).slice(-sendContextDepth)
+	const upToLastAi = chat.slice(0, lastAiId + 1)
+	const sendAiIdx: number[] = []
+	for (let i = 0; i < upToLastAi.length; i++) {
+		if (!upToLastAi[i]!.is_user && !upToLastAi[i]!.is_system) sendAiIdx.push(i)
+	}
+	const sendTake = Math.min(sendContextDepth, sendAiIdx.length)
+	let messages: typeof chat
+	if (sendTake === 0 || sendAiIdx.length === 0) {
+		messages = []
+	} else {
+		const startAi = sendAiIdx[sendAiIdx.length - sendTake]!
+		let startMsg = startAi
+		if (startMsg > 0 && upToLastAi[startMsg - 1]!.is_user) startMsg = startMsg - 1
+		messages = upToLastAi.slice(startMsg)
+	}
 
 	if (tableActive && chronicleActive) {
 		const template = session.getTemplate()
 		if (!template || (template.tables ?? []).filter((t) => t.enabled !== false).length === 0) {
 			pushLog('info', 'fill', `after-send：无启用普通表，合并退化为只生成纪要 lastAiId=${lastAiId}`)
-			await executeFill(session, { runMode: 'chronicle', messages, persistMessageId: lastAiId, skipFloors: 0 })
+			await executeFill(session, { runMode: 'chronicle', messages, skipFloors: 0 })
 			return
 		}
 		pushLog('info', 'fill', `after-send：合并填上一轮 lastAiId=${lastAiId}`)
-		await executeFill(session, { runMode: 'merged', messages, persistMessageId: lastAiId, skipFloors: 0 })
+		await executeFill(session, { runMode: 'merged', messages, skipFloors: 0 })
 		return
 	}
 	if (tableActive) {
 		pushLog('info', 'fill', `after-send：填上一轮表 lastAiId=${lastAiId}`)
-		await executeFill(session, { runMode: 'table', messages, persistMessageId: lastAiId, skipFloors: 0 })
+		await executeFill(session, { runMode: 'table', messages, skipFloors: 0 })
 		return
 	}
 	pushLog('info', 'fill', `after-send：生成上一轮纪要 lastAiId=${lastAiId}`)
-	await executeFill(session, { runMode: 'chronicle', messages, persistMessageId: lastAiId, skipFloors: 0 })
+	await executeFill(session, { runMode: 'chronicle', messages, skipFloors: 0 })
 }
 
 export async function runManualFill(session: CranialNerveSession, opts?: ExecuteFillOptions): Promise<RunResult> {
@@ -504,15 +621,9 @@ export interface ManualCatchUpOptions {
 	toAiFloor?: number
 	batchSize?: number
 	extraHint?: string
-	persistMessageId?: number
 	onProgress?: FillProgressFn
 	suppressProgressNotifier?: boolean
 	signal?: AbortSignal
-}
-
-function sqlMentionsTable(sql: string, tableName: string): boolean {
-	const escaped = tableName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-	return new RegExp(`\\b(?:INSERT\\s+INTO|UPDATE|DELETE\\s+FROM|REPLACE\\s+INTO)\\s+["'\`]?${escaped}(?![A-Za-z0-9_])`, 'i').test(sql)
 }
 
 function reasonsForSql(runMode: FillRunMode, sql: string, targetTables: string[]): SqlBatchOperation['reason'][] {
@@ -532,7 +643,31 @@ function reasonsForSql(runMode: FillRunMode, sql: string, targetTables: string[]
 	return reasons
 }
 
+const FILL_PROGRESS_KEY = 'CN_FILL_PROGRESS'
+
+interface FillProgress {
+	tableFloor?: number
+	chronicleFloor?: number
+}
+
+function readFillProgress(session: CranialNerveSession): FillProgress | null {
+	const raw = session.chat.readChatMetadata(FILL_PROGRESS_KEY)
+	if (!raw || typeof raw !== 'object') return null
+	return raw as FillProgress
+}
+
+function updateFillProgress(session: CranialNerveSession, scene: 'table' | 'chronicle', floor: number): void {
+	const current = readFillProgress(session)
+	const key = scene === 'chronicle' ? 'chronicleFloor' : 'tableFloor'
+	const prev = current?.[key]
+	if (prev != null && floor <= prev) return
+	session.chat.writeChatMetadata(FILL_PROGRESS_KEY, { ...(current ?? {}), [key]: floor })
+}
+
 export function detectLastSummarizedAiFloor(session: CranialNerveSession, scene: 'table' | 'chronicle' = 'table'): number | null {
+	const progress = readFillProgress(session)
+	const progressFloor = scene === 'chronicle' ? progress?.chronicleFloor : progress?.tableFloor
+	if (progressFloor != null && progressFloor >= 0) return progressFloor
 	const repo = session.getSyncBridgeRepo()
 	if (!repo) return null
 	const chat = session.chat.getChat()
@@ -551,6 +686,27 @@ export function detectLastSummarizedAiFloor(session: CranialNerveSession, scene:
 	return lastSummarized
 }
 
+export function detectLastUpdatedAiFloorForTable(session: CranialNerveSession, tableName: string): number | null {
+	const repo = session.getSyncBridgeRepo()
+	if (!repo) return null
+	const chat = session.chat.getChat()
+	let lastUpdated: number | null = null
+	for (let i = 0; i < chat.length; i++) {
+		const msg = chat[i]
+		if (!msg || msg.is_user || msg.is_system) continue
+		const frame = repo.loadFrame(i)
+		if (!frame) continue
+		const hasUpdate = frame.logEntries.some((entry) =>
+			entry.operations.some((op) =>
+				op.kind === 'sql_batch' && op.reason === 'ai_fill_table' &&
+				(op.statements ?? []).some((sql) => sqlMentionsTable(sql, tableName))
+			)
+		)
+		if (hasUpdate) lastUpdated = i
+	}
+	return lastUpdated
+}
+
 export async function runManualCatchUp(session: CranialNerveSession, opts?: ManualCatchUpOptions): Promise<RunResult> {
 	const chat = session.chat.getChat()
 	const aiFloors: number[] = []
@@ -561,27 +717,54 @@ export async function runManualCatchUp(session: CranialNerveSession, opts?: Manu
 	if (aiFloors.length === 0) {
 		return { ok: false, attempts: 0, error: '无 AI 楼层可追平' }
 	}
-	let baseLastSummarized: number | null
+	const toIdx = opts?.toAiFloor != null
+		? opts.toAiFloor
+		: aiFloors[aiFloors.length - 1]!
 	if (opts?.runMode === 'merged') {
 		const tableLast = detectLastSummarizedAiFloor(session, 'table')
 		const chronicleLast = detectLastSummarizedAiFloor(session, 'chronicle')
-		if (tableLast == null && chronicleLast == null) {
-			baseLastSummarized = null
-		} else {
-			baseLastSummarized = Math.max(tableLast ?? -1, chronicleLast ?? -1)
-			if (baseLastSummarized < 0) baseLastSummarized = null
+		const tableFrom = opts?.fromAiFloor != null ? opts.fromAiFloor : (tableLast != null && tableLast >= 0 ? tableLast + 1 : 0)
+		const chronicleFrom = opts?.fromAiFloor != null ? opts.fromAiFloor : (chronicleLast != null && chronicleLast >= 0 ? chronicleLast + 1 : 0)
+		if (tableFrom > toIdx && chronicleFrom > toIdx) {
+			return { ok: false, attempts: 0, error: '所选范围已追平，无需处理' }
 		}
-	} else {
-		baseLastSummarized = detectLastSummarizedAiFloor(session, opts?.runMode === 'chronicle' ? 'chronicle' : 'table')
+		if (tableFrom <= toIdx) {
+			const tableSlice = chat.slice(tableFrom, toIdx + 1)
+			const tableResult = await executeFill(session, {
+				runMode: 'table',
+				fillCfgSource: opts?.fillCfgSource,
+				targetTables: opts?.targetTables,
+				messages: tableSlice,
+				batchSize: opts?.batchSize,
+				extraHint: opts?.extraHint,
+				onProgress: opts?.onProgress,
+				suppressProgressNotifier: opts?.suppressProgressNotifier,
+				signal: opts?.signal,
+			})
+			if (!tableResult.ok) return tableResult
+		}
+		if (chronicleFrom <= toIdx) {
+			const chronicleSlice = chat.slice(chronicleFrom, toIdx + 1)
+			const chronicleResult = await executeFill(session, {
+				runMode: 'chronicle',
+				fillCfgSource: 'chronicle',
+				messages: chronicleSlice,
+				batchSize: opts?.batchSize,
+				extraHint: opts?.extraHint,
+				onProgress: opts?.onProgress,
+				suppressProgressNotifier: opts?.suppressProgressNotifier,
+				signal: opts?.signal,
+			})
+			if (!chronicleResult.ok) return chronicleResult
+		}
+		return { ok: true, attempts: 0 }
 	}
+	const baseLastSummarized = detectLastSummarizedAiFloor(session, opts?.runMode === 'chronicle' ? 'chronicle' : 'table')
 	const fromIdx = opts?.fromAiFloor != null
 		? opts.fromAiFloor
 		: (baseLastSummarized != null && baseLastSummarized >= 0
 			? baseLastSummarized + 1
 			: 0)
-	const toIdx = opts?.toAiFloor != null
-		? opts.toAiFloor
-		: aiFloors[aiFloors.length - 1]!
 	if (fromIdx > toIdx) {
 		return { ok: false, attempts: 0, error: '所选范围已追平，无需处理' }
 	}
@@ -593,7 +776,6 @@ export async function runManualCatchUp(session: CranialNerveSession, opts?: Manu
 		messages: sliceMessages,
 		batchSize: opts?.batchSize,
 		extraHint: opts?.extraHint,
-		persistMessageId: opts?.persistMessageId ?? toIdx,
 		onProgress: opts?.onProgress,
 		suppressProgressNotifier: opts?.suppressProgressNotifier,
 		signal: opts?.signal,

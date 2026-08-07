@@ -269,3 +269,22 @@ export async function cleanupStaleBooks(session: CranialNerveSession): Promise<v
     pushLog('warn', 'worldbook', `detach 失败: ${e instanceof Error ? e.message : String(e)}`)
   }
 }
+
+export async function deleteAllCnBooks(session: CranialNerveSession): Promise<void> {
+  const wb = session.worldbook
+  const all = wb.listWorldbookNames()
+  for (const name of all) {
+    if (name.startsWith(WORLD_BOOK_PREFIX)) {
+      try {
+        await wb.deleteWorldbook(name)
+      } catch (e) {
+        pushLog('warn', 'worldbook', `删除世界书失败: ${name} - ${e instanceof Error ? e.message : String(e)}`)
+      }
+    }
+  }
+  try {
+    await wb.detachFromChat()
+  } catch (e) {
+    pushLog('warn', 'worldbook', `detach 失败: ${e instanceof Error ? e.message : String(e)}`)
+  }
+}

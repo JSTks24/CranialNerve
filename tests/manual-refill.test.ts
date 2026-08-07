@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import SqliteCore from '../src/db/sqlite/core'
 import SqliteSyncBridge from '../src/db/sqlite/sync-bridge'
 import { runManualFill, onMessageSentForFill } from '../src/core/table/fill-orchestrator'
+import { persistFill, createPersistContext } from '../src/db/sqlite/frame-persist'
 import { CHRONICLE_TABLE_NAME } from '../src/shared/constants/chronicle'
 import type { ChatGateway } from '../src/db/gateways/chat'
 import type { CranialNerveSession } from '../src/core/session'
@@ -63,20 +64,20 @@ function makeSession(core: SqliteCore, chat: FakeMessage[], editorRun: () => Pro
       },
       tableFill: {
         autoFillTrigger: 'after-ai', regenerateFill: true, contextDepth: 3, updateFrequency: 1, batchSize: 3, skipFloors: 0, maxRetries: 3,
-        manualUpdateContextDepth: null, manualUpdateBatchSize: null, manualSelectedTables: [], hasManualSelection: false,
+        manualUpdateContextDepth: null, manualUpdateBatchSize: null, manualSelectedTables: []
       },
       chronicleFill: {
         autoFillTrigger: 'off', regenerateFill: false, contextDepth: 3, updateFrequency: 1, batchSize: 3, skipFloors: 0, maxRetries: 3, chronicleSendLatestRows: 10,
         manualUpdateContextDepth: null, manualUpdateBatchSize: null,
       },
       maxRecallItems: 25, recallEnabled: true, recallRecentFixedInjectCount: 5, recallMinScore: 0.45, tableFillPresetId: 'p1', chronicleGenPresetId: '',
-      recallPresetId: '', recallContextDepth: 5, retainFloors: 100,
+      recallPresetId: '', recallContextDepth: 5, retainFloors: 100, checkpointInterval: 20,
       pending: { aiCallTimeoutMs: 60000, aiTimeoutRetries: 1, listModelsTimeoutMs: 10000, writeQueueDrainTimeoutMs: 8000, summarizeOnManualAbort: false, minSummaryLength: 0 },
       tableTemplate: { presets: [], activeId: '', defaultId: '' },
     }),
     getAiPresetForScene: () => makePreset(),
     getTemplate: () => ({ tables: [{ name: 't', displayName: 't', columns: [{ name: 'c', displayName: 'c', type: 'TEXT' }] }] }),
-    chat: { getChat: () => chat },
+    chat: { getChat: () => chat, saveChat: vi.fn(async () => {}), readChatMetadata: () => undefined, writeChatMetadata: vi.fn() },
     getActiveSegments: () => [],
     worldbook: { getCurrentCharLorebookName: () => null, loadLorebook: async () => ({ entries: {} }) },
     getTableEditor: () => ({ run: editorRun }),
@@ -86,6 +87,10 @@ function makeSession(core: SqliteCore, chat: FakeMessage[], editorRun: () => Pro
     getWriteQueue: () => ({ enqueue: (fn: () => Promise<any>) => fn() }),
     getCurrentTemplateId: () => null,
     cleanupOldSnapshots: () => {},
+    persistAfterFill: (messageId: number, ops: import('../src/shared/types/storage-frame').MutationOperation[]) => {
+      const ctx = createPersistContext(syncBridge.getRepo(), core)
+      persistFill(ctx, messageId, ops, { strategy: 'every-message', interval: 20, retainFloors: 100 })
+    },
     getChatToken: () => 'test',
   } as unknown as CranialNerveSession
 }
@@ -99,21 +104,23 @@ describe('runManualFill 重填分支', () => {
     const chat: FakeMessage[] = [{ is_user: false, is_system: false, mes: 'story', extra: {} }]
     const session = makeSession(core, chat, vi.fn(async () => {
       core.run("INSERT INTO t VALUES ('new')")
-      return { ok: true, attempts: 1, lastSql: "INSERT INTO t VALUES ('new')" }
+      return { ok: true, attempts: 1, sqls: ["INSERT INTO t VALUES ('new')"] }
     }))
 
+    const repo = (session as unknown as { getSyncBridgeRepo: () => any }).getSyncBridgeRepo()
+    persistFill(createPersistContext(repo, core), 0, [], { strategy: 'every-message', interval: 20, retainFloors: 100 })
     const result = await runManualFill(session, { clearBeforeFill: true, clearTables: ['t'], targetTables: ['t'] })
 
     expect(result.ok).toBe(true)
     const rows = core.exec('SELECT * FROM t')
     expect(rows[0]!.rows[0]!.c).toBe('new')
-    const repo = (session as unknown as { getSyncBridgeRepo: () => any }).getSyncBridgeRepo()
     const frame = repo.loadFrame(0)
     expect(frame).not.toBeNull()
-    expect(frame.logEntries).toHaveLength(1)
-    expect(frame.logEntries[0].operations).toHaveLength(2)
+    expect(frame.logEntries).toHaveLength(2)
+    expect(frame.logEntries[0].operations).toHaveLength(1)
     expect(frame.logEntries[0].operations[0].reason).toBe('manual_refill')
-    expect(frame.logEntries[0].operations[1].reason).toBe('ai_fill_table')
+    expect(frame.logEntries[1].operations).toHaveLength(1)
+    expect(frame.logEntries[1].operations[0].reason).toBe('ai_fill_table')
     core.dispose()
   })
 
@@ -138,8 +145,8 @@ describe('runManualFill 重填分支', () => {
 })
 
 describe('merged 模式 reason 按 SQL 内容精确拆分', () => {
-  async function runMerged(core: SqliteCore, chat: FakeMessage[], lastSql: string) {
-    const session = makeSession(core, chat, vi.fn(async () => ({ ok: true, attempts: 1, lastSql })))
+  async function runMerged(core: SqliteCore, chat: FakeMessage[], sqls: string[]) {
+    const session = makeSession(core, chat, vi.fn(async () => ({ ok: true, attempts: 1, sqls })))
     const baseCfg = (session as unknown as { getConfig: () => any }).getConfig()
     ;(session as unknown as { getConfig: () => any }).getConfig = () => ({
       ...baseCfg,
@@ -149,8 +156,10 @@ describe('merged 模式 reason 按 SQL 内容精确拆分', () => {
         columns: [{ name: 'key', displayName: '编码', type: 'TEXT' }],
       },
     })
+    const repo = (session as unknown as { getSyncBridgeRepo: () => any }).getSyncBridgeRepo()
+    persistFill(createPersistContext(repo, core), 0, [], { strategy: 'every-message', interval: 20, retainFloors: 100 })
     await runManualFill(session, { runMode: 'merged', targetTables: ['t'] })
-    return (session as unknown as { getSyncBridgeRepo: () => any }).getSyncBridgeRepo()
+    return repo
   }
 
   function frameReasons(repo: any): (string | undefined)[] {
@@ -163,7 +172,7 @@ describe('merged 模式 reason 按 SQL 内容精确拆分', () => {
     await core.init()
     core.run('CREATE TABLE t (c TEXT)')
     const chat: FakeMessage[] = [{ is_user: false, is_system: false, mes: 'story', extra: {} }]
-    const repo = await runMerged(core, chat, "INSERT INTO cn_chronicle (key) VALUES ('CN0001')")
+    const repo = await runMerged(core, chat, ["INSERT INTO cn_chronicle (key) VALUES ('CN0001')"])
     expect(frameReasons(repo)).toEqual(['ai_fill_chronicle'])
     core.dispose()
   })
@@ -173,7 +182,7 @@ describe('merged 模式 reason 按 SQL 内容精确拆分', () => {
     await core.init()
     core.run('CREATE TABLE t (c TEXT)')
     const chat: FakeMessage[] = [{ is_user: false, is_system: false, mes: 'story', extra: {} }]
-    const repo = await runMerged(core, chat, "INSERT INTO t (c) VALUES ('x')")
+    const repo = await runMerged(core, chat, ["INSERT INTO t (c) VALUES ('x')"])
     expect(frameReasons(repo)).toEqual(['ai_fill_table'])
     core.dispose()
   })
@@ -183,7 +192,7 @@ describe('merged 模式 reason 按 SQL 内容精确拆分', () => {
     await core.init()
     core.run('CREATE TABLE t (c TEXT)')
     const chat: FakeMessage[] = [{ is_user: false, is_system: false, mes: 'story', extra: {} }]
-    const repo = await runMerged(core, chat, "INSERT INTO t (c) VALUES ('x'); INSERT INTO cn_chronicle (key) VALUES ('CN0002')")
+    const repo = await runMerged(core, chat, ["INSERT INTO t (c) VALUES ('x'); INSERT INTO cn_chronicle (key) VALUES ('CN0002')"])
     expect(frameReasons(repo)).toEqual(['ai_fill_chronicle', 'ai_fill_table'])
     core.dispose()
   })
@@ -193,8 +202,67 @@ describe('merged 模式 reason 按 SQL 内容精确拆分', () => {
     await core.init()
     core.run('CREATE TABLE t (c TEXT)')
     const chat: FakeMessage[] = [{ is_user: false, is_system: false, mes: 'story', extra: {} }]
-    const repo = await runMerged(core, chat, 'SELECT 1')
+    const repo = await runMerged(core, chat, ['SELECT 1'])
     expect(frameReasons(repo)).toEqual([])
+    core.dispose()
+  })
+
+  it('多对象逐层落帧：每层各自帧、reason 逐条判定', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    core.run('CREATE TABLE t (c TEXT)')
+    const chat: FakeMessage[] = [
+      { is_user: false, is_system: false, mes: 'a1', extra: {} },
+      { is_user: false, is_system: false, mes: 'a2', extra: {} },
+    ]
+    const session = makeSession(core, chat, vi.fn(async () => ({
+      ok: true,
+      attempts: 1,
+      sqls: ["INSERT INTO t (c) VALUES ('x')", "INSERT INTO cn_chronicle (key) VALUES ('CN0001')"],
+    })))
+    const baseCfg = (session as unknown as { getConfig: () => any }).getConfig()
+    ;(session as unknown as { getConfig: () => any }).getConfig = () => ({
+      ...baseCfg,
+      chronicleTableDef: {
+        name: CHRONICLE_TABLE_NAME,
+        displayName: '纪要表',
+        columns: [{ name: 'key', displayName: '编码', type: 'TEXT' }],
+      },
+    })
+    const repo = (session as unknown as { getSyncBridgeRepo: () => any }).getSyncBridgeRepo()
+    persistFill(createPersistContext(repo, core), 0, [], { strategy: 'every-message', interval: 20, retainFloors: 100 })
+    const result = await runManualFill(session, { runMode: 'merged', targetTables: ['t'] })
+    expect(result.ok).toBe(true)
+    const frame0 = repo.loadFrame(0) as import('../src/shared/types/storage-frame').StorageFrame
+    const frame1 = repo.loadFrame(1) as import('../src/shared/types/storage-frame').StorageFrame
+    const reasons0 = frame0.logEntries.flatMap((e) => e.operations.map((o) => o.reason))
+    const reasons1 = frame1.logEntries.flatMap((e) => e.operations.map((o) => o.reason))
+    expect(reasons0).toEqual(['ai_fill_table'])
+    expect(reasons1).toEqual(['ai_fill_chronicle'])
+    core.dispose()
+  })
+
+  it('table 模式空 sql 对象不产生 op 但 metadata 进度推进', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    core.run('CREATE TABLE t (c TEXT)')
+    const chat: FakeMessage[] = [
+      { is_user: false, is_system: false, mes: 'a1', extra: {} },
+      { is_user: false, is_system: false, mes: 'a2', extra: {} },
+    ]
+    const session = makeSession(core, chat, vi.fn(async () => ({
+      ok: true,
+      attempts: 1,
+      sqls: ['', "INSERT INTO t (c) VALUES ('x')"],
+    })))
+    const repo = (session as unknown as { getSyncBridgeRepo: () => any }).getSyncBridgeRepo()
+    const result = await runManualFill(session, { targetTables: ['t'] })
+    expect(result.ok).toBe(true)
+    const frame0 = repo.loadFrame(0)
+    const frame1 = repo.loadFrame(1) as import('../src/shared/types/storage-frame').StorageFrame
+    expect(frame0).toBeNull()
+    expect(frame1.summarizedReasons).toEqual(['ai_fill_table'])
+    expect(session.chat.writeChatMetadata).toHaveBeenCalledWith('CN_FILL_PROGRESS', expect.any(Object))
     core.dispose()
   })
 })
@@ -212,7 +280,7 @@ describe('onMessageSentForFill after-send 截断', () => {
       { is_user: false, is_system: false, mes: 'a5', extra: {} },
       { is_user: true, is_system: false, mes: 'new', extra: {} },
     ]
-    const editorRun = vi.fn(async () => ({ ok: true, attempts: 1, lastSql: '' }))
+    const editorRun = vi.fn(async () => ({ ok: true, attempts: 1, sqls: [] }))
     const session = makeSession(core, chat, editorRun)
     const baseCfg = (session as unknown as { getConfig: () => any }).getConfig()
     ;(session as unknown as { getConfig: () => any }).getConfig = () => ({
@@ -223,6 +291,64 @@ describe('onMessageSentForFill after-send 截断', () => {
     })
     await onMessageSentForFill(session, 6)
     expect(editorRun).toHaveBeenCalledTimes(1)
+    core.dispose()
+  })
+})
+
+describe('填表期间聊天切换', () => {
+  it('chat 引用变化时丢弃落帧，不污染新聊天', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    core.run('CREATE TABLE t (c TEXT)')
+    const chat: FakeMessage[] = [{ is_user: false, is_system: false, mes: 'story', extra: {} }]
+    const session = makeSession(core, chat, vi.fn(async () => {
+      session.chat.getChat = () => [{ is_user: false, is_system: false, mes: 'other', send_date: '', extra: {} }]
+      return { ok: true, attempts: 1, sqls: ["INSERT INTO t VALUES ('x')"] }
+    }))
+    const repo = (session as unknown as { getSyncBridgeRepo: () => any }).getSyncBridgeRepo()
+    const result = await runManualFill(session, { targetTables: ['t'] })
+    expect(result.ok).toBe(true)
+    expect(repo.loadFrame(0)).toBeNull()
+    core.dispose()
+  })
+
+  it('chat 引用未变化时正常落帧', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    core.run('CREATE TABLE t (c TEXT)')
+    const chat: FakeMessage[] = [{ is_user: false, is_system: false, mes: 'story', extra: {} }]
+    const session = makeSession(core, chat, vi.fn(async () => ({ ok: true, attempts: 1, sqls: ["INSERT INTO t VALUES ('x')"] })))
+    const repo = (session as unknown as { getSyncBridgeRepo: () => any }).getSyncBridgeRepo()
+    const result = await runManualFill(session, { targetTables: ['t'] })
+    expect(result.ok).toBe(true)
+    expect(repo.loadFrame(0)).not.toBeNull()
+    core.dispose()
+  })
+})
+
+describe('填表成功后主动存盘', () => {
+  it('fill 成功时调用 saveChat', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    core.run('CREATE TABLE t (c TEXT)')
+    const chat: FakeMessage[] = [{ is_user: false, is_system: false, mes: 'story', extra: {} }]
+    const session = makeSession(core, chat, vi.fn(async () => ({ ok: true, attempts: 1, sqls: ["INSERT INTO t VALUES ('x')"] })))
+    const result = await runManualFill(session, { targetTables: ['t'] })
+    expect(result.ok).toBe(true)
+    expect(session.chat.saveChat).toHaveBeenCalled()
+    expect(session.chat.writeChatMetadata).toHaveBeenCalledWith('CN_FILL_PROGRESS', expect.any(Object))
+    core.dispose()
+  })
+
+  it('fill 失败时不调用 saveChat', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    core.run('CREATE TABLE t (c TEXT)')
+    const chat: FakeMessage[] = [{ is_user: false, is_system: false, mes: 'story', extra: {} }]
+    const session = makeSession(core, chat, vi.fn().mockResolvedValue({ ok: false, attempts: 3, error: 'AI fail' }))
+    const result = await runManualFill(session, { targetTables: ['t'] })
+    expect(result.ok).toBe(false)
+    expect(session.chat.saveChat).not.toHaveBeenCalled()
     core.dispose()
   })
 })
