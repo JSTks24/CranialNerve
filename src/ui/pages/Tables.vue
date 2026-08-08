@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted, onActivated } from 'vue'
 import { getSession } from '@core/session'
 import { CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
 import { syncToWorldbook } from '@core/worldbook-sync'
+import { scheduleChatSave } from '@core/chat-save'
 import { validateRowRequired } from '@shared/table-validation'
 import toast from '@ui/toast'
 import confirm from '@ui/dialog'
@@ -184,9 +185,7 @@ async function persistChanges() {
     session.saveToChat(lastMsgId)
   }
   await syncToWorldbook(session)
-  try {
-    await session.chat.saveChat()
-  } catch {}
+  scheduleChatSave(session)
 }
 
 async function deleteRow(row: RowData) {
@@ -261,6 +260,7 @@ function onImportSnapshot(e: Event) {
 
 onMounted(refresh)
 onActivated(refresh)
+watch(() => fillStore.dataVersion, () => refresh())
 
 watch(
   () => route.query.tab,

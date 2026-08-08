@@ -2,7 +2,7 @@
 import { ref, computed, onActivated } from 'vue'
 import { getSession } from '@core/session'
 import { CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
-import { detectLastSummarizedAiFloor, detectLastUpdatedAiFloorForTable } from '@core/table/fill-orchestrator'
+import { detectLastSummarizedAiFloor, detectLastUpdatedAiFloorForTable, detectActualUpdateFloorForTable, detectMergedLastFilled } from '@core/table/fill-orchestrator'
 import type { FillProgressFn } from '@core/table/retry-loop'
 import type { CranialNerveConfig } from '@shared/types/config'
 import confirm from '@ui/dialog'
@@ -16,12 +16,14 @@ const refreshTick = ref(0)
 const availableTables = computed(() => {
   void refreshTick.value
   void fillStore.progressTick
+  void fillStore.dataVersion
   const names = session.listTables().filter((n) => !n.startsWith('sqlite_') && n !== CHRONICLE_TABLE_NAME)
   return names.map((n) => {
     const def = session.getTableDef(n)
     const lastMsg = detectLastUpdatedAiFloorForTable(session, n)
+    const actualMsg = detectActualUpdateFloorForTable(session, n)
     const aiSeq = lastMsg != null ? aiFloorSeqOf(lastMsg) : 0
-    return { name: n, displayName: def?.displayName || n, lastMsg, aiSeq }
+    return { name: n, displayName: def?.displayName || n, lastMsg, actualMsg, aiSeq }
   })
 })
 const selectedTables = ref<string[]>([...(cfg.value.tableFill.manualSelectedTables || [])])
@@ -46,10 +48,15 @@ function clampInt(raw: number, min: number, max: number, fallback: number): numb
   return Math.max(min, Math.min(max, Math.trunc(raw)))
 }
 
-const aiFloorCount = computed(() => session.chat.getChat().filter((m) => !m.is_user && !m.is_system).length)
+const aiFloorCount = computed(() => {
+  void fillStore.dataVersion
+  return session.chat.getChat().filter((m) => !m.is_user && !m.is_system).length
+})
 const lastSummarized = computed(() => {
   void fillStore.progressTick
-  return detectLastSummarizedAiFloor(session)
+  void refreshTick.value
+  void fillStore.dataVersion
+  return includeChronicle.value ? detectMergedLastFilled(session) : detectLastSummarizedAiFloor(session)
 })
 const summarizedAiCount = computed(() => {
   const last = lastSummarized.value
@@ -59,6 +66,7 @@ const summarizedAiCount = computed(() => {
 const unrecordedCount = computed(() => Math.max(0, aiFloorCount.value - summarizedAiCount.value))
 const expectedRange = computed(() => {
   void fillStore.progressTick
+  void fillStore.dataVersion
   const chat = session.chat.getChat()
   const depth = manualDepth.value ?? cfg.value.tableFill.contextDepth
   const aiFloors: number[] = []
@@ -66,7 +74,7 @@ const expectedRange = computed(() => {
     if (!chat[i]!.is_user && !chat[i]!.is_system) aiFloors.push(i)
   }
   if (aiFloors.length === 0) return '无 AI 楼层'
-  const takeCount = depth > 0 ? Math.min(depth, aiFloors.length) : aiFloors.length
+  const takeCount = depth > 0 ? Math.min(depth, aiFloors.length) : Math.min(10, aiFloors.length)
   return `AI第 ${aiFloors.length - takeCount + 1}~${aiFloors.length} 层（共 ${takeCount} 个 AI 楼层）`
 })
 
@@ -84,7 +92,7 @@ function saveSelection() {
 }
 function saveManualDepth() {
   const v = manualDepth.value
-  cfg.value.tableFill.manualUpdateContextDepth = v === null ? null : clampInt(v, 0, 50, 0)
+  cfg.value.tableFill.manualUpdateContextDepth = v === null ? null : clampInt(v, 1, 50, 1)
   manualDepth.value = cfg.value.tableFill.manualUpdateContextDepth
   session.saveConfig(cfg.value)
 }
@@ -129,39 +137,19 @@ function computeCatchUpRange() {
   if (aiFloors.length === 0) return null
   const toIdx = aiFloors[aiFloors.length - 1]!
   const toSeq = aiFloorSeqOf(toIdx)
-  if (!includeChronicle.value) {
-    const t = detectLastSummarizedAiFloor(session, 'table')
-    const fromIdx = t != null && t >= 0 ? t + 1 : 0
-    if (fromIdx > toIdx) return null
-    const aiCount = aiFloors.filter((idx) => idx >= fromIdx && idx <= toIdx).length
-    const batch = Math.max(1, manualBatch.value ?? cfg.value.tableFill.batchSize)
-    const totalBuckets = Math.max(1, Math.ceil(aiCount / batch))
-    return { fromIdx, toIdx, fromSeq: firstAiSeqAt(fromIdx), toSeq, aiCount, totalBuckets }
-  }
   const t = detectLastSummarizedAiFloor(session, 'table')
-  const c = detectLastSummarizedAiFloor(session, 'chronicle')
+  const c = includeChronicle.value ? detectLastSummarizedAiFloor(session, 'chronicle') : null
+  const mergedLast = includeChronicle.value ? detectMergedLastFilled(session) : null
   const tableFrom = t != null && t >= 0 ? t + 1 : 0
   const chronicleFrom = c != null && c >= 0 ? c + 1 : 0
-  if (tableFrom > toIdx && chronicleFrom > toIdx) return null
-  const tableAiCount = aiFloors.filter((idx) => idx >= tableFrom && idx <= toIdx).length
-  const chronicleAiCount = aiFloors.filter((idx) => idx >= chronicleFrom && idx <= toIdx).length
+  const fromIdx = includeChronicle.value
+    ? (mergedLast != null && mergedLast >= 0 ? mergedLast + 1 : Math.min(tableFrom, chronicleFrom))
+    : tableFrom
+  if (fromIdx > toIdx) return null
+  const aiCount = aiFloors.filter((idx) => idx >= fromIdx && idx <= toIdx).length
   const batch = Math.max(1, manualBatch.value ?? cfg.value.tableFill.batchSize)
-  const tableBuckets = Math.max(1, Math.ceil(tableAiCount / batch))
-  const chronicleBuckets = Math.max(1, Math.ceil(chronicleAiCount / batch))
-  return {
-    fromIdx: Math.min(tableFrom, chronicleFrom),
-    toIdx,
-    fromSeq: firstAiSeqAt(Math.min(tableFrom, chronicleFrom)),
-    toSeq,
-    aiCount: Math.max(tableAiCount, chronicleAiCount),
-    totalBuckets: tableBuckets + chronicleBuckets,
-    tableFrom,
-    chronicleFrom,
-    tableFromSeq: firstAiSeqAt(tableFrom),
-    chronicleFromSeq: firstAiSeqAt(chronicleFrom),
-    tableAiCount,
-    chronicleAiCount
-  }
+  const totalBuckets = Math.max(1, Math.ceil(aiCount / batch))
+  return { fromIdx, toIdx, fromSeq: firstAiSeqAt(fromIdx), toSeq, aiCount, totalBuckets }
 }
 
 function makeProgressUpdater(prog: ReturnType<typeof toast.progress>, prefix: string): FillProgressFn {
@@ -218,8 +206,8 @@ async function runCatchUp() {
   }
   const merged = includeChronicle.value
   const rangeText = merged
-    ? `表格：从第 ${range.tableFromSeq} 层追平至第 ${range.toSeq} 层（${range.tableAiCount} 个 AI 楼层）；纪要：从第 ${range.chronicleFromSeq} 层追平至第 ${range.toSeq} 层（${range.chronicleAiCount} 个 AI 楼层，约 ${range.totalBuckets} 批）`
-    : `将从第 ${range.fromSeq} 层追平至第 ${range.toSeq} 层（共 ${range.aiCount} 个 AI 楼层，约 ${range.totalBuckets} 批）`
+    ? `将追平第${range.fromSeq}~${range.toSeq}层（共${range.aiCount}个AI楼层，约${range.totalBuckets}批，表格与纪要同时更新）`
+    : `将追平第${range.fromSeq}~${range.toSeq}层（共${range.aiCount}个AI楼层，约${range.totalBuckets}批）`
   const confirmed = await confirm('追平未更新楼层', rangeText, '确认追平')
   if (!confirmed) return
   busy.value = true
@@ -245,6 +233,7 @@ async function runCatchUp() {
 }
 
 onActivated(() => {
+  refreshTick.value++
   cfg.value = session.getConfig()
   selectedTables.value = [...(cfg.value.tableFill.manualSelectedTables || [])]
   manualDepth.value = cfg.value.tableFill.manualUpdateContextDepth
@@ -301,7 +290,7 @@ onActivated(() => {
                   <span class="mf-table__display">{{ t.displayName }}</span>
                   <span class="mf-table__raw">{{ t.name }}</span>
                 </td>
-                <td class="mf-table__update">{{ t.lastMsg != null ? `AI第${t.aiSeq}层` : '未更新' }}</td>
+                <td class="mf-table__update">{{ t.lastMsg != null ? `AI第${t.aiSeq}层${t.actualMsg == null || t.actualMsg < t.lastMsg ? ' (无变更)' : ''}` : '未更新' }}</td>
                 <td>
                   <label class="mf-check">
                     <input type="checkbox" :value="t.name" v-model="selectedTables" @change="saveSelection" />
@@ -331,7 +320,7 @@ onActivated(() => {
         <div class="mf-grid-2">
           <div class="mf-field">
             <label class="mf-field__label">处理最近 N 个 AI 楼层</label>
-            <input class="cn-input cn-input--nospin" type="number" min="0" max="50" step="1"
+            <input class="cn-input cn-input--nospin" type="number" min="1" max="50" step="1"
               v-model="manualDepthInput" @change="saveManualDepth" />
             <p class="mf-field__hint">处理最近多少个 AI 楼层。</p>
           </div>

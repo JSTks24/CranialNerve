@@ -14,6 +14,7 @@ function makeConfig() {
   cfg.tableFill.batchSize = 999
   cfg.tableFill.autoFillTrigger = 'off'
   cfg.recallEnabled = false
+  cfg.recallFadeMinDepth = 99
   cfg.snapshotStrategy = 'latest-only'
   cfg.checkpointInterval = 5
   cfg.vectorEnabled = true
@@ -33,6 +34,7 @@ describe('applyDefaults 重置运行参数', () => {
     expect(cfg.tableFill.autoFillTrigger).toBe('after-ai')
     expect(cfg.chronicleFill.batchSize).toBe(10)
     expect(cfg.recallEnabled).toBe(true)
+    expect(cfg.recallFadeMinDepth).toBe(2)
     expect(cfg.snapshotStrategy).toBe('every-message')
     expect(cfg.checkpointInterval).toBe(20)
     expect(cfg.retainFloors).toBe(100)

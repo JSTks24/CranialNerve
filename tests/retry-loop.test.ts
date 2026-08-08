@@ -252,6 +252,56 @@ describe('TableEditor.run 多对象与强校验', () => {
     expect(ai.chatCompletion).toHaveBeenCalledTimes(2)
   })
 
+  it('requireChronicleInsert 缺纪要时错误信息点名元素序号', async () => {
+    const ai = {
+      chatCompletion: vi.fn(async () => JSON.stringify({
+        format: SQL_EDIT_FORMAT,
+        items: [
+          { sql: "INSERT INTO cn_chronicle (key) VALUES ('CN0001')" },
+          { sql: 'INSERT INTO t VALUES (1)' },
+          { sql: 'UPDATE t SET a = 1 WHERE b = 2' },
+        ],
+      }))
+    }
+    const promise = editorWith(ai).run(makeCtx(), { maxRetries: 1, expectedSqlObjects: 3, requireChronicleInsert: true })
+    await vi.runAllTimersAsync()
+    const result = await promise
+    expect(result.ok).toBe(false)
+    expect(result.error).toContain('第 2、3 个元素')
+    expect(result.error).toContain('cn_chronicle')
+    expect(result.error).toContain('每轮必写')
+  })
+
+  it('requireChronicleInsert 全部元素含纪要时通过且不点名', async () => {
+    const ai = {
+      chatCompletion: vi.fn(async () => JSON.stringify({
+        format: SQL_EDIT_FORMAT,
+        items: [
+          { sql: "INSERT INTO cn_chronicle (key) VALUES ('CN0001')" },
+          { sql: "INSERT INTO cn_chronicle (key) VALUES ('CN0002'); UPDATE t SET a = 1 WHERE b = 2" },
+        ],
+      }))
+    }
+    const result = await editorWith(ai).run(makeCtx(), { maxRetries: 1, expectedSqlObjects: 2, requireChronicleInsert: true })
+    expect(result.ok).toBe(true)
+  })
+
+  it('merged 模式缺纪要重试时反馈含 merged 专用说明', async () => {
+    const ai = {
+      chatCompletion: vi.fn(async () => JSON.stringify({ format: SQL_EDIT_FORMAT, sql: 'INSERT INTO t VALUES (1)' }))
+    }
+    const promise = editorWith(ai).run(makeCtx(), { maxRetries: 2, expectedSqlObjects: 1, requireChronicleInsert: true, runMode: 'merged' })
+    await vi.runAllTimersAsync()
+    const result = await promise
+    expect(result.ok).toBe(false)
+    expect(ai.chatCompletion).toHaveBeenCalledTimes(2)
+    const callArgs = ai.chatCompletion.mock.calls as unknown as Array<[import('../src/db/gateways/ai').AiChatMessage[]]>
+    const messages = callArgs[1]![0]
+    const feedback = messages[messages.length - 1]!.content
+    expect(feedback).toContain('merged 模式')
+    expect(feedback).toContain('同时包含')
+  })
+
   it('成功路径发射 calling_ai/parsing/saving/complete', async () => {
     const ai = { chatCompletion: vi.fn(async () => validRaw()) }
     const phases: string[] = []

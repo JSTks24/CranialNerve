@@ -27,6 +27,7 @@ export function applyDefaults(c: CranialNerveConfig): void {
   c.recallContextDepth = 5
   c.recallRecentFixedInjectCount = 5
   c.recallMinScore = 0.45
+  c.recallFadeMinDepth = 2
   c.snapshotStrategy = 'every-message'
   c.retainFloors = 100
   c.checkpointInterval = 20

@@ -7,19 +7,20 @@ const mocks = vi.hoisted(() => {
   const chatState: Array<Record<string, unknown>> = []
   const chatMeta: Record<string, unknown> = {}
   const fsSave = vi.fn(async () => {})
-  return { chatState, chatMeta, fsSave }
-})
-
-vi.mock('@db/gateways/host-context', () => ({
-  getHostContext: () => ({
-    chat: mocks.chatState,
-    chatMetadata: mocks.chatMeta,
+  const host = {
+    chat: chatState,
+    chatMetadata: chatMeta,
     characters: {},
     characterId: null,
     chatId: 'test-chat',
     extensionSettings: {},
     saveSettingsDebounced: () => {},
-  }),
+  }
+  return { chatState, chatMeta, fsSave, host }
+})
+
+vi.mock('@db/gateways/host-context', () => ({
+  getHostContext: () => mocks.host,
   getRequestHeaders: () => ({ 'Content-Type': 'application/json' }),
 }))
 
@@ -60,49 +61,87 @@ async function makeSession(): Promise<CranialNerveSession> {
   return session
 }
 
-describe('reinitWithTemplate 数据判定', () => {
-  it('无数据聊天干净切换：不备份、不绑定、不写帧、重建表结构', async () => {
+describe('reinitWithTemplate 切换语义：清表格、留纪要、无条件绑定', () => {
+  it('无数据聊天切换：无条件绑定 + 写帧 + 重建表结构', async () => {
     const session = await makeSession()
     mocks.chatState.length = 0
     mocks.chatMeta['CN_TEMPLATE'] = undefined
+    mocks.chatMeta['CN_TEMPLATE_ID'] = undefined
     mocks.fsSave.mockClear()
     await session.reinitWithTemplate(makeTemplate('hero'), 'tplA')
-    expect(mocks.chatMeta['CN_TEMPLATE']).toBeUndefined()
-    expect(session.getSyncBridgeRepo()!.findLatestFrameMessageId()).toBeNull()
+    expect(mocks.chatMeta['CN_TEMPLATE']).toBeTruthy()
+    expect(mocks.chatMeta['CN_TEMPLATE_ID']).toBe('tplA')
+    expect(session.getBoundTemplateId()).toBe('tplA')
     expect(mocks.fsSave).not.toHaveBeenCalled()
     expect(session.core.listTables()).toContain('hero')
   })
 
-  it('有数据聊天完整迁移：备份、绑定、写帧、数据保留', async () => {
+  it('有数据聊天切换：表格数据清空、纪要保留、绑定新模板、写帧', async () => {
     const session = await makeSession()
     mocks.chatState.length = 0
     mocks.chatMeta['CN_TEMPLATE'] = undefined
+    mocks.chatMeta['CN_TEMPLATE_ID'] = undefined
     mocks.fsSave.mockClear()
     const core = session.core
     core.run('CREATE TABLE hero (c TEXT)')
     core.run("INSERT INTO hero VALUES ('old')")
     core.run('CREATE TABLE cn_chronicle (key TEXT, chronicle_text TEXT)')
+    core.run("INSERT INTO cn_chronicle VALUES ('CN0001', 'x')")
     mocks.chatState.push({ is_user: true, mes: 'hi' })
     ;(session as unknown as { template: unknown }).template = makeTemplate('hero')
-    await session.reinitWithTemplate(makeTemplate('hero'), 'tplA', { migrate: true })
+    await session.reinitWithTemplate(makeTemplate('tplB'), 'tplA')
     expect(mocks.chatMeta['CN_TEMPLATE']).toBeTruthy()
+    expect(mocks.chatMeta['CN_TEMPLATE_ID']).toBe('tplA')
     expect(session.getSyncBridgeRepo()!.findLatestFrameMessageId()).not.toBeNull()
-    expect(mocks.fsSave).toHaveBeenCalled()
-    const rows = core.exec('SELECT * FROM hero')
-    expect(rows[0]!.rows[0]!.c).toBe('old')
+    expect(mocks.fsSave).not.toHaveBeenCalled()
+    const tplCount = core.exec('SELECT COUNT(*) AS c FROM tplB')[0]?.rows[0]?.c ?? 0
+    expect(tplCount).toBe(0)
+    const chronicleRows = core.exec('SELECT * FROM cn_chronicle')
+    expect(chronicleRows[0]!.rows).toHaveLength(1)
   })
 
-  it('仅纪要数据视为无数据：干净切换（纪要不受模板切换影响）', async () => {
+  it('仅纪要数据切换：纪要保留 + 绑定新模板', async () => {
     const session = await makeSession()
     mocks.chatState.length = 0
     mocks.chatMeta['CN_TEMPLATE'] = undefined
+    mocks.chatMeta['CN_TEMPLATE_ID'] = undefined
     mocks.fsSave.mockClear()
     const core = session.core
     core.run('CREATE TABLE cn_chronicle (key TEXT, chronicle_text TEXT)')
     core.run("INSERT INTO cn_chronicle VALUES ('CN0001', 'x')")
     await session.reinitWithTemplate(makeTemplate('hero'), 'tplA')
-    expect(mocks.chatMeta['CN_TEMPLATE']).toBeUndefined()
-    expect(session.getSyncBridgeRepo()!.findLatestFrameMessageId()).toBeNull()
+    expect(mocks.chatMeta['CN_TEMPLATE']).toBeTruthy()
+    expect(mocks.chatMeta['CN_TEMPLATE_ID']).toBe('tplA')
     expect(mocks.fsSave).not.toHaveBeenCalled()
+    const chronicleRows = core.exec('SELECT * FROM cn_chronicle')
+    expect(chronicleRows[0]!.rows).toHaveLength(1)
+  })
+
+  it('initSessionTemplate：CN_TEMPLATE_ID 命中预设时 currentTemplateId=预设 id', async () => {
+    const session = await makeSession()
+    mocks.chatState.length = 0
+    mocks.chatMeta['CN_TEMPLATE'] = JSON.parse(JSON.stringify(makeTemplate('hero')))
+    mocks.chatMeta['CN_TEMPLATE_ID'] = 'tplA'
+    const cfg = session.getConfig()
+    cfg.tableTemplate.presets = [{ id: 'tplA', name: 'A', template: makeTemplate('hero'), source: 'builtin' }]
+    session.saveConfig(cfg)
+    ;(session as unknown as { initSessionTemplate: () => void }).initSessionTemplate()
+    expect(session.getCurrentTemplateId()).toBe('tplA')
+  })
+
+  it('ensureBoundTemplate：表已有数据不固化，空表才固化', async () => {
+    const session = await makeSession()
+    mocks.chatState.length = 0
+    mocks.chatMeta['CN_TEMPLATE'] = undefined
+    mocks.chatMeta['CN_TEMPLATE_ID'] = undefined
+    const core = session.core
+    ;(session as unknown as { template: unknown }).template = makeTemplate('hero')
+    core.run('CREATE TABLE hero (c TEXT)')
+    core.run("INSERT INTO hero VALUES ('x')")
+    session.ensureBoundTemplate()
+    expect(mocks.chatMeta['CN_TEMPLATE']).toBeUndefined()
+    core.run('DELETE FROM hero')
+    session.ensureBoundTemplate()
+    expect(mocks.chatMeta['CN_TEMPLATE']).toBeTruthy()
   })
 })

@@ -43,4 +43,22 @@ describe('rollbackFillProgress（1.6 修复：regenerate 删帧后回退填表�
     rollbackFillProgress(session, 4)
     expect(meta[FILL_PROGRESS_KEY]).toBeUndefined()
   })
+
+  it('mergedFloor >= 被删楼时回退 mergedFloor（保留未删侧）', () => {
+    const { session, meta } = makeSession({ mergedFloor: 5, tableFloor: 1 })
+    rollbackFillProgress(session, 3)
+    expect(meta[FILL_PROGRESS_KEY]).toEqual({ tableFloor: 1 })
+  })
+
+  it('mergedFloor 全部 >= 被删楼时清空元数据', () => {
+    const { session, meta } = makeSession({ mergedFloor: 5, chronicleFloor: 3 })
+    rollbackFillProgress(session, 3)
+    expect(meta[FILL_PROGRESS_KEY]).toBeUndefined()
+  })
+
+  it('mergedFloor 未达被删楼时保留，仅回退超出的场景', () => {
+    const { session, meta } = makeSession({ mergedFloor: 2, tableFloor: 5 })
+    rollbackFillProgress(session, 4)
+    expect(meta[FILL_PROGRESS_KEY]).toEqual({ mergedFloor: 2 })
+  })
 })

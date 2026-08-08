@@ -94,6 +94,64 @@ describe('cnGenerateInterceptor', () => {
     expect(chat[0]!.mes).toBe('普通老消息')
   })
 
+  it('getter 返回 3 → depth 2 保留、depth 3 剥离', () => {
+    registerGenerateInterceptor(() => 3)
+    const fn = (globalThis as Record<string, unknown>)[GLOBAL_KEY] as (chat: ChatItem[]) => void
+    const chat: ChatItem[] = [
+      { is_user: true, mes: 'CN0001\ndepth4' },
+      { is_user: true, mes: 'CN0002\ndepth3' },
+      { is_user: true, mes: 'CN0003\ndepth2' },
+      { is_user: true, mes: 'CN0004\ndepth1' },
+      { is_user: true, mes: 'CN0005\ndepth0' },
+    ]
+    fn(chat)
+    expect(chat[0]!.mes).toBe('depth4')
+    expect(chat[1]!.mes).toBe('depth3')
+    expect(chat[2]!.mes).toBe('CN0003\ndepth2')
+    expect(chat[3]!.mes).toBe('CN0004\ndepth1')
+    expect(chat[4]!.mes).toBe('CN0005\ndepth0')
+  })
+
+  it('getter 返回 0 → 永不剥离', () => {
+    registerGenerateInterceptor(() => 0)
+    const fn = (globalThis as Record<string, unknown>)[GLOBAL_KEY] as (chat: ChatItem[]) => void
+    const chat: ChatItem[] = [
+      { is_user: true, mes: 'CN0001\n老消息' },
+      { is_user: false, mes: 'AI' },
+      { is_user: true, mes: '用户' },
+    ]
+    fn(chat)
+    expect(chat[0]!.mes).toBe('CN0001\n老消息')
+  })
+
+  it('getter 抛异常 → 回退默认 2', () => {
+    registerGenerateInterceptor(() => {
+      throw new Error('boom')
+    })
+    const fn = (globalThis as Record<string, unknown>)[GLOBAL_KEY] as (chat: ChatItem[]) => void
+    const chat: ChatItem[] = [
+      { is_user: true, mes: 'CN0001\ndepth2' },
+      { is_user: false, mes: 'AI' },
+      { is_user: true, mes: 'CN0002\ndepth0' },
+    ]
+    expect(() => fn(chat)).not.toThrow()
+    expect(chat[0]!.mes).toBe('depth2')
+    expect(chat[2]!.mes).toBe('CN0002\ndepth0')
+  })
+
+  it('getter 返回非法值 → 回退默认 2', () => {
+    registerGenerateInterceptor(() => -5)
+    const fn = (globalThis as Record<string, unknown>)[GLOBAL_KEY] as (chat: ChatItem[]) => void
+    const chat: ChatItem[] = [
+      { is_user: true, mes: 'CN0001\ndepth2' },
+      { is_user: false, mes: 'AI' },
+      { is_user: true, mes: 'CN0002\ndepth0' },
+    ]
+    fn(chat)
+    expect(chat[0]!.mes).toBe('depth2')
+    expect(chat[2]!.mes).toBe('CN0002\ndepth0')
+  })
+
   it('原位修改同一数组对象，不创建新数组', () => {
     registerGenerateInterceptor()
     const fn = (globalThis as Record<string, unknown>)[GLOBAL_KEY] as (chat: ChatItem[]) => void

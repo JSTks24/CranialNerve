@@ -1,5 +1,5 @@
 import type { CranialNerveSession } from '@core/session'
-import { RECALL_FIELD_PREFIX, RECALL_FADE_MIN_DEPTH } from '@shared/constants'
+import { RECALL_FIELD_PREFIX, resolveFadeMinDepth } from '@shared/constants'
 import {
   EVENT_CHAT_LOADED,
   EVENT_MESSAGE_DELETED,
@@ -10,8 +10,9 @@ import {
   EVENT_USER_MESSAGE_RENDERED,
 } from '@shared/constants/events'
 import { parseRecallPayload, stripKeyLineFromMes } from '@shared/recall-payload'
+import { isFirstUserFloorAfterGreeting } from '@shared/chat-role'
 import recallCardCss from './recall-card.css?inline'
-import { buildRecallCardHtml } from './template'
+import { buildRecallCardHtml, buildOpeningCardHtml } from './template'
 
 const HOST_CLASS = 'cn-recall-host'
 const FLOOR_CLASS = 'cn-has-recall'
@@ -89,15 +90,23 @@ export function installRecallRenderer(session: CranialNerveSession): RecallRende
       return
     }
     const payload = session.getConfig().recallEnabled ? readPayload(msgId) : null
-    if (!payload) {
-      cleanupFloorEl(mesEl)
-      return
-    }
     if (mesText.querySelector('#curEditTextarea')) {
       return
     }
+    if (!payload) {
+      if (isFirstUserFloorAfterGreeting(chat, msgId)) {
+        removeHost(mesText)
+        const userText = stripKeyLineFromMes(String(msg.mes ?? ''))
+        mesEl.classList.add(FLOOR_CLASS)
+        mesText.prepend(makeHost(buildOpeningCardHtml(userText)))
+      } else {
+        cleanupFloorEl(mesEl)
+      }
+      return
+    }
     const depth = chat.length - 1 - msgId
-    const faded = depth >= RECALL_FADE_MIN_DEPTH
+    const fadeMin = resolveFadeMinDepth(session.getConfig().recallFadeMinDepth)
+    const faded = fadeMin > 0 && depth >= fadeMin
     removeHost(mesText)
     const userText = stripKeyLineFromMes(String(msg.mes ?? ''))
     const innerHtml = buildRecallCardHtml(payload, userText, faded)

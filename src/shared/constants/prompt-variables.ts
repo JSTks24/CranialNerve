@@ -20,7 +20,7 @@ export const PROMPT_VARIABLES: Record<PromptSceneKey, PromptSceneVariableGroup> 
       },
       {
         name: 'timeFormat',
-        desc: '时间格式说明（ISO 8601，如 YYYY-MM-DDTHH:MM）。告知 AI 纪要表时间列的填写格式。'
+        desc: '时间格式说明（ISO 8601，如 YYYY-MM-DDTHH:MM）。告知 AI 时间列（global_data.cur_time 与纪要表时间列）的填写格式。'
       },
       {
         name: 'tables',
@@ -53,7 +53,7 @@ export const PROMPT_VARIABLES: Record<PromptSceneKey, PromptSceneVariableGroup> 
       },
       {
         name: 'timeFormat',
-        desc: '时间格式说明（ISO 8601，如 YYYY-MM-DDTHH:MM）。告知 AI 纪要表时间列的填写格式。与表格更新共享。'
+        desc: '时间格式说明（ISO 8601，如 YYYY-MM-DDTHH:MM）。告知 AI 时间列（global_data.cur_time 与纪要表时间列）的填写格式。与表格更新共享。'
       },
       {
         name: 'chronicleTable',

@@ -78,8 +78,8 @@ describe('buildChronicleGenPrompt', () => {
   })
 })
 
-describe('buildMergedPrompt 去重', () => {
-  it('共有段去重留一份，主指令各自保留', () => {
+describe('buildMergedPrompt 融合', () => {
+  it('共有段去重留一份，主指令融合为一份且嵌入用户两份主指令', () => {
     const core = mockCore()
     const sharedContent = '<背景设定>\n{{worldbook}}\n</背景设定>'
     const segs = buildMergedPrompt(core, {
@@ -100,13 +100,14 @@ describe('buildMergedPrompt 去重', () => {
     const worldbookSegs = segs.filter((s) => s.name === '世界书上下文')
     expect(worldbookSegs).toHaveLength(1)
     const mainSegs = segs.filter((s) => s.name === '主指令')
-    expect(mainSegs).toHaveLength(2)
-    const contents = mainSegs.map((s) => s.content)
-    expect(contents.some((c) => c.includes('填表指令'))).toBe(true)
-    expect(contents.some((c) => c.includes('纪要生成指令'))).toBe(true)
+    expect(mainSegs).toHaveLength(1)
+    const mainContent = mainSegs[0]!.content
+    expect(mainContent).toContain('填表指令')
+    expect(mainContent).toContain('纪要生成指令')
+    expect(mainContent).toContain('每轮必写')
   })
 
-  it('tables 与 chronicleTable 各自注入不串扰', () => {
+  it('tables 与 chronicleTable 嵌入同一主指令且各自注入不串扰', () => {
     const core = mockCore()
     const segs = buildMergedPrompt(core, {
       tableDefs: [heroTableDef],
@@ -119,11 +120,19 @@ describe('buildMergedPrompt 去重', () => {
         { id: 'cm', name: '纪要指令', role: 'system', content: 'C:{{chronicleTable}}' }
       ]
     })
-    const t = segs.find((s) => s.content.startsWith('T:'))!
-    const c = segs.find((s) => s.content.startsWith('C:'))!
-    expect(t.content).toContain('hero')
-    expect(t.content).not.toContain('CN0001')
-    expect(c.content).toContain('CN0001')
-    expect(c.content).not.toContain('hero')
+    const mainSegs = segs.filter((s) => s.name === '主指令')
+    expect(mainSegs).toHaveLength(1)
+    const mainContent = mainSegs[0]!.content
+    expect(mainContent).toContain('T:')
+    expect(mainContent).toContain('hero')
+    expect(mainContent).toContain('勇者')
+    expect(mainContent).toContain('C:')
+    expect(mainContent).toContain('CN0001')
+    expect(mainContent).toContain('主角抵达王都')
+    const tIdx = mainContent.indexOf('T:')
+    const cIdx = mainContent.indexOf('C:')
+    expect(tIdx).toBeGreaterThan(-1)
+    expect(cIdx).toBeGreaterThan(tIdx)
+    expect(mainContent.slice(tIdx, cIdx)).not.toContain('CN0001')
   })
 })

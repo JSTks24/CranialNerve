@@ -42,6 +42,7 @@ function makeConfig(): CranialNerveConfig {
     recallEnabled: true,
     recallRecentFixedInjectCount: 5,
     recallMinScore: 0.45,
+    recallFadeMinDepth: 2,
     tableFillPresetId: 'p1',
     chronicleGenPresetId: '',
     recallPresetId: '',
@@ -95,12 +96,13 @@ describe('onMessageSentForFill（after-send 填上一轮）', () => {
 
   it('system 消息不当作上一轮 AI，继续往前找', async () => {
     const chat = [
-      { is_user: false, is_system: false, mes: 'ai reply' },
+      { is_user: true, is_system: false, mes: 'hi' },
       { is_user: false, is_system: true, mes: 'system note' },
+      { is_user: false, is_system: false, mes: 'ai reply' },
       { is_user: true, is_system: false, mes: 'new msg' },
     ]
     const { session, getAiPresetForScene } = makeMockSession(chat)
-    await onMessageSentForFill(session, 2)
+    await onMessageSentForFill(session, 3)
     expect(getAiPresetForScene).toHaveBeenCalled()
   })
 

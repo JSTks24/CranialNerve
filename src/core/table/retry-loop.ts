@@ -5,7 +5,7 @@ import type { TableEditSqlV1 } from '@shared/types/ai'
 import type { PromptSegment } from '@shared/types/config'
 import { SQL_EDIT_FORMAT } from '@shared/constants/sql-json'
 import { CHRONICLE_TABLE_NAME } from '@shared/constants/chronicle'
-import executeTableEditSql from './sql-executor'
+import executeTableEditSql, { rewriteChronicleInsert } from './sql-executor'
 import { buildFeedbackMessages } from './prompt-feedback'
 import { sqlMentionsTable } from './sql-mentions'
 
@@ -33,6 +33,8 @@ export interface RunOptions {
   onProgress?: FillProgressFn
   expectedSqlObjects?: number
   requireChronicleInsert?: boolean
+  runMode?: 'table' | 'chronicle' | 'merged'
+  floorSeqs?: (number | null)[]
 }
 
 export interface RunPersist {
@@ -76,7 +78,7 @@ export default class TableEditor {
       }
       options.onProgress?.('calling_ai', { attempt, maxRetries: options.maxRetries })
       const messages =
-        attempt === 1 ? baseMessages : buildFeedbackMessages(baseMessages, lastRaw, lastError)
+        attempt === 1 ? baseMessages : buildFeedbackMessages(baseMessages, lastRaw, lastError, options.runMode)
       let raw: string
       try {
         raw = await this.ai.chatCompletion(
@@ -97,9 +99,11 @@ export default class TableEditor {
 
       if (parsed.ok) {
         if (options.requireChronicleInsert) {
-          const missing = parsed.objects.some((o) => !sqlMentionsTable(o.sql, CHRONICLE_TABLE_NAME))
-          if (missing) {
-            lastError = `每一轮必须输出一条对 ${CHRONICLE_TABLE_NAME} 表的 INSERT`
+          const missingIdx = parsed.objects
+            .map((o, i) => (sqlMentionsTable(o.sql, CHRONICLE_TABLE_NAME) ? -1 : i))
+            .filter((i) => i >= 0)
+          if (missingIdx.length > 0) {
+            lastError = `第 ${missingIdx.map((i) => i + 1).join('、')} 个元素缺少对 ${CHRONICLE_TABLE_NAME} 表的 INSERT（每轮必写）`
             lastCategory = 'model'
             if (attempt < options.maxRetries) {
               await new Promise((resolve) => setTimeout(resolve, 5000))
@@ -109,10 +113,20 @@ export default class TableEditor {
         }
         options.onProgress?.('saving', { attempt, maxRetries: options.maxRetries })
         const persistArg = persist ? { ctx: persist.ctx, messageId: persist.messageId } : undefined
-        const result = executeTableEditSql(this.core, parsed.objects, persistArg)
+        // 纪要 key 系统改写：每层改用楼层绑定序号并转 REPLACE，重填覆盖不堆积。
+        const edits = options.floorSeqs
+          ? parsed.objects.map((o, k) => {
+              const seq = options.floorSeqs![k]
+              if (seq == null) return o
+              if (!sqlMentionsTable(o.sql, CHRONICLE_TABLE_NAME)) return o
+              const rewritten = rewriteChronicleInsert(o.sql, seq)
+              return rewritten != null ? { ...o, sql: rewritten } : o
+            })
+          : parsed.objects
+        const result = executeTableEditSql(this.core, edits, persistArg)
         if (result.ok) {
           options.onProgress?.('complete', { attempt, maxRetries: options.maxRetries })
-          return { ok: true, attempts: attempt, sqls: parsed.objects.map((o) => o.sql) }
+          return { ok: true, attempts: attempt, sqls: edits.map((o) => o.sql) }
         }
         lastError = result.error ?? 'unknown sql error'
         lastCategory = result.errorCategory ?? 'model'

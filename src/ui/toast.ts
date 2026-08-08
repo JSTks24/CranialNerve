@@ -16,7 +16,7 @@ function injectStyle(): void {
   s.id = 'cn_toast_style'
   s.textContent = `
 .cn-toast-vp{position:fixed;top:16px;right:16px;z-index:var(--cn-z-toast);display:flex;flex-direction:column;gap:10px;pointer-events:none}
-.cn-toast{display:flex;flex-direction:column;width:360px;max-width:calc(100vw-32px);border-radius:10px;box-shadow:0 6px 24px rgba(16,42,28,.16);overflow:hidden;pointer-events:auto;opacity:0;transform:translateX(16px);transition:opacity .25s ease,transform .25s ease}
+.cn-toast{display:flex;flex-direction:column;width:360px;max-width:calc(100vw-32px);border-radius:10px;box-shadow:0 6px 24px rgba(16,42,28,.16);overflow:hidden;pointer-events:auto;opacity:0;transform:translateX(16px);transition:opacity .25s ease,transform .25s ease;font-family:'Segoe UI Variable Text','Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'HarmonyOS Sans SC','MiSans','Source Han Sans SC','PingFang SC','Microsoft YaHei',sans-serif}
 .cn-toast--show{opacity:1;transform:translateX(0)}
 .cn-toast__hd{display:flex;align-items:center;gap:8px;padding:8px 14px;background:#fff;border:1px solid #d8e4db;border-bottom:0;border-radius:10px 10px 0 0;font-size:13px;font-weight:600;color:#1e2c24}
 .cn-toast__hd i{font-size:16px}
@@ -36,7 +36,7 @@ function injectStyle(): void {
 .cn-toast__close{width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;margin-left:auto;border:0;border-radius:4px;background:transparent;color:#8ca196;font-size:13px;cursor:pointer;flex-shrink:0;transition:background 0.15s,color 0.15s}
 .cn-toast__close:hover{background:#f2f7f4;color:#1e2c24}
 .cn-toast--progress .cn-toast__bd i{color:#128252}
-.cn-toast--progress .cn-toast__bd span{font-family:'Consolas','Courier New',monospace;font-size:13px}
+.cn-toast--progress .cn-toast__bd span{font-family:'JetBrains Mono','Cascadia Code','Sarasa Mono SC',Consolas,'Courier New',monospace;font-size:13px}
 .cn-toast--progress{border-left:4px solid #128252}
 `
   document.head.appendChild(s)

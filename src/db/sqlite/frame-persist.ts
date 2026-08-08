@@ -103,19 +103,8 @@ export function writeCheckpoint(
 	ctx.repo.saveFrame(messageId, frame)
 }
 
-export function ensureInitCheckpoint(
-	ctx: PersistContext,
-	messageId: number,
-	templateId?: string
-): void {
-	const existing = ctx.repo.loadFrame(messageId)
-	if (existing?.checkpoint) return
-	writeCheckpoint(ctx, messageId, 'init', templateId)
-}
-
 export interface PersistFillOpts {
 	strategy: SnapshotStrategy
-	interval: number
 	retainFloors: number
 	templateId?: string
 }
@@ -131,50 +120,35 @@ export function persistFill(
 		writeCheckpoint(ctx, messageId, 'manual', opts.templateId)
 		return
 	}
-	const hasAny = ctx.repo.findLatestFrameMessageId() != null
-	if (!hasAny) {
-		writeCheckpoint(ctx, messageId, 'init', opts.templateId)
-		const reasons = collectAiFillReasons(operations)
-		if (reasons.length > 0) {
-			const frame = ctx.repo.loadFrame(messageId)
-			if (frame) {
-				const merged = [...new Set([...(frame.summarizedReasons ?? []), ...reasons])]
-				frame.summarizedReasons = merged
-				ctx.repo.saveFrame(messageId, frame)
-			}
-		}
-		return
-	}
 	if (operations.length > 0) {
 		appendSqlLog(ctx, messageId, operations)
 	}
-	maybePeriodicCheckpoint(ctx, messageId, opts.interval, opts.templateId)
 	if (opts.strategy === 'retain-recent') {
 		retainRecentFrames(ctx, opts.retainFloors)
 	}
 }
 
-function maybePeriodicCheckpoint(
+export function writeBucketCheckpoint(
 	ctx: PersistContext,
-	messageId: number,
-	interval: number,
-	templateId?: string
+	lastFloor: number,
+	opts: { interval: number; templateId?: string }
 ): void {
-	if (interval <= 0) return
 	const ids = ctx.repo.listFrameMessageIds()
 	let lastCpId: number | null = null
 	for (const id of ids) {
-		if (id > messageId) continue
+		if (id > lastFloor) continue
 		const f = ctx.repo.loadFrame(id)
 		if (f?.checkpoint) {
 			lastCpId = id
 			break
 		}
 	}
-	if (lastCpId == null) return
-	if (lastCpId === messageId) return
-	if (messageId - lastCpId >= interval) {
-		writeCheckpoint(ctx, messageId, 'periodic', templateId)
+	if (lastCpId == null) {
+		writeCheckpoint(ctx, lastFloor, 'init', opts.templateId)
+		return
+	}
+	if (opts.interval > 0 && lastFloor - lastCpId >= opts.interval) {
+		writeCheckpoint(ctx, lastFloor, 'periodic', opts.templateId)
 	}
 }
 

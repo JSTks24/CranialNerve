@@ -95,6 +95,7 @@ const DEFAULT_CONFIG: CranialNerveConfig = {
   recallEnabled: true,
   recallRecentFixedInjectCount: 5,
   recallMinScore: 0.45,
+  recallFadeMinDepth: 2,
   tableFillPresetId: '',
   chronicleGenPresetId: '',
   recallPresetId: '',

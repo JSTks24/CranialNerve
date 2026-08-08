@@ -124,6 +124,7 @@ export interface CranialNerveConfig {
   recallEnabled: boolean
   recallRecentFixedInjectCount: number
   recallMinScore: number
+  recallFadeMinDepth: number
   tableFillPresetId: string
   chronicleGenPresetId: string
   recallPresetId: string

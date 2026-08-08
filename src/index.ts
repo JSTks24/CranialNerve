@@ -20,7 +20,7 @@ export async function init(): Promise<void> {
 	if (Array.isArray(ctx.extensionSettings.regex)) {
 		ctx.extensionSettings.regex = removeCNRegexScripts(ctx.extensionSettings.regex as Record<string, unknown>[])
 	}
-	registerGenerateInterceptor()
+	registerGenerateInterceptor(() => session.getConfig().recallFadeMinDepth)
 	window.addEventListener('beforeunload', () => {
 		try {
 			session.worldbook.detachFromChatSync()

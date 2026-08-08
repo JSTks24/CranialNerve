@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import SqliteCore from '../src/db/sqlite/core'
 import createFrameRepo from '../src/db/sqlite/storage-frame-repo'
 import { createPersistContext } from '../src/db/sqlite/frame-persist'
-import executeTableEditSql from '../src/core/table/sql-executor'
+import executeTableEditSql, { rewriteChronicleInsert } from '../src/core/table/sql-executor'
 import { SQL_EDIT_FORMAT } from '../src/shared/constants/sql-json'
 import type { ChatGateway } from '../src/db/gateways/chat'
 import type { TableEditSqlV1 } from '../src/shared/types/ai'
@@ -111,5 +111,30 @@ describe('executeTableEditSql 落帧失败处理（1.5 修复：SQL 已执行但
     expect(rows[0]!.rows).toHaveLength(1)
     expect(rows[0]!.rows[0]!.v).toBe('new')
     core.dispose()
+  })
+})
+
+describe('rewriteChronicleInsert 楼层 key 改写', () => {
+  it('单行 VALUES 改写为 REPLACE 与楼层 key', () => {
+    const sql = "INSERT INTO cn_chronicle (key, chronicle_text) VALUES ('CN0099', '剧情')"
+    const r = rewriteChronicleInsert(sql, 5)
+    expect(r).toContain('REPLACE INTO cn_chronicle')
+    expect(r).toContain("'CN0005'")
+    expect(r).toContain('剧情')
+  })
+
+  it('多行 VALUES 无法安全改写时返回 null（原 SQL 走兜底）', () => {
+    const sql = "INSERT INTO cn_chronicle (key, chronicle_text) VALUES ('CN0099', '第一行'), ('CN0100', '第二行')"
+    expect(rewriteChronicleInsert(sql, 5)).toBeNull()
+  })
+
+  it('缺 key 列的 INSERT 不改写返回 null', () => {
+    const sql = "INSERT INTO cn_chronicle (chronicle_text) VALUES ('剧情')"
+    expect(rewriteChronicleInsert(sql, 5)).toBeNull()
+  })
+
+  it('非 cn_chronicle 语句不改写返回 null', () => {
+    const sql = "UPDATE hero SET hp = 50 WHERE name = '勇者'"
+    expect(rewriteChronicleInsert(sql, 5)).toBeNull()
   })
 })

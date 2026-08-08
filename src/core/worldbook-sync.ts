@@ -4,6 +4,13 @@ import type { TablePlacementPosition } from '@shared/types/table'
 import { CHRONICLE_TABLE_NAME, CHRONICLE_COLUMNS } from '@shared/constants/chronicle'
 import { DEFAULT_ENTRY_PLACEMENT, CHRONICLE_ENTRY_PLACEMENT } from '@shared/constants/worldbook'
 import { pushLog } from '@shared/log-buffer'
+import {
+  computeTableFingerprint,
+  entryKeywords,
+  entryMatches,
+  readKeywordsCache,
+  writeKeywordsCache
+} from './keyword-cache'
 
 function positionToRole(position: TablePlacementPosition): number {
   if (position === 'at_depth_as_user') return 1
@@ -97,11 +104,22 @@ export async function syncToWorldbook(session: CranialNerveSession): Promise<voi
         const rows = result.rows
         let rowKeysList: string[][]
         if (exportCfg.keywordMode === 'ai_prompt') {
-          try {
-            rowKeysList = await session.generateKeywordsForRows(tableName)
-          } catch (e) {
-            pushLog('warn', 'worldbook', `AI 生成行关键词失败 ${tableName}: ${e instanceof Error ? e.message : String(e)}`)
-            continue
+          const cache = readKeywordsCache(session, tableName)
+          const tableFp = computeTableFingerprint(tableDef, result.columns)
+          const validCache = cache !== null && cache.tf === tableFp ? cache : null
+          const hasMissing = validCache === null || rows.some((row) => !entryMatches(validCache, tableDef, row))
+          if (hasMissing) {
+            try {
+              rowKeysList = await session.generateKeywordsForRows(tableName)
+              writeKeywordsCache(session, tableName, rows, rowKeysList, tableFp)
+            } catch (e) {
+              pushLog('warn', 'worldbook', `AI 生成行关键词失败 ${tableName}: ${e instanceof Error ? e.message : String(e)}`)
+              rowKeysList = rows.map((row) =>
+                validCache !== null && entryMatches(validCache, tableDef, row) ? entryKeywords(validCache, row) : []
+              )
+            }
+          } else {
+            rowKeysList = rows.map((row) => entryKeywords(validCache!, row))
           }
         } else {
           const keywordCol = exportCfg.keywordColumn
@@ -160,7 +178,9 @@ export async function syncToWorldbook(session: CranialNerveSession): Promise<voi
   }
   const data: WorldInfoData = { entries }
   await wb.saveLorebook(bookName, data)
-  await wb.attachToChat(bookName)
+  if (!wb.isAttachedToChat(bookName)) {
+    await wb.attachToChat(bookName)
+  }
 }
 
 function findKeyColumn(

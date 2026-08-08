@@ -45,6 +45,15 @@ describe('默认模板 5 表结构与新列', () => {
     expect(pkCols[0]!.name).toBe('state_key')
   })
 
+  it('全局数据表时间列精简：仅保留 cur_time', () => {
+    const table = template.tables.find((t) => t.name === 'global_data')
+    expect(table).toBeDefined()
+    const cols = table!.columns.map((c) => c.name)
+    expect(cols).toContain('cur_time')
+    expect(cols).not.toContain('prev_scene_time')
+    expect(cols).not.toContain('elapsed_time')
+  })
+
   it('主角信息表含近况列，重要角色表含人际关系列', () => {
     const protagonist = template.tables.find((t) => t.name === 'protagonist_info')
     expect(protagonist?.columns.map((c) => c.name)).toContain('current_condition')

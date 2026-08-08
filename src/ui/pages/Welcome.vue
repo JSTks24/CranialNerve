@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, computed, onActivated } from 'vue'
+import { ref, computed, onActivated, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { getSession } from '@core/session'
 import { detectLastSummarizedAiFloor } from '@core/table/fill-orchestrator'
 import { applyDefaults } from '@shared/config-defaults'
 import toast from '@ui/toast'
 import { pushLog } from '@shared/log-buffer'
+import { useFillStatusStore } from '@ui/stores/fill-status'
 
 const router = useRouter()
 const session = getSession()
@@ -133,6 +134,9 @@ function onExportSnapshot() {
 function go(path: string) {
 	router.push(path)
 }
+
+const fillStore = useFillStatusStore()
+watch(() => fillStore.dataVersion, () => refresh())
 
 onActivated(refresh)
 refresh()

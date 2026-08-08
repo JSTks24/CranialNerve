@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed, watch, onScopeDispose } from 'vue'
 import { subscribeFillState, getFillState, type FillRunMode, type FillProgressState } from '@core/table/fill-orchestrator'
+import { subscribeDataChanged, getDataVersion } from '@core/data-version'
 import toast from '@ui/toast'
 
 export const useFillStatusStore = defineStore('cn-fill-status', () => {
@@ -12,7 +13,17 @@ export const useFillStatusStore = defineStore('cn-fill-status', () => {
     runMode.value = r
     progress.value = p
   })
-  onScopeDispose(unsubscribe)
+  const dataVersion = ref(getDataVersion())
+  const unsubscribeData = subscribeDataChanged(() => {
+    dataVersion.value = getDataVersion()
+  })
+  onScopeDispose(() => {
+    unsubscribe()
+    unsubscribeData()
+  })
+  function bumpDataVersion(): void {
+    dataVersion.value++
+  }
   const tableActive = computed(() => busy.value && (runMode.value === 'table' || runMode.value === 'merged'))
   const chronicleActive = computed(() => busy.value && (runMode.value === 'chronicle' || runMode.value === 'merged'))
   const progressTick = computed(() => progress.value?.tick ?? 0)
@@ -32,5 +43,5 @@ export const useFillStatusStore = defineStore('cn-fill-status', () => {
       toast.warning(`第 ${progress.value?.currentBucket ?? '?'}/${progress.value?.totalBuckets ?? '?'} 批预计输出约 ${w.estimatedTokens} tokens，超出预设 maxTokens（${w.maxTokens}），建议减小每批楼层数或调大 maxTokens`)
     }
   )
-  return { busy, runMode, progress, progressTick, currentBucket, totalBuckets, tableActive, chronicleActive }
+  return { busy, runMode, progress, progressTick, currentBucket, totalBuckets, tableActive, chronicleActive, dataVersion, bumpDataVersion }
 })

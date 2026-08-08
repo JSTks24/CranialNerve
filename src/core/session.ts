@@ -27,15 +27,15 @@ import type {
 } from '@db/gateways'
 import type { ConfigGateway } from '@db/gateways/config'
 import SqliteSyncBridge from '@db/sqlite/sync-bridge'
-import { persistFill, createPersistContext } from '@db/sqlite/frame-persist'
-import { buildSnapshotFromCore } from '@db/sqlite/snapshot-builder'
+import { persistFill, createPersistContext, writeBucketCheckpoint, retainRecentFrames } from '@db/sqlite/frame-persist'
 import type { MutationOperation } from '@shared/types/storage-frame'
 import NameMapper from '@shared/namemapper'
 import { buildCreateTableSql, quoteIdent } from '@shared/template-builder'
 import { CHRONICLE_TABLE_NAME, CHRONICLE_COLUMNS } from '@shared/constants/chronicle'
 import { validateTimeRegistration, clearTimeRegistration } from './time'
-import { analyzeMigration as analyzeTemplateMigration, migrateCommonData as migrateTemplateData, type MigrationDiff } from './template-migrate'
 import { clearChatData } from './chat-reset'
+import { flushChatSave } from './chat-save'
+import { migrateChronicleKeymap } from './table/chronicle-keymap'
 import { EVENT_CHAT_CHANGED } from '@shared/constants/events'
 import type { CardTemplate } from '@shared/types/card'
 import type { QueryResult, TableDef } from '@shared/types/table'
@@ -62,6 +62,7 @@ import { stripKeyLineFromMes } from '@shared/recall-payload'
 import { RECALL_FIELD_PREFIX } from '@shared/constants'
 import { exportCheckpoint, validateCheckpointFile } from './checkpoint-transfer'
 import { pushLog } from '@shared/log-buffer'
+import { notifyDataChanged } from './data-version'
 import { EVENT_GENERATION_ENDED, EVENT_GENERATION_AFTER_COMMANDS, EVENT_CHAT_RENAMED, EVENT_GENERATION_STARTED, EVENT_GENERATION_STOPPED, EVENT_MESSAGE_DELETED, EVENT_MESSAGE_SENT, EVENT_MESSAGE_EDITED } from '@shared/constants/events'
 
 function parseRowKeywords(raw: string, expectedRows: number): string[][] {
@@ -206,6 +207,7 @@ export class CranialNerveSession {
         return
       }
       this.realGenerationPending = true
+      notifyDataChanged()
       const isRegenerate = type === 'regenerate' || type === 'swipe'
       if (isRegenerate) {
         pushLog('info', 'session', 'regenerate/swipe：延迟删除旧帧，生成成功后回退并填表，中止则保留数据')
@@ -444,6 +446,7 @@ export class CranialNerveSession {
     this.lastRecalledUserSendDate = null
     this.realGenerationPending = false
     this.abortCurrentTask()
+    await flushChatSave(this)
     try {
       await this.writeQueue.waitForDrain(this.getConfig().pending.writeQueueDrainTimeoutMs)
     } catch (e) {
@@ -483,12 +486,14 @@ export class CranialNerveSession {
     }
     this.core.run(buildCreateTableSql(this.getChronicleTableDef()))
     this.loadFromChat()
+    migrateChronicleKeymap(this)
     this.warnOnCriticalLoadWarnings()
     if (mySeq !== this.reloadSeq) {
       return
     }
     this.backfillRecallDisplayText()
     await this.setupWorldbook(mySeq)
+    notifyDataChanged()
   }
 
   private backfillRecallDisplayText(): void {
@@ -603,78 +608,74 @@ export class CranialNerveSession {
     return template
   }
 
-  private hasActualTableData(): boolean {
-    const names = this.core.listTables().filter((n) => !n.startsWith('sqlite_') && n !== CHRONICLE_TABLE_NAME)
-    return names.some((n) => {
-      const r = this.core.exec(`SELECT COUNT(*) AS c FROM ${quoteIdent(n)}`)
-      return (r[0]?.rows[0]?.c as number) > 0
-    })
-  }
-
-  async reinitWithTemplate(template: CardTemplate, id?: string, opts?: { migrate?: boolean }): Promise<void> {
-    const hasData = this.hasActualTableData()
-    const oldSnapshot = hasData ? buildSnapshotFromCore(this.core) : null
-    const oldTemplate = this.getBoundTemplate() ?? this.template
-    const migrate = opts?.migrate !== false
-    if (hasData && migrate && oldTemplate) {
-      await this.backupBeforeMigration(oldTemplate, oldSnapshot!)
-    }
-    this.template = template
-    this.currentTemplateId = id ?? null
-    this.nameMapper = new NameMapper(template.tables)
-    this.core.dispose()
-    await this.core.init()
-    for (const table of template.tables) {
-      if (!table.name || table.columns.length === 0 || table.enabled === false) continue
-      this.core.run(buildCreateTableSql(table))
-    }
-    this.core.run(buildCreateTableSql(this.getChronicleTableDef()))
-    if (hasData && migrate) {
-      migrateTemplateData(this.core, oldSnapshot!, template)
-    }
-    const chat = this.chat.getChat()
-    const targetId = chat.length - 1
-    if (hasData) {
+  async reinitWithTemplate(template: CardTemplate, id?: string): Promise<void> {
+    await this.runWrite(async () => {
+      const hasChronicle = this.core.listTables().includes(CHRONICLE_TABLE_NAME)
+      const oldRows = hasChronicle ? (this.getTableRowsWithRowid(CHRONICLE_TABLE_NAME)[0]?.rows ?? []) : []
+      this.template = template
+      this.currentTemplateId = id ?? null
+      this.nameMapper = new NameMapper(template.tables)
+      this.core.dispose()
+      await this.core.init()
+      for (const table of template.tables) {
+        if (!table.name || table.columns.length === 0 || table.enabled === false) continue
+        this.core.run(buildCreateTableSql(table))
+      }
+      const def = this.getChronicleTableDef()
+      this.core.run(buildCreateTableSql(def))
+      if (def.columns.length > 0 && oldRows.length > 0) {
+        const cols = def.columns.map((c) => quoteIdent(c.name))
+        const placeholders = def.columns.map(() => '?').join(', ')
+        const sql = `INSERT INTO ${quoteIdent(CHRONICLE_TABLE_NAME)} (${cols.join(', ')}) VALUES (${placeholders})`
+        let skippedRows = 0
+        for (const row of oldRows) {
+          const values = def.columns.map((c) => {
+            const v = (row as Record<string, unknown>)[c.name]
+            return v == null ? '' : String(v)
+          })
+          try {
+            this.core.run(sql, values)
+          } catch (e) {
+            skippedRows++
+            pushLog('warn', 'session', `切换模板回填纪要跳过冲突行: ${e instanceof Error ? e.message : String(e)}`)
+          }
+        }
+        if (skippedRows > 0) {
+          this.toastNotifier?.warning(`切换模板后 ${skippedRows} 行纪要因不满足新结构被跳过`)
+        }
+      }
       this.writeBoundTemplate(template)
+      if (id) this.writeTemplateId(id)
+      const chat = this.chat.getChat()
+      const targetId = chat.length - 1
       if (this.syncBridge && targetId >= 0) {
         this.syncBridge.removeAllSnapshots()
         this.syncBridge.writeCheckpoint(targetId, 'manual', this.currentTemplateId ?? undefined)
       }
-    }
-    try {
-      await syncToWorldbook(this)
-    } catch (e) {
-      pushLog('error', 'session', `reinitWithTemplate 同步世界书失败: ${e instanceof Error ? e.message : String(e)}`)
-    }
-    resetFillScheduler()
-  }
-
-  analyzeMigration(newTemplate: CardTemplate): MigrationDiff {
-    const oldTemplate = this.getBoundTemplate() ?? this.template
-    const oldSnapshot = buildSnapshotFromCore(this.core)
-    return analyzeTemplateMigration(oldTemplate, newTemplate, oldSnapshot)
-  }
-
-  private async backupBeforeMigration(oldTemplate: CardTemplate, oldSnapshot: import('@shared/types/table').DatabaseSnapshot): Promise<void> {
-    try {
-      const fs = createFileStorageGateway()
-      const token = this.getChatToken()
-      const name = `CranialNerve/migration-backup-${token}-${Date.now()}.json`
-      const content = JSON.stringify({ createdAt: Date.now(), template: oldTemplate, snapshot: oldSnapshot })
-      await fs.save(name, content)
-      pushLog('info', 'session', `迁移前备份已保存: ${name}`)
-      this.toastNotifier?.info(`迁移前备份已保存: ${name}`)
-    } catch (e) {
-      pushLog('warn', 'session', `迁移前备份失败: ${e instanceof Error ? e.message : String(e)}`)
-      this.toastNotifier?.warning(`迁移前备份失败: ${e instanceof Error ? e.message : String(e)}`)
-    }
+      try {
+        await syncToWorldbook(this)
+      } catch (e) {
+        pushLog('error', 'session', `reinitWithTemplate 同步世界书失败: ${e instanceof Error ? e.message : String(e)}`)
+      }
+      await this.chat.saveChat().catch((e) => {
+        pushLog('warn', 'session', `reinitWithTemplate 保存聊天失败: ${e instanceof Error ? e.message : String(e)}`)
+      })
+      resetFillScheduler()
+      notifyDataChanged()
+    })
   }
 
   private initSessionTemplate(): void {
     const bound = this.readBoundTemplate()
     if (bound) {
       try {
-        this.initGameSession(bound, '__bound__')
+        const boundId = this.readTemplateId()
+        const cfg = this.getConfig()
+        if (boundId && cfg.tableTemplate.presets.some((p) => p.id === boundId)) {
+          this.initGameSession(bound, boundId)
+        } else {
+          this.initGameSession(bound, '__bound__')
+        }
         return
       } catch (e) {
         pushLog('warn', 'session', `绑定模板加载失败，降级: ${e instanceof Error ? e.message : String(e)}`)
@@ -811,6 +812,7 @@ export class CranialNerveSession {
     this.nameMapper = new NameMapper(file.templateSnapshot.tables)
     const targetId = this.getLastAiMessageId() ?? 0
     this.syncBridge.writeCheckpoint(targetId, 'import', this.currentTemplateId ?? undefined)
+    notifyDataChanged()
     this.toastNotifier?.info('表格数据与模板已随快照导入')
     return { ok: true }
   }
@@ -830,6 +832,7 @@ export class CranialNerveSession {
     if (lastMsgId >= 0) {
       this.syncBridge.writeCheckpoint(lastMsgId, 'manual', this.currentTemplateId ?? undefined)
     }
+    notifyDataChanged()
     this.toastNotifier?.info(`已恢复到第 ${index + 1} 楼状态并保存`)
     return true
   }
@@ -845,6 +848,7 @@ export class CranialNerveSession {
       retainFloors: cfg.retainFloors,
       templateId: this.currentTemplateId ?? undefined
     })
+    notifyDataChanged()
   }
 
   getBoundTemplate(): CardTemplate | null {
@@ -861,14 +865,41 @@ export class CranialNerveSession {
     this.chat.writeChatMetadata('CN_TEMPLATE', template)
   }
 
+  private readTemplateId(): string | null {
+    const raw = this.chat.readChatMetadata('CN_TEMPLATE_ID')
+    return typeof raw === 'string' && raw.length > 0 ? raw : null
+  }
+
+  private writeTemplateId(id: string): void {
+    this.chat.writeChatMetadata('CN_TEMPLATE_ID', id)
+  }
+
+  getBoundTemplateId(): string | null {
+    return this.readTemplateId()
+  }
+
   ensureBoundTemplate(): void {
     if (!this.template) return
     if (this.readBoundTemplate() != null) return
+    if (this.hasActualTableData()) return
     this.writeBoundTemplate(this.template)
+    const currentId = this.currentTemplateId
+    if (currentId && this.getConfig().tableTemplate.presets.some((p) => p.id === currentId)) {
+      this.writeTemplateId(currentId)
+    }
+  }
+
+  private hasActualTableData(): boolean {
+    const names = this.core.listTables().filter((n) => !n.startsWith('sqlite_') && n !== CHRONICLE_TABLE_NAME)
+    return names.some((n) => {
+      const r = this.core.exec(`SELECT COUNT(*) AS c FROM ${quoteIdent(n)}`)
+      return (r[0]?.rows[0]?.c as number) > 0
+    })
   }
 
   unbindBoundTemplate(): void {
     this.chat.writeChatMetadata('CN_TEMPLATE', undefined)
+    this.chat.writeChatMetadata('CN_TEMPLATE_ID', undefined)
   }
 
   persistAfterFill(messageId: number, operations: MutationOperation[]): void {
@@ -880,10 +911,27 @@ export class CranialNerveSession {
     const ctx = createPersistContext(repo, this.core)
     persistFill(ctx, messageId, operations, {
       strategy: cfg.snapshotStrategy,
-      interval: cfg.checkpointInterval,
       retainFloors: cfg.retainFloors,
       templateId: this.currentTemplateId ?? undefined
     })
+    notifyDataChanged()
+  }
+
+  finishFillBucket(lastFloor: number): void {
+    if (!this.syncBridge) return
+    const cfg = this.config.read()
+    if (cfg.snapshotStrategy === 'latest-only') return
+    const repo = this.getSyncBridgeRepo()
+    if (!repo) return
+    this.ensureBoundTemplate()
+    const ctx = createPersistContext(repo, this.core)
+    writeBucketCheckpoint(ctx, lastFloor, {
+      interval: cfg.checkpointInterval,
+      templateId: this.currentTemplateId ?? undefined
+    })
+    if (cfg.snapshotStrategy === 'retain-recent') {
+      retainRecentFrames(ctx, cfg.retainFloors)
+    }
   }
 
   private getLastAiMessageId(): number | null {
@@ -913,6 +961,7 @@ export class CranialNerveSession {
     const targetId = this.getLastAiMessageId()
     if (targetId == null) return
     this.syncBridge.appendManualSqlLog(targetId, statements, params)
+    notifyDataChanged()
   }
 
   getConfig(): CranialNerveConfig {
@@ -1025,6 +1074,14 @@ export class CranialNerveSession {
     return this.template
   }
 
+  getCardTemplate(): CardTemplate | null {
+    try {
+      return this.character.readTemplateFromCard()
+    } catch {
+      return null
+    }
+  }
+
   getDefaultTemplate(): CardTemplate | null {
     return getGatewayDefaultTemplate()
   }
@@ -1054,6 +1111,7 @@ export class CranialNerveSession {
       throw new Error('session not initialized')
     }
     this.syncBridge.applySnapshotExternal(snapshot)
+    notifyDataChanged()
   }
 
   async runManualRefill(opts?: ExecuteFillOptions): Promise<import('./table/retry-loop').RunResult> {
@@ -1119,6 +1177,7 @@ export class CranialNerveSession {
       } catch (e) {
         pushLog('error', 'session', `applyChronicleTableDef 同步失败: ${e instanceof Error ? e.message : String(e)}`)
       }
+      notifyDataChanged()
     })
   }
 

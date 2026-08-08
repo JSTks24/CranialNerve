@@ -3,6 +3,7 @@ import { ref, computed, watch, onMounted, onActivated } from 'vue'
 import { getSession } from '@core/session'
 import { CHRONICLE_TABLE_NAME, CHRONICLE_COLUMNS } from '@shared/constants/chronicle'
 import { syncToWorldbook } from '@core/worldbook-sync'
+import { scheduleChatSave } from '@core/chat-save'
 import toast from '@ui/toast'
 import { useFillStatusStore } from '@ui/stores/fill-status'
 import confirm from '@ui/dialog'
@@ -19,6 +20,7 @@ interface RowData {
 const session = getSession()
 const rows = ref<RowData[]>([])
 const chatActive = ref(false)
+const refreshTick = ref(0)
 const keyword = ref('')
 const editingRowid = ref<number | null>(null)
 const editSnapshot = ref<RowData | null>(null)
@@ -60,6 +62,7 @@ function parseImportantWord(val: unknown): { label: string; value: string }[] {
 
 function refresh() {
   chatActive.value = session.isChatActive()
+  refreshTick.value++
   try {
     const result = session.getTableRowsWithRowid(CHRONICLE_TABLE_NAME)
     const first = result[0]
@@ -158,9 +161,7 @@ async function persistChanges() {
     session.saveToChat(lastMsgId)
   }
   await syncToWorldbook(session)
-  try {
-    await session.chat.saveChat()
-  } catch {}
+  scheduleChatSave(session)
 }
 
 function addRow() {
@@ -220,9 +221,14 @@ function defaultInput(r: { value: number | null }, fallback: number) {
 const manualDepthInput = defaultInput(manualDepth, session.getConfig().chronicleFill.contextDepth)
 const manualBatchInput = defaultInput(manualBatch, session.getConfig().chronicleFill.batchSize)
 
-const aiFloorCount = computed(() => session.chat.getChat().filter((m) => !m.is_user && !m.is_system).length)
+const aiFloorCount = computed(() => {
+  void fillStore.dataVersion
+  return session.chat.getChat().filter((m) => !m.is_user && !m.is_system).length
+})
 const lastSummarized = computed(() => {
   void fillStore.progressTick
+  void refreshTick.value
+  void fillStore.dataVersion
   return detectLastSummarizedAiFloor(session, 'chronicle')
 })
 const summarizedAiCount = computed(() => {
@@ -233,6 +239,7 @@ const summarizedAiCount = computed(() => {
 const unrecordedCount = computed(() => Math.max(0, aiFloorCount.value - summarizedAiCount.value))
 const expectedRange = computed(() => {
   void fillStore.progressTick
+  void fillStore.dataVersion
   const chat = session.chat.getChat()
   const depth = manualDepth.value ?? session.getConfig().chronicleFill.contextDepth
   const aiFloors: number[] = []
@@ -240,14 +247,14 @@ const expectedRange = computed(() => {
     if (!chat[i]!.is_user && !chat[i]!.is_system) aiFloors.push(i)
   }
   if (aiFloors.length === 0) return '无 AI 楼层'
-  const takeCount = depth > 0 ? Math.min(depth, aiFloors.length) : aiFloors.length
+  const takeCount = depth > 0 ? Math.min(depth, aiFloors.length) : Math.min(10, aiFloors.length)
   return `AI第 ${aiFloors.length - takeCount + 1}~${aiFloors.length} 层（共 ${takeCount} 个 AI 楼层）`
 })
 
 function saveManualDepth() {
   const c = session.getConfig()
   const v = manualDepth.value
-  c.chronicleFill.manualUpdateContextDepth = v === null ? null : clampInt(v, 0, 50, 0)
+  c.chronicleFill.manualUpdateContextDepth = v === null ? null : clampInt(v, 1, 50, 1)
   manualDepth.value = c.chronicleFill.manualUpdateContextDepth
   session.saveConfig(c)
 }
@@ -284,7 +291,7 @@ function computeChronicleCatchUpRange() {
   const fromSeq = aiFloorSeqOf(fromIdx)
   const toSeq = aiFloorSeqOf(toIdx)
   const aiCount = aiFloors.filter((idx) => idx >= fromIdx && idx <= toIdx).length
-  const batch = Math.max(1, manualBatch.value ?? session.getConfig().chronicleFill.batchSize)
+  const batch = Math.min(5, Math.max(1, manualBatch.value ?? session.getConfig().chronicleFill.batchSize))
   const totalBuckets = Math.max(1, Math.ceil(aiCount / batch))
   return { fromIdx, toIdx, fromSeq, toSeq, aiCount, totalBuckets }
 }
@@ -335,7 +342,7 @@ async function runChronicleCatchUp() {
     toast.info('当前已同步，无需追平')
     return
   }
-  const rangeText = `将从第 ${range.fromSeq} 层追平至第 ${range.toSeq} 层（共 ${range.aiCount} 个 AI 楼层，约 ${range.totalBuckets} 批）`
+  const rangeText = `将追平第${range.fromSeq}~${range.toSeq}层（共${range.aiCount}个AI楼层，约${range.totalBuckets}批）`
   const confirmed = await confirm('追平未总结楼层', rangeText, '确认追平')
   if (!confirmed) return
   busy.value = true
@@ -359,6 +366,7 @@ async function runChronicleCatchUp() {
 }
 
 onMounted(refresh)
+watch(() => fillStore.dataVersion, () => refresh())
 onActivated(() => {
   refresh()
   manualDepth.value = session.getConfig().chronicleFill.manualUpdateContextDepth
@@ -415,7 +423,7 @@ onActivated(() => {
               <div class="mf-grid-2">
                 <div class="mf-field">
                   <label class="mf-field__label">处理最近 N 个 AI 楼层</label>
-                  <input class="cn-input cn-input--nospin" type="number" min="0" max="50" step="1" v-model="manualDepthInput" @change="saveManualDepth" />
+                  <input class="cn-input cn-input--nospin" type="number" min="1" max="50" step="1" v-model="manualDepthInput" @change="saveManualDepth" />
                   <p class="mf-field__hint">处理最近多少个 AI 楼层。</p>
                 </div>
                 <div class="mf-field">

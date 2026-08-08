@@ -9,6 +9,7 @@ export interface WorldbookGateway {
   createWorldbook(name: string): Promise<void>
   deleteWorldbook(name: string): Promise<void>
   listWorldbookNames(): string[]
+  isAttachedToChat(name: string): boolean
   attachToChat(name: string): Promise<void>
   detachFromChat(): Promise<void>
   detachFromChatSync(): void
@@ -76,6 +77,10 @@ export default function createWorldbookGateway(): WorldbookGateway {
         return []
       }
       return ctx.getWorldInfoNames()
+    },
+    isAttachedToChat(name) {
+      const ctx = getHostContext()
+      return ctx.chatMetadata[METADATA_KEY] === name
     },
     async attachToChat(name) {
       const ctx = getHostContext()

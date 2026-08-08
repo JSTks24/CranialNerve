@@ -23,6 +23,11 @@ vi.mock('@core/table/fill-orchestrator', () => ({
   getFillState: () => ({ busy: false, runMode: null, progress: null }),
 }))
 
+vi.mock('@core/data-version', () => ({
+  subscribeDataChanged: () => () => {},
+  getDataVersion: () => 0,
+}))
+
 import { useFillStatusStore } from '../src/ui/stores/fill-status'
 import type { FillRunMode, FillProgressState } from '../src/core/table/fill-orchestrator'
 

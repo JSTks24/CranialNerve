@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import SqliteCore from '../src/db/sqlite/core'
 import SqliteSyncBridge from '../src/db/sqlite/sync-bridge'
-import { persistFill, createPersistContext, retainRecentFrames } from '../src/db/sqlite/frame-persist'
+import { persistFill, createPersistContext, writeBucketCheckpoint, retainRecentFrames } from '../src/db/sqlite/frame-persist'
 import { FRAME_FIELD_PREFIX } from '../src/shared/constants/msg-fields'
 import type { ChatGateway } from '../src/db/gateways/chat'
 import type { StorageFrame, MutationOperation, SqlBatchOperation } from '../src/shared/types/storage-frame'
@@ -45,10 +45,10 @@ function sqlOp(sql: string, reason: SqlBatchOperation['reason'] = 'ai_fill'): Mu
   return { kind: 'sql_batch', statements: [sql], reason }
 }
 
-const OPTS = { strategy: 'every-message' as const, interval: 20, retainFloors: 100 }
+const OPTS = { strategy: 'every-message' as const, retainFloors: 100 }
 
-describe('新存储模型 persistFill', () => {
-  it('首次持久化只写 init 全量 checkpoint，不追加增量（防重载翻倍）', async () => {
+describe('新存储模型 persistFill + writeBucketCheckpoint', () => {
+  it('persistFill 只追加增量；writeBucketCheckpoint 才写 init 全量（快照=当前 DB，清该楼 logEntries）', async () => {
     const core = new SqliteCore()
     await core.init()
     core.run('CREATE TABLE t (c TEXT)')
@@ -57,14 +57,19 @@ describe('新存储模型 persistFill', () => {
     const bridge = new SqliteSyncBridge(core, gateway)
     const ctx = createPersistContext(bridge.getRepo(), core)
     persistFill(ctx, 1, [sqlOp("INSERT INTO t VALUES ('a')")], OPTS)
-    const frame = loadFrame(gateway, 1)
-    expect(frame?.checkpoint?.reason).toBe('init')
-    expect(frame?.checkpoint?.data.tables[0]?.rows).toHaveLength(1)
-    expect(frame?.logEntries).toHaveLength(0)
+    core.run("INSERT INTO t VALUES ('a')")
+    const frameLog = loadFrame(gateway, 1)
+    expect(frameLog?.checkpoint).toBeUndefined()
+    expect(frameLog?.logEntries).toHaveLength(1)
+    writeBucketCheckpoint(ctx, 1, { interval: 20 })
+    const frameCp = loadFrame(gateway, 1)
+    expect(frameCp?.checkpoint?.reason).toBe('init')
+    expect(frameCp?.checkpoint?.data.tables[0]?.rows).toHaveLength(2)
+    expect(frameCp?.logEntries).toHaveLength(0)
     core.dispose()
   })
 
-  it('首次持久化后重载行数不翻倍（端到端）', async () => {
+  it('bucket 边界 checkpoint 后重载行数不翻倍（端到端）', async () => {
     const core = new SqliteCore()
     await core.init()
     core.run('CREATE TABLE t (c TEXT)')
@@ -73,6 +78,7 @@ describe('新存储模型 persistFill', () => {
     const ctx = createPersistContext(bridge.getRepo(), core)
     core.run("INSERT INTO t VALUES ('a')")
     persistFill(ctx, 1, [sqlOp("INSERT INTO t VALUES ('a')")], OPTS)
+    writeBucketCheckpoint(ctx, 1, { interval: 20 })
     const core2 = new SqliteCore()
     await core2.init()
     core2.run('CREATE TABLE t (c TEXT)')
@@ -92,8 +98,9 @@ describe('新存储模型 persistFill', () => {
     const { gateway } = makeChatGateway(6)
     const bridge = new SqliteSyncBridge(core, gateway)
     const ctx = createPersistContext(bridge.getRepo(), core)
-    persistFill(ctx, 1, [sqlOp("INSERT INTO t VALUES ('a')")], OPTS)
+    writeBucketCheckpoint(ctx, 1, { interval: 20 })
     persistFill(ctx, 3, [sqlOp("INSERT INTO t VALUES ('b')")], OPTS)
+    persistFill(ctx, 5, [sqlOp("INSERT INTO t VALUES ('c')")], OPTS)
     const frame1 = loadFrame(gateway, 1)
     const frame3 = loadFrame(gateway, 3)
     expect(frame1?.checkpoint?.reason).toBe('init')
@@ -102,18 +109,17 @@ describe('新存储模型 persistFill', () => {
     core.dispose()
   })
 
-  it('定期 checkpoint：楼层差超 interval 时写 periodic 全量', async () => {
+  it('定期 checkpoint：bucket 边界楼层差超 interval 时写 periodic 全量', async () => {
     const core = new SqliteCore()
     await core.init()
     core.run('CREATE TABLE t (c TEXT)')
     const { gateway } = makeChatGateway(10)
     const bridge = new SqliteSyncBridge(core, gateway)
     const ctx = createPersistContext(bridge.getRepo(), core)
-    const opts = { strategy: 'every-message' as const, interval: 5, retainFloors: 100 }
-    persistFill(ctx, 1, [sqlOp("INSERT INTO t VALUES ('a')")], opts)
-    persistFill(ctx, 3, [sqlOp("INSERT INTO t VALUES ('b')")], opts)
+    writeBucketCheckpoint(ctx, 1, { interval: 5 })
+    persistFill(ctx, 3, [sqlOp("INSERT INTO t VALUES ('b')")], OPTS)
     expect(loadFrame(gateway, 3)?.checkpoint).toBeUndefined()
-    persistFill(ctx, 7, [sqlOp("INSERT INTO t VALUES ('c')")], opts)
+    writeBucketCheckpoint(ctx, 7, { interval: 5 })
     expect(loadFrame(gateway, 7)?.checkpoint?.reason).toBe('periodic')
     core.dispose()
   })
@@ -125,7 +131,7 @@ describe('新存储模型 persistFill', () => {
     const { gateway } = makeChatGateway(6)
     const bridge = new SqliteSyncBridge(core, gateway)
     const ctx = createPersistContext(bridge.getRepo(), core)
-    const opts = { strategy: 'latest-only' as const, interval: 20, retainFloors: 100 }
+    const opts = { strategy: 'latest-only' as const, retainFloors: 100 }
     persistFill(ctx, 1, [sqlOp("INSERT INTO t VALUES ('a')")], opts)
     persistFill(ctx, 3, [sqlOp("INSERT INTO t VALUES ('b')")], opts)
     expect(loadFrame(gateway, 1)).toBeNull()
@@ -141,6 +147,7 @@ describe('新存储模型 persistFill', () => {
     const { gateway } = makeChatGateway(8)
     const bridge = new SqliteSyncBridge(core, gateway)
     const ctx = createPersistContext(bridge.getRepo(), core)
+    writeBucketCheckpoint(ctx, 1, { interval: 20 })
     persistFill(ctx, 1, [], OPTS)
     core.run("INSERT INTO t VALUES ('x')")
     persistFill(ctx, 3, [sqlOp("INSERT INTO t VALUES ('x')")], OPTS)
@@ -165,8 +172,7 @@ describe('新存储模型 persistFill', () => {
     const { gateway } = makeChatGateway(6)
     const bridge = new SqliteSyncBridge(core, gateway)
     const ctx = createPersistContext(bridge.getRepo(), core)
-    persistFill(ctx, 1, [], OPTS)
-    core.run("INSERT INTO t VALUES ('x')")
+    writeBucketCheckpoint(ctx, 1, { interval: 20 })
     persistFill(ctx, 3, [
       sqlOp("INSERT INTO t VALUES ('x')", 'ai_fill_table'),
       sqlOp("INSERT INTO t VALUES ('x')", 'ai_fill_chronicle'),
@@ -189,10 +195,9 @@ describe('新存储模型 persistFill', () => {
     const { gateway } = makeChatGateway(10)
     const bridge = new SqliteSyncBridge(core, gateway)
     const ctx = createPersistContext(bridge.getRepo(), core)
-    const opts = { strategy: 'every-message' as const, interval: 100, retainFloors: 100 }
-    persistFill(ctx, 1, [sqlOp("INSERT INTO t VALUES ('a')")], opts)
-    persistFill(ctx, 3, [sqlOp("INSERT INTO t VALUES ('b')")], opts)
-    persistFill(ctx, 5, [sqlOp("INSERT INTO t VALUES ('c')")], opts)
+    persistFill(ctx, 1, [sqlOp("INSERT INTO t VALUES ('a')")], OPTS)
+    persistFill(ctx, 3, [sqlOp("INSERT INTO t VALUES ('b')")], OPTS)
+    persistFill(ctx, 5, [sqlOp("INSERT INTO t VALUES ('c')")], OPTS)
     retainRecentFrames(ctx, 2)
     expect(loadFrame(gateway, 1)).not.toBeNull()
     core.dispose()
@@ -205,14 +210,60 @@ describe('新存储模型 persistFill', () => {
     const { gateway } = makeChatGateway(10)
     const bridge = new SqliteSyncBridge(core, gateway)
     const ctx = createPersistContext(bridge.getRepo(), core)
-    const opts = { strategy: 'every-message' as const, interval: 3, retainFloors: 100 }
-    persistFill(ctx, 1, [sqlOp("INSERT INTO t VALUES ('a')")], opts)
-    persistFill(ctx, 5, [sqlOp("INSERT INTO t VALUES ('b')")], opts)
-    persistFill(ctx, 7, [sqlOp("INSERT INTO t VALUES ('c')")], opts)
+    persistFill(ctx, 1, [sqlOp("INSERT INTO t VALUES ('a')")], OPTS)
+    writeBucketCheckpoint(ctx, 1, { interval: 3 })
+    persistFill(ctx, 5, [sqlOp("INSERT INTO t VALUES ('b')")], OPTS)
+    writeBucketCheckpoint(ctx, 5, { interval: 3 })
+    persistFill(ctx, 7, [sqlOp("INSERT INTO t VALUES ('c')")], OPTS)
+    writeBucketCheckpoint(ctx, 7, { interval: 3 })
     expect(loadFrame(gateway, 5)?.checkpoint?.reason).toBe('periodic')
     retainRecentFrames(ctx, 2)
     expect(loadFrame(gateway, 1)).toBeNull()
     expect(loadFrame(gateway, 5)).not.toBeNull()
     core.dispose()
+  })
+})
+
+describe('bucket 边界 checkpoint：多桶回放不翻倍、不丢后续桶（追平刷新丢数据回归）', () => {
+  it('两桶逐层落帧 + 桶末 checkpoint，重载后每表行数唯一、两桶数据齐全', async () => {
+    const core = new SqliteCore()
+    await core.init()
+    core.run('CREATE TABLE t (k TEXT PRIMARY KEY, c TEXT)')
+    core.run('CREATE TABLE cn_chronicle (key TEXT PRIMARY KEY, chronicle_text TEXT)')
+    const { gateway } = makeChatGateway(12)
+    const bridge = new SqliteSyncBridge(core, gateway)
+    const ctx = createPersistContext(bridge.getRepo(), core)
+
+    const bucketApply = (floors: number[]) => {
+      for (const f of floors) {
+        core.run("INSERT INTO t (k, c) VALUES ('k" + f + "', 'v" + f + "')")
+        persistFill(ctx, f, [sqlOp("INSERT INTO t (k, c) VALUES ('k" + f + "', 'v" + f + "')")], OPTS)
+        core.run("INSERT INTO cn_chronicle (key, chronicle_text) VALUES ('CN" + String(f).padStart(4, '0') + "', 'x" + f + "')")
+        persistFill(ctx, f, [sqlOp("INSERT INTO cn_chronicle (key, chronicle_text) VALUES ('CN" + String(f).padStart(4, '0') + "', 'x" + f + "')", 'ai_fill_chronicle')], OPTS)
+      }
+      writeBucketCheckpoint(ctx, floors[floors.length - 1]!, { interval: 20 })
+    }
+
+    bucketApply([1, 3])
+    bucketApply([5, 7])
+
+    const core2 = new SqliteCore()
+    await core2.init()
+    core2.run('CREATE TABLE t (k TEXT PRIMARY KEY, c TEXT)')
+    core2.run('CREATE TABLE cn_chronicle (key TEXT PRIMARY KEY, chronicle_text TEXT)')
+    const bridge2 = new SqliteSyncBridge(core2, gateway)
+    const result = bridge2.load()
+    expect(result.ok).toBe(true)
+
+    const tRows = core2.exec('SELECT k FROM t')[0]?.rows ?? []
+    const cRows = core2.exec('SELECT key FROM cn_chronicle')[0]?.rows ?? []
+    expect(tRows).toHaveLength(4)
+    expect(cRows).toHaveLength(4)
+    const tKeys = new Set(tRows.map((r) => r['k']))
+    const cKeys = new Set(cRows.map((r) => r['key']))
+    expect(tKeys).toEqual(new Set(['k1', 'k3', 'k5', 'k7']))
+    expect(cKeys).toEqual(new Set(['CN0001', 'CN0003', 'CN0005', 'CN0007']))
+    core.dispose()
+    core2.dispose()
   })
 })

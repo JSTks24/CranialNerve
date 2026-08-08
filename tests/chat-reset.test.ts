@@ -29,13 +29,15 @@ function makeSession(overrides: Record<string, unknown> = {}) {
     writeChatMetadata: vi.fn(),
     saveChat: vi.fn(async () => {})
   }
-  return {
+  const session = {
     chat,
     getChatToken: () => 'token1',
     worldbook,
     vectorIndexStore: { remove: vi.fn(async () => {}) },
+    runWrite: vi.fn(async (task: () => unknown) => task()),
     ...overrides
   }
+  return session
 }
 
 describe('clearChatData', () => {

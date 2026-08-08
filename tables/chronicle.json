@@ -20,7 +20,7 @@
       "name": "time_end",
       "displayName": "结束时间",
       "type": "TEXT",
-      "note": "事件结束时间，格式同 time_start。可算事件持续时长"
+      "note": "事件结束时间，格式同 time_start。可算事件持续时长；本轮事件结束时即当前剧情时间，全局数据表 cur_time 与之保持一致"
     },
     {
       "name": "location",

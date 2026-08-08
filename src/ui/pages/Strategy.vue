@@ -105,7 +105,7 @@ function onBlurAiTimeout() {
 	aiTimeoutText.value = cfg.value.pending.aiCallTimeoutMs === 0 ? '∞' : String(cfg.value.pending.aiCallTimeoutMs)
 }
 
-function saveBoolean(field: 'summarizeOnManualAbort') {
+function saveBoolean() {
 	session.saveConfig(cfg.value)
 }
 
@@ -137,7 +137,7 @@ function saveChronicleField(field: 'contextDepth' | 'updateFrequency' | 'batchSi
 	saveCfg()
 }
 
-function saveRecallField(field: 'maxRecallItems' | 'recallContextDepth' | 'retainFloors' | 'checkpointInterval' | 'recallRecentFixedInjectCount', min: number, max: number, fallback: number) {
+function saveRecallField(field: 'maxRecallItems' | 'recallContextDepth' | 'retainFloors' | 'checkpointInterval' | 'recallRecentFixedInjectCount' | 'recallFadeMinDepth', min: number, max: number, fallback: number) {
 	const c = cfg.value as unknown as Record<string, unknown>
 	c[field] = clampInt(c[field] as number, min, max, fallback)
 	saveCfg()
@@ -190,7 +190,7 @@ onActivated(() => {
 								<span class="strategy-row__desc">用户手动中断 AI 生成时是否仍进行纪要总结与表格更新。关闭则手动中止时本轮一并跳过（默认）。</span>
 							</div>
 							<label class="cn-switch">
-								<input type="checkbox" v-model="cfg.pending.summarizeOnManualAbort" @change="saveBoolean('summarizeOnManualAbort')" />
+								<input type="checkbox" v-model="cfg.pending.summarizeOnManualAbort" @change="saveBoolean()" />
 								<span class="cn-switch__track"></span>
 							</label>
 						</div>
@@ -314,7 +314,7 @@ onActivated(() => {
 								<span class="strategy-row__desc">与表格更新共用。用户手动中断 AI 生成时是否仍生成纪要/更新表格。</span>
 							</div>
 							<label class="cn-switch">
-								<input type="checkbox" v-model="cfg.pending.summarizeOnManualAbort" @change="saveBoolean('summarizeOnManualAbort')" />
+								<input type="checkbox" v-model="cfg.pending.summarizeOnManualAbort" @change="saveBoolean()" />
 								<span class="cn-switch__track"></span>
 							</label>
 						</div>
@@ -429,6 +429,15 @@ onActivated(() => {
 							<input class="cn-input cn-input--nospin strategy-num" type="number" min="0" max="1" step="0.05"
 								v-model.number="cfg.recallMinScore"
 								@blur="saveRecallFloat('recallMinScore', 0, 1, 0.45)" />
+						</div>
+						<div class="strategy-row">
+							<div class="strategy-row__text">
+								<span class="strategy-row__label">记忆消逝阈值</span>
+								<span class="strategy-row__desc">消息距当前超过 N 层后，召回卡片不再展示纪要、keys 不再注入 AI 上下文。0=永不消逝。默认 2</span>
+							</div>
+							<input class="cn-input cn-input--nospin strategy-num" type="number" min="0" max="50" step="1"
+								v-model.number="cfg.recallFadeMinDepth"
+								@blur="saveRecallField('recallFadeMinDepth', 0, 50, 2)" />
 						</div>
 					</div>
 				</section>

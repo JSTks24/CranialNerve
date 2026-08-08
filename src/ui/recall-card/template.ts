@@ -79,3 +79,15 @@ export function buildRecallCardHtml(payload: RecallCardPayload, userText: string
     `</div>`
   )
 }
+
+export function buildOpeningCardHtml(userText: string): string {
+  const head = `<div class="cn-recall-card__head">${svgIcon('cn-recall-card__icon', BRAIN_PATHS)}<span class="cn-recall-card__brand">CranialNerve</span></div>`
+  const body = `<div class="cn-recall-card__opening">${svgIcon('cn-recall-card__opening-icon', BRAIN_PATHS)}<span class="cn-recall-card__opening-text">故事的序幕，由你亲手揭开</span></div>`
+  return (
+    `<div class="cn-recall-card">` +
+    head +
+    body +
+    `<div class="cn-recall-card__message"><span class="cn-recall-card__tag">本回合输入</span>${escapeHtml(userText)}</div>` +
+    `</div>`
+  )
+}

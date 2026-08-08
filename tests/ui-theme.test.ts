@@ -55,6 +55,17 @@ describe('UI 主题守卫（深翠框景）', () => {
     expect(theme).not.toMatch(/fonts\.googleapis|fonts\.gstatic|@import|@font-face/)
   })
 
+  it('字体栈渐进升级：--cn-font 含新字体优先级，toast/recall-card 不继承酒馆字体', () => {
+    expect(theme).toContain("'Segoe UI Variable Text'")
+    expect(theme).toContain("'HarmonyOS Sans SC'")
+    expect(theme).toContain("'Source Han Sans SC'")
+    expect(theme).toContain("'JetBrains Mono'")
+    expect(toastSource).toContain("font-family:'Segoe UI Variable Text'")
+    const recallCardCss = readProjectFile('src/ui/recall-card/recall-card.css')
+    expect(recallCardCss).not.toContain('font-family: inherit')
+    expect(recallCardCss).toContain("'Segoe UI Variable Text'")
+  })
+
   it('禁 max-height/height 过渡', () => {
     expect(theme).not.toMatch(/transition:\s*[^;}]*max-height/)
   })
@@ -313,34 +324,41 @@ describe('模板与提示词预设弹窗改名', () => {
   })
 
   it('角色卡来源预设不显示删除按钮，模板复制功能已移除', () => {
-    expect(promptConfigPage).toContain(`v-if="p.source !== 'card'"`)
+    expect(promptConfigPage).toContain("p.source !== 'card'")
     expect(promptConfigPage).toContain('title="删除"')
     expect(promptConfigPage).not.toContain('duplicatePresetT')
     expect(promptConfigPage).not.toContain('fa-copy')
   })
 
-  it('预设列表点击选中、对号浮现才切换，按钮常驻透明占位', () => {
+  it('预设列表点击选中、对号浮现才切换，按钮仅选中时渲染', () => {
     expect(promptConfigPage).toContain('selectedPresetId')
     expect(promptConfigPage).toContain('selectedScenePresetId')
     expect(promptConfigPage).toContain('selectPresetItem')
     expect(promptConfigPage).toContain('preset-list__item--selected')
     expect(promptConfigPage).toContain('@click="selectPresetItem(p.id)"')
-    expect(promptConfigPage).toContain('preset-list__actions')
-    expect(promptConfigPage).toContain('preset-list__btn-hidden')
+    expect(promptConfigPage).toContain('p.id !== boundMatchPresetId && chatActive')
     expect(promptConfigPage).toContain(
-      'selectedPresetId !== p.id || p.id === ttConfig.activeId'
+      'v-if="selectedScenePresetId === p.id && p.id !== sceneConfig.activeId"'
     )
     expect(theme).toContain('.preset-list__item--selected')
   })
 
-  it('预设列表固定行高 46px，选中/未选中高度一致', () => {
+  it('角色卡自带模板始终置顶，可随时切回', () => {
+    expect(promptConfigPage).toContain("session.getCardTemplate()")
+    expect(promptConfigPage).toContain("ttConfig.value.presets.unshift(cardPreset)")
+    expect(promptConfigPage).not.toContain('preset-list__badge--edited')
+  })
+
+  it('预设列表固定行高 46px，选中/未选中高度一致，未选中无按钮占位', () => {
     expect(theme).toMatch(/\.preset-list__item \{[^}]*height:\s*46px;/)
     expect(theme).not.toMatch(/\.preset-list__item \{[^}]*min-height/)
-    expect(theme).toContain('.preset-list__actions .cn-btn.preset-list__btn-hidden')
+    expect(promptConfigPage).not.toContain('preset-list__btn-hidden')
+    expect(promptConfigPage).not.toContain('preset-list__actions')
   })
 
   it('绑定模板条目布局与样式合规（name-text、无彩色外光环、soft 徽标）', () => {
     expect(theme).toContain('.preset-list__name-text')
+    expect(theme).toMatch(/\.preset-list__name-text \{[^}]*flex:\s*0 1 auto;/)
     expect(promptConfigPage).toMatch(/preset-list__name-text">本聊天绑定模板<\/span>/)
     expect(theme).not.toMatch(/\.preset-list__item--bound \{[^}]*box-shadow/)
     expect(theme).toMatch(/\.preset-list__badge \{[^}]*background:\s*var\(--cn-primary-soft\)/)
@@ -354,12 +372,12 @@ describe('模板与提示词预设弹窗改名', () => {
     expect(sessionSource).not.toContain('已解除聊天模板绑定')
   })
 
-  it('追平范围按每侧游标计算，不再塌缩到第1层', () => {
-    expect(manualFillPage).toContain('tableFromSeq')
-    expect(manualFillPage).toContain('chronicleFromSeq')
-    expect(manualFillPage).not.toMatch(/Math\.min\(t \?\? -1, c \?\? -1\)/)
-    expect(fillOrchestratorSrc).not.toMatch(/Math\.min\(t \?\? -1, c \?\? -1\)/)
+  it('追平起点统一为 min(tableFrom,chronicleFrom)，不塌缩到第1层', () => {
+    expect(manualFillPage).toContain('Math.min(tableFrom, chronicleFrom)')
+    expect(manualFillPage).not.toContain('tableFromSeq')
+    expect(manualFillPage).not.toContain('chronicleFromSeq')
     expect(fillOrchestratorSrc).toContain('detectMergedLastFilled')
+    expect(fillOrchestratorSrc).toContain('mergedLast + 1')
   })
 
   it('内置模板预设可删除，不再强制恒存在', () => {

@@ -2,11 +2,26 @@ import { describe, expect, it, vi } from 'vitest'
 import { syncToWorldbook, cleanupStaleBooks } from '../src/core/worldbook-sync'
 
 function makeSession(overrides: Record<string, unknown> = {}) {
+  const messages: Array<{ extra?: Record<string, unknown>; mes?: string }> = [{ mes: 'm0' }]
+  const chat = {
+    getChat: () => messages,
+    readMessageExtra: (id: number, key: string) => messages[id]?.extra?.[key],
+    writeMessageExtra: (id: number, key: string, value: unknown) => {
+      if (id < 0 || id >= messages.length) {
+        throw new Error(`message ${id} not found`)
+      }
+      if (!messages[id]!.extra) {
+        messages[id]!.extra = {}
+      }
+      messages[id]!.extra![key] = value
+    }
+  }
   const worldbook = {
     listWorldbookNames: vi.fn(() => []),
     createWorldbook: vi.fn(async () => {}),
     loadLorebook: vi.fn(async () => ({ entries: {} })),
     saveLorebook: vi.fn(async () => {}),
+    isAttachedToChat: vi.fn(() => false),
     attachToChat: vi.fn(async () => {})
   }
   const chronicleDef = {
@@ -18,6 +33,7 @@ function makeSession(overrides: Record<string, unknown> = {}) {
   }
   return {
     getChatToken: () => 'token1',
+    chat,
     worldbook,
     getChronicleTableDef: () => chronicleDef,
     listTables: vi.fn(() => ['t1']),
